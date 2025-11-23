@@ -1,9 +1,38 @@
 # Credentials and Vault Management Standards
+## Security Standards for HX-Infrastructure Credential and Vault Management
 
-**Document Type**: Standards - Security & Operations  
-**Created**: 2025-11-15  
-**Classification**: Internal - DO NOT COMMIT TO GITHUB  
-**Status**: ✅ ACTIVE - Required for All Infrastructure Deployments  
+**Document Type:** Standard - Security & Credential Management (HIGHLY SENSITIVE)
+**Version:** 1.1
+**Date:** 2025-11-21
+**Status:** ✅ APPROVED - CRITICAL SECURITY STANDARD - Required for All Deployments
+**Location:** `/home/agent0/HX-Infrastructure/standards/credentials-vault-management.md`
+**Previous Version:** 1.0 → 1.1 (comprehensive metadata, infrastructure integration, procedure alignment)
+**Classification:** 🔴 INTERNAL - DO NOT COMMIT TO GITHUB - CONTAINS SENSITIVE PATTERNS
+
+---
+
+## Document Purpose
+
+This document establishes credentials and vault management standards for HX-Infrastructure, defining how secrets are stored, managed, and deployed across all services and nodes. This is a CRITICAL SECURITY document that must be protected.
+
+### Target Audience
+- **Frank Martinez (Security Specialist):** PRIMARY OWNER for security architecture and credential management
+- **William Thompson (Infrastructure Specialist):** Vault implementation and deployment integration
+- **Agent Zero (CC):** Validates vault configuration during all 6 lifecycle phases
+- **All Service Developers:** Must implement vault configuration following these standards
+- **All Infrastructure Engineers:** Must manage credentials securely
+
+### Scope
+- Ansible Vault architecture and configuration
+- Service vault structure and management
+- Node vault structure and management
+- Password standards and patterns
+- Credential rotation procedures
+- Git repository safety for secrets
+- Integration with deployment procedures
+
+### Authority
+**Mandatory for all service deployments.** No service may be deployed without proper vault configuration. Credential management compliance is validated throughout all 6 lifecycle phases.
 
 ---
 
@@ -180,7 +209,45 @@ cat 0.0.5.2.2-url-safe-password-pattern.md
 
 ## 2. Vault Architecture
 
-### 2.1 Two-Level Vault System
+### 2.1 Centralized Ansible Vault Password
+
+**⚠️ CRITICAL: Ansible Vault Configuration**
+
+**🔴 SECURITY NOTICE**: The actual vault password must NEVER be committed to Git. Store it securely offline.
+
+**Centralized Vault Password**: `[REDACTED - See secure offline documentation]`
+
+**Location**: Centralized vault password file must be stored on secured admin hosts only:
+- Example path: `/srv/ansible/.vault_password` (not tracked in Git)
+- Backup required in secure offline location (encrypted, access-controlled)
+- **NEVER commit the password file or actual password value to any repository**
+
+**Backup Requirements for Password File**:
+- ✅ Weekly backup of password file (encrypted)
+- ✅ Store backups in secure offline location with access logging
+- ✅ Verify backup integrity monthly
+- ✅ Document backup location in **private, git-ignored runbook only**
+- ✅ Encrypt backup media/archives with separate encryption key
+- ✅ Maintain 3 generations of backups (weekly rotation)
+
+**Usage**:
+```bash
+# All vault operations reference password file (never expose actual password)
+ansible-vault view secrets.yml --vault-password-file /srv/ansible/.vault_password
+ansible-vault edit secrets.yml --vault-password-file /srv/ansible/.vault_password
+ansible-vault encrypt secrets.yml --vault-password-file /srv/ansible/.vault_password
+```
+
+**Security Notes**:
+- This password protects all service and node vault files
+- File permissions: `chmod 600 /srv/ansible/.vault_password`
+- Owner: `root:root` or dedicated ansible automation user only
+- **CRITICAL**: Actual password value stored in secure offline documentation (not in Git)
+- Operational details documented in private runbook under `hx-knowledge/docs/` (git-ignored)
+
+---
+
+### 2.2 Two-Level Vault System
 
 **HX Infrastructure uses two levels of vaults**:
 
@@ -855,4 +922,171 @@ ansible-vault rekey secrets.yml \
 
 ---
 
+## Infrastructure Philosophy Integration
+
+Credential management aligns with HX-Infrastructure deployment philosophy:
+
+### Ansible Vault Philosophy
+
+**From deployment-requirements.md (authoritative source):**
+- ✅ **Ansible Vault ONLY:** All credentials stored in Ansible Vault (no alternative secret stores)
+- ✅ **No Ansible Playbooks:** Vault used for storage ONLY, not for automation deployment
+- ✅ **Manual Procedures:** Vault content extracted manually during deployment procedures
+- ✅ **Systemd Integration:** Credentials from vault used in systemd unit files and .env files
+- ✅ **Bare Metal Deployment:** Vault passwords stored on bare metal nodes (file-based)
+
+### Vault Usage Pattern
+
+**Correct Usage (Manual):**
+```bash
+# Extract credentials from vault manually
+ansible-vault view services/[service]/vault/secrets.yml \
+  --vault-password-file=/srv/ansible/.vault_password > /tmp/secrets.yml
+
+# Manually create .env file from vault content
+export DB_PASSWORD=$(grep db_password /tmp/secrets.yml | cut -d' ' -f2)
+echo "DB_PASSWORD=$DB_PASSWORD" > /opt/service/.env
+```
+
+**Incorrect Usage (Automation - NOT ALLOWED):**
+```bash
+# ❌ DO NOT USE: Ansible playbook automation
+ansible-playbook deploy.yml --vault-password-file .vault_password
+```
+
+### Procedure Alignment
+
+Credential management is integrated across all 6 lifecycle phases:
+
+**Phase 0 (Project Initiation):**
+- Initial feasibility includes credential requirements assessment
+- Service account naming planned
+- Vault structure planned
+
+**Phase 2 (Specification Development):**
+- spec.md documents credential requirements
+- plan.md documents vault structure
+- Vault creation planned in deployment tasks
+
+**Phase 3 (Task Breakdown & Testing):**
+- Task files include vault creation tasks
+- Task files include credential generation tasks
+- Task files include .env file creation from vault
+- No Ansible playbook tasks (manual procedures only)
+
+**Phase 4 (Task Execution):**
+- Vault created following vault structure standards
+- Credentials generated following password patterns
+- Vault encrypted with centralized vault password
+- Credentials extracted manually for deployment
+
+**Phase 5 (Project Closeout):**
+- Vault documented in service README
+- Credential rotation schedule documented
+- Vault backup procedures validated
+
+---
+
+## Related Documents
+
+### Standards
+- **`/home/agent0/HX-Infrastructure/standards/deployment-requirements.md`** - Infrastructure philosophy AUTHORITATIVE source, Ansible Vault philosophy
+- **`/home/agent0/HX-Infrastructure/standards/architecture-standards.md`** - Security architecture requirements
+- **`/home/agent0/HX-Infrastructure/standards/documentation-requirements.md`** - Vault documentation requirements
+- **`/home/agent0/HX-Infrastructure/standards/naming-conventions.md`** - Service account naming conventions
+
+### Procedures (Lifecycle Integration)
+- **`/home/agent0/HX-Infrastructure/procedures/node-deployment-workflow.md`** - Phase 0: Project initiation with credential planning
+- **`/home/agent0/HX-Infrastructure/procedures/spec-workflow.md`** - Phase 2: Credential requirements specification
+- **`/home/agent0/HX-Infrastructure/procedures/task-workflow.md`** - Phase 3: Vault creation task breakdown
+- **`/home/agent0/HX-Infrastructure/procedures/task-execution-workflow.md`** - Phase 4: Manual vault operations during deployment
+
+### Knowledge Base Documents (🔴 CRITICAL - CONTAINS ACTUAL PASSWORDS)
+- **`/home/agent0/HX-Infrastructure/hx-knowledge/docs/0.0.5.2.0-readme.md`** - 🔴 MUST READ - Credentials index
+- **`/home/agent0/HX-Infrastructure/hx-knowledge/docs/0.0.5.2.1-credentials.md`** - 🔴 MUST READ - Actual passwords SOURCE OF TRUTH
+- **`/home/agent0/HX-Infrastructure/hx-knowledge/docs/0.0.5.2.2-url-safe-password-pattern.md`** - 🔴 MUST READ - Password patterns
+
+### Commands
+- **`/cc-agent-zero-orchestrator`** - Validates vault configuration across all phases
+- **`/cc-frank-security-specialist`** - Security architecture and credential management PRIMARY OWNER
+- **`/cc-william-infra-specialist`** - Vault implementation validation
+
+### Governance Documents
+- **`/home/agent0/HX-Infrastructure/constitution.md`** - Security and compliance principles
+- **`.gitignore`** - Vault password and credential exclusion patterns
+
+### Agent Profiles
+- **Frank Martinez (Security Specialist):** PRIMARY OWNER for security architecture, credential management, vault standards
+- **William Thompson (Infrastructure Specialist):** Vault implementation and deployment integration
+- **Agent Zero (CC):** STATEFUL orchestrator validating vault configuration across all 6 phases
+
+---
+
+## Version History
+
+| Version | Date | Changes | Lines Changed | Author |
+|---------|------|---------|---------------|--------|
+| 1.0 | 2025-11-15 | Initial credential and vault management standards with comprehensive vault structure | 894 lines | HX-Infrastructure Team + Frank Martinez |
+| 1.1 | 2025-11-21 | Added comprehensive metadata, infrastructure philosophy integration (Ansible Vault only, no playbooks), procedure alignment, expanded related documents, version history, document maintenance | +150 lines (est.) | Agent Zero (CC) |
+
+**Key Updates in v1.1:**
+- Added comprehensive document metadata header (Type, Version, Date, Status, Location)
+- Added Document Purpose section emphasizing CRITICAL SECURITY STANDARD
+- Added Infrastructure Philosophy Integration section (Ansible Vault ONLY, no playbooks, manual procedures)
+- Added Vault Usage Pattern section (correct manual usage vs incorrect automation)
+- Added Procedure Alignment section (vault management across all 6 phases)
+- Expanded related documents section with comprehensive standards, procedures, knowledge base, commands, governance, agents
+- Added version history table (this table)
+- Added document maintenance section
+- Maintained 100% backward compatibility with v1.0
+
+**Backward Compatibility:** 100% - All v1.0 credential and vault requirements unchanged, only infrastructure philosophy explicit documentation and metadata enhancements added
+
+---
+
+## Document Maintenance
+
+### Update Triggers
+This document should be updated when:
+- Infrastructure philosophy credential requirements change
+- New vault structure patterns emerge
+- Password standards updated
+- Credential rotation policies change
+- New security tools integrated (future: HashiCorp Vault, cloud secret managers)
+- Knowledge base credential documentation structure changes
+- Samba AD authentication changes
+- Git safety patterns updated
+
+### Review Frequency
+- **Quarterly Review:** Frank Martinez reviews credential management effectiveness and security posture
+- **Post-Incident Review:** After security incidents, review credential management procedures
+- **Annual Security Audit:** Comprehensive review of vault passwords, credential rotation, access controls
+- **Continuous Monitoring:** Agent Zero validates vault configuration in all deployments
+
+### Compliance Enforcement
+- **Phase 2:** Agent Zero validates vault structure in spec.md and plan.md
+- **Phase 3:** Agent Zero validates vault creation tasks follow manual procedure patterns
+- **Phase 4:** Frank Martinez validates vault encryption and credential security during deployment
+- **Phase 5:** CAIO validates complete vault documentation before operational promotion
+- **Blocking Issue:** Missing or improperly configured vault PREVENTS operational promotion
+
+### Change Control
+- Changes to vault password standards require Frank Martinez security review
+- Changes to vault structure require template updates
+- Changes to Ansible Vault usage require infrastructure philosophy review
+- All changes maintain 100% backward compatibility or include migration procedures for existing vaults
+- Version increments: Minor for enhancements, Major for breaking changes (requires security justification)
+
+### Security Maintenance
+- **Vault Password Rotation:** Annually or after security incident
+- **Credential Rotation:** Quarterly for service accounts, semi-annually for admin accounts
+- **Access Review:** Quarterly review of who has access to vault passwords
+- **Backup Verification:** Monthly verification of /srv/ansible/ backups
+- **Git Safety Audit:** Quarterly audit of .gitignore effectiveness
+
+---
+
 **END OF DOCUMENT**
+**Version:** 1.1
+**Last Updated:** 2025-11-21
+**Security Classification:** 🔴 INTERNAL - DO NOT COMMIT TO GITHUB

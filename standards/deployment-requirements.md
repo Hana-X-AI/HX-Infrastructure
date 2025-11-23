@@ -1,15 +1,44 @@
 # Deployment Requirements Standards
+## Infrastructure Philosophy and Deployment Standards for HX-Infrastructure
 
-**Document Type**: Standards - Deployment & Operations  
-**Created**: 2025-11-15  
-**Version**: 1.0  
-**Status**: ✅ ACTIVE - Required for All Service Deployments
+**Document Type:** Standard - Deployment & Operations (Infrastructure Philosophy Primary Authority)
+**Version:** 1.1
+**Date:** 2025-11-21
+**Status:** ✅ APPROVED - Required for All Service Deployments
+**Location:** `/home/agent0/HX-Infrastructure/standards/deployment-requirements.md`
+**Previous Version:** 1.0 → 1.1 (infrastructure philosophy explicit documentation, comprehensive metadata)
 
 ---
 
-## Purpose
+## Document Purpose
 
-This document establishes deployment standards for HX Infrastructure. All service deployments must follow these requirements to ensure consistency, reliability, and maintainability.
+This document establishes deployment standards for HX-Infrastructure, including the **authoritative documentation of infrastructure philosophy**. All service deployments must follow these requirements to ensure consistency, reliability, maintainability, and infrastructure philosophy compliance.
+
+### Target Audience
+- **William Thompson (Infrastructure Specialist):** Primary authority for infrastructure philosophy enforcement
+- **All Deployment Engineers:** Must follow infrastructure philosophy for all deployments
+- **Agent Zero (CC):** Validates infrastructure philosophy compliance throughout lifecycle
+- **CAIO:** Approves operational promotions after philosophy validation
+
+### Scope
+- HX-Infrastructure deployment philosophy (**AUTHORITATIVE**)
+- Pre-deployment requirements and validation
+- Deployment process and task execution
+- Post-deployment verification and testing
+- Service promotion requirements
+- Rollback procedures
+- Change management
+
+### Infrastructure Philosophy Authority
+
+**This document is the authoritative source for HX-Infrastructure deployment philosophy:**
+- ✅ Bare metal first (Ubuntu 24.04 LTS for production/staging)
+- ✅ Docker dev-only (containers allowed ONLY on hx-dev-server)
+- ✅ Systemd service management (all services)
+- ✅ Manual procedures only (no automation, no Ansible playbooks)
+- ✅ Ansible Vault only (all credentials)
+
+**Philosophy compliance is validated across all 6 lifecycle phases (0-5)**
 
 ---
 
@@ -824,15 +853,147 @@ All promotion criteria met:
 
 ---
 
-## Related Documents
+## Infrastructure Philosophy Enforcement
 
-- `constitution.md` - Deployment principles
-- `standards/documentation-requirements.md` - Documentation standards
-- `standards/testing-requirements.md` - Testing standards
-- `standards/architecture-standards.md` - Architecture requirements
+This document is the **AUTHORITATIVE SOURCE** for HX-Infrastructure deployment philosophy. All deployments MUST comply with these principles:
+
+### Philosophy Validation Checkpoints
+
+**Phase 0 (Project Initiation):**
+- Initial feasibility assessment includes infrastructure philosophy compliance check
+- Docker consideration limited to hx-dev-server development use only
+- Bare metal deployment confirmed for production/staging environments
+
+**Phase 2 (Specification):**
+- `spec.md` MUST document bare metal deployment architecture
+- Systemd service management design required
+- Manual deployment procedures specified (no automation references)
+- All credentials documented for Ansible Vault storage
+
+**Phase 3 (Task Breakdown):**
+- Task files MUST follow manual procedure patterns
+- No Ansible playbook task types allowed
+- Systemd unit file creation tasks required
+- Vault credential retrieval tasks documented
+
+**Phase 4 (Task Execution):**
+- William Thompson validates infrastructure philosophy compliance
+- All deployments use manual procedures (no automation execution)
+- Systemd services created and enabled
+- Credentials retrieved from Ansible Vault only
+
+**Phase 5 (Project Closeout):**
+- Infrastructure philosophy compliance documented in lessons learned
+- Operational status confirms systemd service management
+- Manual procedure effectiveness evaluated
+
+### Infrastructure Philosophy Violations
+
+**Blocking Violations (prevent promotion to operational/):**
+- ❌ Docker containers in production/staging (except hx-dev-server)
+- ❌ Ansible playbooks for deployment automation
+- ❌ Credentials stored outside Ansible Vault
+- ❌ Services not managed by systemd
+- ❌ Missing bare metal deployment documentation
+
+**Warning Violations (require justification):**
+- ⚠️ Non-Ubuntu operating systems (require Alex Rivera approval)
+- ⚠️ Non-systemd service managers (require William Thompson approval)
+- ⚠️ Alternative credential storage (require Frank Martinez security review)
 
 ---
 
-**Template Version**: 1.0  
-**Last Updated**: 2025-11-15  
+## Related Documents
+
+### Standards
+- **`/home/agent0/HX-Infrastructure/standards/architecture-standards.md`** - Architecture requirements, deployment architecture alignment
+- **`/home/agent0/HX-Infrastructure/standards/testing-requirements.md`** - Testing standards, pre/post-deployment testing
+- **`/home/agent0/HX-Infrastructure/standards/documentation-requirements.md`** - Documentation standards for specs, plans, tasks
+- **`/home/agent0/HX-Infrastructure/standards/naming-conventions.md`** - Service and node naming conventions
+- **`/home/agent0/HX-Infrastructure/standards/credentials-vault-management.md`** - Ansible Vault credential management
+
+### Procedures (Lifecycle Integration)
+- **`/home/agent0/HX-Infrastructure/procedures/node-deployment-workflow.md`** - Phase 0: Project initiation and infrastructure philosophy validation
+- **`/home/agent0/HX-Infrastructure/procedures/charter-workflow.md`** - Phase 1: Charter creation including deployment approach
+- **`/home/agent0/HX-Infrastructure/procedures/spec-workflow.md`** - Phase 2: Specification development including infrastructure philosophy compliance
+- **`/home/agent0/HX-Infrastructure/procedures/task-workflow.md`** - Phase 3: Task breakdown following manual procedure patterns
+- **`/home/agent0/HX-Infrastructure/procedures/task-execution-workflow.md`** - Phase 4: Task execution using manual procedures
+- **`/home/agent0/HX-Infrastructure/procedures/project-closeout-workflow.md`** - Phase 5: Project closeout with infrastructure compliance validation
+
+### Commands
+- **`/cc-agent-zero-orchestrator`** - Validates infrastructure philosophy across all phases
+- **`/cc-william-infra-specialist`** - Infrastructure philosophy primary enforcement agent
+- **`/cc-alex-platform-architect`** - Architecture compliance validation
+- **`/cc-frank-security-specialist`** - Security architecture and credential vault compliance
+- **`/cc-julia-testing-specialist`** - Pre/post-deployment testing validation
+
+### Governance Documents
+- **`/home/agent0/HX-Infrastructure/constitution.md`** - Deployment principles and governance framework
+- **Node specifications** (`nodes/*/node-spec.md`) - Per-node infrastructure details
+- **Service specifications** (`services/*/spec.md`) - Per-service deployment architecture
+
+### Agent Profiles
+- **William Thompson (Infrastructure Specialist):** Infrastructure philosophy PRIMARY OWNER and enforcement authority
+- **Alex Rivera (Platform Architect):** Architecture design validation and infrastructure compliance review
+- **Frank Martinez (Security Specialist):** Security architecture and Ansible Vault compliance
+- **Julia Chen (Testing & Quality Specialist):** Pre/post-deployment testing validation
+- **Agent Zero (CC):** STATEFUL orchestrator validating infrastructure philosophy across all phases
+
+---
+
+## Version History
+
+| Version | Date | Changes | Lines Changed | Author |
+|---------|------|---------|---------------|--------|
+| 1.0 | 2025-11-15 | Initial deployment requirements standard with comprehensive deployment process documentation | 838 lines | HX-Infrastructure Team |
+| 1.1 | 2025-11-21 | Explicit infrastructure philosophy documentation, comprehensive metadata, infrastructure philosophy enforcement sections, expanded related documents, version history | +135 lines (est.) | Agent Zero (CC) |
+
+**Key Updates in v1.1:**
+- Added comprehensive document metadata header (Type, Version, Date, Status, Location)
+- Added Document Purpose section identifying this as Infrastructure Philosophy PRIMARY AUTHORITY
+- Added Infrastructure Philosophy Authority section with 5 core principles explicitly stated
+- Added Infrastructure Philosophy Enforcement section with validation checkpoints across all 6 phases
+- Added Infrastructure Philosophy Violations section (blocking vs warning violations)
+- Expanded related documents section with comprehensive standards, procedures, commands, governance, agents
+- Added version history table (this table)
+- Added document maintenance section
+- Maintained 100% backward compatibility with v1.0
+
+**Backward Compatibility:** 100% - All v1.0 deployment requirements unchanged, only infrastructure philosophy explicit documentation and metadata enhancements added
+
+---
+
+## Document Maintenance
+
+### Update Triggers
+This document should be updated when:
+- Infrastructure philosophy principles change (requires CAIO approval)
+- New deployment patterns emerge across multiple services
+- Deployment process improvements identified
+- New infrastructure components added (e.g., new node types, new service categories)
+- Agent role changes affect deployment validation
+- Procedure workflows updated (Phase 0-5 changes)
+- Compliance violations identified requiring new validation checkpoints
+
+### Review Frequency
+- **Quarterly Review:** William Thompson reviews infrastructure philosophy enforcement effectiveness
+- **Post-Project Review:** After major service deployments, review process effectiveness
+- **Annual Review:** Comprehensive review of all deployment requirements and infrastructure philosophy
+
+### Compliance Enforcement
+- **Pre-Deployment:** William Thompson validates infrastructure philosophy compliance before task execution
+- **Promotion Review:** CAIO validates infrastructure philosophy compliance before operational promotion
+- **Continuous Monitoring:** Agent Zero monitors infrastructure philosophy across all lifecycle phases
+- **Violation Response:** Blocking violations prevent promotion; warning violations require documented justification
+
+### Change Control
+- Changes to infrastructure philosophy require CAIO approval and constitution.md update
+- Changes to deployment process require William Thompson review and Alex Rivera architectural alignment
+- All changes maintain 100% backward compatibility or include migration procedures
+- Version increments: Minor for enhancements, Major for breaking changes (requires justification)
+
+---
+
+**Document Version**: 1.1
+**Last Updated**: 2025-11-21
 **Repository**: https://github.com/Hana-X-AI/HX-Infrastructure.git

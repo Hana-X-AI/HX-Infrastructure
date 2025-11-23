@@ -255,7 +255,25 @@ Each test case file should follow this structure:
 
 ---
 
-**Template Version**: 1.0  
-**Last Updated**: 2025-11-15  
-**Repository**: https://github.com/Hana-X-AI/HX-Infrastructure.git  
-*Based on HX Infrastructure Constitution v1.0 - See `/constitution.md`*
+## 🔗 Related Documents
+
+**Workflows:**
+- [Task Workflow](/home/agent0/HX-Infrastructure/procedures/task-workflow.md)
+- [Task Execution Workflow](/home/agent0/HX-Infrastructure/procedures/task-execution-workflow.md) (Next Phase)
+
+**Templates:**
+- [Service Spec Template](/home/agent0/HX-Infrastructure/templates/service-spec-template.md) (Previous Phase)
+- [Test Plan Template](/home/agent0/HX-Infrastructure/templates/testing/test-plan-template.md)
+- [Test Case Template](/home/agent0/HX-Infrastructure/templates/testing/test-case-template.md)
+
+**Reference:**
+- [Constitution](/home/agent0/HX-Infrastructure/constitution.md)
+- [Testing Requirements](/home/agent0/HX-Infrastructure/standards/testing-requirements.md)
+- [Documentation Requirements](/home/agent0/HX-Infrastructure/standards/documentation-requirements.md)
+
+---
+
+**Template Version**: 1.0
+**Last Updated**: 2025-11-18
+**Maintained By:** Agent Zero (CC)
+**Repository**: https://github.com/Hana-X-AI/HX-Infrastructure.git

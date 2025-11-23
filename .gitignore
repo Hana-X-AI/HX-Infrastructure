@@ -1,1 +1,6 @@
 hx-knowledge/
+
+# Ignore all directories and files starting with 'x'
+x-*/
+x-*
+

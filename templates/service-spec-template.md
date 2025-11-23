@@ -1,8 +1,36 @@
 # Service Specification: [SERVICE NAME]
 
-**Service Branch**: `[###-service-name]`  
-**Created**: [DATE]  
-**Status**: Draft  
+**Template Type:** Service Specification Template (Phase 2: Specification Development)
+**Template Version:** 1.1
+**Template Date:** 2025-11-21
+**Lifecycle Phase:** Phase 2 (Specification Development - spec-workflow.md)
+**Previous Version:** 1.0 → 1.1 (comprehensive metadata, infrastructure philosophy integration, standards alignment)
+
+---
+
+## Template Purpose
+
+This template guides creation of service specifications during Phase 2 (Specification Development). Specifications define WHAT the service does and WHY it's needed, without implementation details (HOW).
+
+### When to Use This Template
+- **Phase 2:** During specification development (spec-workflow.md)
+- **Created By:** Agent Zero (CC) or service developers
+- **Reviewed By:** Alex Rivera (Platform Architect) for architecture alignment
+- **Approved By:** CAIO before proceeding to Phase 3
+
+### Infrastructure Philosophy Requirements
+This template MUST be used to document infrastructure philosophy compliance:
+- ✅ **Bare-metal deployment:** Document target node (Ubuntu 24.04 LTS for production/staging)
+- ✅ **Systemd service management:** Document service management approach (systemd)
+- ✅ **Manual procedures:** Spec focuses on requirements, not automation
+- ✅ **Ansible Vault only:** Document credential requirements (vault storage, not playbook automation)
+- ✅ **Docker dev-only:** If Docker used, document hx-dev-server constraint and CAIO approval
+
+---
+
+**Service Branch**: `[###-service-name]`
+**Created**: [DATE]
+**Status**: Draft
 **Input**: User description: "$ARGUMENTS"
 
 ## Execution Flow (main)
@@ -189,6 +217,86 @@ When creating this spec from a user prompt:
 
 ---
 
-**Template Version**: 1.0  
-**Last Updated**: 2025-11-15  
+## 🔗 Related Documents
+
+**Workflows:**
+- [Specification Workflow](/home/agent0/HX-Infrastructure/procedures/spec-workflow.md)
+- [Task Workflow](/home/agent0/HX-Infrastructure/procedures/task-workflow.md) (Next Phase)
+
+**Templates:**
+- [Service Plan Template](/home/agent0/HX-Infrastructure/templates/service-plan-template.md)
+- [Service Tasks Template](/home/agent0/HX-Infrastructure/templates/service-tasks-template.md) (Next Phase)
+
+**Reference:**
+- [Constitution](/home/agent0/HX-Infrastructure/constitution.md)
+- [Architecture Standards](/home/agent0/HX-Infrastructure/standards/architecture-standards.md)
+- [Testing Requirements](/home/agent0/HX-Infrastructure/standards/testing-requirements.md)
+
+---
+
+## Template Standards Alignment
+
+This template implements standards from:
+- **`/home/agent0/HX-Infrastructure/standards/documentation-requirements.md`** - Service documentation structure
+- **`/home/agent0/HX-Infrastructure/standards/architecture-standards.md`** - Requirements documentation
+- **`/home/agent0/HX-Infrastructure/standards/deployment-requirements.md`** - Infrastructure philosophy documentation
+- **`/home/agent0/HX-Infrastructure/standards/naming-conventions.md`** - Service naming patterns
+
+---
+
+## Template Usage in Lifecycle
+
+**Phase 2 (Specification Development):**
+1. Agent Zero or service developer creates spec.md using this template
+2. All mandatory sections filled (Service Purpose, Requirements, Node Requirements, etc.)
+3. Infrastructure philosophy compliance documented
+4. Alex Rivera reviews architecture alignment
+5. CAIO approves spec before proceeding to Phase 3
+
+**Quality Gates:**
+- spec_draft_gate: Validates spec completeness before team formation
+- spec_context_gate: Validates requirements clarity before task breakdown
+
+---
+
+## Related Templates
+
+- **`service-plan-template.md`** - Next phase: Deployment plan (Phase 2)
+- **`service-architecture-template.md`** - Architecture documentation (Phase 2)
+- **`service-tasks-template.md`** - Task breakdown (Phase 3)
+- **`test-plan-template.md`** - Test planning (Phase 3)
+
+---
+
+## Related Procedures
+
+- **`/home/agent0/HX-Infrastructure/procedures/spec-workflow.md`** - Phase 2: Specification development workflow
+- **`/home/agent0/HX-Infrastructure/procedures/task-workflow.md`** - Phase 3: Next phase after spec approval
+
+---
+
+## Template Version History
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0 | 2025-11-18 | Initial service specification template | Agent Zero (CC) |
+| 1.1 | 2025-11-21 | Added template metadata, infrastructure philosophy requirements, standards alignment, lifecycle integration | Agent Zero (CC) |
+
+**Key Updates in v1.1:**
+- Added Template Purpose section
+- Added Infrastructure Philosophy Requirements section
+- Added Template Standards Alignment section
+- Added Template Usage in Lifecycle section
+- Added Related Templates and Procedures sections
+- Added Template Version History table
+- Maintained 100% backward compatibility with v1.0
+
+**Backward Compatibility:** 100% - All v1.0 template sections unchanged, only metadata and guidance enhancements added
+
+---
+
+**Template Version**: 1.1
+**Last Updated**: 2025-11-21
+**Maintained By:** Agent Zero (CC)
+**Lifecycle Phase:** Phase 2 (Specification Development)
 **Repository**: https://github.com/Hana-X-AI/HX-Infrastructure.git
