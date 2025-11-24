@@ -867,136 +867,554 @@ cat /home/agent0/HX-Infrastructure/standards/deployment-requirements.md
 
 **Scenario:** Deploy hx-metric-server (monitoring service)
 
-```bash
-# Pre-requisites:
-# - Service concept identified
-# - CAIO has vision for service
-# - Target node identified (e.g., hx-monitoring-server)
+**User Input:**
+```
+"I want to deploy a new Prometheus metrics aggregation service on
+hx-metric-server that collects metrics from all infrastructure nodes
+and exposes them for Grafana."
+```
 
+**Command Invocation:**
+```bash
 # Phase 1: Execute Charter Workflow
 /cc-charter-workflow.md
+```
 
-# Claude Code will execute 10 phases:
-# Phase 1: Parse CAIO brain dump
-# Phase 2: Generate initial questions (via cc-phase-charter-questions.md)
-# Phase 3: CAIO answers questions
-# Phase 4: Research knowledge vault (via cc-phase-knowledge-research.md)
-# Phase 5: Analyze research findings
-# Phase 6: Generate post-research questions (via cc-phase-charter-questions.md)
-# Phase 7: CAIO answers post-research questions
-# Phase 8: Generate charter document
-# Phase 9: CAIO reviews and approves
-# Phase 10: Finalize and commit charter
+**Expected Agent Behavior:**
+```
+Agent Zero will:
+1. Parse the request and identify service: hx-metric-server
+2. Call /cc-phase-charter-questions.md to generate initial questions
+3. Present 10 P0/P1 questions to CAIO (e.g., "Which metrics?", "Retention?",
+   "Authentication?")
+4. After answers, call /cc-phase-knowledge-research.md
+5. Research Prometheus, node-exporter, Grafana integration
+6. Generate post-research questions for clarification
+7. Create charter.md with confidence levels
 
-# Output: charter.md with High/Medium/Low confidence assessment
+Timeline: 30-90 minutes depending on CAIO response time
+```
 
+**Expected Output File Structure:**
+```
+services/planning/hx-metric-server/
+├── charter-hx-metric-server.md          # Primary charter document
+├── questions-initial.md                  # Initial P0/P1 questions
+├── questions-post-research.md            # Refined questions after research
+├── research-findings.md                  # Knowledge vault research results
+│   ├── Primary: prometheus-main (CONFIDENCE: HIGH)
+│   ├── Integration: grafana (CONFIDENCE: HIGH)
+│   └── Integration: node-exporter (CONFIDENCE: MEDIUM)
+└── charter-approval.md                   # CAIO approval record
+```
+
+**Sample Charter Output (excerpt):**
+```markdown
+# Service Charter: Metrics Aggregation Server
+
+**Service Name:** hx-metric-server
+**Node:** hx-metric-server.hx.dev.local (192.168.10.230)
+**Layer:** Layer 6 (Integration & Testing)
+**Timeline:** 2-3 weeks
+
+## Confidence Assessment
+- Prometheus deployment: HIGH (excellent documentation)
+- Grafana integration: HIGH (standard practice)
+- Node exporter setup: MEDIUM (custom configurations needed)
+- Authentication via LDAP: MEDIUM (integration pattern documented)
+
+## Agent Assignments
+- Lead: William Chen (Infrastructure Specialist)
+- Support: Frank Lucas (LDAP authentication)
+- Testing: Julia Santos (Test plan creation)
+
+## Next Phase
+Proceed to specification development (/cc-spec-workflow.md)
+```
+
+---
+
+**Continuation to Specification:**
+```bash
 # Phase 2: Continue with specification workflow
 /cc-spec-workflow.md
-# Output: spec.md, plan.md, architecture.md
+```
 
-# Phase 3: Continue with task workflow
-/cc-task-workflow.md
-# Output: plan.md, tasks.md, test-suite/ (100% coverage)
+**Expected Output:**
+```
+services/planning/hx-metric-server/
+├── spec-hx-metric-server.md              # Technical specification
+│   ├── System architecture
+│   ├── Prometheus configuration
+│   ├── Data collection strategy
+│   ├── Storage requirements (retention, volume)
+│   ├── Query patterns and API
+│   └── Security (LDAP auth, TLS)
+├── plan-hx-metric-server.md              # Deployment plan outline
+└── architecture-hx-metric-server.md      # Architecture diagrams
 
-# Phase 4: Continue with execution workflow
-/cc-task-execution-workflow.md
-# Output: results.md, operational service
+Timeline: 45-120 minutes
+Agent: William Chen coordinates with Frank Lucas (auth)
+```
 
-# Phase 5: Continue with closeout workflow
-/cc-closeout-workflow.md
-# Output: final-report.md, lessons-learned.md
+---
+
+**Complete SDLC Example Output:**
+```bash
+# Full service deployment produces:
+
+services/operational/hx-metric-server/
+├── charter-hx-metric-server.md           # Phase 1 output
+├── spec-hx-metric-server.md              # Phase 2 output
+├── plan-hx-metric-server.md              # Phase 3 output
+├── tasks/
+│   ├── task-001-infrastructure.md        # Node setup
+│   ├── task-002-prometheus-install.md    # Prometheus deployment
+│   ├── task-003-node-exporters.md        # Collector configuration
+│   ├── task-004-grafana-integration.md   # Visualization setup
+│   └── task-005-authentication.md        # LDAP integration
+├── test-suite/
+│   ├── test-plan-hx-metric-server.md     # Test strategy
+│   ├── tc-metric-deploy-001.md           # Deployment tests
+│   ├── tc-metric-func-001.md             # Functional tests
+│   ├── tc-metric-integ-001.md            # Integration tests
+│   └── test-results-20251124.md          # Execution results
+├── defects/
+│   └── (empty if no defects discovered)
+├── results-hx-metric-server.md           # Phase 4 execution results
+└── final-report-hx-metric-server.md      # Phase 5 closeout
+
+Total Timeline: 3-8 hours for complete deployment
 ```
 
 ---
 
 ### **Example 2: Quick Status Check**
 
-**Scenario:** CAIO wants current status of all projects.
+**Scenario:** CAIO wants current status of all active projects.
 
+**User Input:**
+```
+"Give me a status report on all active infrastructure projects."
+```
+
+**Command Invocation:**
 ```bash
-# Execute Status Report Utility:
 /cc-util-status-report.md
+```
 
-# Prompts:
-# - Report type: "multi-project"
-# - Scope: "all active projects"
+**Expected Agent Behavior:**
+```
+Agent Zero will:
+1. Scan /home/agent0/HX-Infrastructure/services/ directories
+2. Identify active projects (planning/ or operational/)
+3. Read charter, spec, plan, test results for each project
+4. Calculate completion percentage per phase
+5. Identify blockers (P0 questions, failing tests, open defects)
+6. Generate comprehensive status report
 
-# Claude Code will:
-# 1. Scan all project directories
-# 2. Identify active projects
-# 3. Check phase completion
-# 4. Identify blockers
-# 5. Calculate progress
-# 6. Generate report
+Timeline: 15 minutes
+```
 
-# Output: status-report-2025-11-21.md
+**Expected Output:**
+```markdown
+# HX-Infrastructure Status Report
+**Generated:** 2025-11-24 14:30:00 UTC
+**Scope:** All active projects
+**Report Type:** Multi-project summary
 
-# Report includes:
-# - Executive summary
-# - Per-project status
-# - Blockers and risks
-# - Next actions
-# - Infrastructure philosophy compliance
+## Executive Summary
+- Active Projects: 3
+- Completed Projects: 12
+- Blocked Projects: 1 (hx-vector-search: Critical defect)
+- On-Track Projects: 2
+
+## Project Status Details
+
+### Project 1: hx-metric-server (Prometheus Metrics)
+**Phase:** 2 (Specification Development)
+**Progress:** 40% complete
+**Status:** ✅ ON TRACK
+**Blockers:** None
+**Next Milestone:** Complete specification (due: 2025-11-25)
+**Assigned:** William Chen (lead), Frank Lucas (auth)
+
+### Project 2: hx-vector-search (Vector Search Gateway)
+**Phase:** 4 (Task Execution - Testing)
+**Progress:** 85% complete
+**Status:** ❌ BLOCKED
+**Blocker:** 1 CRITICAL defect (SQL injection in pgvector filter)
+**Action Required:** Trinity Brooks resolving defect (ETA: 2 hours)
+**Tests:** 42/43 passing (98%)
+
+### Project 3: hx-backup-automation (Backup Service)
+**Phase:** 5 (Project Closeout)
+**Progress:** 95% complete
+**Status:** ✅ ON TRACK
+**Blockers:** None
+**Next Action:** Final documentation review
+
+## Infrastructure Philosophy Compliance
+✅ All projects: Bare metal deployment documented
+✅ All projects: Systemd service management
+✅ All projects: Manual procedures (no Ansible playbooks)
+✅ All projects: Ansible Vault credential storage
+⚠️  hx-vector-search: Requires security review after defect fix
+
+## Recommendations
+1. Prioritize hx-vector-search defect resolution (blocks promotion)
+2. Complete hx-metric-server spec by EOD 2025-11-25
+3. Finalize hx-backup-automation closeout documentation
+
+**Next Report:** 2025-11-25 14:30:00 UTC
 ```
 
 ---
 
 ### **Example 3: Emergency Defect Fix**
 
-**Scenario:** Critical defect discovered in hx-webui-server.
+**Scenario:** Critical SQL injection vulnerability discovered in hx-vector-gateway during security testing.
 
+**User Input:**
+```
+"Critical defect: SQL injection in pgvector filter allows arbitrary SQL execution.
+Test case tc-vector-sec-003 failed."
+```
+
+**Command Invocation (Step 1: Log Defect):**
 ```bash
-# Step 1: Log the defect
 /cc-phase-defect-mgmt.md
-# Section: "Log New Defect"
-# Input: Test TC-WEBUI-004 failed, service won't start
-# Output: DEF-001.md
-# Status: Critical, Open, Blocks: Yes
+```
 
-# Step 2: Fix the defect
-# (Developer/William fixes the issue)
+**Agent Prompt:**
+```
+Select action: Log New Defect
+Service: hx-vector-gateway
+Test Case: tc-vector-sec-003
+Severity: CRITICAL
+Description: SQL injection vulnerability in pgvector adapter
+```
 
-# Step 3: Verify the fix
+**Expected Output (defect-vector-critical-003-sql-injection.md):**
+```yaml
+---
+defect_id: defect-vector-critical-003-sql-injection
+service: hx-vector-gateway
+severity: CRITICAL
+priority: P0 (BLOCKER - IMMEDIATE ACTION)
+status: OPEN
+discovered_date: 2025-11-24
+discovered_by: Julia Santos (Security Testing)
+assigned_to: Trinity Brooks (PostgreSQL DBA)
+test_case: tc-vector-sec-003
+phase: Security Testing
+---
+
+## Description
+SQL injection vulnerability: User-provided filter values executed directly
+in SQL queries without parameterization.
+
+## Impact
+- CRITICAL SECURITY RISK: Full database compromise possible
+- Data loss: Attacker can DROP tables, DELETE data
+- Blocks operational promotion: YES
+
+## Reproduction
+1. POST /v1/search with filter: {"category": "'; DROP TABLE vectors; --"}
+2. SQL query executes injection, drops table
+
+## Affected Code
+File: src/adapters/pgvector_adapter.py
+Method: _build_filter_query()
+
+## Status
+🚨 DEPLOYMENT HALTED - Security incident protocol activated
+Assigned: Trinity Brooks (fix within 4 hours)
+Oversight: Alex Rivera (security review mandatory)
+```
+
+**Agent Behavior:**
+```
+Agent Zero will:
+1. Create defect file with CRITICAL severity
+2. ❌ BLOCK all deployment activities immediately
+3. Assign to Trinity Brooks (PostgreSQL DBA)
+4. Escalate to Alex Rivera (security review)
+5. Update service status to BLOCKED
+6. Notify CAIO of critical security issue
+
+Timeline: 5 minutes to log, 1-4 hours to fix
+```
+
+---
+
+**Command Invocation (Step 2: Resolve Defect):**
+```bash
+# Trinity Brooks fixes the code (implements parameterized queries)
+# Re-runs security tests
+
 /cc-phase-defect-mgmt.md
-# Section: "Verify Resolution"
-# Re-runs: TC-WEBUI-004 and full test suite
-# Result: All tests pass
-# Updates: DEF-001.md status to "Closed"
+```
 
-# Step 4: Update tracking
-/cc-util-artifact-tracker.md
-# Updates: Central defect log
-# Updates: Service status (unblocked)
+**Agent Prompt:**
+```
+Select action: Verify Resolution
+Defect ID: defect-vector-critical-003-sql-injection
+Fix implemented: Parameterized queries with asyncpg ($1, $2, ...)
+Test results: All security tests passing (7/7)
+```
+
+**Expected Output (updated defect file):**
+```yaml
+---
+status: RESOLVED → CLOSED
+resolution: Implemented parameterized queries + filter key whitelist
+resolution_date: 2025-11-24 17:30:00 UTC
+time_to_fix: 1 hour 48 minutes
+verification_status: PASSED (security tests + penetration testing)
+security_review: APPROVED (Alex Rivera)
+---
+
+## Resolution
+- Replaced string interpolation with asyncpg parameterized queries
+- Added metadata field whitelist (prevent column name injection)
+- All SQL injection tests passing
+- Security review approved by Alex Rivera
+
+## Prevention Measures
+- Updated security-coding-standards.md
+- Added Bandit linter to CI/CD (detect string interpolation)
+- Mandatory security testing for all database operations
+```
+
+**Service Status Update:**
+```
+hx-vector-gateway status: UNBLOCKED
+All tests passing: 43/43 (100%)
+Ready for operational promotion: YES
 ```
 
 ---
 
 ### **Example 4: Research New Integration**
 
-**Scenario:** Evaluating LangGraph integration for n8n workflows.
+**Scenario:** Evaluating LangGraph for multi-agent workflow orchestration.
 
+**User Input:**
+```
+"I want to use LangGraph for orchestrating our AI agent workflows.
+Can we integrate it with our current infrastructure?"
+```
+
+**Command Invocation (Step 1: Find Repositories):**
 ```bash
-# Step 1: Find repositories
 /cc-list-knowledge.md
-# Search: "langgraph n8n integration workflow"
-# Results: LangGraph repo, n8n repo, integration patterns
+```
 
-# Step 2: Conduct research
+**Agent Prompt:**
+```
+Search query: "langgraph agent orchestration workflow state management"
+```
+
+**Expected Output:**
+```markdown
+# Knowledge Repository Search Results
+
+## Primary Matches (3 repositories)
+
+### 1. langgraph-main (PRIMARY)
+**Path:** /home/agent0/HX-Infrastructure/hx-knowledge/repos/langgraph-main/
+**Size:** 2,847 files, 458 KB
+**Relevance:** EXACT MATCH - Core LangGraph framework
+**Content:**
+- Architecture: Graph-based agent orchestration
+- State management: Persistent state across nodes
+- Human-in-the-loop: Interrupt and approval patterns
+- Multi-agent coordination: Node-based workflow design
+**Confidence:** HIGH (official docs, comprehensive examples)
+
+### 2. langchain-docs (INTEGRATION)
+**Path:** /home/agent0/HX-Infrastructure/hx-knowledge/repos/langchain-docs/
+**Size:** 5,234 files, 1.2 MB
+**Relevance:** HIGH - LangGraph built on LangChain
+**Content:**
+- Integration patterns with LangGraph
+- Agent tool usage with LangGraph nodes
+- LLM integration (OpenAI, Anthropic, Ollama)
+**Confidence:** HIGH
+
+### 3. fastapi-master (DEPLOYMENT)
+**Path:** /home/agent0/HX-Infrastructure/hx-knowledge/repos/fastapi-master/
+**Size:** 892 files, 234 KB
+**Relevance:** MEDIUM - FastAPI backend for LangGraph
+**Content:**
+- Async API design for agent workflows
+- Streaming responses (SSE for agent status)
+**Confidence:** MEDIUM
+
+## Recommendation
+Proceed with knowledge research on langgraph-main (primary).
+Estimated research time: 30-45 minutes.
+```
+
+---
+
+**Command Invocation (Step 2: Conduct Research):**
+```bash
 /cc-phase-knowledge-research.md
-# Primary: LangGraph (30-45 min)
-# Integration: n8n (15-30 min)
-# Output: research-findings.md with confidence levels
+```
 
-# Step 3: Generate questions
+**Agent Prompt:**
+```
+Primary repository: langgraph-main
+Integration repositories: langchain-docs, fastapi-master
+Research focus: Agent orchestration, state management, HX-Infrastructure integration
+```
+
+**Expected Output (research-findings-langgraph.md):**
+```markdown
+# Knowledge Research Findings: LangGraph
+
+**Research Date:** 2025-11-24
+**Primary Repository:** langgraph-main
+**Research Duration:** 42 minutes
+
+## Core Capabilities
+
+### 1. Graph-Based Agent Orchestration
+**Confidence:** HIGH
+- Nodes represent agents or functions
+- Edges define workflow transitions
+- Conditional routing based on state
+- Cyclic graphs supported (loops, retries)
+
+**Key Finding:** LangGraph uses StateGraph pattern - perfect for our multi-agent coordination needs.
+
+### 2. Persistent State Management
+**Confidence:** HIGH
+- Built-in checkpointing (PostgreSQL, SQLite backends)
+- State persists across workflow interruptions
+- Resume from any checkpoint
+- Full state history tracking
+
+**Key Finding:** PostgreSQL backend available - integrates with hx-postgres-server.
+
+### 3. Human-in-the-Loop Patterns
+**Confidence:** MEDIUM
+- Interrupt nodes for approval gates
+- Resume after human input
+- State inspection during interruption
+
+**Gap:** Documentation limited on approval UI integration (needs POC).
+
+### 4. Multi-Agent Coordination
+**Confidence:** HIGH
+- Each agent is a node in the graph
+- Shared state between agents
+- Agent-to-agent message passing
+- Parallel agent execution supported
+
+**Key Finding:** Maps directly to our agent coordination patterns (agent-zero, alex-rivera, julia-santos, william-chen).
+
+## Integration Assessment
+
+### HX-Infrastructure Integration Points
+
+**✅ FEASIBLE:**
+- FastAPI backend (Bob Martinez expertise)
+- PostgreSQL state storage (Trinity Brooks, hx-postgres-server)
+- LiteLLM for LLM calls (Shane Black, hx-litellm-server)
+- Ollama models (Jim Taylor, hx-ollama1/2/3-server)
+
+**⚠️  REQUIRES WORK:**
+- Authentication integration (Frank Lucas, hx-dc-server LDAP)
+- Monitoring integration (Prometheus metrics)
+- Deployment automation (William Chen, systemd services)
+
+**❌ GAPS:**
+- Human approval UI (needs custom development)
+- Agent result streaming to frontend (needs SSE implementation)
+
+## Recommendations
+
+**Confidence Level:** HIGH for core capabilities, MEDIUM for full integration
+
+**Next Steps:**
+1. Proceed with charter creation (high confidence in core features)
+2. Plan POC for human-in-the-loop UI (address confidence gap)
+3. Coordinate with: Bob Martinez (FastAPI), Trinity Brooks (PostgreSQL), Shane Black (LiteLLM)
+
+**Timeline Estimate:** 3-4 weeks for full deployment
+**Risk Level:** LOW (well-documented, proven technology)
+```
+
+---
+
+**Command Invocation (Step 3: Generate Post-Research Questions):**
+```bash
 /cc-phase-charter-questions.md
-# Use: Post-research question generation
-# Based on: Research findings
-# Output: questions-post-research.md
+```
 
-# Step 4: Decision
-# If High Confidence: Proceed with charter
-# If Medium Confidence: Conduct POC first
-# If Low Confidence: Find better docs or different approach
+**Agent Prompt:**
+```
+Question type: Post-research
+Based on: research-findings-langgraph.md
+Confidence gaps: Human-in-the-loop UI, authentication integration
+```
+
+**Expected Output (questions-post-research-langgraph.md):**
+```markdown
+# Post-Research Clarifying Questions: LangGraph Integration
+
+## P0 Questions (Must Answer Before Charter)
+
+1. **Human Approval Interface:** LangGraph supports interrupts for human approval, but requires custom UI. Do you want:
+   A) Web-based approval dashboard (React/Next.js)
+   B) CLI-based approval (terminal prompts)
+   C) Slack/Discord bot integration for approvals
+   D) Defer UI development to future phase
+
+2. **Authentication Strategy:** How should LangGraph agent workflows authenticate?
+   A) API key per workflow (stored in Ansible Vault)
+   B) LDAP integration via hx-dc-server (user-based auth)
+   C) OAuth2 with external provider
+   D) No authentication (internal network only)
+
+3. **State Storage Location:** LangGraph checkpoints can use:
+   A) hx-postgres-server (existing, shared with other services)
+   B) Dedicated PostgreSQL instance (hx-langgraph-db-server, new node)
+   C) SQLite (simpler, but single-server limitation)
+
+## P1 Questions (Should Answer, Not Blockers)
+
+4. **Workflow Monitoring:** How should we expose LangGraph workflow status?
+   A) Prometheus metrics + Grafana dashboards
+   B) Custom web dashboard
+   C) Log aggregation only
+   D) All of the above
+
+5. **Agent Result Streaming:** Should agent results stream to clients in real-time?
+   A) Yes, implement SSE (Server-Sent Events) streaming
+   B) No, poll for results via REST API
+   C) WebSocket streaming instead of SSE
+
+## Confidence Gaps Addressed
+- **Gap 1 (Human-in-the-loop UI):** Q1 resolves approach (web, CLI, or defer)
+- **Gap 2 (Authentication):** Q2 resolves auth strategy
+- **Gap 3 (Deployment):** Q3 resolves state storage decision
+
+## Next Step After Answers
+Proceed to charter creation with HIGH confidence.
+Recommended POC: Q1 Answer A (web dashboard) requires prototype validation.
+```
+
+---
+
+**Decision Flow:**
+```
+If CAIO answers Q1-Q3 → HIGH CONFIDENCE → Proceed to charter (/cc-charter-workflow.md)
+If confidence gaps remain → MEDIUM CONFIDENCE → Recommend POC first
+If critical unknowns → LOW CONFIDENCE → More research or different approach
 ```
 
 ---
