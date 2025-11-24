@@ -1624,7 +1624,7 @@ Integration Points:         127 documented integrations
 **Version:** 2.1
 **Status:** ✅ PRODUCTION READY
 **Maintained by:** HX-Infrastructure Team
-**Repository:** https://github.com/Hana-X-AI/HX-Infrastructure.git
+**Repository:** https://github.com/langchain-ai/langgraph.git
 
 ---
 
