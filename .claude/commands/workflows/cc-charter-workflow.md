@@ -1,11 +1,15 @@
 ---
-workflow: charter-creation
-version: 1.2
-date: 2025-11-16
+document: cc-charter-workflow
+version: 1.3
+date: 2025-11-24
 status: APPROVED
 type: workflow-command
 description: Charter creation workflow for any node deployment in HX-Infrastructure
 applies_to: all_node_deployments
+author: HX-Infrastructure Team
+location: /home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-charter-workflow.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 ---
 
 <metadata>
@@ -775,7 +779,7 @@ TOTAL:     ~2-4 hours (depends on repo count and iterations)
 - `/home/agent0/HX-Infrastructure/standards/documentation-requirements.md` - Doc standards
 
 **Reference:**
-- `/home/agent0/HX-Infrastructure/x-claude/semantic-xml-documentation-guide.md` - Structure guide
+- `/home/agent0/HX-Infrastructure/.claude/semantic-xml-documentation-guide.md` - Structure guide
 </related_documents>
 
 <validation_checklist>

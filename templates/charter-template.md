@@ -359,8 +359,8 @@ Step 7: Post-Approval Actions (After charter approved)
 3. Keep ONLY the top 3-5 most critical items in the charter
 4. Remember: Charter = executive summary, RAIDD log = comprehensive tracking
 
-**RAIDD Log Reference:** `raidd-log.md` or `services/<service>/raidd-log.md`  
-**All risks and assumptions MUST be comprehensively documented in the RAIDD log.**
+**RAIDD Log Reference:** `/home/agent0/HX-Infrastructure/docs/raidd-log.md` (single centralized file)
+**All risks and assumptions MUST be documented in the centralized RAIDD log.**
 
 ---
 

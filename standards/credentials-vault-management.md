@@ -16,8 +16,8 @@
 This document establishes credentials and vault management standards for HX-Infrastructure, defining how secrets are stored, managed, and deployed across all services and nodes. This is a CRITICAL SECURITY document that must be protected.
 
 ### Target Audience
-- **Frank Martinez (Security Specialist):** PRIMARY OWNER for security architecture and credential management
-- **William Thompson (Infrastructure Specialist):** Vault implementation and deployment integration
+- **Frank Lucas (Security Specialist):** PRIMARY OWNER for security architecture and credential management
+- **William Chen (Infrastructure Specialist):** Vault implementation and deployment integration
 - **Agent Zero (CC):** Validates vault configuration during all 6 lifecycle phases
 - **All Service Developers:** Must implement vault configuration following these standards
 - **All Infrastructure Engineers:** Must manage credentials securely
@@ -666,35 +666,33 @@ ansible-vault view vault/secrets.yml --vault-password-file vault/.vault_password
 4. **Verification**: Test with vault-provided credentials
 5. **Post-deployment**: Secure .env file
 
-**Example deployment task**:
+**Manual deployment pattern (allowed):**
 
-```yaml
----
-- name: Deploy [service]
-  hosts: [node]
-  vars_files:
-    - vault/secrets.yml
-  
-  tasks:
-    - name: Create service user
-      user:
-        name: "{{ service_account_username }}"
-        password: "{{ service_account_password | password_hash('sha512') }}"
-        shell: /bin/bash
-    
-    - name: Generate configuration
-      template:
-        src: templates/config.j2
-        dest: /etc/[service]/config.yml
-        mode: '0600'
-        owner: "{{ service_account_username }}"
-    
-    - name: Generate .env
-      template:
-        src: templates/env.j2
-        dest: /opt/[service]/.env
-        mode: '0600'
-        owner: "{{ service_account_username }}"
+```bash
+# 1) Extract service user credentials from vault
+usr=$(ansible-vault view services/[service]/vault/secrets.yml \
+  --vault-password-file=/srv/ansible/.vault_password | \
+  awk '/service_account_username:/{print $2}')
+
+pwd=$(ansible-vault view services/[service]/vault/secrets.yml \
+  --vault-password-file=/srv/ansible/.vault_password | \
+  awk '/service_account_password:/{print $2}')
+
+# 2) Create service user
+sudo useradd -m -s /bin/bash "$usr"
+echo "$usr:$pwd" | sudo chpasswd
+
+# 3) Generate config from template (manual envsubst or sed)
+export SERVICE_USER="$usr"
+envsubst < templates/config.j2 > /tmp/config.yml
+sudo install -m 0600 -o "$usr" /tmp/config.yml /etc/[service]/config.yml
+
+# 4) Create .env with proper permissions
+sudo install -m 0600 -o "$usr" /dev/null /opt/[service]/.env
+echo "DB_PASSWORD=$pwd" | sudo tee -a /opt/[service]/.env > /dev/null
+
+# 5) Verify permissions
+ls -la /etc/[service]/config.yml /opt/[service]/.env
 ```
 
 ---
@@ -935,6 +933,18 @@ Credential management aligns with HX-Infrastructure deployment philosophy:
 - ✅ **Systemd Integration:** Credentials from vault used in systemd unit files and .env files
 - ✅ **Bare Metal Deployment:** Vault passwords stored on bare metal nodes (file-based)
 
+**Ansible Usage Scope (Explicitly Allowed/Forbidden):**
+- ✅ **ALLOWED:** `ansible-vault` CLI for encrypt/decrypt/view/edit operations
+- ✅ **ALLOWED:** `ansible-vault view` to extract credentials during manual procedures
+- ✅ **ALLOWED:** Vault file storage in repository (encrypted YAML files)
+- ✅ **ALLOWED:** hx-control-node for centralized vault management
+- ✅ **ALLOWED:** Inventory files for host tracking (documentation only, no automation)
+- ❌ **FORBIDDEN:** `ansible-playbook` - No playbook execution for deployment
+- ❌ **FORBIDDEN:** Ansible roles - No automation frameworks
+- ❌ **FORBIDDEN:** `ansible` ad-hoc commands - No remote execution automation
+- ❌ **FORBIDDEN:** `ansible-console` - No interactive automation
+- ℹ️ **RATIONALE:** Ansible Vault = **storage tool only**. Manual deployment procedures maintain operational control and knowledge retention
+
 ### Vault Usage Pattern
 
 **Correct Usage (Manual):**
@@ -1016,9 +1026,9 @@ Credential management is integrated across all 6 lifecycle phases:
 - **`.gitignore`** - Vault password and credential exclusion patterns
 
 ### Agent Profiles
-- **Frank Martinez (Security Specialist):** PRIMARY OWNER for security architecture, credential management, vault standards
-- **William Thompson (Infrastructure Specialist):** Vault implementation and deployment integration
-- **Agent Zero (CC):** STATEFUL orchestrator validating vault configuration across all 6 phases
+- **Frank Lucas (Security Specialist):** PRIMARY OWNER for security architecture, credential management, vault standards
+- **William Chen (Infrastructure Specialist):** Vault implementation and deployment integration
+- **Agent Zero (CC):** STATEFUL orchestrator validating vault configuration across all 5 phases
 
 ---
 
@@ -1026,7 +1036,7 @@ Credential management is integrated across all 6 lifecycle phases:
 
 | Version | Date | Changes | Lines Changed | Author |
 |---------|------|---------|---------------|--------|
-| 1.0 | 2025-11-15 | Initial credential and vault management standards with comprehensive vault structure | 894 lines | HX-Infrastructure Team + Frank Martinez |
+| 1.0 | 2025-11-15 | Initial credential and vault management standards with comprehensive vault structure | 894 lines | HX-Infrastructure Team + Frank Lucas |
 | 1.1 | 2025-11-21 | Added comprehensive metadata, infrastructure philosophy integration (Ansible Vault only, no playbooks), procedure alignment, expanded related documents, version history, document maintenance | +150 lines (est.) | Agent Zero (CC) |
 
 **Key Updates in v1.1:**
@@ -1034,7 +1044,7 @@ Credential management is integrated across all 6 lifecycle phases:
 - Added Document Purpose section emphasizing CRITICAL SECURITY STANDARD
 - Added Infrastructure Philosophy Integration section (Ansible Vault ONLY, no playbooks, manual procedures)
 - Added Vault Usage Pattern section (correct manual usage vs incorrect automation)
-- Added Procedure Alignment section (vault management across all 6 phases)
+- Added Procedure Alignment section (vault management across all 5 phases)
 - Expanded related documents section with comprehensive standards, procedures, knowledge base, commands, governance, agents
 - Added version history table (this table)
 - Added document maintenance section
@@ -1058,20 +1068,26 @@ This document should be updated when:
 - Git safety patterns updated
 
 ### Review Frequency
-- **Quarterly Review:** Frank Martinez reviews credential management effectiveness and security posture
+- **Quarterly Review:** Frank Lucas reviews credential management effectiveness and security posture
 - **Post-Incident Review:** After security incidents, review credential management procedures
 - **Annual Security Audit:** Comprehensive review of vault passwords, credential rotation, access controls
 - **Continuous Monitoring:** Agent Zero validates vault configuration in all deployments
 
 ### Compliance Enforcement
 - **Phase 2:** Agent Zero validates vault structure in spec.md and plan.md
-- **Phase 3:** Agent Zero validates vault creation tasks follow manual procedure patterns
-- **Phase 4:** Frank Martinez validates vault encryption and credential security during deployment
+- **Phase 3:** Agent Zero validates vault creation tasks follow manual procedure patterns (no ansible-playbook usage)
+- **Phase 4:** Frank Lucas validates vault encryption and credential security during deployment
 - **Phase 5:** CAIO validates complete vault documentation before operational promotion
 - **Blocking Issue:** Missing or improperly configured vault PREVENTS operational promotion
 
+**Ansible Usage Enforcement:**
+- ✅ **Vault CLI usage validated:** All procedures use `ansible-vault` commands for encrypt/decrypt/view/edit
+- ❌ **Playbook usage blocked:** Any `ansible-playbook`, `ansible`, or `ansible-console` commands in deployment procedures FAIL validation
+- ✅ **Manual extraction required:** All vault content extraction must be manual bash procedures, not automated playbooks
+- ✅ **hx-control-node allowed:** Centralized vault management on control node (storage/editing only, no automation execution)
+
 ### Change Control
-- Changes to vault password standards require Frank Martinez security review
+- Changes to vault password standards require Frank Lucas security review
 - Changes to vault structure require template updates
 - Changes to Ansible Vault usage require infrastructure philosophy review
 - All changes maintain 100% backward compatibility or include migration procedures for existing vaults

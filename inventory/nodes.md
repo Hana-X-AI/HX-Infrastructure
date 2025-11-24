@@ -703,7 +703,7 @@ This document provides a comprehensive inventory of all server nodes in HX-Infra
 ### Alignment with HX-Infrastructure Standards
 
 This node inventory aligns with HX-Infrastructure core documents:
-1. **Network Topology** (`network/topology.md`) - IP allocations and zones match exactly
+1. **Network Topology** (`network/network-topology.md`) - IP allocations and zones match exactly
 2. **Architecture Standards** (`standards/architecture-standards.md`) - Service patterns comply
 3. **Documentation Requirements** (`standards/documentation-requirements.md`) - Format follows standards
 4. **Testing Requirements** (`standards/testing-requirements.md`) - Validation status reflects test-driven deployment
@@ -861,7 +861,7 @@ This document MUST be updated when:
 - `action-plan-v2-updated.md` - Project roadmap and status
 
 **Network and Infrastructure:**
-- `network/topology.md` - Network architecture and IP allocations (v1.1.1)
+- `network/network-topology.md` - Network architecture and IP allocations (v1.1.1)
 - `network/port-mapping.md` - Service port assignments (when created)
 - `nodes/<node-name>/node-spec.md` - Individual node specifications (when created)
 
@@ -873,7 +873,7 @@ This document MUST be updated when:
 - `standards/deployment-requirements.md` - Deployment procedures
 
 **Agent Documentation:**
-- `hx-agents/hx-agent-inventory.md` - 45 agents and capabilities
+- `hx-agents/hx-agent-inventory.md` - 32 agents (5 Core Team SMEs + 27 Technology SMEs) and capabilities
 - `hx-agents/hx-orchestration-guide.md` - Multi-agent workflows
 - `CLAUDE.md` - Agent Zero orchestration instructions
 

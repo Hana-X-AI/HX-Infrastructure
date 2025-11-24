@@ -1,14 +1,15 @@
 ---
-workflow: util-quality-gate
-version: 1.1
-date: 2025-11-20
+document: cc-util-quality-gate
+version: 1.2
+date: 2025-11-24
 status: APPROVED
 type: utility-command
 description: Quality gate validation utility for checking pass criteria, reporting status, documenting failures, and tracking gate history across workflows
 applies_to: all_workflows, all_orchestrations, quality_management, phase_validation
 author: HX-Infrastructure Team
-last_updated: 2025-11-20
-update_notes: Integration convention enhancement, state management clarity
+location: /home/agent0/HX-Infrastructure/.claude/commands/utilities/cc-util-quality-gate.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 ---
 
 <metadata>

@@ -19,11 +19,11 @@ This procedure defines the systematic workflow for creating comprehensive node s
 
 **Related Documents:**
 - `.claude/commands/workflows/cc-spec-workflow.md` - Detailed specification workflow command (Set 1)
-- `procedures/charter-workflow.md` - Previous phase (charter creation)
-- `procedures/task-workflow.md` - Next phase (task breakdown)
-- `procedures/context-loading-process.md` - CRITICAL: Context loading for stateless agents
-- `procedures/core-project-team.md` - Core team roles and responsibilities
-- `templates/node-template.md` - Specification document template
+- `/home/agent0/HX-Infrastructure/procedures/charter-workflow.md` - Previous phase (charter creation)
+- `/home/agent0/HX-Infrastructure/procedures/task-workflow.md` - Next phase (task breakdown)
+- `/home/agent0/HX-Infrastructure/procedures/context-loading-process.md` - CRITICAL: Context loading for stateless agents
+- `/home/agent0/HX-Infrastructure/procedures/core-project-team.md` - Core team roles and responsibilities
+- `/home/agent0/HX-Infrastructure/templates/node-template.md` - Specification document template
 
 **Target Audience:**
 - Agent Zero (Universal PM Orchestrator)
@@ -237,9 +237,9 @@ Does project need additional agents beyond core 5?
 Core Team (Always Present):
 ✓ Agent Zero (CC) - Orchestration, synthesis
 ✓ Alex Rivera - Architecture
-✓ Julia Chen - Testing & Quality
-✓ Frank Martinez - Security & Identity
-✓ William Thompson - Infrastructure
+✓ Julia Santos - Testing & Quality
+✓ Frank Lucas - Security & Identity
+✓ William Chen - Infrastructure
 
 Additional Agents (Project-Specific):
 Based on charter technical requirements, consider:
@@ -410,7 +410,7 @@ While context is FRESH in memory:
    ├─ ADR requirements
    └─ Validate infrastructure philosophy alignment
 
-   Frank Martinez (Security):
+   Frank Lucas (Security):
    ├─ Security & Identity section
    ├─ Authentication approach (Kerberos)
    ├─ Authorization model (LDAP, ACLs)
@@ -419,7 +419,7 @@ While context is FRESH in memory:
    ├─ Ansible Vault credential types
    └─ Security zone validation
 
-   William Thompson (Infrastructure):
+   William Chen (Infrastructure):
    ├─ Infrastructure Requirements section (PRIMARY OWNER)
    ├─ Bare metal deployment details
    ├─ Systemd service unit specification
@@ -428,7 +428,7 @@ While context is FRESH in memory:
    ├─ OS requirements (Ubuntu 24, packages)
    └─ Performance/capacity planning
 
-   Julia Chen (Testing):
+   Julia Santos (Testing):
    ├─ Testing Strategy section
    ├─ Test plan (100% requirements coverage)
    ├─ Test categories (deployment, functionality, integration, health)
@@ -641,9 +641,9 @@ Document your contribution using template below.
 ```
 Waiting for contributions from:
 [ ] Alex Rivera (Architecture)
-[ ] Julia Chen (Testing)
-[ ] Frank Martinez (Security)
-[ ] William Thompson (Infrastructure)
+[ ] Julia Santos (Testing)
+[ ] Frank Lucas (Security)
+[ ] William Chen (Infrastructure)
 [ ] [Project-Specific Agent 1]
 [ ] [Project-Specific Agent 2]
 
@@ -1071,9 +1071,9 @@ Key Decisions Made:
 
 Team Contributions Integrated:
 ├─ Architecture: Alex Rivera ✓
-├─ Security & Identity: Frank Martinez ✓
-├─ Infrastructure: William Thompson ✓
-├─ Testing: Julia Chen ✓
+├─ Security & Identity: Frank Lucas ✓
+├─ Infrastructure: William Chen ✓
+├─ Testing: Julia Santos ✓
 └─ [Specialists]: [Names] ✓
 
 Top 5 Risks Documented:
@@ -1366,7 +1366,7 @@ Agent Zero:
 
    Next Steps:
    1. Agent Zero will break specification into atomic tasks
-   2. Julia Chen will generate comprehensive test suite (100% coverage)
+   2. Julia Santos will generate comprehensive test suite (100% coverage)
    3. Core team will validate task completeness
    4. Agent Zero will sequence tasks based on dependencies
    5. Tasks will be assigned and execution planned
@@ -1580,7 +1580,7 @@ Agent Zero:
 ```
 Issue: Infrastructure Philosophy Violation Discovered
 ───────────────────────────────────────────────────────────────
-Agent: William Thompson (Infrastructure)
+Agent: William Chen (Infrastructure)
 Severity: P0 (Blocking)
 Phase: Specification Development (Phase 3)
 
@@ -1742,16 +1742,16 @@ Workflow: Continue Phase 4 with decision documented
    - Defines context needed, handoff protocol, output validation
 
 6. **cc-orchestrate-frank.md** (Set 5 - Agent Orchestration)
-   - Used to coordinate Frank Martinez's security/identity contributions
+   - Used to coordinate Frank Lucas's security/identity contributions
    - Ensures Samba AD, Kerberos, DNS, certificate requirements captured
 
 7. **cc-orchestrate-william.md** (Set 5 - Agent Orchestration)
-   - Used to coordinate William Thompson's infrastructure contributions
+   - Used to coordinate William Chen's infrastructure contributions
    - PRIMARY for infrastructure philosophy documentation
    - Ensures bare metal, systemd, manual procedures specified
 
 8. **cc-orchestrate-julia.md** (Set 5 - Agent Orchestration)
-   - Used to coordinate Julia Chen's testing contributions
+   - Used to coordinate Julia Santos's testing contributions
    - Ensures 100% requirements coverage plan documented
 
 9. **cc-handoff.md** (Set 3 - Utilities)
@@ -1776,28 +1776,28 @@ Workflow: Continue Phase 4 with decision documented
 - `action-plan-v2-updated.md` - Project roadmap
 
 ### **Standards:**
-- `standards/architecture-standards.md` - Architecture patterns (always applied)
-- `standards/deployment-requirements.md` - Infrastructure philosophy (mandatory)
-- `standards/testing-requirements.md` - Quality standards (100% coverage)
-- `standards/documentation-requirements.md` - Documentation format
+- `/home/agent0/HX-Infrastructure/standards/architecture-standards.md` - Architecture patterns (always applied)
+- `/home/agent0/HX-Infrastructure/standards/deployment-requirements.md` - Infrastructure philosophy (mandatory)
+- `/home/agent0/HX-Infrastructure/standards/testing-requirements.md` - Quality standards (100% coverage)
+- `/home/agent0/HX-Infrastructure/standards/documentation-requirements.md` - Documentation format
 
 ### **Infrastructure State:**
-- `inventory/nodes.md` - Current infrastructure baseline (verify deployment target)
-- `network/network-topology.md` - Network architecture (zone placement, IP allocation)
+- `/home/agent0/HX-Infrastructure/inventory/nodes.md` - Current infrastructure baseline (verify deployment target)
+- `/home/agent0/HX-Infrastructure/network/network-topology.md` - Network architecture (zone placement, IP allocation)
 
 ### **Templates:**
-- `templates/node-template.md` - Specification document template
-- `templates/contribution-template.md` - Agent contribution format
+- `/home/agent0/HX-Infrastructure/templates/node-template.md` - Specification document template
+- `/home/agent0/HX-Infrastructure/templates/contribution-template.md` - Agent contribution format
 
 ### **Procedures:**
-- **Previous Phase:** `procedures/charter-workflow.md` - Charter creation
-- **Next Phase:** `procedures/task-workflow.md` - Task breakdown
-- **Critical Reference:** `procedures/context-loading-process.md` - Context loading for stateless agents
-- **Team Structure:** `procedures/core-project-team.md` - Core team roles
+- **Previous Phase:** `/home/agent0/HX-Infrastructure/procedures/charter-workflow.md` - Charter creation
+- **Next Phase:** `/home/agent0/HX-Infrastructure/procedures/task-workflow.md` - Task breakdown
+- **Critical Reference:** `/home/agent0/HX-Infrastructure/procedures/context-loading-process.md` - Context loading for stateless agents
+- **Team Structure:** `/home/agent0/HX-Infrastructure/procedures/core-project-team.md` - Core team roles
 
 ### **Agent Documentation:**
-- `hx-agents/hx-agent-inventory.md` - 45 specialist agents
-- `hx-agents/hx-orchestration-guide.md` - Multi-agent coordination
+- `/home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md` - 32 agents (5 Core Team SMEs + 27 Technology SMEs)
+- `/home/agent0/HX-Infrastructure/hx-agents/hx-orchestration-guide.md` - Multi-agent coordination
 
 ---
 

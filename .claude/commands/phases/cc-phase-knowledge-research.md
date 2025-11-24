@@ -1,14 +1,15 @@
 ---
-workflow: phase-knowledge-research
-version: 1.1
-date: 2025-11-20
+document: cc-phase-knowledge-research
+version: 1.2
+date: 2025-11-24
 status: APPROVED
 type: phase-command
 description: Systematic knowledge vault repository research to gather technical understanding, identify integration patterns, and document findings with confidence levels for charter development
 applies_to: charter_workflow, technical_research, knowledge_discovery
 author: HX-Infrastructure Team
-last_updated: 2025-11-20
-update_notes: Standardized integration convention header, infrastructure philosophy alignment
+location: /home/agent0/HX-Infrastructure/.claude/commands/phases/cc-phase-knowledge-research.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 ---
 
 <metadata>

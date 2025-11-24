@@ -1,11 +1,15 @@
 ---
-workflow: specification-development
-version: 1.3
-date: 2025-11-16
+document: cc-spec-workflow
+version: 1.4
+date: 2025-11-24
 status: APPROVED
 type: workflow-command
 description: Team-based specification development with multi-agent contributions for HX-Infrastructure nodes
 applies_to: all_node_types
+author: HX-Infrastructure Team
+location: /home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-spec-workflow.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 prerequisites:
   - approved_charter
   - team_assignments_complete

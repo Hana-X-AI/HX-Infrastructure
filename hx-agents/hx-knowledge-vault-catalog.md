@@ -515,7 +515,7 @@ When adding new documentation to `/home/agent0/HX-Infrastructure/hx-knowledge/re
 - `deployment-engineer`, `isaac`, `mcp-backend-engineer`, `neo`, `ringo`, `technical-researcher`
 - `test-automator`, `trinity`
 
-**Note:** Agent profiles are maintained in `/home/agent0/.claude/agents/` directory. Refer to individual agent files for complete capabilities and knowledge requirements.
+**Note:** Agent profiles are maintained in `/home/agent0/HX-Infrastructure/x-agents/` directory. Refer to individual agent files for complete capabilities and knowledge requirements.
 
 ---
 
@@ -582,7 +582,7 @@ du -sh /home/agent0/HX-Infrastructure/hx-knowledge/repos/* | sort -h
 - **Constitution** (`constitution.md`) - Defines principles for knowledge management
 - **Documentation Standards** (`standards/documentation-requirements.md`) - How to document knowledge
 - **Architecture Standards** (`standards/architecture-standards.md`) - References to framework patterns
-- **Agent Profiles** (`/home/agent0/.claude/agents/*.md`) - Agent-specific knowledge requirements
+- **Agent Profiles** (`/home/agent0/HX-Infrastructure/x-agents/*.md`) - Agent-specific knowledge requirements
 - **Service Specs** (`services/*/spec.md`) - Technology stack references
 - **Credentials Documentation** (`hx-knowledge/docs/0.0.5.2.1-credentials.md`) - Infrastructure credentials (🔴 MUST READ)
 
@@ -591,7 +591,7 @@ du -sh /home/agent0/HX-Infrastructure/hx-knowledge/repos/* | sort -h
 ## Related Documents
 
 - **HX-Infrastructure Constitution:** `/home/agent0/HX-Infrastructure/constitution.md`
-- **Agent Profiles Directory:** `/home/agent0/.claude/agents/`
+- **Agent Profiles Directory:** `/home/agent0/HX-Infrastructure/x-agents/`
 - **Naming Conventions:** `/home/agent0/HX-Infrastructure/standards/naming-conventions.md`
 - **Architecture Standards:** `/home/agent0/HX-Infrastructure/standards/architecture-standards.md`
 - **Credentials Documentation:** `/home/agent0/HX-Infrastructure/hx-knowledge/docs/0.0.5.2.1-credentials.md` (🔴 MUST READ)

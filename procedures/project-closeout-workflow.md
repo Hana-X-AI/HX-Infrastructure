@@ -1779,7 +1779,7 @@ Organize and archive project artifacts:
 4. Update inventory documentation:
    ├─ /inventory/nodes.md (node operational)
    ├─ /inventory/services.md (services listed)
-   ├─ /network/topology.md (node in topology)
+   ├─ /network/network-topology.md (node in topology)
    └─ /network/port-mapping.md (ports documented)
 
 5. Archive project artifacts (optional):
@@ -2193,11 +2193,10 @@ cc-closeout-workflow.md (Set 1) executes Phase 5
 ├─ PHASE 5: Final status report (status-report utility)
 ├─ PHASE 6: Archive and documentation
 ├─ PHASE 7: Infrastructure philosophy validation
-├─ PHASE 8: CAIO closure approval
-└─ PHASE 9: Operational handoff
+└─ PHASE 8: Operational handoff & CAIO closure approval
 ↓
 Project Lifecycle COMPLETE
-└─ All 5 phases closed: Charter → Spec → Task/Test → Execution → Closeout
+└─ All 5 lifecycle phases closed: Charter → Spec → Task/Test → Execution → Closeout
 ```
 
 **Centralized Artifact Update Pattern:**

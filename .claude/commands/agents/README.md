@@ -7,7 +7,7 @@
 
 ## Overview
 
-This directory contains orchestration commands that define how Agent Zero (Chief AI Officer) coordinates work with specialist agents across the HX-Infrastructure ecosystem. Each command provides systematic patterns for context preparation, handoffs, quality validation, and integration of specialist expertise.
+This directory contains orchestration commands that define how Agent Zero (Universal PM Orchestrator) coordinates work with specialist agents across the HX-Infrastructure ecosystem. Each command provides systematic patterns for context preparation, handoffs, quality validation, and integration of specialist expertise.
 
 ## Commands in This Set
 
@@ -16,7 +16,7 @@ This directory contains orchestration commands that define how Agent Zero (Chief
 **Version:** 1.1
 **Size:** 1,567 lines (92.85 KB)
 **Status:** ✅ APPROVED - Production Ready v1.1
-**Agent:** Agent Zero (Chief AI Officer)
+**Agent:** Agent Zero (Universal PM Orchestrator)
 **Purpose:** Multi-agent coordination synthesis patterns for orchestrating complex work requiring multiple specialist agents simultaneously or sequentially
 **Domains Coordinated:** Architecture (Alex), Security (Frank), Infrastructure (William), Testing (Julia)
 
@@ -69,7 +69,7 @@ This directory contains orchestration commands that define how Agent Zero (Chief
 **Version:** 1.0
 **Size:** 1,323 lines (50.25 KB)
 **Status:** ✅ APPROVED - Ready for use
-**Agent:** Frank Martinez (Security Specialist)
+**Agent:** Frank Lucas (Security Specialist)
 **Purpose:** Orchestration patterns for coordinating security, identity, and trust infrastructure work with Frank
 **Specialty:** Identity & Trust layer, Samba AD, authentication/authorization, security architecture, credentials management
 
@@ -96,7 +96,7 @@ This directory contains orchestration commands that define how Agent Zero (Chief
 **Version:** 1.0
 **Size:** 1,527 lines (95.63 KB)
 **Status:** ✅ APPROVED - Ready for use
-**Agent:** Julia Chen (Testing & Quality Specialist)
+**Agent:** Julia Santos (Testing & Quality Specialist)
 **Purpose:** Orchestration patterns for coordinating testing, quality assurance, and validation work with Julia
 **Specialty:** Test-driven deployment, 100% requirements coverage, defect management, quality gates
 
@@ -123,7 +123,7 @@ This directory contains orchestration commands that define how Agent Zero (Chief
 **Version:** 2.0
 **Size:** 1,069 lines (53.30 KB)
 **Status:** ✅ APPROVED - Production Ready v2.0
-**Agent:** William Thompson (Infrastructure Specialist)
+**Agent:** William Chen (Infrastructure Specialist)
 **Purpose:** Orchestration patterns for coordinating operational infrastructure work with William
 **Specialty:** Bare metal deployment, systemd services, manual procedures, network configuration, server provisioning
 
@@ -165,13 +165,13 @@ This directory contains orchestration commands that define how Agent Zero (Chief
 ### Agent Hierarchy
 
 ```text
-Agent Zero (Chief AI Officer)
+Agent Zero (Universal PM Orchestrator)
 ├── Meta-Orchestration: cc-agent-zero-synthesis.md
 └── Specialist Orchestrations:
     ├── Alex Rivera (Platform Architect) - cc-orchestrate-alex.md
-    ├── Frank Martinez (Security Specialist) - cc-orchestrate-frank.md
-    ├── Julia Chen (Testing & Quality Specialist) - cc-orchestrate-julia.md
-    └── William Thompson (Infrastructure Specialist) - cc-orchestrate-william.md
+    ├── Frank Lucas (Security Specialist) - cc-orchestrate-frank.md
+    ├── Julia Santos (Testing & Quality Specialist) - cc-orchestrate-julia.md
+    └── William Chen (Infrastructure Specialist) - cc-orchestrate-william.md
 ```
 
 ### Orchestration Patterns
@@ -281,7 +281,7 @@ Each orchestration command uses a phase-based structure:
 
 ---
 
-### Frank Martinez (Security Specialist)
+### Frank Lucas (Security Specialist)
 **Core Capabilities:**
 - Identity & Trust layer (Samba AD)
 - Authentication mechanisms (Kerberos, LDAP)
@@ -301,7 +301,7 @@ Each orchestration command uses a phase-based structure:
 
 ---
 
-### Julia Chen (Testing & Quality Specialist)
+### Julia Santos (Testing & Quality Specialist)
 **Core Capabilities:**
 - Test-driven deployment methodology
 - 100% requirements coverage
@@ -321,7 +321,7 @@ Each orchestration command uses a phase-based structure:
 
 ---
 
-### William Thompson (Infrastructure Specialist)
+### William Chen (Infrastructure Specialist)
 **Core Capabilities:**
 - Bare metal server deployment
 - Systemd service management

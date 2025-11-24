@@ -1,11 +1,15 @@
 ---
-workflow: project-closeout
-version: 1.0
-date: 2025-11-17
+document: cc-project-closeout-workflow
+version: 1.1
+date: 2025-11-24
 status: APPROVED
 type: workflow-command
 description: Systematic project closure with centralized artifact updates, knowledge capture, and formal handoff to operations
 applies_to: all_completed_projects
+author: HX-Infrastructure Team
+location: /home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-project-closeout-workflow.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 prerequisites:
   - operational_status_achieved
   - stability_period_complete

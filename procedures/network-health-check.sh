@@ -485,12 +485,12 @@ else
 fi
 
 # LightRAG Server
-print_subheader "hx-literag-server (192.168.10.220) - LightRAG"
+print_subheader "hx-lightrag-server (192.168.10.220) - LightRAG"
 
 if ping -c 2 -W 2 192.168.10.220 >/dev/null 2>&1; then
-    check_pass "hx-literag-server is reachable"
+    check_pass "hx-lightrag-server is reachable"
 else
-    check_fail "hx-literag-server is unreachable"
+    check_fail "hx-lightrag-server is unreachable"
 fi
 
 ###############################################################################

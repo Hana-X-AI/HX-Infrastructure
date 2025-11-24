@@ -92,7 +92,7 @@ This directory contains the comprehensive operational standards for HX-Infrastru
 
 **Type:** Operational Standard - Deployment & Operations (Infrastructure Philosophy Primary Authority)
 **Version:** 1.1
-**Primary Owner:** William Thompson (Infrastructure Specialist)
+**Primary Owner:** William Chen (Infrastructure Specialist)
 **Status:** ✅ APPROVED - Required for All Service Deployments
 
 **Purpose:** Establishes deployment standards for HX-Infrastructure, including the **AUTHORITATIVE documentation of infrastructure philosophy**. This is THE critical infrastructure philosophy file.
@@ -110,7 +110,7 @@ This directory contains the comprehensive operational standards for HX-Infrastru
 - Service promotion requirements
 - Rollback procedures
 - Change management
-- Infrastructure philosophy enforcement checkpoints across all 6 phases
+- Infrastructure philosophy enforcement checkpoints across all 5 phases
 
 **When to Use:**
 - Phase 2: Documenting deployment architecture in spec.md and plan.md
@@ -118,7 +118,7 @@ This directory contains the comprehensive operational standards for HX-Infrastru
 - Phase 4: Executing deployment
 - Phase 5: Validating infrastructure philosophy compliance before promotion
 
-**Enforcement:** William Thompson validates infrastructure philosophy compliance, Agent Zero validates across all phases, CAIO validates before operational promotion
+**Enforcement:** William Chen validates infrastructure philosophy compliance, Agent Zero validates across all phases, CAIO validates before operational promotion
 
 **Related Procedures:** All procedures reference deployment-requirements.md for infrastructure philosophy authority
 
@@ -158,7 +158,7 @@ This directory contains the comprehensive operational standards for HX-Infrastru
 
 **Type:** Operational Standard - Security & Credential Management (HIGHLY SENSITIVE)
 **Version:** 1.1
-**Primary Owner:** Frank Martinez (Security Specialist)
+**Primary Owner:** Frank Lucas (Security Specialist)
 **Status:** ✅ APPROVED - CRITICAL SECURITY STANDARD - Required for All Deployments
 **Classification:** 🔴 INTERNAL - DO NOT COMMIT TO GITHUB - CONTAINS SENSITIVE PATTERNS
 
@@ -182,7 +182,7 @@ This directory contains the comprehensive operational standards for HX-Infrastru
 - Phase 4: Creating and populating vaults during deployment
 - Any credential management operation
 
-**Enforcement:** Frank Martinez validates vault configuration and security, William Thompson validates vault implementation, Agent Zero validates across all phases
+**Enforcement:** Frank Lucas validates vault configuration and security, William Chen validates vault implementation, Agent Zero validates across all phases
 
 **Related Procedures:** Vault creation and management integrated into all deployment procedures
 
@@ -221,7 +221,7 @@ This directory contains the comprehensive operational standards for HX-Infrastru
 
 **Type:** Operational Standard - Testing & Quality Assurance (Test-Driven Deployment)
 **Version:** 2.1
-**Primary Owner:** Julia Chen (Testing & Quality Specialist)
+**Primary Owner:** Julia Santos (Testing & Quality Specialist)
 **Status:** ✅ APPROVED - CRITICAL QUALITY GATE - Required for All Service Promotion
 
 **Purpose:** Establishes testing standards for HX-Infrastructure ensuring all services have comprehensive test suites meeting infrastructure-specific requirements before promotion to operational status. **100% test pass rate is MANDATORY for promotion. No exceptions.**
@@ -242,7 +242,7 @@ This directory contains the comprehensive operational standards for HX-Infrastru
 - Phase 4: Executing tests (pre-deployment MUST FAIL, post-deployment MUST PASS)
 - Phase 5: Validating 100% test pass rate before promotion
 
-**Enforcement:** Julia Chen validates test plan completeness (Phase 3) and test execution (Phase 4), William Thompson validates infrastructure-specific tests, Agent Zero blocks Phase 4 until testing complete, CAIO validates 100% test pass rate before operational promotion
+**Enforcement:** Julia Santos validates test plan completeness (Phase 3) and test execution (Phase 4), William Chen validates infrastructure-specific tests, Agent Zero blocks Phase 4 until testing complete, CAIO validates 100% test pass rate before operational promotion
 
 **Related Procedures:** task-workflow.md (Phase 3) and task-execution-workflow.md (Phase 4) enforce test-driven deployment
 
@@ -254,11 +254,11 @@ This directory contains the comprehensive operational standards for HX-Infrastru
 |----------|-------|---------|---------------|-------------|
 | naming-conventions.md | 674 | 2.1 | HX-Infrastructure Team | All artifact creation |
 | architecture-standards.md | 839 | 1.1 | Alex Rivera | Phase 2 (Specification) |
-| deployment-requirements.md | 999 | 1.1 | William Thompson | Infrastructure philosophy (ALL PHASES) |
+| deployment-requirements.md | 999 | 1.1 | William Chen | Infrastructure philosophy (ALL PHASES) |
 | documentation-requirements.md | 1070 | 2.1 | Agent Zero | All phases (documentation-first) |
-| credentials-vault-management.md | 1090 | 1.1 | Frank Martinez | All credential operations |
+| credentials-vault-management.md | 1090 | 1.1 | Frank Lucas | All credential operations |
 | utility-development-standards.md | 1255 | 1.1 | Agent Zero | Utility command development |
-| testing-requirements.md | 1448 | 2.1 | Julia Chen | Phase 3 & 4 (test-driven deployment) |
+| testing-requirements.md | 1448 | 2.1 | Julia Santos | Phase 3 & 4 (test-driven deployment) |
 | **TOTAL** | **7,375** | - | - | - |
 
 ---
@@ -283,7 +283,7 @@ All other standards reference deployment-requirements.md for infrastructure phil
 - **Phase 0:** Initial feasibility checks infrastructure philosophy compliance
 - **Phase 2:** spec.md and plan.md MUST document infrastructure philosophy compliance
 - **Phase 3:** Task files MUST follow manual procedure patterns (no playbooks)
-- **Phase 4:** William Thompson validates infrastructure philosophy during deployment
+- **Phase 4:** William Chen validates infrastructure philosophy during deployment
 - **Phase 5:** CAIO validates infrastructure philosophy before operational promotion
 
 ---

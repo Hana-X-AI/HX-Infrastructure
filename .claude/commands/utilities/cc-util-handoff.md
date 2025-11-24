@@ -1,14 +1,15 @@
 ---
-workflow: util-handoff
-version: 1.1
-date: 2025-11-20
+document: cc-util-handoff
+version: 1.2
+date: 2025-11-24
 status: APPROVED
 type: utility-command
 description: Session handoff utility for generating comprehensive handoff documents enabling seamless project continuation across chat sessions with complete context preservation, current state capture, and clear next action instructions
 applies_to: all_workflows, all_orchestrations, session_continuity, context_preservation, project_handoff
 author: HX-Infrastructure Team
-last_updated: 2025-11-20
-update_notes: Enhanced integration convention clarity, added infrastructure-specific handoff considerations for HX-Infrastructure bare-metal deployment projects
+location: /home/agent0/HX-Infrastructure/.claude/commands/utilities/cc-util-handoff.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 ---
 
 <metadata>
@@ -1177,7 +1178,7 @@ synthesize. Generate detailed handoff with decision history."
 - `/home/agent0/HX-Infrastructure/.claude/commands/utilities/cc-util-quality-gate.md` - Quality gate status
 - `/home/agent0/HX-Infrastructure/.claude/commands/utilities/cc-util-artifact-tracker.md` - Artifact status
 - `/home/agent0/HX-Infrastructure/.claude/commands/utilities/cc-util-status-report.md` - Status reporting integration
-- `/home/agent0/HX-Infrastructure/.claude/commands/core/cc-closeout-workflow.md` - Final project handoff
+- `/home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-project-closeout-workflow.md` - Final project handoff
 </related_documents>
 
 <metadata_footer>

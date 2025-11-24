@@ -1,12 +1,15 @@
 ---
-workflow: orchestrate-frank
-version: 1.0
-date: 2025-11-20
+document: cc-orchestrate-frank
+version: 1.1
+date: 2025-11-24
 status: APPROVED
 type: workflow-command
 description: Orchestration patterns for coordinating security, identity, and trust infrastructure work with Frank (Security Specialist)
 applies_to: security_tasks, identity_management, dns_operations, certificate_management, trust_infrastructure
 author: HX-Infrastructure Team
+location: /home/agent0/HX-Infrastructure/.claude/commands/agents/cc-orchestrate-frank.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 ---
 
 <metadata>
@@ -15,7 +18,7 @@ author: HX-Infrastructure Team
 **Date:** 2025-11-20
 **Status:** APPROVED - Ready for use
 **Type:** Agent Orchestration Command
-**Agent:** Frank Martinez (Security Specialist)
+**Agent:** Frank Lucas (Security Specialist)
 **Purpose:** Define how agent0 coordinates WITH Frank for security, identity, DNS, and trust infrastructure work
 </metadata>
 
@@ -1143,7 +1146,7 @@ Complex security implementations: 90-120 min
 
 <notes>
 <note type="agent_persona">
-**About Frank Martinez:**
+**About Frank Lucas:**
 
 Frank is the Security Specialist for HX-Infrastructure, responsible for:
 - Identity management (Samba Active Directory)
@@ -1226,7 +1229,7 @@ Improvement in these areas indicates agent0 is learning security practices.
 
 <related_documents>
 **Frank's Agent File:**
-- `/home/agent0/HX-Infrastructure/.claude/agents/security-specialist-frank.md` - Frank's system prompt and configuration
+- `/home/agent0/HX-Infrastructure/x-agents/security-specialist-frank.md` - Frank's system prompt and configuration
 
 **Security Standards:**
 - `/home/agent0/HX-Infrastructure/constitution.md` - Governance and security principles

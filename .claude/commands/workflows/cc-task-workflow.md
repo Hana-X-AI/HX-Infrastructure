@@ -1,11 +1,15 @@
 ---
-workflow: task-breakdown
-version: 1.0
-date: 2025-11-17
+document: cc-task-workflow
+version: 1.1
+date: 2025-11-24
 status: APPROVED
 type: workflow-command
 description: Team-based task generation from approved specification with comprehensive test suite sub-workflow
 applies_to: all_node_types
+author: HX-Infrastructure Team
+location: /home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-task-workflow.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 prerequisites:
   - approved_specification
   - raidd_log_updated

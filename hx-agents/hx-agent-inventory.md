@@ -1113,6 +1113,12 @@ These agents provide deep technical expertise in specific technologies, framewor
 | | | - Added correct knowledge requirements (4 core + domain) | |
 | | | - Added agent coordination patterns | |
 | | | - Added critical infrastructure and credentials reference | |
+| 1.1 | 2025-11-21 | Agent reclassification from 45 to 32 agents | Infrastructure Team |
+| | | - **Reclassified into two categories:** | |
+| | | - Core Team SMEs (5): agent-zero, alex-rivera, frank-lucas, julia-santos, william-chen | |
+| | | - Technology SMEs (27): See Technology SME Agents section (lines 491+) | |
+| | | - Authoritative count: 32 total agents (5 Core + 27 Technology) | |
+| | | - Updated all documentation to reflect correct agent count | |
 | 1.0 | 2025-11-15 | Initial inventory with 45 agents (DEPRECATED) | Infrastructure Team |
 | | | - Moved to /home/agent0/HX-Infrastructure/x-archive/ | |
 

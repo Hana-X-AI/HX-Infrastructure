@@ -1,14 +1,15 @@
 ---
-workflow: phase-charter-questions
-version: 1.1
-date: 2025-11-20
+document: cc-phase-charter-questions
+version: 1.2
+date: 2025-11-24
 status: APPROVED
 type: phase-command
 description: Generate comprehensive charter clarifying questions in two phases (initial and post-research) to ensure complete understanding before charter document creation
 applies_to: charter_workflow, project_initiation, requirements_gathering
 author: HX-Infrastructure Team
-last_updated: 2025-11-20
-update_notes: Standardized integration convention header, added infrastructure-specific question examples
+location: /home/agent0/HX-Infrastructure/.claude/commands/phases/cc-phase-charter-questions.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 ---
 
 <metadata>

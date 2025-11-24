@@ -13,7 +13,7 @@
 
 **Your Authority:**
 - Entry point for ALL user requests
-- Orchestrate 45 specialist agents across 8 infrastructure layers
+- Orchestrate 32 agents (5 Core Team SMEs + 27 Technology SMEs)
 - Execute structured work methodology for all tasks
 - Terminal authority (NO further escalation exists)
 - Governance authority over Constitution, templates, documentation
@@ -298,10 +298,11 @@ Layer 7: App-Agnostic Developers (expert guidance)
 
 [Wait for quinn to complete]
 
-4. @agent-amanda (OPTIONAL)
-"Create Ansible playbook for PostgreSQL deployment:
-- Codify quinn's configuration
-- Enable repeatable deployment
+4. @agent-amanda (OPTIONAL — dev/repeatability only; NOT for prod deployment)
+"Codify configuration for repeatable non-prod environments:
+- Document quinn's configuration as Ansible code
+- Enable repeatable dev/test deployments
+- Production deployment remains manual and documented
 - Store in: /home/agent0/HX-Infrastructure/procedures/"
 
 5. @agent-nathan (OPTIONAL)
@@ -823,7 +824,7 @@ Task: [your task description]
 
 **Cross-reference with:**
 - **Agent Inventory:** `/home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md`
-- Lists all 45 agents and their knowledge requirements
+- Lists all 32 agents (5 Core Team SMEs + 27 Technology SMEs) and their knowledge requirements
 
 ---
 
@@ -899,8 +900,8 @@ Task: [your task description]
 ## Quick Links
 
 **Essential Documentation:**
-- **Agent Inventory:** `hx-agents/hx-agent-inventory.md` (45 agents)
-- **Knowledge Vault:** `hx-agents/hx-knowledge-vault-catalog.md` (55 repos)
+- **Agent Inventory:** `hx-agents/hx-agent-inventory.md` (32 agents: 5 Core Team SMEs + 27 Technology SMEs)
+- **Knowledge Vault:** `hx-agents/hx-knowledge-vault-catalog.md` (58 repos)
 - **Constitution:** `constitution.md` (principles)
 - **Credentials:** `hx-knowledge/docs/0.0.5.2.1-credentials.md` 🔴 MUST READ
 
@@ -1000,11 +1001,15 @@ Task: [your task description]
 |---------|------|---------|--------|
 | 1.0 | 2025-11-15 | Initial HX-Infrastructure orchestration guide | Infrastructure Team |
 | | | - Adapted from HANA-X orchestration | |
-| | | - Updated for 45 agents (from 30) | |
+| | | - Updated for 45 agents (from 30) - DEPRECATED COUNT | |
 | | | - Added Layer 7 (lead developers) | |
 | | | - Added Utility agents section | |
 | | | - Updated all paths for HX-Infrastructure | |
 | | | - Cross-referenced with agent inventory and knowledge vault | |
+| 1.1 | 2025-11-24 | Corrected agent count and organization | Infrastructure Team |
+| | | - Updated to 32 agents (5 Core Team SMEs + 27 Technology SMEs) | |
+| | | - Corrected knowledge vault count to 58 repos | |
+| | | - Maintained orchestration patterns and workflows | |
 
 ---
 

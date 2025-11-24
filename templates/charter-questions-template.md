@@ -159,7 +159,8 @@ You specified [DEPLOYMENT-CONSTRAINTS] deployment.
 Confirmation:
 • Installation method: [METHOD-OPTIONS]?
 • Service management: systemd service?
-• Configuration management: Ansible playbook?
+• Configuration management: Manual procedures + systemd (no Ansible playbooks)
+• Secret management: Ansible Vault only (credentials storage; no playbooks)
 • Updates/maintenance: Manual or automated?
 
 This affects the deployment plan and operational procedures.

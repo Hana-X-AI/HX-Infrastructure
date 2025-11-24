@@ -652,7 +652,10 @@ hx-knowledge/repos/              # 58 repositories
 ⚠️ **Credentials**: Never commit to GitHub
 ⚠️ **Authentication**: Samba AD only (no local user accounts for humans)
 ⚠️ **Vaults**: Service vaults + node vaults only
-⚠️ **Protected Files**: `credentials-vault-management.md` must be .gitignored
+⚠️ **Protected Content** (must be .gitignored):
+   - All `*/vault/` directories (secret material only)
+   - Any files containing secrets or keys
+   - Note: `standards/credentials-vault-management.md` is a documentation file and SHOULD remain tracked
 ⚠️ **Ansible**: Vault for credentials ONLY (no playbooks for deployment)
 
 ### Deployment Requirements

@@ -1,11 +1,15 @@
 ---
-workflow: task-execution
-version: 1.0
-date: 2025-11-17
+document: cc-task-execution-workflow
+version: 1.1
+date: 2025-11-24
 status: APPROVED
 type: workflow-command
 description: Systematic execution of approved tasks with test-driven deployment and comprehensive result documentation
 applies_to: all_node_deployments
+author: HX-Infrastructure Team
+location: /home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-task-execution-workflow.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 prerequisites:
   - approved_task_breakdown
   - approved_test_suite
@@ -805,7 +809,7 @@ Agent Zero executes operational promotion by updating all status documents, inve
    - Update resource allocations
 
 3. **Update Network Documentation**
-   - `/network/topology.md`: Add node/service to topology
+   - `/network/network-topology.md`: Add node/service to topology
    - `/network/port-mapping.md`: Document ports used
    - Update connectivity matrix
 

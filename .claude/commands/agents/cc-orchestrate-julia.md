@@ -1,12 +1,15 @@
 ---
-workflow: orchestrate-julia
-version: 1.0
-date: 2025-11-20
+document: cc-orchestrate-julia
+version: 1.1
+date: 2025-11-24
 status: APPROVED
 type: workflow-command
 description: Orchestration patterns for coordinating testing, quality assurance, and validation work with Julia (Testing & Quality Specialist)
 applies_to: testing_tasks, quality_assurance, validation, test_planning, defect_management, test_automation
 author: HX-Infrastructure Team
+location: /home/agent0/HX-Infrastructure/.claude/commands/agents/cc-orchestrate-julia.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 ---
 
 <metadata>
@@ -1437,11 +1440,11 @@ This orchestration follows a 7-phase pattern specifically adapted for testing an
 - `/home/agent0/HX-Infrastructure/templates/test-suite-index-template.md` - Test suite organization template
 - `/srv/knowledge/vault/testing-knowledge/` - Testing tools, patterns, and quality frameworks
 - `/srv/cc/Governance/constitution.md` - Project governance including quality principles and testing standards
-- `/home/agent0/HX-Infrastructure/x-claude/claude-code-commands/core/cc-task-workflow.md` - Task workflow including testing task breakdown patterns
-- `/home/agent0/HX-Infrastructure/x-claude/claude-code-commands/core/cc-execution-workflow.md` - Execution workflow including testing implementation patterns
-- `/home/agent0/HX-Infrastructure/x-claude/claude-code-commands/agents/cc-orchestrate-alex.md` - Alex orchestration patterns (architecture coordination reference)
-- `/home/agent0/HX-Infrastructure/x-claude/claude-code-commands/agents/cc-orchestrate-frank.md` - Frank orchestration patterns (security coordination reference)
-- `/home/agent0/HX-Infrastructure/x-claude/claude-code-commands/agents/cc-orchestrate-william.md` - William orchestration patterns (infrastructure coordination reference)
+- `/home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-task-workflow.md` - Task workflow including testing task breakdown patterns
+- `/home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-task-execution-workflow.md` - Execution workflow including testing implementation patterns
+- `/home/agent0/HX-Infrastructure/.claude/commands/agents/cc-orchestrate-alex.md` - Alex orchestration patterns (architecture coordination reference)
+- `/home/agent0/HX-Infrastructure/.claude/commands/agents/cc-orchestrate-frank.md` - Frank orchestration patterns (security coordination reference)
+- `/home/agent0/HX-Infrastructure/.claude/commands/agents/cc-orchestrate-william.md` - William orchestration patterns (infrastructure coordination reference)
 </related_documents>
 
 <critical_reminders>

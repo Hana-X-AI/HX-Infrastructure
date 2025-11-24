@@ -1,14 +1,15 @@
 ---
-workflow: phase-test-suite-generation
-version: 1.1
-date: 2025-11-20
+document: cc-phase-test-suite-generation
+version: 1.2
+date: 2025-11-24
 status: APPROVED
 type: phase-command
 description: Generate comprehensive test suite with 100% requirements coverage following test-driven deployment methodology to ensure service quality before operational promotion
 applies_to: task_workflow, testing_phase, quality_assurance
 author: HX-Infrastructure Team
-last_updated: 2025-11-20
-update_notes: Standardized integration convention header, infrastructure testing alignment
+location: /home/agent0/HX-Infrastructure/.claude/commands/phases/cc-phase-test-suite-generation.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 ---
 
 <metadata>

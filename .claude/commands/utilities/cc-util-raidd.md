@@ -1,14 +1,15 @@
 ---
-workflow: util-raidd
-version: 1.1
-date: 2025-11-20
+document: cc-util-raidd
+version: 1.2
+date: 2025-11-24
 status: APPROVED
 type: utility-command
 description: RAIDD log management utility for tracking Risks, Assumptions, Issues, Dependencies, and Decisions across project lifecycle with structured logging, status tracking, and resolution management
 applies_to: all_workflows, all_orchestrations, project_management, risk_management, decision_tracking
 author: HX-Infrastructure Team
-last_updated: 2025-11-20
-update_notes: Enhanced integration convention clarity, infrastructure philosophy alignment
+location: /home/agent0/HX-Infrastructure/.claude/commands/utilities/cc-util-raidd.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 ---
 
 <metadata>
@@ -694,7 +695,7 @@ technical capabilities. Create RAIDD entries:
 
 Log entries at /projects/auth-system/raidd/log.md"
 
-**Example from cc-execution-workflow.md Phase 2:**
+**Example from cc-task-execution-workflow.md Phase 2:**
 "Use cc-util-raidd to log issue blocking deployment. Create entry:
 - RAIDD-ISSUE-003: Database migration fails in staging environment
 - Priority: P0 (blocking deployment)
@@ -1115,11 +1116,11 @@ Document decision at /projects/auth-system/raidd/log.md"
 </validation_checklist>
 
 <related_documents>
-- `/home/agent0/HX-Infrastructure/.claude/commands/core/cc-charter-workflow.md` - Charter RAIDD integration
-- `/home/agent0/HX-Infrastructure/.claude/commands/core/cc-spec-workflow.md` - Spec RAIDD integration
-- `/home/agent0/HX-Infrastructure/.claude/commands/core/cc-task-workflow.md` - Task RAIDD integration
-- `/home/agent0/HX-Infrastructure/.claude/commands/core/cc-execution-workflow.md` - Execution RAIDD integration
-- `/home/agent0/HX-Infrastructure/.claude/commands/core/cc-closeout-workflow.md` - Closeout RAIDD summary
+- `/home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-charter-workflow.md` - Charter RAIDD integration
+- `/home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-spec-workflow.md` - Spec RAIDD integration
+- `/home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-task-workflow.md` - Task RAIDD integration
+- `/home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-task-execution-workflow.md` - Execution RAIDD integration
+- `/home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-project-closeout-workflow.md` - Closeout RAIDD summary
 - `/home/agent0/HX-Infrastructure/.claude/commands/agents/cc-orchestrate-alex.md` - Alex orchestration RAIDD usage
 - `/home/agent0/HX-Infrastructure/.claude/commands/agents/cc-orchestrate-frank.md` - Frank orchestration RAIDD usage
 - `/home/agent0/HX-Infrastructure/.claude/commands/agents/cc-orchestrate-william.md` - William orchestration RAIDD usage

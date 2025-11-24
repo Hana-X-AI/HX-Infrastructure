@@ -1,14 +1,15 @@
 ---
-workflow: util-status-report
-version: 1.1
-date: 2025-11-20
+document: cc-util-status-report
+version: 1.2
+date: 2025-11-24
 status: APPROVED
 type: utility-command
 description: Status reporting utility for generating project status reports, progress summaries, stakeholder communications, and executive dashboards with metrics, trends, and actionable insights
 applies_to: all_workflows, all_orchestrations, project_management, stakeholder_communication, progress_tracking
 author: HX-Infrastructure Team
-last_updated: 2025-11-20
-update_notes: Enhanced integration convention clarity, infrastructure philosophy alignment
+location: /home/agent0/HX-Infrastructure/.claude/commands/utilities/cc-util-status-report.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 ---
 
 <metadata>
@@ -1052,7 +1053,7 @@ This section documents how workflow commands (Set 1) and orchestration commands 
 **From Workflow Commands (Set 1):**
 At phase completion or regular intervals, commands invoke status reporting:
 
-**Example from cc-execution-workflow.md Phase 4:**
+**Example from cc-task-execution-workflow.md Phase 4:**
 "Use cc-util-status-report to generate phase completion report. Report type:
 Phase Completion. Phase: Execution. Include quality gate validation results,
 artifact inventory, RAIDD summary. Request approval for integration and
@@ -1350,9 +1351,9 @@ risks, critical decisions needed. Distribute to leadership."
 - `/home/agent0/HX-Infrastructure/.claude/commands/utilities/cc-util-raidd.md` - RAIDD data source
 - `/home/agent0/HX-Infrastructure/.claude/commands/utilities/cc-util-quality-gate.md` - Quality gate data source
 - `/home/agent0/HX-Infrastructure/.claude/commands/utilities/cc-util-artifact-tracker.md` - Artifact inventory data source
-- `/home/agent0/HX-Infrastructure/.claude/commands/core/cc-execution-workflow.md` - Execution progress tracking
-- `/home/agent0/HX-Infrastructure/.claude/commands/core/cc-closeout-workflow.md` - Closeout reporting
-- `/srv/cc/Governance/constitution.md` - Project governance and reporting requirements
+- `/home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-task-execution-workflow.md` - Execution progress tracking
+- `/home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-project-closeout-workflow.md` - Closeout reporting
+- `/home/agent0/HX-Infrastructure/constitution.md` - Project governance and reporting requirements
 </related_documents>
 
 <metadata_footer>

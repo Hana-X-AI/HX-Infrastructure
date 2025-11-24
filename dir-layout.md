@@ -11,7 +11,7 @@
 /home/agent0/HX-Infrastructure/
 │
 ├── hx-agents/                           ← Agent Documentation
-│   ├── hx-agent-inventory.md            ← All 45 agents inventory
+│   ├── hx-agent-inventory.md            ← All 32 agents inventory (5 Core Team SMEs + 27 Technology SMEs)
 │   ├── hx-knowledge-vault-catalog.md    ← Knowledge repository catalog
 │   ├── hx-orchestration-guide.md        ← Agent Zero orchestration guide
 │   ├── hx-orchestration-quick-ref.md    ← Quick reference

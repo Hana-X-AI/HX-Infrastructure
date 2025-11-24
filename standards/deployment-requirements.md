@@ -15,7 +15,7 @@
 This document establishes deployment standards for HX-Infrastructure, including the **authoritative documentation of infrastructure philosophy**. All service deployments must follow these requirements to ensure consistency, reliability, maintainability, and infrastructure philosophy compliance.
 
 ### Target Audience
-- **William Thompson (Infrastructure Specialist):** Primary authority for infrastructure philosophy enforcement
+- **William Chen (Infrastructure Specialist):** Primary authority for infrastructure philosophy enforcement
 - **All Deployment Engineers:** Must follow infrastructure philosophy for all deployments
 - **Agent Zero (CC):** Validates infrastructure philosophy compliance throughout lifecycle
 - **CAIO:** Approves operational promotions after philosophy validation
@@ -480,7 +480,7 @@ grep -r "FAIL" test-results/
   - Update port mappings (if changed)
   - Update network configuration (if changed)
 
-- [ ] **network/topology.md** (if network changes)
+- [ ] **network/network-topology.md** (if network changes)
   - Update network diagram
   - Document new connections
 
@@ -877,7 +877,7 @@ This document is the **AUTHORITATIVE SOURCE** for HX-Infrastructure deployment p
 - Vault credential retrieval tasks documented
 
 **Phase 4 (Task Execution):**
-- William Thompson validates infrastructure philosophy compliance
+- William Chen validates infrastructure philosophy compliance
 - All deployments use manual procedures (no automation execution)
 - Systemd services created and enabled
 - Credentials retrieved from Ansible Vault only
@@ -898,8 +898,8 @@ This document is the **AUTHORITATIVE SOURCE** for HX-Infrastructure deployment p
 
 **Warning Violations (require justification):**
 - ⚠️ Non-Ubuntu operating systems (require Alex Rivera approval)
-- ⚠️ Non-systemd service managers (require William Thompson approval)
-- ⚠️ Alternative credential storage (require Frank Martinez security review)
+- ⚠️ Non-systemd service managers (require William Chen approval)
+- ⚠️ Alternative credential storage (require Frank Lucas security review)
 
 ---
 
@@ -933,10 +933,10 @@ This document is the **AUTHORITATIVE SOURCE** for HX-Infrastructure deployment p
 - **Service specifications** (`services/*/spec.md`) - Per-service deployment architecture
 
 ### Agent Profiles
-- **William Thompson (Infrastructure Specialist):** Infrastructure philosophy PRIMARY OWNER and enforcement authority
+- **William Chen (Infrastructure Specialist):** Infrastructure philosophy PRIMARY OWNER and enforcement authority
 - **Alex Rivera (Platform Architect):** Architecture design validation and infrastructure compliance review
-- **Frank Martinez (Security Specialist):** Security architecture and Ansible Vault compliance
-- **Julia Chen (Testing & Quality Specialist):** Pre/post-deployment testing validation
+- **Frank Lucas (Security Specialist):** Security architecture and Ansible Vault compliance
+- **Julia Santos (Testing & Quality Specialist):** Pre/post-deployment testing validation
 - **Agent Zero (CC):** STATEFUL orchestrator validating infrastructure philosophy across all phases
 
 ---
@@ -952,7 +952,7 @@ This document is the **AUTHORITATIVE SOURCE** for HX-Infrastructure deployment p
 - Added comprehensive document metadata header (Type, Version, Date, Status, Location)
 - Added Document Purpose section identifying this as Infrastructure Philosophy PRIMARY AUTHORITY
 - Added Infrastructure Philosophy Authority section with 5 core principles explicitly stated
-- Added Infrastructure Philosophy Enforcement section with validation checkpoints across all 6 phases
+- Added Infrastructure Philosophy Enforcement section with validation checkpoints across all 5 phases
 - Added Infrastructure Philosophy Violations section (blocking vs warning violations)
 - Expanded related documents section with comprehensive standards, procedures, commands, governance, agents
 - Added version history table (this table)
@@ -976,19 +976,19 @@ This document should be updated when:
 - Compliance violations identified requiring new validation checkpoints
 
 ### Review Frequency
-- **Quarterly Review:** William Thompson reviews infrastructure philosophy enforcement effectiveness
+- **Quarterly Review:** William Chen reviews infrastructure philosophy enforcement effectiveness
 - **Post-Project Review:** After major service deployments, review process effectiveness
 - **Annual Review:** Comprehensive review of all deployment requirements and infrastructure philosophy
 
 ### Compliance Enforcement
-- **Pre-Deployment:** William Thompson validates infrastructure philosophy compliance before task execution
+- **Pre-Deployment:** William Chen validates infrastructure philosophy compliance before task execution
 - **Promotion Review:** CAIO validates infrastructure philosophy compliance before operational promotion
 - **Continuous Monitoring:** Agent Zero monitors infrastructure philosophy across all lifecycle phases
 - **Violation Response:** Blocking violations prevent promotion; warning violations require documented justification
 
 ### Change Control
 - Changes to infrastructure philosophy require CAIO approval and constitution.md update
-- Changes to deployment process require William Thompson review and Alex Rivera architectural alignment
+- Changes to deployment process require William Chen review and Alex Rivera architectural alignment
 - All changes maintain 100% backward compatibility or include migration procedures
 - Version increments: Minor for enhancements, Major for breaking changes (requires justification)
 

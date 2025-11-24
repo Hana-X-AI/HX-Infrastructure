@@ -1202,7 +1202,7 @@ Utility command development aligns with HX-Infrastructure procedures:
 - Added Document Purpose section with target audience and scope
 - Added Infrastructure Philosophy Integration section (infrastructure-agnostic default vs infrastructure-aware explicit)
 - Added Infrastructure Awareness Pattern for utilities requiring infrastructure validation
-- Added Procedure Alignment section (utility usage across all 6 phases)
+- Added Procedure Alignment section (utility usage across all 5 phases)
 - Expanded related documents section with comprehensive standards, procedures, commands, governance, agents
 - Added version history table (this table)
 - Added document maintenance section

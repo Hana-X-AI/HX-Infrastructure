@@ -782,7 +782,7 @@ Architecture standards align with HX-Infrastructure philosophy:
 - `.claude/commands/workflows/` - Workflow commands enforce architecture documentation
 
 **Agent Profiles:**
-- `.claude/agents/alex.md` - Alex Rivera (Platform Architect) - Primary architecture authority
+- `x-agents/alex.md` - Alex Rivera (Platform Architect) - Primary architecture authority
 
 **Governance:**
 - `/home/agent0/HX-Infrastructure/constitution.md` - Infrastructure principles and philosophy

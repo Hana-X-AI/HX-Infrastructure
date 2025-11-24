@@ -28,7 +28,7 @@ Fast reference for multi-agent orchestration patterns in HX-Infrastructure. For 
 | **Utility** | Specialists | 8 | Specialized support functions |
 | **Other** | Support | 2 | Additional capabilities |
 
-**Total**: 45 agents
+**Total**: 32 agents (5 Core Team SMEs + 27 Technology SMEs)
 
 ### Agent Invocation Format
 
@@ -199,7 +199,7 @@ Inventory:
 - inventory/network-topology.md
 
 Network:
-- network/topology.md
+- network/network-topology.md
 - network/port-mapping.md
 - network/connectivity.md
 
@@ -461,8 +461,8 @@ Core Standards:
 Location: /home/agent0/HX-Infrastructure/hx-agents/
 
 Agent References:
-- hx-agent-inventory.md (45 agents)
-- hx-knowledge-vault-catalog.md (55 repos)
+- hx-agent-inventory.md (32 agents: 5 Core Team SMEs + 27 Technology SMEs)
+- hx-knowledge-vault-catalog.md (58 repos)
 - hx-orchestration-guide.md (detailed workflows)
 - hx-orchestration-quick-ref.md (this document)
 ```
@@ -482,7 +482,7 @@ Node Details:
 - nodes/<node-name>/configuration/
 
 Network:
-- network/topology.md
+- network/network-topology.md
 - network/port-mapping.md
 - network/connectivity.md
 ```

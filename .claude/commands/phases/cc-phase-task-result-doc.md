@@ -1,14 +1,15 @@
 ---
-workflow: phase-task-result-documentation
-version: 1.1
-date: 2025-11-20
+document: cc-phase-task-result-doc
+version: 1.2
+date: 2025-11-24
 status: APPROVED
 type: phase-command
 description: Systematic documentation of task execution results including deliverables, test outcomes, artifacts created, issues encountered, and handoff preparation for operational promotion
 applies_to: task_workflow, task_completion, result_documentation
 author: HX-Infrastructure Team
-last_updated: 2025-11-20
-update_notes: v1.1 - Standardized integration convention header, added infrastructure philosophy alignment
+location: /home/agent0/HX-Infrastructure/.claude/commands/phases/cc-phase-task-result-doc.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 ---
 
 <metadata>

@@ -60,7 +60,7 @@ Full SDLC workflow orchestration from charter through closeout, implementing the
 | **Charter Workflow** | workflows/cc-charter-workflow.md | 3,465 | Phase 1 | Complete charter development process with 10 phases |
 | **Specification Workflow** | workflows/cc-spec-workflow.md | 3,893 | Phase 2 | Requirements analysis and technical specifications |
 | **Task Workflow** | workflows/cc-task-workflow.md | 3,271 | Phase 3 | Task generation, sequencing, and test suite creation |
-| **Execution Workflow** | workflows/cc-execution-workflow.md | 3,446 | Phase 4 | Test-driven deployment with 8 execution phases |
+| **Execution Workflow** | workflows/cc-task-execution-workflow.md | 3,446 | Phase 4 | Test-driven deployment with 8 execution phases |
 | **Closeout Workflow** | workflows/cc-closeout-workflow.md | 3,850 | Phase 5 | Project completion and artifact consolidation |
 
 **Total:** 17,925 lines
@@ -95,7 +95,7 @@ Coordinate with specialized agents and manage team formation.
 
 **Agent Coordination Patterns:**
 - Agent Zero (CC) coordinates WITH agents using their expertise
-- Core team: Alex Rivera, Julia Chen, William Thompson, Frank Martinez
+- Core team: Alex Rivera, Julia Santos, William Chen, Frank Lucas
 - Object-oriented agent coordination (not impersonation)
 - Stateless agent context loading patterns
 
@@ -180,7 +180,7 @@ graph TB
     end
 
     subgraph "Phase 4: Task Execution"
-        P4[cc-execution-workflow.md]
+        P4[cc-task-execution-workflow.md]
         P4_D[cc-phase-task-result-doc.md]
         P4_DEF[cc-phase-defect-mgmt.md]
         P4_OUT1[results.md]
@@ -247,7 +247,7 @@ flowchart TD
     TASK --> |calls| TESTGEN[Test Suite Generation<br/>cc-phase-test-suite-generation.md]
     TASK --> |output| TASK_DOC[plan.md + tasks.md + test-suite/]
 
-    TASK_DOC --> EXEC[Execution Workflow<br/>cc-execution-workflow.md]
+    TASK_DOC --> EXEC[Execution Workflow<br/>cc-task-execution-workflow.md]
     EXEC --> |calls| TASKDOC[Task Result Documentation<br/>cc-phase-task-result-doc.md]
     EXEC --> |calls on failure| DEFECT[Defect Management<br/>cc-phase-defect-mgmt.md]
     EXEC --> |output| EXEC_DOC[results.md + Operational Service]
@@ -332,9 +332,9 @@ graph TB
 
     subgraph "Core Agent Team"
         ALEX[Alex Rivera<br/>Platform Architect]
-        JULIA[Julia Chen<br/>Testing & Quality Specialist]
-        WILLIAM[William Thompson<br/>Infrastructure Specialist]
-        FRANK[Frank Martinez<br/>Security Specialist]
+        JULIA[Julia Santos<br/>Testing & Quality Specialist]
+        WILLIAM[William Chen<br/>Infrastructure Specialist]
+        FRANK[Frank Lucas<br/>Security Specialist]
     end
 
     subgraph "Specialized Agents (45 total)"
@@ -473,7 +473,7 @@ gantt
   # Output: plan.md, tasks.md, test-suite/ (100% coverage)
 
 # Phase 4: EXECUTION (60-180 minutes)
-/cc-execution-workflow.md
+/cc-task-execution-workflow.md
   # Uses: plan.md, tasks.md, test-suite/ as input
   # Calls: cc-phase-task-result-doc.md
   # Calls: cc-phase-defect-mgmt.md (if failures)
@@ -760,7 +760,7 @@ cat defects/defect-summary.md
 ```bash
 # Step 1: Review agent inventory
 /cc-list-hx-agents.md
-  # Shows: All 45 agents with specializations
+  # Shows: All 32 agents (5 Core Team SMEs + 27 Technology SMEs) with specializations
 
 # Step 2: Use orchestration guide
 /cc-orchestrate-hx.md
@@ -769,9 +769,9 @@ cat defects/defect-summary.md
 
 # Core Team Assignments:
 # - Alex Rivera: Architecture, design, technical specs
-# - Julia Chen: Testing, QA, test generation
-# - William Thompson: OS, systems, infrastructure
-# - Frank Martinez: Security, DNS, identity
+# - Julia Santos: Testing, QA, test generation
+# - William Chen: OS, systems, infrastructure
+# - Frank Lucas: Security, DNS, identity
 # - Agent Zero: Orchestration, synthesis
 
 # Step 3: Form appropriate team
@@ -899,7 +899,7 @@ cat /home/agent0/HX-Infrastructure/standards/deployment-requirements.md
 # Output: plan.md, tasks.md, test-suite/ (100% coverage)
 
 # Phase 4: Continue with execution workflow
-/cc-execution-workflow.md
+/cc-task-execution-workflow.md
 # Output: results.md, operational service
 
 # Phase 5: Continue with closeout workflow
@@ -1139,7 +1139,7 @@ Integration Points:         127 documented integrations
 /cc-charter-workflow.md
 /cc-spec-workflow.md
 /cc-task-workflow.md
-/cc-execution-workflow.md
+/cc-task-execution-workflow.md
 /cc-closeout-workflow.md
 
 # Orchestration (Set 2)

@@ -624,7 +624,7 @@ This document is a living standard. Proposed changes must:
 **Key Updates in v2.1:**
 - Added comprehensive document metadata header (Type, Version, Date, Status, Location)
 - Added infrastructure integration section (infrastructure-agnostic naming philosophy)
-- Added procedure alignment section (naming enforcement across all 6 phases)
+- Added procedure alignment section (naming enforcement across all 5 phases)
 - Added related documents section (standards, procedures, templates, commands)
 - Added version history table (this table)
 - Updated semantic XML metadata tags

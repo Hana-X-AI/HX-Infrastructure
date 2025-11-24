@@ -13,17 +13,17 @@
 
 This document defines the core team of specialist agents that participate in EVERY HX-Infrastructure project. It establishes standard agent roles, responsibilities, state management requirements, and team coordination patterns to ensure consistent multi-perspective validation across all phases of project execution.
 
-**Source:** `/home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md` (45 specialist agents)
+**Source:** `/home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md` (32 agents: 5 Core Team SMEs + 27 Technology SMEs)
 
 **Related Documents:**
-- `hx-agents/hx-agent-inventory.md` - Complete 45-agent specialist ecosystem
-- `hx-agents/hx-orchestration-guide.md` - Multi-agent coordination patterns
+- `/home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md` - Complete 32-agent specialist ecosystem
+- `/home/agent0/HX-Infrastructure/hx-agents/hx-orchestration-guide.md` - Multi-agent coordination patterns
 - `.claude/commands/agents/` - Agent orchestration commands (Set 5)
-- `procedures/context-loading-process.md` - Context loading for stateless agents
+- `/home/agent0/HX-Infrastructure/procedures/context-loading-process.md` - Context loading for stateless agents
 - `constitution.md` - Project governance and principles
 
 **Target Audience:**
-- Agent Zero (Chief AI Officer / Universal PM Orchestrator)
+- Agent Zero (Universal PM Orchestrator)
 - CAIO (project sponsors and stakeholders)
 - All specialist agents (core and project-specific)
 - Infrastructure team members
@@ -62,7 +62,7 @@ All core agents understand and apply HX-Infrastructure philosophy:
 
 **Role:** Chief AI Officer / Universal PM Orchestrator & Governance
 **Agent Name:** agent-zero
-**Profile:** `/home/agent0/.claude/agents/agent-zero.md`
+**Profile:** `/home/agent0/HX-Infrastructure/x-agents/agent-zero.md`
 **State:** STATEFUL - Maintains context throughout entire project lifecycle
 
 **Responsibilities:**
@@ -109,7 +109,7 @@ All core agents understand and apply HX-Infrastructure philosophy:
 
 **Role:** Platform Architecture Specialist
 **Agent Name:** alex
-**Profile:** `/home/agent0/.claude/agents/alex.md`
+**Profile:** `/home/agent0/HX-Infrastructure/x-agents/alex.md`
 **State:** STATELESS - Must reload context each invocation
 
 **Responsibilities:**
@@ -147,11 +147,11 @@ All core agents understand and apply HX-Infrastructure philosophy:
 
 ---
 
-### **Frank Martinez - Security Specialist** ⭐ CORE - STATELESS
+### **Frank Lucas - Security Specialist** ⭐ CORE - STATELESS
 
 **Role:** Identity & Trust Infrastructure Specialist
 **Agent Name:** frank
-**Profile:** `/home/agent0/.claude/agents/frank.md`
+**Profile:** `/home/agent0/HX-Infrastructure/x-agents/frank.md`
 **State:** STATELESS - Must reload context each invocation
 
 **Responsibilities:**
@@ -191,11 +191,11 @@ All core agents understand and apply HX-Infrastructure philosophy:
 
 ---
 
-### **William Thompson - Infrastructure Specialist** ⭐ CORE - STATELESS
+### **William Chen - Infrastructure Specialist** ⭐ CORE - STATELESS
 
 **Role:** Bare Metal Infrastructure & Ubuntu Systems Specialist
 **Agent Name:** william
-**Profile:** `/home/agent0/.claude/agents/william.md`
+**Profile:** `/home/agent0/HX-Infrastructure/x-agents/william.md`
 **State:** STATELESS - Must reload context each invocation
 
 **Responsibilities:**
@@ -239,11 +239,11 @@ William is the authoritative specialist for HX-Infrastructure philosophy:
 
 ---
 
-### **Julia Chen - Testing & Quality Specialist** ⭐ CORE - STATELESS
+### **Julia Santos - Testing & Quality Specialist** ⭐ CORE - STATELESS
 
 **Role:** Testing & Quality Assurance Specialist
 **Agent Name:** julia
-**Profile:** `/home/agent0/.claude/agents/julia.md`
+**Profile:** `/home/agent0/HX-Infrastructure/x-agents/julia.md`
 **State:** STATELESS - Must reload context each invocation
 
 **Responsibilities:**
@@ -416,9 +416,9 @@ William is the authoritative specialist for HX-Infrastructure philosophy:
 **Core Team Participates:**
 1. ✅ **Agent Zero (CC)** - Orchestration, charter generation, synthesis
 2. ✅ **Alex Rivera** - Architecture review, feasibility validation
-3. ✅ **Julia Chen** - Testing requirements review, quality criteria
-4. ✅ **Frank Martinez** - Identity/DNS review, security requirements
-5. ✅ **William Thompson** - Infrastructure review, deployment feasibility
+3. ✅ **Julia Santos** - Testing requirements review, quality criteria
+4. ✅ **Frank Lucas** - Identity/DNS review, security requirements
+5. ✅ **William Chen** - Infrastructure review, deployment feasibility
 
 **Knowledge Vault Assignments:**
 - Agent Zero assigns repositories based on agent expertise
@@ -457,9 +457,9 @@ William is the authoritative specialist for HX-Infrastructure philosophy:
 **Core Team Participates:**
 1. ✅ **Agent Zero (CC)** - Orchestration, base specification generation, synthesis
 2. ✅ **Alex Rivera** - Architecture sections (integration patterns, ADRs)
-3. ✅ **Julia Chen** - Testing sections (test plan, coverage requirements)
-4. ✅ **Frank Martinez** - Identity/DNS sections (authentication, certificates)
-5. ✅ **William Thompson** - Infrastructure sections (systemd, manual procedures)
+3. ✅ **Julia Santos** - Testing sections (test plan, coverage requirements)
+4. ✅ **Frank Lucas** - Identity/DNS sections (authentication, certificates)
+5. ✅ **William Chen** - Infrastructure sections (systemd, manual procedures)
 
 **Plus:** Project-specific agents based on technology stack:
 - Database agents (if database requirements)
@@ -498,10 +498,10 @@ William is the authoritative specialist for HX-Infrastructure philosophy:
 
 **Core Team Participates:**
 1. ✅ **Agent Zero (CC)** - Task breakdown, sequencing, assignments
-2. ✅ **Julia Chen** - Test suite generation (100% requirements coverage)
+2. ✅ **Julia Santos** - Test suite generation (100% requirements coverage)
 3. ✅ **Alex Rivera** - Task validation for architecture alignment
-4. ✅ **Frank Martinez** - Task validation for identity/DNS requirements
-5. ✅ **William Thompson** - Task validation for infrastructure requirements
+4. ✅ **Frank Lucas** - Task validation for identity/DNS requirements
+5. ✅ **William Chen** - Task validation for infrastructure requirements
 
 **Plus:** Project-specific agents validate tasks for their domains
 
@@ -539,9 +539,9 @@ William is the authoritative specialist for HX-Infrastructure philosophy:
 
 **Core Team Participates:**
 1. ✅ **Agent Zero (CC)** - Orchestration, progress tracking, defect management
-2. ✅ **William Thompson** - Infrastructure deployment execution (primary executor)
-3. ✅ **Frank Martinez** - DNS records, certificates, domain-joining
-4. ✅ **Julia Chen** - Test execution, defect management, quality validation
+2. ✅ **William Chen** - Infrastructure deployment execution (primary executor)
+3. ✅ **Frank Lucas** - DNS records, certificates, domain-joining
+4. ✅ **Julia Santos** - Test execution, defect management, quality validation
 5. ✅ **Alex Rivera** - Integration validation, architecture compliance
 
 **Plus:** Project-specific agents execute technology-specific tasks
@@ -584,9 +584,9 @@ William is the authoritative specialist for HX-Infrastructure philosophy:
 **Core Team Participates:**
 1. ✅ **Agent Zero (CC)** - Final validation, documentation compilation, lessons learned
 2. ✅ **Alex Rivera** - Architecture documentation validation, ADR completion
-3. ✅ **Julia Chen** - Test results validation, defect closure verification
-4. ✅ **Frank Martinez** - Identity/DNS documentation validation
-5. ✅ **William Thompson** - Manual procedure validation, infrastructure documentation
+3. ✅ **Julia Santos** - Test results validation, defect closure verification
+4. ✅ **Frank Lucas** - Identity/DNS documentation validation
+5. ✅ **William Chen** - Manual procedure validation, infrastructure documentation
 
 **Infrastructure Philosophy Validation:**
 - William validates manual procedures complete and accurate
@@ -1002,17 +1002,17 @@ COORDINATION:
 - Participates: Charter review, specification, deployment validation
 - State: STATELESS - context load required each phase
 
-**Julia Chen - Testing & Quality Specialist**
+**Julia Santos - Testing & Quality Specialist**
 - Role: Test-driven deployment, 100% coverage, quality gates
 - Participates: Charter review, specification, test generation, test execution, quality validation
 - State: STATELESS - context load required each phase
 
-**Frank Martinez - Security Specialist**
+**Frank Lucas - Security Specialist**
 - Role: Identity & Trust, Samba AD, Kerberos, certificates, DNS
 - Participates: Charter review, specification, deployment (DNS/certs)
 - State: STATELESS - context load required each phase
 
-**William Thompson - Infrastructure Specialist**
+**William Chen - Infrastructure Specialist**
 - Role: Bare metal deployment, systemd, manual procedures, network config
 - Participates: Charter review, specification, deployment execution, manual procedure documentation
 - State: STATELESS - context load required each phase
@@ -1100,10 +1100,10 @@ COORDINATION:
 ## 🔗 Related Documentation
 
 ### **Agent Documentation:**
-- **Agent Inventory:** `/home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md` (45 agents)
+- **Agent Inventory:** `/home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md` (32 agents: 5 Core Team SMEs + 27 Technology SMEs)
 - **Orchestration Guide:** `/home/agent0/HX-Infrastructure/hx-agents/hx-orchestration-guide.md`
 - **Knowledge Vault Catalog:** `/home/agent0/HX-Infrastructure/hx-agents/hx-knowledge-vault-catalog.md`
-- **Agent Profiles:** `/home/agent0/.claude/agents/` (individual agent specifications)
+- **Agent Profiles:** `/home/agent0/HX-Infrastructure/x-agents/` (individual agent specifications)
 
 ### **HX-Infrastructure Core:**
 - **Constitution:** `/home/agent0/HX-Infrastructure/constitution.md` (governance principles)
@@ -1111,18 +1111,18 @@ COORDINATION:
 - **Action Plan:** `/home/agent0/HX-Infrastructure/action-plan-v2-updated.md` (project roadmap)
 
 ### **Standards:**
-- **Architecture Standards:** `standards/architecture-standards.md`
-- **Deployment Requirements:** `standards/deployment-requirements.md` (infrastructure philosophy)
-- **Testing Requirements:** `standards/testing-requirements.md`
-- **Documentation Requirements:** `standards/documentation-requirements.md`
+- **Architecture Standards:** `/home/agent0/HX-Infrastructure/standards/architecture-standards.md`
+- **Deployment Requirements:** `/home/agent0/HX-Infrastructure/standards/deployment-requirements.md` (infrastructure philosophy)
+- **Testing Requirements:** `/home/agent0/HX-Infrastructure/standards/testing-requirements.md`
+- **Documentation Requirements:** `/home/agent0/HX-Infrastructure/standards/documentation-requirements.md`
 
 ### **Procedures:**
-- **Context Loading:** `procedures/context-loading-process.md` (CRITICAL for stateless agents)
-- **Charter Workflow:** `procedures/charter-workflow.md`
-- **Spec Workflow:** `procedures/spec-workflow.md`
-- **Task Workflow:** `procedures/task-workflow.md`
-- **Execution Workflow:** `procedures/task-execution-workflow.md`
-- **Closeout Workflow:** `procedures/project-closeout-workflow.md`
+- **Context Loading:** `/home/agent0/HX-Infrastructure/procedures/context-loading-process.md` (CRITICAL for stateless agents)
+- **Charter Workflow:** `/home/agent0/HX-Infrastructure/procedures/charter-workflow.md`
+- **Spec Workflow:** `/home/agent0/HX-Infrastructure/procedures/spec-workflow.md`
+- **Task Workflow:** `/home/agent0/HX-Infrastructure/procedures/task-workflow.md`
+- **Execution Workflow:** `/home/agent0/HX-Infrastructure/procedures/task-execution-workflow.md`
+- **Closeout Workflow:** `/home/agent0/HX-Infrastructure/procedures/project-closeout-workflow.md`
 
 ### **Claude Code Commands:**
 - **Workflows (Set 1):** `.claude/commands/workflows/` (Charter, Spec, Task, Execution, Closeout)

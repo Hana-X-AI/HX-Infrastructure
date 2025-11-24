@@ -17,8 +17,8 @@ This procedure defines the systematic workflow for creating project charters in 
 - `.claude/commands/workflows/cc-charter-workflow.md` - Detailed charter workflow command (Set 1)
 - `.claude/commands/phases/cc-phase-charter-questions.md` - Question generation phase (Set 4)
 - `.claude/commands/phases/cc-phase-knowledge-research.md` - Knowledge vault research phase (Set 4)
-- `templates/charter-template.md` - Charter document template
-- `hx-agents/hx-agent-inventory.md` - Agent assignment reference
+- `/home/agent0/HX-Infrastructure/templates/charter-template.md` - Charter document template
+- `/home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md` - Agent assignment reference
 
 **Target Audience:**
 - Agent Zero (Claude Code Systems Integrator)
@@ -144,11 +144,11 @@ CAIO: Confirms or adds missing repos
 - Saves time by researching the right repositories upfront
 
 **HX-Infrastructure Repositories Always Included:**
-- `standards/architecture-standards.md` - Architecture patterns
-- `standards/deployment-requirements.md` - Infrastructure philosophy
-- `standards/testing-requirements.md` - Quality standards
-- `inventory/nodes.md` - Current infrastructure state
-- `network/network-topology.md` - Network architecture
+- `/home/agent0/HX-Infrastructure/standards/architecture-standards.md` - Architecture patterns
+- `/home/agent0/HX-Infrastructure/standards/deployment-requirements.md` - Infrastructure philosophy
+- `/home/agent0/HX-Infrastructure/standards/testing-requirements.md` - Quality standards
+- `/home/agent0/HX-Infrastructure/inventory/nodes.md` - Current infrastructure state
+- `/home/agent0/HX-Infrastructure/network/network-topology.md` - Network architecture
 
 ---
 
@@ -328,7 +328,7 @@ CAIO: Provides answers
 **Duration:** 15-20 minutes
 **Participants:** CC (autonomous generation)
 **Output:** Structured charter draft
-**Template:** Uses `templates/charter-template.md`
+**Template:** Uses `/home/agent0/HX-Infrastructure/templates/charter-template.md`
 
 ```
 CC Generates Structured Charter:
@@ -542,9 +542,9 @@ CC Executes Post-Charter Actions:
    ├─ Reference hx-agent-inventory.md
    ├─ Suggest agent assignments:
    │   ├─ Alex Rivera (if architecture decisions needed)
-   │   ├─ Frank Martinez (if security/identity involved)
-   │   ├─ William Thompson (if bare metal deployment)
-   │   ├─ Julia Chen (testing strategy)
+   │   ├─ Frank Lucas (if security/identity involved)
+   │   ├─ William Chen (if bare metal deployment)
+   │   ├─ Julia Santos (testing strategy)
    │   └─ Other specialists as needed
    └─ Get CAIO confirmation
 
@@ -587,7 +587,7 @@ Output:
    - Specialist agents identified based on charter requirements
    - Agent capabilities matched to technical needs
    - Multi-agent coordination planned (if needed)
-   - Reference: `hx-agents/hx-agent-inventory.md`
+   - Reference: `/home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md`
 
 4. **Dependency Validation**
    - Infrastructure dependencies verified operational
@@ -849,24 +849,24 @@ Gate 3: Charter Approved
 - `action-plan-v2-updated.md` - Project roadmap
 
 ### **Standards:**
-- `standards/architecture-standards.md` - Architecture patterns (always researched)
-- `standards/deployment-requirements.md` - Infrastructure philosophy (always researched)
-- `standards/testing-requirements.md` - Quality standards (always researched)
-- `standards/documentation-requirements.md` - Documentation format
+- `/home/agent0/HX-Infrastructure/standards/architecture-standards.md` - Architecture patterns (always researched)
+- `/home/agent0/HX-Infrastructure/standards/deployment-requirements.md` - Infrastructure philosophy (always researched)
+- `/home/agent0/HX-Infrastructure/standards/testing-requirements.md` - Quality standards (always researched)
+- `/home/agent0/HX-Infrastructure/standards/documentation-requirements.md` - Documentation format
 
 ### **Templates:**
-- `templates/charter-template.md` - Charter document template
-- `templates/question-template.md` - Question format guidance
+- `/home/agent0/HX-Infrastructure/templates/charter-template.md` - Charter document template
+- `/home/agent0/HX-Infrastructure/templates/question-template.md` - Question format guidance
 
 ### **Agent Documentation:**
-- `hx-agents/hx-agent-inventory.md` - 45 specialist agents
-- `hx-agents/hx-orchestration-guide.md` - Multi-agent coordination
+- `/home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md` - 32 agents (5 Core Team SMEs + 27 Technology SMEs)
+- `/home/agent0/HX-Infrastructure/hx-agents/hx-orchestration-guide.md` - Multi-agent coordination
 
 ### **Other Workflows:**
-- `procedures/spec-workflow.md` - Next phase after charter approval
-- `procedures/task-workflow.md` - Task breakdown from specification
-- `procedures/task-execution-workflow.md` - Implementation phase
-- `procedures/project-closeout-workflow.md` - Final phase
+- `/home/agent0/HX-Infrastructure/procedures/spec-workflow.md` - Next phase after charter approval
+- `/home/agent0/HX-Infrastructure/procedures/task-workflow.md` - Task breakdown from specification
+- `/home/agent0/HX-Infrastructure/procedures/task-execution-workflow.md` - Implementation phase
+- `/home/agent0/HX-Infrastructure/procedures/project-closeout-workflow.md` - Final phase
 
 ---
 

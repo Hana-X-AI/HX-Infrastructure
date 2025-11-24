@@ -831,10 +831,12 @@ echo "=== Health Check Complete ==="
 # Gateway
 192.168.10.1    gateway
 
+# DMZ / Ingress Layer
+192.168.10.202  hx-ssl-server.hx.dev.local           hx-ssl-server
+
 # Identity & Trust Zone
 192.168.10.200  hx-dc-server.hx.dev.local            hx-dc-server
 192.168.10.201  hx-ca-server.hx.dev.local            hx-ca-server
-192.168.10.202  hx-ssl-server.hx.dev.local           hx-ssl-server
 192.168.10.203  hx-control-node.hx.dev.local         hx-control-node
 
 # Model & Inference Zone
@@ -973,7 +975,7 @@ This document MUST be updated when:
 - `standards/deployment-requirements.md` - Deployment procedures
 
 **Agent Documentation**:
-- `hx-agents/hx-agent-inventory.md` - 45 agents and capabilities
+- `hx-agents/hx-agent-inventory.md` - 32 agents (5 Core Team SMEs + 27 Technology SMEs) and capabilities
 - `hx-agents/hx-orchestration-guide.md` - Multi-agent workflows
 - `CLAUDE.md` - Agent Zero orchestration instructions
 

@@ -23,7 +23,7 @@ This procedure defines the **Task Breakdown Workflow** - the third major phase i
 - **Agent Zero (CC):** Primary coordinator and synthesizer across all 8 workflow phases
 - **Core Team (Alex, Frank, William):** Task generation for their respective domains
 - **Project-Specific Agents:** Domain specialists (Drew, database agents, framework agents) for specialized task generation
-- **Julia Chen (Testing Agent):** Test suite generation after task breakdown approved
+- **Julia Santos (Testing Agent):** Test suite generation after task breakdown approved
 - **CAIO:** Final approval authority for task breakdown and test suite
 
 ### Related Documents
@@ -71,7 +71,7 @@ All tasks generated through this workflow MUST align with HX-Infrastructure depl
 - **Ansible Vault only:** All credential-related tasks must store secrets in Ansible Vault (no inline secrets, no local users)
 
 ### Task Generation Implications
-- **William Thompson:** Primary owner of infrastructure philosophy - his tasks define deployment approach
+- **William Chen:** Primary owner of infrastructure philosophy - his tasks define deployment approach
 - **Infrastructure tasks:** Must include bare metal provisioning, systemd configuration, manual procedure documentation
 - **Security tasks (Frank):** Must coordinate with William for domain join, DNS, certificate tasks on bare metal
 - **Testing tasks (Julia):** Must validate systemd service health, bare metal deployment success, manual procedure completeness
@@ -1405,10 +1405,10 @@ PHASE 8: Post-approval updates
 - `/home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md` - Core Team and Technology SME agents (authoritative list)
 - `/home/agent0/HX-Infrastructure/hx-agents/hx-orchestration-guide.md` - Multi-agent coordination patterns
 - **Agent Profiles:**
-  - `.claude/agents/william.md` - Infrastructure specialist (bare metal, systemd, manual procedures)
-  - `.claude/agents/alex.md` - Platform architect (architecture, integration)
-  - `.claude/agents/frank.md` - Security specialist (identity, DNS, credentials)
-  - `.claude/agents/julia.md` - Testing & quality specialist (test-driven deployment, 100% coverage)
+  - `x-agents/william.md` - Infrastructure specialist (bare metal, systemd, manual procedures)
+  - `x-agents/alex.md` - Platform architect (architecture, integration)
+  - `x-agents/frank.md` - Security specialist (identity, DNS, credentials)
+  - `x-agents/julia.md` - Testing & quality specialist (test-driven deployment, 100% coverage)
 
 ---
 

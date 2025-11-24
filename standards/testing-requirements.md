@@ -29,10 +29,10 @@ update_notes: Added comprehensive metadata, infrastructure integration, procedur
 This document establishes testing standards for HX-Infrastructure ensuring all services have comprehensive test suites meeting infrastructure-specific requirements before promotion to operational status. **100% test pass rate is MANDATORY for promotion. No exceptions.**
 
 ### Target Audience
-- **Julia Chen (Testing & Quality Specialist):** PRIMARY OWNER for testing standards, test plan review, test execution validation
+- **Julia Santos (Testing & Quality Specialist):** PRIMARY OWNER for testing standards, test plan review, test execution validation
 - **Agent Zero (CC):** STATEFUL orchestrator validating testing completeness across all 5 project lifecycle phases
 - **All Service Developers:** Must create comprehensive test suites following these standards
-- **William Thompson (Infrastructure Specialist):** Infrastructure-specific test validation
+- **William Chen (Infrastructure Specialist):** Infrastructure-specific test validation
 - **CAIO:** Final testing validation before operational promotion
 
 ### Scope
@@ -1298,21 +1298,21 @@ Testing requirements are enforced across all 5 project lifecycle phases:
 - All test cases written BEFORE deployment execution
 - Test cases include infrastructure-specific tests
 - Test suite peer reviewed
-- Julia Chen validates test completeness
+- Julia Santos validates test completeness
 - Agent Zero blocks Phase 4 until test suite complete
 
 **Phase 4 (Deployment Execution):**
 - Pre-deployment tests executed (MUST FAIL - service not deployed)
 - Deployment tasks executed following manual procedures
 - Post-deployment tests executed (MUST PASS - service deployed)
-- Julia Chen validates test results
+- Julia Santos validates test results
 - Defects logged and resolved
 - Re-testing after defect resolution
 
 **Phase 5 (Project Closeout):**
 - **CRITICAL GATE:** 100% test pass rate validated
-- Infrastructure-specific tests validated by William Thompson
-- Test results reviewed by Julia Chen
+- Infrastructure-specific tests validated by William Chen
+- Test results reviewed by Julia Santos
 - CAIO validates complete testing before operational promotion
 - Testing compliance REQUIRED for promotion
 
@@ -1361,9 +1361,9 @@ Testing requirements are enforced across all 5 project lifecycle phases:
 - **`/home/agent0/HX-Infrastructure/constitution.md`** - Test-driven deployment principle authority
 
 ### Agent Profiles
-- **Julia Chen (Testing & Quality Specialist):** PRIMARY OWNER for testing standards, test plan review, test execution validation
-- **William Thompson (Infrastructure Specialist):** Infrastructure-specific test validation
-- **Agent Zero (CC):** STATEFUL orchestrator validating testing completeness across all 6 phases
+- **Julia Santos (Testing & Quality Specialist):** PRIMARY OWNER for testing standards, test plan review, test execution validation
+- **William Chen (Infrastructure Specialist):** Infrastructure-specific test validation
+- **Agent Zero (CC):** STATEFUL orchestrator validating testing completeness across all 5 phases
 - **CAIO:** Final testing validation before operational promotion
 
 </related_documents>
@@ -1383,7 +1383,7 @@ Testing requirements are enforced across all 5 project lifecycle phases:
 - Added Document Purpose section emphasizing CRITICAL QUALITY GATE
 - Added Infrastructure Philosophy Integration section (infrastructure-specific testing MANDATORY)
 - Added Test Categories and Infrastructure Philosophy section
-- Added Procedure Alignment section (testing enforcement across all 6 phases, Phase 3 CRITICAL)
+- Added Procedure Alignment section (testing enforcement across all 5 phases, Phase 3 CRITICAL)
 - Added Infrastructure Testing Philosophy section (tests validate philosophy, not assume it)
 - Expanded related documents section with comprehensive standards, procedures, templates, commands, governance, agents
 - Added version history table (this table)
@@ -1407,29 +1407,29 @@ This document should be updated when:
 - Defect patterns indicate testing gaps
 
 ### Review Frequency
-- **Quarterly Review:** Julia Chen reviews testing effectiveness, pass rates, defect patterns
+- **Quarterly Review:** Julia Santos reviews testing effectiveness, pass rates, defect patterns
 - **Post-Promotion Review:** After operational promotions, review testing completeness and effectiveness
 - **Post-Incident Review:** After operational incidents, review testing gaps
 - **Annual Review:** Comprehensive review of all testing requirements and infrastructure testing standards
 
 ### Compliance Enforcement
 - **Phase 2:** Agent Zero validates requirements and success criteria completeness
-- **Phase 3:** Julia Chen validates test plan completeness, Agent Zero blocks Phase 4 until testing complete
-- **Phase 4:** Julia Chen validates test execution and results, William Thompson validates infrastructure tests
+- **Phase 3:** Julia Santos validates test plan completeness, Agent Zero blocks Phase 4 until testing complete
+- **Phase 4:** Julia Santos validates test execution and results, William Chen validates infrastructure tests
 - **Phase 5:** CAIO validates 100% test pass rate before operational promotion
 - **Blocking Issue:** Incomplete testing or failed tests PREVENT operational promotion
 
 ### Change Control
 - Changes to test pass rate thresholds require CAIO approval (currently 100%, non-negotiable)
-- Changes to infrastructure-specific tests require William Thompson review
+- Changes to infrastructure-specific tests require William Chen review
 - Changes to test-driven deployment workflow require procedure updates
 - All changes maintain 100% backward compatibility or include migration procedures for existing test suites
 - Version increments: Minor for enhancements, Major for breaking changes (requires justification)
 
 ### Quality Assurance
-- **Test Plan Reviews:** Julia Chen reviews all test plans during Phase 3
-- **Test Execution Validation:** Julia Chen validates all test executions during Phase 4
-- **Infrastructure Test Validation:** William Thompson validates infrastructure-specific tests during Phase 4
+- **Test Plan Reviews:** Julia Santos reviews all test plans during Phase 3
+- **Test Execution Validation:** Julia Santos validates all test executions during Phase 4
+- **Infrastructure Test Validation:** William Chen validates infrastructure-specific tests during Phase 4
 - **Defect Pattern Analysis:** Quarterly analysis of defects to identify testing gaps
 - **Test Coverage Audits:** Quarterly audit of requirements coverage across all services
 

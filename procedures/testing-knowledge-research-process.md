@@ -20,7 +20,7 @@
 This procedure defines the **Testing Knowledge Research Process** - a systematic methodology for researching knowledge vault repositories BEFORE generating test suites. This process is **STEP 1** of Phase 7 (Test Suite Generation) in the task workflow, executed by Julia (Testing Agent) to identify testing frameworks, patterns, tools, and examples from technology repositories.
 
 ### Target Audience
-- **Julia Chen (Testing Agent):** Primary user - executes this research before test suite generation
+- **Julia Santos (Testing Agent):** Primary user - executes this research before test suite generation
 - **Agent Zero (CC):** Coordinates timing of research in task workflow Phase 7
 - **Other Agents:** Any agent creating tests can follow this process
 
@@ -1101,7 +1101,7 @@ STEP 2: Test Suite Generation
 
 **Team Documentation:**
 - `/home/agent0/HX-Infrastructure/procedures/core-project-team.md` - Julia's role as testing specialist
-- **Julia Profile:** `.claude/agents/julia.md` - Testing & quality specialist capabilities
+- **Julia Profile:** `x-agents/julia.md` - Testing & quality specialist capabilities
 
 **Templates:**
 - Research output template provided in STEP 6 of this document
@@ -1136,7 +1136,7 @@ STEP 2: Test Suite Generation
 
 **Document Type:** Procedure - Testing Support Process
 **Status:** APPROVED - Production Ready v1.1
-**Maintained By:** Agent Zero (CC) and Julia Chen (Testing Specialist)
+**Maintained By:** Agent Zero (CC) and Julia Santos (Testing Specialist)
 **Review Frequency:** Quarterly (or when testing research process changes)
 **Last Review:** 2025-11-21
 **Next Review:** 2026-02-21

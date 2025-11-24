@@ -1,14 +1,15 @@
 ---
-workflow: agent-zero-synthesis
-version: 1.1
-date: 2025-11-20
+document: cc-agent-zero-synthesis
+version: 1.2
+date: 2025-11-24
 status: APPROVED
 type: workflow-command
 description: Multi-agent coordination synthesis patterns for Agent Zero's orchestration of complex work requiring multiple specialist agents
 applies_to: multi_agent_coordination, cross_domain_tasks, complex_projects, specialist_synthesis, meta_orchestration
 author: HX-Infrastructure Team
-last_updated: 2025-11-20
-update_notes: Infrastructure philosophy integration (bare metal first, Docker dev-only, Ansible Vault only)
+location: /home/agent0/HX-Infrastructure/.claude/commands/agents/cc-agent-zero-synthesis.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 ---
 
 <metadata>
@@ -18,7 +19,7 @@ update_notes: Infrastructure philosophy integration (bare metal first, Docker de
 **Last Updated:** 2025-11-20 (Infrastructure philosophy integration)
 **Status:** APPROVED - Production Ready
 **Type:** Meta-Orchestration Command
-**Agent:** Agent Zero (Chief AI Officer)
+**Agent:** Agent Zero (Universal PM Orchestrator)
 **Purpose:** Define how Agent Zero coordinates complex work requiring multiple specialist agents (Alex, Frank, William, Julia) simultaneously or sequentially
 </metadata>
 
@@ -1332,7 +1333,7 @@ This meta-orchestration follows a 7-phase pattern specifically adapted for multi
   <note type="meta_orchestration">
   **Agent Zero's Unique Role**
   
-  Agent Zero is Chief AI Officer with meta-orchestration responsibility. Unlike specialist agents (Alex, Frank, William, Julia) who operate within specific domains, Agent Zero operates ACROSS domains:
+  Agent Zero is Universal PM Orchestrator with meta-orchestration responsibility. Unlike specialist agents (Alex, Frank, William, Julia) who operate within specific domains, Agent Zero operates ACROSS domains:
   
   **Agent Zero's Capabilities:**
   - Strategic agent selection and coordination planning

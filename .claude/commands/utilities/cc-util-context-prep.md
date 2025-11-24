@@ -1,14 +1,15 @@
 ---
-workflow: util-context-prep
-version: 1.1
-date: 2025-11-20
+document: cc-util-context-prep
+version: 1.2
+date: 2025-11-24
 status: APPROVED
 type: utility-command
 description: Context preparation utility for streamlining context document creation, validation, and handoff package generation for agent orchestration
 applies_to: all_orchestrations, context_preparation, agent_handoffs, multi_agent_coordination
 author: HX-Infrastructure Team
-last_updated: 2025-11-20
-update_notes: Integration convention enhancement, state management clarity
+location: /home/agent0/HX-Infrastructure/.claude/commands/utilities/cc-util-context-prep.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 ---
 
 <metadata>
@@ -1265,11 +1266,11 @@ dependencies and ensure context continuity for sequential coordination."
 </validation_checklist>
 
 <related_documents>
-- `/home/agent0/HX-Infrastructure/x-claude/claude-code-commands/agents/cc-orchestrate-alex.md` - Alex orchestration Phase 2
-- `/home/agent0/HX-Infrastructure/x-claude/claude-code-commands/agents/cc-orchestrate-frank.md` - Frank orchestration Phase 2
-- `/home/agent0/HX-Infrastructure/x-claude/claude-code-commands/agents/cc-orchestrate-william.md` - William orchestration Phase 2
-- `/home/agent0/HX-Infrastructure/x-claude/claude-code-commands/agents/cc-orchestrate-julia.md` - Julia orchestration Phase 2
-- `/home/agent0/HX-Infrastructure/x-claude/claude-code-commands/agents/cc-agent-zero-synthesis.md` - Multi-agent synthesis Phase 2
+- `/home/agent0/HX-Infrastructure/.claude/commands/agents/cc-orchestrate-alex.md` - Alex orchestration Phase 2
+- `/home/agent0/HX-Infrastructure/.claude/commands/agents/cc-orchestrate-frank.md` - Frank orchestration Phase 2
+- `/home/agent0/HX-Infrastructure/.claude/commands/agents/cc-orchestrate-william.md` - William orchestration Phase 2
+- `/home/agent0/HX-Infrastructure/.claude/commands/agents/cc-orchestrate-julia.md` - Julia orchestration Phase 2
+- `/home/agent0/HX-Infrastructure/.claude/commands/agents/cc-agent-zero-synthesis.md` - Multi-agent synthesis Phase 2
 - `/home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md` - Agent specialist details
 - `/srv/knowledge/vault/` - Reference materials for specialist contexts
 </related_documents>

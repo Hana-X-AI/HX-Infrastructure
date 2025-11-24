@@ -370,7 +370,7 @@ This document establishes documentation standards for HX-Infrastructure ensuring
 2. **Deployment Changes**
    - Node reassigned → Update node-spec.md, services-deployed.md
    - Resources changed → Update node-spec.md
-   - Network changed → Update network/topology.md
+   - Network changed → Update network/network-topology.md
 
 3. **Test Changes**
    - New tests added → Update test-plan.md
@@ -989,10 +989,10 @@ Documentation requirements are enforced across all 6 lifecycle phases:
 - **Node specifications** (`nodes/*/node-spec.md`) - Per-node documentation
 
 ### Agent Profiles
-- **Agent Zero (CC):** STATEFUL orchestrator validating documentation completeness across all 6 phases
+- **Agent Zero (CC):** STATEFUL orchestrator validating documentation completeness across all 5 phases
 - **Alex Rivera (Platform Architect):** Architecture documentation review and approval
-- **William Thompson (Infrastructure Specialist):** Infrastructure philosophy documentation compliance
-- **Julia Chen (Testing & Quality Specialist):** Test documentation completeness validation
+- **William Chen (Infrastructure Specialist):** Infrastructure philosophy documentation compliance
+- **Julia Santos (Testing & Quality Specialist):** Test documentation completeness validation
 - **CAIO:** Final documentation validation before operational promotion
 
 </related_documents>
@@ -1011,7 +1011,7 @@ Documentation requirements are enforced across all 6 lifecycle phases:
 - Added comprehensive document metadata header (Type, Version, Date, Status, Location)
 - Added Document Purpose section with target audience and scope
 - Added Infrastructure Philosophy Integration section (documentation must reflect infrastructure philosophy)
-- Added Procedure Alignment section (documentation enforcement across all 6 phases)
+- Added Procedure Alignment section (documentation enforcement across all 5 phases)
 - Expanded related documents section with comprehensive standards, procedures, templates, commands, governance, agents
 - Added version history table (this table)
 - Added document maintenance section

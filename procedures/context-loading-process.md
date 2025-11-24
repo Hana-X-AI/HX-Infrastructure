@@ -14,7 +14,7 @@
 This procedure defines the systematic context loading process for stateless specialist agents participating in HX-Infrastructure projects. It ensures consistent knowledge baselines, quality contributions, and efficient context management across all project phases.
 
 **Problem Statement:**
-Sub-agents (Alex Rivera, Julia Chen, Frank Martinez, William Thompson, and other specialists) are STATELESS:
+Sub-agents (Alex Rivera, Julia Santos, Frank Lucas, William Chen, and other specialists) are STATELESS:
 - No memory between invocations
 - Cannot assume knowledge from previous interactions
 - Must reload full context each time they contribute
@@ -28,11 +28,11 @@ Systematic context loading checklists ensure:
 - Immediate action while context is fresh
 
 **Related Documents:**
-- `hx-agents/hx-agent-inventory.md` - 45 specialist agents and capabilities
-- `hx-agents/hx-orchestration-guide.md` - Multi-agent coordination patterns
+- `/home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md` - 32 agents (5 Core Team SMEs + 27 Technology SMEs) and capabilities
+- `/home/agent0/HX-Infrastructure/hx-agents/hx-orchestration-guide.md` - Multi-agent coordination patterns
 - `.claude/commands/agents/` - Agent orchestration commands (Set 5)
 - `.claude/commands/utilities/cc-context-prep.md` - Context preparation utility
-- `procedures/core-project-team.md` - Agent roles and responsibilities
+- `/home/agent0/HX-Infrastructure/procedures/core-project-team.md` - Agent roles and responsibilities
 
 **Target Audience:**
 - Specialist agents (Alex, Frank, William, Julia, others)
@@ -84,13 +84,13 @@ Participates in:
 
 **Specialist Agent Examples:**
 - **Alex Rivera** (Platform Architect) - Architecture decisions, ADRs
-- **Frank Martinez** (Security Specialist) - Identity & Trust, Samba AD, Kerberos
-- **William Thompson** (Infrastructure Specialist) - Bare metal deployment, systemd, manual procedures
-- **Julia Chen** (Testing & Quality Specialist) - Test-driven deployment, 100% coverage
+- **Frank Lucas** (Security Specialist) - Identity & Trust, Samba AD, Kerberos
+- **William Chen** (Infrastructure Specialist) - Bare metal deployment, systemd, manual procedures
+- **Julia Santos** (Testing & Quality Specialist) - Test-driven deployment, 100% coverage
 - **Laura Patel** (Langchain Specialist) - Agent framework integration
 - **Marcus Johnson** (LightRAG Specialist) - RAG knowledge graph implementation
 - **Amanda Rodriguez** (Ansible Automation) - Fleet-wide configuration management
-- Others as documented in `hx-agents/hx-agent-inventory.md`
+- Others as documented in `/home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md`
 
 ---
 
@@ -137,7 +137,7 @@ Participates in:
 
 □ 6. Note agent role and responsibilities
      From: /home/agent0/HX-Infrastructure/procedures/core-project-team.md
-     Reference: hx-agents/hx-agent-inventory.md (agent capabilities)
+     Reference: /home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md (agent capabilities)
      Focus: Understand contribution expectations
 ```
 
@@ -284,7 +284,7 @@ During specification contribution, agents ensure:
      Location: /nodes/[node-name]/tests/
      Focus: Tests related to agent's tasks
      Purpose: Understand test-driven deployment requirements
-     Note: Tests written BEFORE implementation (Julia Chen's methodology)
+     Note: Tests written BEFORE implementation (Julia Santos's methodology)
 
 □ 6. Review task assignments
      Location: /nodes/[node-name]/tasks/task-assignments.md
@@ -370,7 +370,7 @@ Agents validate deployment aligns with HX-Infrastructure philosophy:
 
 **Time Estimate:** 30-40 minutes
 
-**Orchestration:** Julia Chen (Testing Specialist) orchestrates test-driven deployment
+**Orchestration:** Julia Santos (Testing Specialist) orchestrates test-driven deployment
 
 **Checklist:**
 ```
@@ -401,7 +401,7 @@ Agents validate deployment aligns with HX-Infrastructure philosophy:
 ```
 
 **100% Requirements Coverage:**
-Julia Chen ensures ALL requirements have corresponding tests:
+Julia Santos ensures ALL requirements have corresponding tests:
 - Deployment tests (bare metal provisioning, systemd service)
 - Functionality tests (core features, use cases)
 - Integration tests (dependencies, API contracts)
@@ -471,21 +471,21 @@ Alex Rivera (Platform Architect):
 - System design decisions
 - Agentic patterns
 
-Frank Martinez (Security Specialist):
+Frank Lucas (Security Specialist):
 - Authentication/authorization sections
 - Samba AD, Kerberos, LDAP requirements
 - Certificate needs (hx-ca-server)
 - Identity & Trust layer integration
 - Credentials management (Ansible Vault)
 
-William Thompson (Infrastructure Specialist):
+William Chen (Infrastructure Specialist):
 - Bare metal deployment sections
 - Systemd service requirements
 - Manual procedure documentation
 - Network configuration
 - Infrastructure philosophy compliance
 
-Julia Chen (Testing & Quality Specialist):
+Julia Santos (Testing & Quality Specialist):
 - Testing requirements across all documents
 - Quality criteria and acceptance criteria
 - 100% requirements coverage validation
@@ -857,30 +857,30 @@ Context loading is integrated into all workflow phases:
 - `action-plan-v2-updated.md` - Project roadmap
 
 ### **Standards:**
-- `standards/architecture-standards.md` - Architecture patterns (always reviewed)
-- `standards/deployment-requirements.md` - Infrastructure philosophy (always reviewed)
-- `standards/testing-requirements.md` - Quality standards (always reviewed)
-- `standards/naming-conventions.md` - Naming standards
-- `standards/documentation-requirements.md` - Documentation format
+- `/home/agent0/HX-Infrastructure/standards/architecture-standards.md` - Architecture patterns (always reviewed)
+- `/home/agent0/HX-Infrastructure/standards/deployment-requirements.md` - Infrastructure philosophy (always reviewed)
+- `/home/agent0/HX-Infrastructure/standards/testing-requirements.md` - Quality standards (always reviewed)
+- `/home/agent0/HX-Infrastructure/standards/naming-conventions.md` - Naming standards
+- `/home/agent0/HX-Infrastructure/standards/documentation-requirements.md` - Documentation format
 
 ### **Infrastructure State:**
-- `inventory/nodes.md` - Current infrastructure baseline
-- `network/network-topology.md` - Network architecture
+- `/home/agent0/HX-Infrastructure/inventory/nodes.md` - Current infrastructure baseline
+- `/home/agent0/HX-Infrastructure/network/network-topology.md` - Network architecture
 
 ### **Agent Documentation:**
-- `hx-agents/hx-agent-inventory.md` - 45 specialist agents and capabilities
-- `hx-agents/hx-orchestration-guide.md` - Multi-agent coordination patterns
+- `/home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md` - 32 agents (5 Core Team SMEs + 27 Technology SMEs) and capabilities
+- `/home/agent0/HX-Infrastructure/hx-agents/hx-orchestration-guide.md` - Multi-agent coordination patterns
 - `.claude/commands/agents/` - Agent orchestration commands (Set 5)
 
 ### **Workflow Procedures:**
-- `procedures/charter-workflow.md` - Charter creation process
-- `procedures/spec-workflow.md` - Specification development process
-- `procedures/task-workflow.md` - Task breakdown and execution
-- `procedures/task-execution-workflow.md` - Implementation workflow
-- `procedures/project-closeout-workflow.md` - Project closeout process
+- `/home/agent0/HX-Infrastructure/procedures/charter-workflow.md` - Charter creation process
+- `/home/agent0/HX-Infrastructure/procedures/spec-workflow.md` - Specification development process
+- `/home/agent0/HX-Infrastructure/procedures/task-workflow.md` - Task breakdown and execution
+- `/home/agent0/HX-Infrastructure/procedures/task-execution-workflow.md` - Implementation workflow
+- `/home/agent0/HX-Infrastructure/procedures/project-closeout-workflow.md` - Project closeout process
 
 ### **Team Documentation:**
-- `procedures/core-project-team.md` - Agent roles and responsibilities
+- `/home/agent0/HX-Infrastructure/procedures/core-project-team.md` - Agent roles and responsibilities
 
 ---
 

@@ -1,14 +1,15 @@
 ---
-workflow: util-artifact-tracker
-version: 1.1
-date: 2025-11-20
+document: cc-util-artifact-tracker
+version: 1.2
+date: 2025-11-24
 status: APPROVED
 type: utility-command
 description: Artifact tracking utility for centralized registry of project deliverables with version control, relationship mapping, status tracking, and compliance validation
 applies_to: all_workflows, all_orchestrations, artifact_management, deliverable_tracking, compliance_verification
 author: HX-Infrastructure Team
-last_updated: 2025-11-20
-update_notes: Enhanced integration convention clarity, expanded infrastructure artifact types for HX-Infrastructure bare-metal deployment philosophy
+location: /home/agent0/HX-Infrastructure/.claude/commands/utilities/cc-util-artifact-tracker.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 ---
 
 <metadata>
@@ -774,7 +775,7 @@ Throughout workflow phases, commands invoke artifact tracker with instructional 
 
 Update artifact dashboard showing new charter artifact."
 
-**Example from cc-execution-workflow.md Phase 2:**
+**Example from cc-task-execution-workflow.md Phase 2:**
 "Use cc-util-artifact-tracker to register deployment artifacts. Create entries:
 - ARTIFACT-035: Deployment script (Code artifact)
 - ARTIFACT-036: Configuration file (Code artifact)
@@ -1298,11 +1299,11 @@ Validate ADRs comply with architecture standards."
 </validation_checklist>
 
 <related_documents>
-- `/home/agent0/HX-Infrastructure/.claude/commands/core/cc-charter-workflow.md` - Charter artifact registration
-- `/home/agent0/HX-Infrastructure/.claude/commands/core/cc-spec-workflow.md` - Spec artifact registration
-- `/home/agent0/HX-Infrastructure/.claude/commands/core/cc-task-workflow.md` - Task artifact registration
-- `/home/agent0/HX-Infrastructure/.claude/commands/core/cc-execution-workflow.md` - Code artifact registration
-- `/home/agent0/HX-Infrastructure/.claude/commands/core/cc-closeout-workflow.md` - Artifact catalog generation
+- `/home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-charter-workflow.md` - Charter artifact registration
+- `/home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-spec-workflow.md` - Spec artifact registration
+- `/home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-task-workflow.md` - Task artifact registration
+- `/home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-task-execution-workflow.md` - Code artifact registration
+- `/home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-project-closeout-workflow.md` - Artifact catalog generation
 - `/home/agent0/HX-Infrastructure/.claude/commands/agents/cc-orchestrate-alex.md` - Architecture artifact registration
 - `/home/agent0/HX-Infrastructure/.claude/commands/agents/cc-orchestrate-frank.md` - Security artifact registration
 - `/home/agent0/HX-Infrastructure/.claude/commands/agents/cc-orchestrate-william.md` - Infrastructure artifact registration

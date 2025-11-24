@@ -75,7 +75,7 @@ Templates for service deployment documentation following HX-Infrastructure stand
 **Purpose:** Deployment plan defining HOW to deploy the service (technical implementation)
 **Phase:** Phase 2 (Specification Development)
 **Created By:** Agent Zero (CC) or infrastructure engineers
-**Reviewed By:** William Thompson (Infrastructure Specialist)
+**Reviewed By:** William Chen (Infrastructure Specialist)
 **Approved By:** CAIO before Phase 3
 
 **Key Sections:**
@@ -106,7 +106,7 @@ Templates for service deployment documentation following HX-Infrastructure stand
 **Purpose:** Individual deployment task documentation (step-by-step manual procedures)
 **Phase:** Phase 3 (Task Breakdown & Testing)
 **Created By:** Agent Zero (CC) during task breakdown
-**Reviewed By:** William Thompson (Infrastructure Specialist)
+**Reviewed By:** William Chen (Infrastructure Specialist)
 **Executed By:** Deployment engineers in Phase 4
 
 **Key Sections:**
@@ -166,8 +166,8 @@ Templates for test-driven deployment following HX-Infrastructure testing standar
 #### **test-plan-template.md** (325 lines) - v1.0
 **Purpose:** Comprehensive test plan for service validation (test-driven deployment)
 **Phase:** Phase 3 (Task Breakdown & Testing) - CRITICAL PHASE
-**Created By:** Julia Chen (Testing & Quality Specialist) or Agent Zero (CC)
-**Reviewed By:** Julia Chen
+**Created By:** Julia Santos (Testing & Quality Specialist) or Agent Zero (CC)
+**Reviewed By:** Julia Santos
 **Approved By:** Agent Zero before Phase 4 execution
 
 **Key Sections:**
@@ -197,9 +197,9 @@ Templates for test-driven deployment following HX-Infrastructure testing standar
 #### **test-case-template.md** (285 lines) - v1.0
 **Purpose:** Individual test case documentation (specific test procedure)
 **Phase:** Phase 3 (Task Breakdown & Testing)
-**Created By:** Julia Chen or Agent Zero (CC)
+**Created By:** Julia Santos or Agent Zero (CC)
 **Executed By:** Testing engineers in Phase 4
-**Validated By:** Julia Chen (test results)
+**Validated By:** Julia Santos (test results)
 
 **Key Sections:**
 - Test Case Metadata (TC ID, requirement traceability, priority)
@@ -227,7 +227,7 @@ Templates for test-driven deployment following HX-Infrastructure testing standar
 **Purpose:** Test execution results documentation (test run record)
 **Phase:** Phase 4 (Task Execution)
 **Created By:** Testing engineers during test execution
-**Reviewed By:** Julia Chen
+**Reviewed By:** Julia Santos
 **Validated By:** CAIO (100% pass rate required for promotion)
 
 **Key Sections:**
@@ -253,9 +253,9 @@ Templates for test-driven deployment following HX-Infrastructure testing standar
 #### **test-suite-index-template.md** (373 lines) - v1.0
 **Purpose:** Test suite index and requirements coverage matrix
 **Phase:** Phase 3 (created), Phase 4 (updated)
-**Created By:** Julia Chen or Agent Zero (CC)
+**Created By:** Julia Santos or Agent Zero (CC)
 **Maintained By:** Updated during test execution
-**Validated By:** Julia Chen (100% coverage required)
+**Validated By:** Julia Santos (100% coverage required)
 
 **Key Sections:**
 - Test suite overview
@@ -282,7 +282,7 @@ Templates for test-driven deployment following HX-Infrastructure testing standar
 **Phase:** Phase 4 (Task Execution) when tests fail
 **Created By:** Testing engineers or Agent Zero (CC)
 **Assigned To:** Service developers
-**Validated By:** Julia Chen (defect resolution, retest)
+**Validated By:** Julia Santos (defect resolution, retest)
 
 **Key Sections:**
 - Defect metadata (defect ID, severity, priority)
@@ -369,7 +369,7 @@ Templates for node specification and deployment.
 #### **node-template.md** (456 lines) - v1.0
 **Purpose:** Node specification documenting node hardware, OS, network, and services
 **Phase:** Phase 0 (Project Initiation)
-**Created By:** William Thompson (Infrastructure Specialist)
+**Created By:** William Chen (Infrastructure Specialist)
 **Maintained By:** Updated as services deployed
 **Purpose:** Node inventory and capacity tracking
 
@@ -398,7 +398,7 @@ Templates for node specification and deployment.
 #### **node-deployment-plan-template.md** (472 lines) - v1.0
 **Purpose:** Node deployment plan for initial node setup or major updates
 **Phase:** Phase 0 (Project Initiation) for new nodes
-**Created By:** William Thompson (Infrastructure Specialist)
+**Created By:** William Chen (Infrastructure Specialist)
 **Reviewed By:** Alex Rivera (Platform Architect)
 **Executed By:** Infrastructure engineers
 

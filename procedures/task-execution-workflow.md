@@ -23,7 +23,7 @@ This procedure defines the **Task Execution Workflow** - the fourth major phase 
 - **Agent Zero (CC):** Primary coordinator for all 8 execution phases
 - **Core Team (Alex, Frank, William):** Task execution for their respective domains
 - **Project-Specific Agents:** Specialized task execution (Drew, database agents, framework agents)
-- **Julia Chen (Testing Agent):** Test suite execution after implementation tasks complete
+- **Julia Santos (Testing Agent):** Test suite execution after implementation tasks complete
 - **CAIO:** Final approval authority for operational promotion
 
 ### Related Documents
@@ -1063,7 +1063,7 @@ Promotion Actions:
    └─ Update resource allocations
 
 3. Update network documentation:
-   ├─ /network/topology.md
+   ├─ /network/network-topology.md
    │   └─ Add node/service to topology
    ├─ /network/port-mapping.md
    │   └─ Document ports used
@@ -1417,7 +1417,7 @@ Location: `/nodes/[node-name]/defects/defect-[node]-[severity]-###-[description]
 ### How Commands Invoke This Workflow
 
 **Set 1: Workflow Commands (Primary Integration)**
-- **`cc-execution-workflow.md`:** Primary command implementing this entire workflow
+- **`cc-task-execution-workflow.md`:** Primary command implementing this entire workflow
   - Invokes this procedure for systematic task execution
   - Coordinates all 8 phases from pre-execution through post-execution updates
   - Enforces test-driven deployment and infrastructure philosophy compliance
@@ -1445,7 +1445,7 @@ Location: `/nodes/[node-name]/defects/defect-[node]-[severity]-###-[description]
 ```
 User: "Execute approved tasks for hx-webui-server"
 ↓
-cc-execution-workflow.md (Set 1) executes this procedure
+cc-task-execution-workflow.md (Set 1) executes this procedure
 ↓
 PHASE 0-1: Agent Zero validates readiness and assigns tasks
 └─ artifact-tracker (Set 3) → Initializes execution tracking
@@ -1493,7 +1493,7 @@ PHASE 7-8: Operational promotion and updates
 - `/home/agent0/HX-Infrastructure/standards/testing-requirements.md` - 100% coverage requirement
 
 **Claude Code Commands:**
-- **Set 1:** `.claude/commands/workflows/cc-execution-workflow.md` - Primary execution workflow command
+- **Set 1:** `.claude/commands/workflows/cc-task-execution-workflow.md` - Primary execution workflow command
 - **Set 3:** `.claude/commands/utilities/` - Supporting utilities (artifact-tracker, doc-lint, status-report, raidd, defect-mgmt)
 - **Set 4:** `.claude/commands/phases/` - Sub-workflow commands (task-result-doc, defect-mgmt)
 - **Set 5:** `.claude/commands/agents/` - Agent orchestration commands (william, alex, frank, julia)
@@ -1513,10 +1513,10 @@ PHASE 7-8: Operational promotion and updates
 - `/home/agent0/HX-Infrastructure/constitution.md` - Governance principles and manual procedures philosophy
 
 **Agent Profiles:**
-- `.claude/agents/william.md` - Infrastructure specialist (bare metal, systemd, manual procedures execution)
-- `.claude/agents/alex.md` - Platform architect (architecture/integration task execution)
-- `.claude/agents/frank.md` - Security specialist (identity, DNS, credentials task execution)
-- `.claude/agents/julia.md` - Testing & quality specialist (test suite execution, defect management)
+- `x-agents/william.md` - Infrastructure specialist (bare metal, systemd, manual procedures execution)
+- `x-agents/alex.md` - Platform architect (architecture/integration task execution)
+- `x-agents/frank.md` - Security specialist (identity, DNS, credentials task execution)
+- `x-agents/julia.md` - Testing & quality specialist (test suite execution, defect management)
 
 ---
 

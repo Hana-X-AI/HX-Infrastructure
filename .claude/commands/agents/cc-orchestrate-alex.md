@@ -1,12 +1,15 @@
 ---
-workflow: orchestrate-alex
-version: 1.0
-date: 2025-11-20
+document: cc-orchestrate-alex
+version: 1.1
+date: 2025-11-24
 status: APPROVED
 type: workflow-command
 description: Orchestration patterns for coordinating development and architecture work with Alex (Platform Architect)
 applies_to: development_tasks, architectural_decisions, multi_layer_changes
 author: HX-Infrastructure Team
+location: /home/agent0/HX-Infrastructure/.claude/commands/agents/cc-orchestrate-alex.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 ---
 
 <metadata>
@@ -1127,7 +1130,7 @@ Improvement in these areas indicates agent0 is learning architecture.
 
 <related_documents>
 **Alex's Agent File:**
-- `/home/agent0/HX-Infrastructure/.claude/agents/platform-architect-alex.md` - Alex's system prompt and configuration
+- `/home/agent0/HX-Infrastructure/x-agents/platform-architect-alex.md` - Alex's system prompt and configuration
 
 **Architecture Documentation:**
 - `/home/agent0/HX-Infrastructure/docs/architecture/0.3-architecture.md` - Current architecture
@@ -1212,6 +1215,5 @@ When providing context to Alex, use absolute paths for all file references. Alex
 **Purpose:** Establish systematic orchestration patterns for agent0 to coordinate with Alex (Platform Architect)
 **Key Innovation:** Separates orchestration (agent0's role) from execution (Alex's role) - proper separation of concerns
 **Compliance:** Fully compliant with semantic XML documentation standards
-**Next Steps:** Apply learnings to other agent orchestration commands (Frank, William, Julia)
-**Related Commands:** cc-orchestrate-frank.md, cc-orchestrate-william.md, cc-orchestrate-julia.md (to be created)
+**Related Commands:** cc-orchestrate-frank.md, cc-orchestrate-william.md, cc-orchestrate-julia.md
 </metadata_footer>

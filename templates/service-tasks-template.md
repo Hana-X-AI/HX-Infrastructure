@@ -55,7 +55,15 @@ Example: `services/non-operational/api-gateway/tasks/api-gateway-task-001-verify
 - [ ] [service]-task-009 [P] Create configuration files from templates
 - [ ] [service]-task-010 [P] Configure environment variables
 - [ ] [service]-task-011 [P] Set up logging configuration
-- [ ] [service]-task-012 Configure service startup (systemd/init/docker)
+- [ ] [service]-task-012 Configure service startup
+  - Production/Staging: systemd unit (required)
+    - Unit file: `/etc/systemd/system/[service].service`
+    - Restart policy: `Restart=on-failure`
+    - Target: `WantedBy=multi-user.target`
+    - Enable on boot: `systemctl enable [service]`
+  - Dev only (hx-dev-server): Docker allowed
+    - Compose file: `/srv/docker/[service]/docker-compose.yml`
+    - Dev server IP: 192.168.10.222
 - [ ] [service]-task-013 Apply security configurations
 - [ ] [service]-task-014 [P] Configure firewall rules (if needed)
 
@@ -92,7 +100,7 @@ Example: `services/non-operational/api-gateway/tasks/api-gateway-task-001-verify
 - [ ] [service]-task-031 Update inventory/services.md with service entry
 - [ ] [service]-task-032 Update nodes/[node]/services-deployed.md
 - [ ] [service]-task-033 Update inventory/nodes.md with resource changes
-- [ ] [service]-task-034 [P] Update network/topology.md (if network changes)
+- [ ] [service]-task-034 [P] Update network/network-topology.md (if network changes)
 - [ ] [service]-task-035 [P] Update network/port-mapping.md (if port changes)
 - [ ] [service]-task-036 [P] Document deployment issues/learnings
 - [ ] [service]-task-037 Create service monitoring dashboard/alerts (if applicable)

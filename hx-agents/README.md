@@ -1,15 +1,15 @@
 # HX-Infrastructure Agent Ecosystem Documentation
 
 **Directory:** `/home/agent0/HX-Infrastructure/hx-agents/`
-**Purpose:** Comprehensive documentation of the 45-agent specialist ecosystem
-**Last Updated:** 2025-11-21
+**Purpose:** Comprehensive documentation of the 32-agent specialist ecosystem (5 Core Team SMEs + 27 Technology SMEs)
+**Last Updated:** 2025-11-24
 **Status:** ✅ Production Documentation
 
 ---
 
 ## Overview
 
-This directory contains comprehensive documentation for the HX-Infrastructure multi-agent ecosystem. The ecosystem consists of 45 specialist agents organized across 8 infrastructure layers, orchestrated by Agent Zero (Chief AI Officer) for systematic infrastructure development and operations.
+This directory contains comprehensive documentation for the HX-Infrastructure multi-agent ecosystem. The ecosystem consists of 32 agents (5 Core Team SMEs + 27 Technology SMEs) organized for systematic infrastructure development and operations, orchestrated by Agent Zero (Universal PM Orchestrator).
 
 **Key Principle:** Layer-aware coordination with strict dependency management ensures services deploy in correct order with proper foundation layers operational first.
 
@@ -20,7 +20,7 @@ This directory contains comprehensive documentation for the HX-Infrastructure mu
 ### 1. Agent Inventory
 **File:** `hx-agent-inventory.md`
 **Size:** 1,111 lines
-**Purpose:** Complete inventory of all 45 agents with roles, responsibilities, and knowledge requirements
+**Purpose:** Complete inventory of all 32 agents (5 Core Team SMEs + 27 Technology SMEs) with roles, responsibilities, and knowledge requirements
 
 **Contents:**
 - **Layer 0:** Governance & Orchestration (2 agents)
@@ -147,8 +147,8 @@ Repositories organized by infrastructure layer matching agent organization:
 - Authority and responsibility definition
 - Core principles (quality first, systematic approach, progressive execution)
 
-**The 45 Specialist Agents:**
-- Complete agent listing by layer
+**The 32 Specialist Agents (5 Core Team SMEs + 27 Technology SMEs):**
+- Complete agent listing by specialty
 - When to invoke each agent
 - Knowledge requirements per agent
 - Integration points and dependencies
@@ -404,21 +404,21 @@ agent-zero: Synthesizes findings, coordinates fix
 - **Services:** Samba DC, LDAP, Kerberos, DNS, PKI
 - **Critical:** MUST be operational before any other services
 - **Knowledge:** nginx, ansible-devel
-- **Profile:** `/home/agent0/.claude/agents/frank.md`
+- **Profile:** `/home/agent0/HX-Infrastructure/x-agents/frank.md`
 
 **william (Ubuntu Systems Administrator)**
 - **Servers:** All Ubuntu 24.04 LTS servers across platform
 - **Services:** OS configuration, package management, system hardening
 - **Critical:** Foundation for all service deployments
 - **Knowledge:** ansible-devel, docker-install-master
-- **Profile:** `/home/agent0/.claude/agents/william.md`
+- **Profile:** `/home/agent0/HX-Infrastructure/x-agents/william.md`
 
 **amanda (Ansible Automation)**
 - **Server:** hx-ansible-server.hx.dev.local (192.168.10.208)
 - **Services:** Configuration management, automation, secrets (Ansible Vault)
 - **Critical:** Automation and configuration consistency
 - **Knowledge:** ansible-devel
-- **Profile:** `/home/agent0/.claude/agents/amanda.md`
+- **Profile:** `/home/agent0/HX-Infrastructure/x-agents/amanda.md`
 
 ---
 
@@ -428,19 +428,19 @@ agent-zero: Synthesizes findings, coordinates fix
 - **Servers:** hx-ollama-server-1/2/3 (192.168.10.212/213/214)
 - **Services:** Self-hosted LLM inference, model management, embedding generation
 - **Knowledge:** ollama-main, litellm-main
-- **Profile:** `/home/agent0/.claude/agents/patricia.md`
+- **Profile:** `/home/agent0/HX-Infrastructure/x-agents/patricia.md`
 
 **maya (LiteLLM Gateway)**
 - **Server:** hx-litellm-server.hx.dev.local (192.168.10.211)
 - **Services:** Unified LLM access, 50+ provider support, load balancing
 - **Knowledge:** litellm-main, ollama-main
-- **Profile:** `/home/agent0/.claude/agents/maya.md`
+- **Profile:** `/home/agent0/HX-Infrastructure/x-agents/maya.md`
 
 **laura (LangGraph Orchestration)**
 - **Server:** hx-lang-server.hx.dev.local (192.168.10.204)
 - **Services:** Graph-based agent orchestration, LangChain workflows
 - **Knowledge:** langgraph-main, langchain, agentic-design-patterns-docs-main
-- **Profile:** `/home/agent0/.claude/agents/laura.md`
+- **Profile:** `/home/agent0/HX-Infrastructure/x-agents/laura.md`
 
 ---
 
@@ -450,19 +450,19 @@ agent-zero: Synthesizes findings, coordinates fix
 - **Server:** hx-postgres-server.hx.dev.local (192.168.10.207)
 - **Services:** Relational database, structured data storage
 - **Knowledge:** postgres-master, prisma-main
-- **Profile:** `/home/agent0/.claude/agents/quinn.md`
+- **Profile:** `/home/agent0/HX-Infrastructure/x-agents/quinn.md`
 
 **robert (Qdrant Vector DB)**
 - **Server:** hx-qdrant-server.hx.dev.local (192.168.10.210)
 - **Services:** Vector storage, similarity search, semantic retrieval
 - **Knowledge:** qdrant-master, qdrant-client-master, mcp-server-qdrant-master
-- **Profile:** `/home/agent0/.claude/agents/robert.md`
+- **Profile:** `/home/agent0/HX-Infrastructure/x-agents/robert.md`
 
 **marcus (LightRAG Knowledge Graph)**
 - **Server:** hx-lightrag-server.hx.dev.local (192.168.10.209)
 - **Services:** Graph-based RAG, knowledge graph construction
 - **Knowledge:** lightrag-main, qdrant-client-master
-- **Profile:** `/home/agent0/.claude/agents/marcus.md`
+- **Profile:** `/home/agent0/HX-Infrastructure/x-agents/marcus.md`
 
 ---
 
@@ -472,13 +472,13 @@ agent-zero: Synthesizes findings, coordinates fix
 - **Scope:** All services and deployments
 - **Services:** Test-driven deployment, 100% coverage validation, defect management
 - **Knowledge:** pytest-main, playwright-main, testing-best-practices
-- **Profile:** `/home/agent0/.claude/agents/julia.md`
+- **Profile:** `/home/agent0/HX-Infrastructure/x-agents/julia.md`
 
 **isaac (CI/CD Pipeline)**
 - **Server:** hx-cicd-server.hx.dev.local
 - **Services:** Automated testing, deployment pipelines, integration workflows
 - **Knowledge:** github-actions-main, gitlab-ci-main
-- **Profile:** `/home/agent0/.claude/agents/isaac.md`
+- **Profile:** `/home/agent0/HX-Infrastructure/x-agents/isaac.md`
 
 ---
 
@@ -521,7 +521,7 @@ hx-knowledge/repos/
 ## Agent Profile System
 
 ### Profile Location
-**Directory:** `/home/agent0/.claude/agents/`
+**Directory:** `/home/agent0/HX-Infrastructure/x-agents/`
 
 **Profile Format:**
 ```markdown
@@ -548,7 +548,7 @@ hx-knowledge/repos/
 [Expected deliverables and format]
 ```
 
-**Total Profiles:** 45 agent profiles
+**Total Profiles:** 32 agent profiles (5 Core Team SMEs + 27 Technology SMEs)
 
 ---
 
@@ -659,11 +659,10 @@ hx-knowledge/repos/
 - Orchestration Quick Ref: 593 lines (17%)
 
 **Coverage:**
-- 45 agents documented
-- 100+ repositories cataloged
-- 8 infrastructure layers defined
-- 20+ orchestration patterns documented
-- 30+ servers mapped to agents
+- 32 agents documented (5 Core Team SMEs + 27 Technology SMEs)
+- 58 repositories cataloged in knowledge vault
+- Agent orchestration patterns documented
+- Server mappings and coordination patterns defined
 
 ---
 
@@ -682,12 +681,12 @@ hx-knowledge/repos/
 - **Agent Orchestration:** `/home/agent0/HX-Infrastructure/.claude/commands/agents/README.md`
 
 **Agent Profiles:**
-- **Profile Directory:** `/home/agent0/.claude/agents/`
-- **45 Individual Profiles:** One per agent
+- **Profile Directory:** `/home/agent0/HX-Infrastructure/x-agents/`
+- **32 Individual Profiles:** One per agent (5 Core Team SMEs + 27 Technology SMEs)
 
 ---
 
 **Directory Maintained By:** HX-Infrastructure Team
-**Primary User:** Agent Zero (Chief AI Officer)
+**Primary User:** Agent Zero (Universal PM Orchestrator)
 **Last Comprehensive Review:** 2025-11-21
 **Status:** ✅ Production Documentation - Complete and Current

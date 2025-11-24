@@ -1,14 +1,15 @@
 ---
-workflow: phase-defect-management
-version: 1.1
-date: 2025-11-20
+document: cc-phase-defect-mgmt
+version: 1.2
+date: 2025-11-24
 status: APPROVED
 type: phase-command
 description: Comprehensive defect lifecycle management from discovery through resolution and closure, ensuring quality gates maintained and defects systematically tracked and resolved
 applies_to: testing_phase, quality_assurance, defect_tracking
 author: HX-Infrastructure Team
-last_updated: 2025-11-21
-update_notes: v1.1 - Standardized integration convention header, added infrastructure philosophy alignment
+location: /home/agent0/HX-Infrastructure/.claude/commands/phases/cc-phase-defect-mgmt.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 ---
 
 <metadata>

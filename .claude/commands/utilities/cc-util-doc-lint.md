@@ -1,14 +1,15 @@
 ---
-workflow: util-doc-lint
-version: 1.1
-date: 2025-11-20
+document: cc-util-doc-lint
+version: 1.2
+date: 2025-11-24
 status: APPROVED
 type: utility-command
 description: Documentation linting utility for validating documentation compliance, checking formatting standards, verifying semantic XML structure, detecting content quality issues, and providing automated remediation guidance
 applies_to: all_workflows, all_orchestrations, documentation_quality, compliance_validation, standards_enforcement
 author: HX-Infrastructure Team
-last_updated: 2025-11-20
-update_notes: Enhanced integration convention clarity, added infrastructure documentation validation rules for HX-Infrastructure deployment philosophy compliance
+location: /home/agent0/HX-Infrastructure/.claude/commands/utilities/cc-util-doc-lint.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 ---
 
 <metadata>
@@ -161,7 +162,7 @@ This evolution demonstrates documentation quality improvement trajectory and sup
 - **Description:** Only approved semantic XML tags used
 - **Severity:** Error
 - **Check:** All XML tags match approved tag list
-- **Approved Tags:** `<metadata>`, `<objective>`, `<procedure>`, `<example>`, `<template>`, `<critical_reminders>`, `<validation_checklist>`, `<related_documents>`, `<metadata_footer>`, etc.
+- **Approved Tags:** `<metadata>`, `<metadata_footer>`, `<objective>`, `<procedure>`, `<example>`, `<template>`, `<critical_reminders>`, `<validation_checklist>`, `<validation_checklists>`, `<related_documents>`, `<notes>`, `<inputs>`, `<outputs>`, `<description>`, `<duration>`, `<actions>`, `<state_management>`, `<quality_gate>`, `<quality_gates>`, `<rationale>`, `<integration_convention>`, `<usage_examples>`, `<visual_diagrams>`, `<decision_tree>`, `<conflict_resolution>`, etc.
 - **Remediation:** Replace invalid tags with approved semantic XML tags
 
 **XML-002: Tag Nesting Correct**
@@ -701,7 +702,7 @@ Before artifact registration or status transitions, commands invoke doc linting:
 metadata completeness. Generate linting report. Status: Draft requires minimum
 score 70 for review transition."
 
-**Example from cc-execution-workflow.md Phase 2:**
+**Example from cc-task-execution-workflow.md Phase 2:**
 "Use cc-util-doc-lint to validate runbook documentation. Lint:
 /projects/auth-system/runbooks/deployment-runbook.md. Verify required sections,
 validate code blocks, check cross-references. Must be compliant before
@@ -1052,8 +1053,8 @@ issues if non-compliant."
 <related_documents>
 - `/home/agent0/HX-Infrastructure/.claude/commands/utilities/cc-util-artifact-tracker.md` - Artifact registration integration
 - `/home/agent0/HX-Infrastructure/.claude/commands/utilities/cc-util-quality-gate.md` - Quality gate validation
-- `/home/agent0/HX-Infrastructure/.claude/commands/core/cc-charter-workflow.md` - Charter documentation standards
-- `/home/agent0/HX-Infrastructure/.claude/commands/core/cc-spec-workflow.md` - Specification documentation standards
+- `/home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-charter-workflow.md` - Charter documentation standards
+- `/home/agent0/HX-Infrastructure/.claude/commands/workflows/cc-spec-workflow.md` - Specification documentation standards
 - `/home/agent0/HX-Infrastructure/standards/documentation-requirements.md` - Documentation standards reference
 - `/home/agent0/HX-Infrastructure/standards/utility-development-standards.md` - Semantic XML and formatting standards
 </related_documents>

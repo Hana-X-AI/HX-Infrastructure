@@ -1,12 +1,15 @@
 ---
-workflow: orchestrate-william
-version: 2.0
-date: 2025-11-20
+document: cc-orchestrate-william
+version: 2.1
+date: 2025-11-24
 status: APPROVED
 type: workflow-command
 description: Orchestration patterns for coordinating operational infrastructure work with William (Infrastructure Specialist)
 applies_to: infrastructure_operations, bare_metal_deployment, operational_runbooks, manual_procedures
 author: HX-Infrastructure Team
+location: /home/agent0/HX-Infrastructure/.claude/commands/agents/cc-orchestrate-william.md
+last_updated: 2025-11-24
+update_notes: Updated to v2.1 metadata format with location field
 ---
 
 <metadata>
@@ -939,7 +942,7 @@ HX-Infrastructure is in the manual operations phase with a focus on comprehensiv
 - `/home/agent0/HX-Infrastructure/.claude/commands/agents/cc-orchestrate-frank.md` - Frank orchestration (security)
 
 **Infrastructure Philosophy:**
-- `/home/agent0/HX-Infrastructure/x-claude/williams-review.md` - William orchestration review with CAIO feedback
+- `/home/agent0/HX-Infrastructure/.claude/williams-review.md` - William orchestration review with CAIO feedback
 
 **Operational Standards:**
 - Infrastructure runbook templates (to be created as operational patterns emerge)

@@ -8,7 +8,7 @@
 
 ## Directory Purpose
 
-The `procedures/` directory contains operational procedures and workflow documentation that define HOW work is performed in the HX-Infrastructure platform. These procedures are actively used by Agent Zero (CC) and specialist agents to execute projects systematically from initiation through closeout.
+The `/home/agent0/HX-Infrastructure/procedures/` directory contains operational procedures and workflow documentation that define HOW work is performed in the HX-Infrastructure platform. These procedures are actively used by Agent Zero (CC) and specialist agents to execute projects systematically from initiation through closeout.
 
 ### Key Characteristics
 
@@ -304,11 +304,11 @@ The HX-Infrastructure project lifecycle consists of 6 phases, each with a dedica
 - 5 quality gates (Gate 1-5) with approval criteria
 
 **Core Team:**
-1. **Agent Zero (CC)** - Chief AI Officer, STATEFUL orchestrator
+1. **Agent Zero (CC)** - Universal PM Orchestrator, STATEFUL orchestrator
 2. **Alex Rivera** - Platform Architect (architecture, ADRs, integration)
-3. **Frank Martinez** - Security Specialist (Identity & Trust, Samba AD, Ansible Vault)
-4. **William Thompson** - Infrastructure Specialist ⭐ Infrastructure Philosophy PRIMARY OWNER
-5. **Julia Chen** - Testing & Quality Specialist (100% coverage, test-driven deployment)
+3. **Frank Lucas** - Security Specialist (Identity & Trust, Samba AD, Ansible Vault)
+4. **William Chen** - Infrastructure Specialist ⭐ Infrastructure Philosophy PRIMARY OWNER
+5. **Julia Santos** - Testing & Quality Specialist (100% coverage, test-driven deployment)
 
 **When to Use:** Referenced during team assignment in all 5 phases
 
@@ -526,7 +526,7 @@ Four centralized artifacts are updated throughout the lifecycle (NEVER create no
 - `cc-charter-workflow.md` → Executes charter-workflow.md
 - `cc-spec-workflow.md` → Executes spec-workflow.md (future)
 - `cc-task-workflow.md` → Executes task-workflow.md
-- `cc-execution-workflow.md` → Executes task-execution-workflow.md
+- `cc-task-execution-workflow.md` → Executes task-execution-workflow.md
 - `cc-closeout-workflow.md` → Executes project-closeout-workflow.md
 - `cc-node-deployment-init.md` → Executes node-deployment-workflow.md
 
@@ -573,9 +573,9 @@ Four centralized artifacts are updated throughout the lifecycle (NEVER create no
   - `status-report-template.md`
 
 ### Agent Documentation
-- `/home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md` - All 45 agents
+- `/home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md` - All 32 agents (5 Core Team SMEs + 27 Technology SMEs)
 - `/home/agent0/HX-Infrastructure/hx-agents/hx-orchestration-guide.md` - Multi-agent coordination
-- `.claude/agents/` - Individual agent profiles
+- `/home/agent0/HX-Infrastructure/hx-agents/` - Individual agent profiles
 
 ### Command Documentation
 - `.claude/commands/workflows/` - Set 1 workflow commands

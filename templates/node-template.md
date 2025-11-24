@@ -402,7 +402,7 @@
 - `services-deployed.md` - Services running on this node
 - `configuration/` - Configuration files and details
 - `/inventory/nodes.md` - Node inventory
-- `/network/topology.md` - Network topology
+- `/network/network-topology.md` - Network topology
 
 ### Diagrams
 **Block Diagram**: [Link to diagram showing node architecture]  

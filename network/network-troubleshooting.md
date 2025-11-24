@@ -17,7 +17,7 @@ This document provides systematic troubleshooting procedures for diagnosing and 
 - Familiarity with Linux networking commands
 
 **Related Documents:**
-- `network/topology.md` - Complete network architecture
+- `network/network-topology.md` - Complete network architecture
 - `network/port-mapping.md` - Service port assignments (when created)
 - `inventory/nodes.md` - Server inventory and status
 

@@ -1,8 +1,8 @@
 # Document Quality Checklist
 
 **Document Type:** Standards - Quality Assurance
-**Version:** 1.0
-**Last Updated:** 2025-11-23
+**Version:** 1.1
+**Last Updated:** 2025-11-24
 **Owner:** Agent Zero (CC)
 **Status:** Active
 
@@ -13,6 +13,67 @@
 This checklist MUST be followed for ALL document creation and modification in HX-Infrastructure. It prevents the defect patterns identified in CodeRabbit review (2025-11-23) where 22 process-critical defects occurred due to insufficient attention to detail.
 
 **Core Principle:** Quality over speed. Documentation defects are as critical as code defects.
+
+---
+
+## Workflow Enforcement Checklist
+
+**CRITICAL: Before starting ANY task, verify you are following the correct workflow phase.**
+
+### □ 0. Mandatory Workflow Verification
+
+**For Service/Node Deployment:**
+- [ ] **STOP:** Have you received charter approval? If NO → You MUST execute Charter Workflow first
+- [ ] Read `/home/agent0/HX-Infrastructure/procedures/charter-workflow.md` completely
+- [ ] Verify current phase against workflow documentation
+- [ ] **NEVER skip Phase 0 (Charter Creation)** - This is MANDATORY before specification
+- [ ] Confirm all prior phase gates are completed before proceeding
+- [ ] If user says "deploy service" → Charter MUST exist first (8-phase charter workflow)
+
+**Workflow Phase Order (CANNOT BE SKIPPED):**
+```
+Phase 0: Charter Creation (8 sub-phases with 3 quality gates)
+  ↓ ✅ Charter Approved
+Phase 1: Specification Development
+  ↓ ✅ Spec Approved
+Phase 2: Task Breakdown & Planning
+  ↓ ✅ Plan Approved
+Phase 3: Test Planning (100% coverage required)
+  ↓ ✅ Test Plan Approved
+Phase 4: Development/Deployment Execution
+  ↓ ✅ Implementation Complete
+Phase 5: Testing & Validation
+  ↓ ✅ All Tests Passing
+Phase 6: Project Closeout
+  ↓ ✅ Complete
+```
+
+**Failure Modes to Avoid:**
+- ❌ User says "deploy service" → Agent skips directly to asking for service details
+- ✅ User says "deploy service" → Agent confirms: "Charter workflow required first"
+- ❌ Agent assumes charter exists without verification
+- ✅ Agent checks for `/nodes/<node-name>/charter.md` existence and approval status
+- ❌ Agent jumps from Phase 1 → Phase 4 (skipping planning and test planning)
+- ✅ Agent validates all prior phases complete before starting new phase
+
+**Enforcement Rules:**
+1. **Charter First:** NO specification, planning, or development without approved charter
+2. **Sequential Phases:** Complete Phase N before starting Phase N+1
+3. **Quality Gates:** Cannot proceed past gate without explicit approval
+4. **No Phase-Skipping:** Agent has ZERO authority to skip phases
+5. **Workflow Documentation is Law:** Follow procedures EXACTLY as written
+
+**When User Requests Task:**
+```
+User: "Deploy new service"
+Agent Response:
+1. Check: Does charter exist at /nodes/<service-name>/charter.md?
+2. If NO: "This requires charter workflow first (Phase 0). Please provide service description for charter creation."
+3. If YES: Read charter, verify Status: APPROVED, then proceed to specification phase
+
+NOT THIS:
+"What service would you like to deploy?" (skips charter entirely - WRONG)
+```
 
 ---
 
@@ -28,6 +89,9 @@ This checklist MUST be followed for ALL document creation and modification in HX
 - [ ] Check for related standards that apply
 
 ### □ 2. Verify Requirements
+- [ ] **Confirm current workflow phase** (charter, spec, planning, testing, deployment, closeout)
+- [ ] **Verify all prior phases complete** before starting new phase
+- [ ] **Check for required phase gate approvals** (charter approved, spec approved, etc.)
 - [ ] Confirm which template to use (if applicable)
 - [ ] Identify all required sections
 - [ ] Understand target audience and purpose
@@ -35,6 +99,8 @@ This checklist MUST be followed for ALL document creation and modification in HX
 - [ ] Verify approval/review requirements
 
 ### □ 3. Gather References
+- [ ] **Read complete workflow procedure** for current phase (`procedures/<workflow-name>.md`)
+- [ ] **Verify phase prerequisites met** (prior documents exist and approved)
 - [ ] Locate authoritative inventory files (nodes.md, hx-agent-inventory.md)
 - [ ] Identify canonical directory structures
 - [ ] Find related procedures and workflows
@@ -238,35 +304,43 @@ This checklist MUST be followed for ALL document creation and modification in HX
 
 ### ❌ Anti-Patterns (NEVER DO THIS)
 
-1. **Hardcoded Agent Counts**
-   - ❌ "All 45 agents" → ✅ "See hx-agent-inventory.md for current agent list"
+1. **Workflow Phase Skipping (CRITICAL)**
+   - ❌ User says "deploy service" → Agent asks "What service?" (skips charter)
+   - ✅ User says "deploy service" → Agent responds "Charter workflow required first"
+   - ❌ Agent jumps from charter to development (skips spec, planning, test planning)
+   - ✅ Agent validates all phases complete sequentially with quality gates
+   - ❌ Agent assumes "probably don't need charter for this"
+   - ✅ Agent follows workflow documentation EXACTLY with zero exceptions
 
-2. **Hardcoded IP Addresses**
+2. **Hardcoded Agent Counts**
+   - ❌ Hardcoded agent counts → ✅ "See hx-agent-inventory.md for current agent list (32 agents: 5 Core Team SMEs + 27 Technology SMEs)"
+
+3. **Hardcoded IP Addresses**
    - ❌ Hardcoded IPs → ✅ Use placeholders like `{DEV_SERVER_IP}` (actual: 192.168.10.222 for hx-dev-server)
 
-3. **Deprecated Paths**
+4. **Deprecated Paths**
    - ❌ `/x-claude/claude-code-commands/` → ✅ `/.claude/commands/`
 
-4. **Wrong Phase Numbers**
+5. **Wrong Phase Numbers**
    - ❌ "Phase 5 of Charter Creation" → ✅ "Phase 1 of Project Lifecycle"
 
-5. **Deployment Philosophy Violations**
+6. **Deployment Philosophy Violations**
    - ❌ "Request Ansible playbook" → ✅ "Execute manual deployment procedures"
    - ❌ "Docker deployment to production" → ✅ "Docker dev-only (not production/staging)"
 
-6. **Brittle References**
+7. **Brittle References**
    - ❌ "See lines 100-150" → ✅ "See `<section_name>` section"
 
-7. **Inconsistent Hyphenation**
+8. **Inconsistent Hyphenation**
    - ❌ "bare metal deployment" (as adjective) → ✅ "bare-metal deployment"
 
-8. **Malformed Tables**
+9. **Malformed Tables**
    - ❌ Missing pipes, mismatched columns → ✅ Proper Markdown table syntax
 
-9. **Placeholder Syntax Issues**
+10. **Placeholder Syntax Issues**
    - ❌ `[group-name]` (triggers link ref) → ✅ `` `<group-name>` ``
 
-10. **Bare URLs**
+11. **Bare URLs**
     - ❌ `https://example.com` → ✅ `<https://example.com>`
 
 ---
@@ -275,6 +349,9 @@ This checklist MUST be followed for ALL document creation and modification in HX
 
 **Success Criteria for Document Quality:**
 
+- ✅ **Zero workflow phase violations** (all phases executed sequentially)
+- ✅ **Zero phase-skipping** (charter → spec → planning → testing → deployment → closeout)
+- ✅ **All quality gates passed** (charter approved, spec approved, plan approved, tests passing)
 - ✅ Zero hardcoded values that should reference authoritative sources
 - ✅ Zero path references that don't exist
 - ✅ Zero deployment philosophy violations
@@ -344,9 +421,14 @@ grep "|" file.md
 
 | Category | Authoritative Source | What to Verify |
 |----------|---------------------|----------------|
+| **Workflow Phases** | `/home/agent0/HX-Infrastructure/procedures/charter-workflow.md` | **Charter creation mandatory first** |
+| **Lifecycle Phases** | `/home/agent0/HX-Infrastructure/procedures/core-project-team.md` | **Sequential phase execution** |
+| **Spec Workflow** | `/home/agent0/HX-Infrastructure/procedures/spec-workflow.md` | **Phase 1 requirements** |
+| **Task Workflow** | `/home/agent0/HX-Infrastructure/procedures/task-workflow.md` | **Phase 2-3 requirements** |
+| **Execution Workflow** | `/home/agent0/HX-Infrastructure/procedures/task-execution-workflow.md` | **Phase 4-5 requirements** |
+| **Closeout Workflow** | `/home/agent0/HX-Infrastructure/procedures/project-closeout-workflow.md` | **Phase 6 requirements** |
 | Agent Count/Names | `/home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md` | Agent names, counts, capabilities |
 | Node Count/Names | `/home/agent0/HX-Infrastructure/inventory/nodes.md` | Node names, counts, status |
-| Lifecycle Phases | `/home/agent0/HX-Infrastructure/procedures/core-project-team.md` | Phase numbers, names |
 | Directory Structure | `.claude/commands/` | Command file paths |
 | Template Paths | `/home/agent0/HX-Infrastructure/templates/` | Template file locations |
 | Deployment Philosophy | `/home/agent0/HX-Infrastructure/constitution.md` | Infrastructure principles |
@@ -359,13 +441,20 @@ grep "|" file.md
 ## Accountability
 
 **Document Creator Responsibilities:**
+- **Verify correct workflow phase before starting ANY work**
+- **Never skip mandatory phases** (charter, spec, planning, testing)
+- **Validate all quality gates passed** before proceeding to next phase
 - Complete 100% of checklist before marking document ready
 - Verify every reference against authoritative sources
 - Read entire document completely (not just beginning/end)
 - Apply standards consistently throughout
 - Treat documentation defects as critical (they ARE critical)
+- **Treat workflow violations as CRITICAL FAILURES** (they block all downstream work)
 
 **Reviewer Responsibilities:**
+- **Verify workflow phase is correct** (charter before spec, spec before planning, etc.)
+- **Confirm all prior quality gates passed** (charter approved, spec approved, etc.)
+- **Reject any work that skipped mandatory phases** (immediate STOP and correction)
 - Verify checklist was completed
 - Spot-check references against authoritative sources
 - Validate standards compliance
@@ -393,6 +482,7 @@ grep "|" file.md
 ## Version History
 
 - **v1.0** (2025-11-23): Initial creation based on CodeRabbit defect analysis (22 issues)
+- **v1.1** (2025-11-24): Added Workflow Enforcement Checklist (Section 0) to prevent phase-skipping failures. Added workflow phase validation to all checklists. Elevated workflow violations to CRITICAL status.
 
 ---
 
@@ -401,3 +491,5 @@ grep "|" file.md
 **Principle:** Assume nothing, verify everything. Read completely, not partially.
 
 **Standard:** Zero defects is the only acceptable target for process-critical documentation.
+
+**CRITICAL:** Workflows exist for a reason. Phase-skipping is a CRITICAL FAILURE that invalidates all downstream work. When user says "deploy service", your FIRST action is verify charter exists and is approved. No exceptions.
