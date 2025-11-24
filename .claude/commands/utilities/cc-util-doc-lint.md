@@ -14,9 +14,9 @@ update_notes: Updated to v2.1 metadata format with location field
 
 <metadata>
 **Workflow:** Documentation Linting Utility - Automated Documentation Validation
-**Version:** 1.1
-**Date:** 2025-11-20
-**Last Updated:** 2025-11-20 (Enhanced integration convention header, added infrastructure documentation validation rules)
+**Version:** 1.2
+**Date:** 2025-11-24
+**Last Updated:** 2025-11-24 (Updated to v2.1 metadata format with location field)
 **Status:** APPROVED - Production Ready
 **Type:** Utility Command
 **Purpose:** Provide automated documentation validation checking structure compliance, formatting standards, semantic XML correctness, content quality, and metadata completeness with actionable remediation guidance
@@ -1060,10 +1060,10 @@ issues if non-compliant."
 </related_documents>
 
 <metadata_footer>
-**Version:** 1.1
+**Version:** 1.2
 **Status:** APPROVED - Production Ready
-**Date:** 2025-11-20
-**Last Updated:** 2025-11-20 (Enhanced integration convention header, added 5 infrastructure documentation validation rules for HX-Infrastructure bare metal deployment philosophy)
+**Date:** 2025-11-24
+**Last Updated:** 2025-11-24 (Updated to v2.1 metadata format with location field)
 **Compliance:** 100% semantic XML structure, comprehensive validation rules, automated quality assessment
 **Next Steps:** Use this utility before artifact registration and phase transitions to ensure documentation compliance
 **Semantic XML Compliance:** All sections use semantic XML tags, critical reminders with ⚠️ markers, comprehensive validation checklists

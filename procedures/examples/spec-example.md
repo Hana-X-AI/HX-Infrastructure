@@ -295,17 +295,24 @@ Value: {
 }
 ```
 
-**2. Semantic Cache Index (for similarity-based lookup)**
+**2. Semantic Cache (vector similarity via RediSearch)**
 ```
-Key Pattern: cache:semantic:{collection}
-Value Type: Sorted Set
-Members: query_hash (text)
-Scores: timestamp (for TTL management)
+Key Pattern: cache:semantic:{collection}:{id}
+Value Type: HASH
+ Fields:
+  - text_hash: string
+  - embedding: VECTOR HNSW 1536 TYPE FLOAT32 M 16 EF_CONSTRUCTION 64
+  - ts: unix timestamp
 
-Purpose: Track all cached queries for semantic similarity search
-Implementation: Use Redis Vector Similarity Search (RediSearch module)
-  - Store query embeddings alongside hashes
-  - K-NN search with threshold 0.95 for cache hits
+Index:
+ FT.CREATE idx:semantic:{collection} ON HASH PREFIX 1 "cache:semantic:{collection}:"
+ SCHEMA text_hash TAG embedding VECTOR HNSW 12 TYPE FLOAT32 DIM 1536 DISTANCE_METRIC COSINE
+
+Lookup:
+ FT.SEARCH idx:semantic:{collection} "*=>[KNN 1 @embedding $vec AS score]" PARAMS 2 vec $embedding DIALECT 2
+
+TTL:
+ Maintain with a periodic cleanup on ts or use volatile-ttl keys (per memory policy)
 ```
 
 **3. Statistics Tracking**

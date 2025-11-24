@@ -219,8 +219,8 @@ Provides LLM inference capabilities, model management, and agentic orchestration
 - Layer 3: Redis (caching), PostgreSQL (virtual keys tracking)
 
 **Provides To:**
-- Layer 4: LLM capabilities for MCP tool execution
-- Layer 5: Model inference for applications
+- Layer 4: LLM capabilities for MCP tool execution and LiteLLM gateway
+- Layer 5: Model inference for applications (via Layer 4 LiteLLM Gateway)
 
 ---
 
@@ -293,6 +293,7 @@ Provides MCP (Model Context Protocol) tool integration, web scraping, document p
 
 **Provides To:**
 - Layer 5: Tool capabilities accessible to applications via MCP
+- Layer 5: LLM inference gateway (LiteLLM proxies Layer 2 model access)
 
 ---
 
@@ -324,9 +325,9 @@ User-facing applications, UI frameworks, and backend APIs. Entry point for end u
 
 **Requires:**
 - Layer 1: Authentication (SSO via Kerberos), SSL/TLS (HTTPS)
-- Layer 2: LLM inference (model calls)
+- Layer 2: LLM inference (via Layer 4 LiteLLM Gateway - no direct communication)
 - Layer 3: PostgreSQL (user data), Redis (sessions), Qdrant (RAG)
-- Layer 4: MCP tools (crawling, document processing, workflows)
+- Layer 4: MCP tools (crawling, document processing, workflows), LLM gateway (LiteLLM)
 
 **Provides To:**
 - End users: Web UIs, chat interfaces, workflow automation
@@ -658,11 +659,6 @@ Phase 5: Observability (AFTER APPLICATIONS)
 - ✅ Audit logging enabled
 - ✅ Principle of least privilege enforced
 - ✅ Secrets managed via Ansible Vault
-
-**Layer Isolation:**
-- Direct communication only between adjacent layers (except monitoring)
-- No Layer 5 → Layer 2 direct communication (must go through Layer 4)
-- Layer 6 (monitoring) can observe all layers but cannot modify
 
 ---
 

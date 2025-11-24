@@ -466,9 +466,20 @@ from pydantic import ValidationError
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     """Handle Pydantic validation errors explicitly (422 status)"""
+    # Log full validation details server-side for debugging
+    logger.warning(f"Validation error: {exc.errors()}", extra={
+        "request_id": getattr(request.state, 'request_id', None),
+        "path": request.url.path
+    })
+    
+    # Return sanitized error message (no request body/PII)
     return JSONResponse(
         status_code=422,
-        content={"detail": exc.errors()}  # Return Pydantic error details
+        content={
+            "error": "ValidationError",
+            "message": "Request validation failed. Check required fields and data types.",
+            "request_id": getattr(request.state, 'request_id', None)
+        }
     )
 
 @app.exception_handler(Exception)

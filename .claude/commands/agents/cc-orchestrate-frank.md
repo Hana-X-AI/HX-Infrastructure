@@ -14,8 +14,8 @@ update_notes: Updated to v2.1 metadata format with location field
 
 <metadata>
 **Workflow:** Frank Orchestration - Security & Identity Coordination
-**Version:** 1.0
-**Date:** 2025-11-20
+**Version:** 1.1
+**Date:** 2025-11-24
 **Status:** APPROVED - Ready for use
 **Type:** Agent Orchestration Command
 **Agent:** Frank Lucas (Security Specialist)

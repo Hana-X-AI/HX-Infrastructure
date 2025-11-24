@@ -26,27 +26,28 @@ This checklist MUST be followed for ALL document creation and modification in HX
 - [ ] **STOP:** Have you received charter approval? If NO → You MUST execute Charter Workflow first
 - [ ] Read `/home/agent0/HX-Infrastructure/procedures/charter-workflow.md` completely
 - [ ] Verify current phase against workflow documentation
-- [ ] **NEVER skip Phase 0 (Charter Creation)** - This is MANDATORY before specification
+- [ ] **NEVER skip Phase 1 (Charter Creation)** - This is MANDATORY before specification
 - [ ] Confirm all prior phase gates are completed before proceeding
-- [ ] If user says "deploy service" → Charter MUST exist first (8-phase charter workflow)
+- [ ] If user says "deploy service" → Charter MUST exist first
 
-**Workflow Phase Order (CANNOT BE SKIPPED):**
+**Workflow Phase Order (5-Phase Canonical Lifecycle):**
+
+Reference: `/home/agent0/HX-Infrastructure/README.md` and `procedures/core-project-team.md`
+
 ```
-Phase 0: Charter Creation (8 sub-phases with 3 quality gates)
+Phase 1: Charter Creation
   ↓ ✅ Charter Approved
-Phase 1: Specification Development
+Phase 2: Specification Development
   ↓ ✅ Spec Approved
-Phase 2: Task Breakdown & Planning
-  ↓ ✅ Plan Approved
-Phase 3: Test Planning (100% coverage required)
-  ↓ ✅ Test Plan Approved
-Phase 4: Development/Deployment Execution
-  ↓ ✅ Implementation Complete
-Phase 5: Testing & Validation
-  ↓ ✅ All Tests Passing
-Phase 6: Project Closeout
+Phase 3: Task Breakdown & Planning
+  ↓ ✅ Plan Approved (includes test planning - 100% coverage required)
+Phase 4: Deployment Execution
+  ↓ ✅ Implementation Complete & All Tests Passing
+Phase 5: Project Closeout
   ↓ ✅ Complete
 ```
+
+**Note:** Some detailed workflows (like `CLAUDE.md` state tracker) expand these 5 phases into more granular sub-phases (e.g., Phase 3 includes both task breakdown and test planning; Phase 4 includes development, testing, deployment, and promotion). The above shows the canonical 5-phase model that all HX-Infrastructure projects follow.
 
 **Failure Modes to Avoid:**
 - ❌ User says "deploy service" → Agent skips directly to asking for service details

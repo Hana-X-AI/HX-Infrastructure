@@ -242,11 +242,22 @@ async def validation_exception_handler(
 
     FastAPI tries this handler BEFORE generic Exception handler.
     """
+    # Log validation errors server-side (DO NOT log raw request body - may contain PII)
+    logger.warning(
+        "Validation error occurred",
+        extra={
+            "request_id": getattr(request.state, 'request_id', None),
+            "path": request.url.path,
+            "error_count": len(exc.errors())
+        }
+    )
+    
     return JSONResponse(
         status_code=422,
         content={
-            "detail": exc.errors(),  # Pydantic error details
-            "body": exc.body         # Include request body for debugging
+            "error": "ValidationError",
+            "message": "Request validation failed",
+            "request_id": getattr(request.state, 'request_id', None)
         }
     )
 
@@ -285,16 +296,12 @@ curl -X POST http://localhost:8000/v1/search \
 Response:
 HTTP/1.1 422 Unprocessable Entity
 {
-  "detail": [
-    {
-      "loc": ["body", "query_text"],
-      "msg": "query_text cannot be empty or whitespace only",
-      "type": "value_error"
-    }
-  ]
+  "error": "ValidationError",
+  "message": "Request validation failed",
+  "request_id": "req_abc123xyz"
 }
 
-✅ PASS: Returns 422 with validation details
+✅ PASS: Returns 422 without exposing request body (security best practice)
 
 # Test 2: Invalid top_k (negative)
 curl -X POST http://localhost:8000/v1/search \
@@ -305,16 +312,12 @@ curl -X POST http://localhost:8000/v1/search \
 Response:
 HTTP/1.1 422 Unprocessable Entity
 {
-  "detail": [
-    {
-      "loc": ["body", "top_k"],
-      "msg": "ensure this value is greater than or equal to 1",
-      "type": "value_error.number.not_ge"
-    }
-  ]
+  "error": "ValidationError",
+  "message": "Request validation failed",
+  "request_id": "req_def456uvw"
 }
 
-✅ PASS: Returns 422 with validation details
+✅ PASS: Returns 422 without exposing request body (security best practice)
 
 # Test 3: Valid query (ensure no regression)
 curl -X POST http://localhost:8000/v1/search \

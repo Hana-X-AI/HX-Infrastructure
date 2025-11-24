@@ -14,8 +14,8 @@ update_notes: Updated to v2.1 metadata format with location field
 
 <metadata>
 **Workflow:** Charter Creation
-**Version:** 1.2 (with CAIO refinements)
-**Date:** 2025-11-16
+**Version:** 1.3 (with CAIO refinements)
+**Date:** 2025-11-24
 **Status:** APPROVED - Ready for immediate use
 **Type:** Workflow Command
 </metadata>
@@ -795,9 +795,9 @@ TOTAL:     ~2-4 hours (depends on repo count and iterations)
 </validation_checklist>
 
 <metadata_footer>
-**Workflow Version:** 1.2 (with CAIO refinements)
+**Workflow Version:** 1.3 (with CAIO refinements)
 **Status:** APPROVED for immediate use
-**Last Updated:** 2025-11-16
+**Last Updated:** 2025-11-24
 **Converted to Semantic XML:** 2025-11-19
 **Next Phase:** Specification workflow
 </metadata_footer>

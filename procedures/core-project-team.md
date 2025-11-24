@@ -402,7 +402,7 @@ William is the authoritative specialist for HX-Infrastructure philosophy:
 - When: Web UI for LLM interactions
 - Infrastructure: hx-webui-server (192.168.10.227)
 
-**See:** `/home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md` for complete 45-agent ecosystem
+**See:** `/home/agent0/HX-Infrastructure/hx-agents/hx-agent-inventory.md` for complete 32-agent ecosystem (5 Core Team SMEs + 27 Technology SMEs)
 
 ---
 
