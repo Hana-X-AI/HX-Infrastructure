@@ -7,7 +7,7 @@ set -euo pipefail
 
 # Configuration
 GATE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="/home/agent0/HX-Infrastructure"
+export PROJECT_ROOT="/home/agent0/HX-Infrastructure"
 
 # Colors for output
 RED='\033[0;31m'
