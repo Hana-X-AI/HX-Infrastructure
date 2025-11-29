@@ -33,8 +33,9 @@ LOCATION_RULES = [
      '/specification/status-reports/',
      "BLOCKED: status-reports/ must be inside specification/ directory."),
 
-    # No UPPERCASE filenames in nodes/
-    (r'/nodes/.*[A-Z].*\.md$',
+    # No UPPERCASE filenames in nodes/ - only check filename portion after last /
+    # Pattern: match /nodes/ path, then any subdirs, then a filename with uppercase
+    (r'/nodes/.*/[^/]*[A-Z][^/]*\.md$',
      None,  # Special case - check for absence
      "BLOCKED: Filename contains UPPERCASE. Use lowercase-with-hyphens per naming standards."),
 ]
