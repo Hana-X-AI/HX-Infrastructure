@@ -5,6 +5,8 @@ Event: UserPromptSubmit
 Purpose: Block or warn when prompts contain known violation patterns
 
 This catches violations BEFORE Claude acts on them.
+
+File permissions: This script must be executable (chmod +x).
 """
 
 import json
