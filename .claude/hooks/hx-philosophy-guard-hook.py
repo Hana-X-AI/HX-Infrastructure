@@ -31,13 +31,6 @@ VIOLATION_PATTERNS = [
 
     (r'\bcreate\s+(deployment|backup|cleanup)\s+script',
      "BLOCKED: No scripts. Create manual procedure documentation instead."),
-
-    # File location violations
-    (r'write.*charter\.md.*(?<!charter/)$',
-     "WARNING: charter.md must be in charter/ subdirectory, not project root."),
-
-    (r'write.*node-spec\.md.*(?<!specification/)$',
-     "WARNING: node-spec.md must be in specification/ subdirectory, not project root."),
 ]
 
 # Patterns that require reading charter first
@@ -46,17 +39,61 @@ CHARTER_CHECK_PATTERNS = [
     r'\b(deploy|implementation|planning)\s+(phase|step)',
 ]
 
+
+def check_file_location_violations(prompt: str) -> tuple:
+    """
+    Check for file location violations using explicit path matching.
+    
+    Returns (should_block, message) - warnings don't block, just advise.
+    
+    Valid locations:
+    - charter.md must be in .../charter/charter.md
+    - node-spec.md must be in .../specification/node-spec.md
+    
+    The regex pattern (^|/)subdir/file\.md\$ ensures:
+    - ^subdir/ matches relative paths starting with the subdir
+    - /subdir/ matches absolute paths containing the subdir
+    - This correctly handles both 'charter/charter.md' and '/path/to/charter/charter.md'
+    """
+    prompt_lower = prompt.lower()
+    
+    # Check for charter.md
+    charter_match = re.search(r'write\s+(\S*charter\.md)', prompt_lower)
+    if charter_match:
+        filepath = charter_match.group(1)
+        # Valid if path ends with charter/charter.md (relative or absolute)
+        is_valid = bool(re.search(r'(^|/)charter/charter\.md\$', filepath))
+        if not is_valid:
+            return (False, "WARNING: charter.md must be in charter/ subdirectory. Correct: .../charter/charter.md")
+    
+    # Check for node-spec.md
+    nodespec_match = re.search(r'write\s+(\S*node-spec\.md)', prompt_lower)
+    if nodespec_match:
+        filepath = nodespec_match.group(1)
+        # Valid if path ends with specification/node-spec.md
+        is_valid = bool(re.search(r'(^|/)specification/node-spec\.md\$', filepath))
+        if not is_valid:
+            return (False, "WARNING: node-spec.md must be in specification/ subdirectory. Correct: .../specification/node-spec.md")
+    
+    return (False, None)
+
+
 def check_violations(prompt: str) -> tuple:
     """Check for violation patterns. Returns (should_block, message)."""
     prompt_lower = prompt.lower()
 
+    # Check philosophy violations first
     for pattern, message in VIOLATION_PATTERNS:
         if re.search(pattern, prompt_lower):
             if message.startswith("BLOCKED"):
                 return (True, message)
             else:
-                # Warning - add context but don't block
                 return (False, message)
+
+    # Check file location violations
+    blocked, location_msg = check_file_location_violations(prompt)
+    if location_msg:
+        return (blocked, location_msg)
 
     # Check if this is a phase transition question
     for pattern in CHARTER_CHECK_PATTERNS:
@@ -69,6 +106,7 @@ def check_violations(prompt: str) -> tuple:
             return (False, reminder)
 
     return (False, None)
+
 
 def main():
     try:
@@ -95,6 +133,7 @@ def main():
         sys.exit(0)
     else:
         sys.exit(0)
+
 
 if __name__ == '__main__':
     main()
