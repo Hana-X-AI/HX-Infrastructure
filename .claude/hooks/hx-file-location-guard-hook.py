@@ -10,6 +10,7 @@ This enforces file structure rules from lessons-learned.md.
 import json
 import sys
 import re
+from pathlib import Path
 
 # File location rules: (file_pattern, must_contain_in_path, error_message)
 LOCATION_RULES = [
@@ -33,12 +34,30 @@ LOCATION_RULES = [
      '/specification/status-reports/',
      "BLOCKED: status-reports/ must be inside specification/ directory."),
 
-    # No UPPERCASE filenames in nodes/ - only check filename portion after last /
-    # Pattern: match /nodes/ path, then any subdirs, then a filename with uppercase
+    # No UPPERCASE in .md filenames within nodes/
+    # Pattern breakdown:
+    #   /nodes/   - matches nodes directory
+    #   .*/       - matches any subdirectories (greedy, up to last /)
+    #   [^/]*     - matches filename chars before uppercase (no slashes)
+    #   [A-Z]     - matches the uppercase letter in filename
+    #   [^/]*     - matches remaining filename chars (no slashes)
+    #   \.md$    - matches .md extension at end
+    # This ensures only the filename portion is checked, not directory names
     (r'/nodes/.*/[^/]*[A-Z][^/]*\.md$',
-     None,  # Special case - check for absence
+     None,  # Special case - pattern should NOT match valid files
      "BLOCKED: Filename contains UPPERCASE. Use lowercase-with-hyphens per naming standards."),
 ]
+
+
+def find_repo_root(start_path: str) -> Path:
+    """Find repository root by looking for .git directory."""
+    path = Path(start_path).resolve()
+    for parent in [path] + list(path.parents):
+        if (parent / '.git').exists():
+            return parent
+    # Fallback to current working directory
+    return Path.cwd()
+
 
 def check_file_location(file_path: str) -> tuple:
     """Check if file location is valid. Returns (is_valid, error_message)."""
@@ -52,6 +71,7 @@ def check_file_location(file_path: str) -> tuple:
                 return (False, error_message)
 
     return (True, None)
+
 
 def main():
     try:
@@ -76,10 +96,14 @@ def main():
 
     if not is_valid:
         print(error_message, file=sys.stderr)
-        print("\nReview: /home/agent0/HX-Infrastructure/lessons-learned.md", file=sys.stderr)
+        # Dynamically find repo root for lessons-learned.md reference
+        repo_root = find_repo_root(file_path)
+        lessons_learned = repo_root / 'lessons-learned.md'
+        print(f"\nReview: {lessons_learned}", file=sys.stderr)
         sys.exit(2)
 
     sys.exit(0)
+
 
 if __name__ == '__main__':
     main()
