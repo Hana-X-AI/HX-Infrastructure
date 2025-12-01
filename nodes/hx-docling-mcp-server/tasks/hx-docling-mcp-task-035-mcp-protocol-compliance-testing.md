@@ -170,9 +170,18 @@ def test_invalid_json_parse_error():
 
 
 def test_invalid_request_error():
-    """Test that request missing 'jsonrpc' field returns invalid request error (-32600)."""
+    """
+    Test that request missing 'jsonrpc' field returns invalid request error (-32600).
+    
+    This test enforces strict JSON-RPC 2.0 compliance per the specification:
+    "A rpc call is represented by sending a Request object to a Server. 
+     The Request object has the following members: jsonrpc (required), method, params, id"
+    
+    Note: Lenient server implementations may accept requests without the jsonrpc field.
+    If testing against a lenient server, this test may need to be skipped or adjusted.
+    """
     request = {
-        # Missing "jsonrpc": "2.0"
+        # Missing "jsonrpc": "2.0" - REQUIRED by JSON-RPC 2.0 spec
         "method": "tools/list",
         "params": {},
         "id": 1
@@ -181,7 +190,8 @@ def test_invalid_request_error():
     response = requests.post(MCP_ENDPOINT, json=request, timeout=TIMEOUT)
     result = response.json()
 
-    assert "error" in result, "Expected error response for invalid request"
+    # Strict JSON-RPC 2.0: missing jsonrpc field MUST return -32600 Invalid Request
+    assert "error" in result, "Expected error response for invalid request (missing jsonrpc field)"
     assert result["error"]["code"] == -32600, f"Expected invalid request code -32600, got {result['error']['code']}"
 
 

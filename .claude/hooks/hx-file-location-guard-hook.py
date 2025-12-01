@@ -61,12 +61,20 @@ def find_repo_root(start_path: str) -> Path:
 
 def check_file_location(file_path: str) -> tuple:
     """Check if file location is valid. Returns (is_valid, error_message)."""
-
+    import os
+    
     for pattern, required_path, error_message in LOCATION_RULES:
         if re.search(pattern, file_path):
             if required_path is None:
-                # This is a pattern that should NOT match (like uppercase)
-                return (False, error_message)
+                # This is the uppercase check - verify only filename has uppercase
+                # Extract just the filename portion
+                filename = os.path.basename(file_path)
+                # Check if filename (not path) contains uppercase and ends with .md
+                if filename.endswith('.md') and any(c.isupper() for c in filename):
+                    return (False, error_message)
+                # If pattern matched but filename is actually lowercase, allow it
+                # (this handles directory names with uppercase)
+                continue
             elif required_path not in file_path:
                 return (False, error_message)
 

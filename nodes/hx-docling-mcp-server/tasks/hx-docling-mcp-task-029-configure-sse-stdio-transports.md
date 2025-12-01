@@ -19,7 +19,22 @@ Configure Server-Sent Events (SSE) and stdio transports for the Docling MCP Serv
 
 ## Steps
 
-### 1. Configure SSE Transport
+### 1. Install SSE Dependency
+
+```bash
+# Add sse-starlette to requirements.txt
+echo "sse-starlette>=1.8.0,<2.0.0  # SSE transport for streaming MCP tool progress" >> /opt/docling-mcp/application/requirements.txt
+
+# Activate virtual environment and install
+source /opt/docling-mcp/venv/bin/activate
+pip install sse-starlette>=1.8.0
+
+# Verify installation
+pip show sse-starlette
+# Expected: Version 1.8.x or higher
+```
+
+### 2. Configure SSE Transport
 
 ```bash
 # Update server.py to add SSE transport configuration
@@ -28,9 +43,19 @@ cat > /opt/docling-mcp/application/docling_mcp/transports/sse_config.py <<'EOF'
 Server-Sent Events (SSE) Transport Configuration.
 
 Provides streaming progress updates for long-running MCP tool executions.
+
+SSE Endpoint: GET /mcp/sse
+Event Format:
+  - ping: {"event": "ping", "data": "keepalive"} (every 30s)
+  - progress: {"event": "progress", "data": {"type": "progress", "tool": "<name>", "percentage": 0-100, "message": "..."}}
+  - complete: {"event": "complete", "data": {"type": "complete", "tool": "<name>", "result": {...}}}
+  - error: {"event": "error", "data": {"type": "error", "tool": "<name>", "error": "..."}}
+
+Dependency: sse-starlette>=1.8.0
 """
 
 import logging
+import json
 from typing import AsyncIterator
 from fastmcp import FastMCP
 from sse_starlette.sse import EventSourceResponse
@@ -54,10 +79,10 @@ class SSEProgressEmitter:
             message: Optional progress message
 
         Returns:
-            Event dict for SSE stream
+            Event dict for SSE stream (keyed for EventSourceResponse)
         """
         self.percentage = percentage
-        event = {
+        event_data = {
             "type": "progress",
             "tool": self.tool_name,
             "session_id": self.session_id,
@@ -65,7 +90,7 @@ class SSEProgressEmitter:
             "message": message or f"Processing: {percentage}%"
         }
         logger.debug(f"SSE progress: {self.tool_name} {percentage}%")
-        return event
+        return {"event": "progress", "data": json.dumps(event_data)}
 
     async def complete(self, result: dict) -> dict:
         """
@@ -75,37 +100,83 @@ class SSEProgressEmitter:
             result: MCP tool result
 
         Returns:
-            Completion event dict
+            Completion event dict (keyed for EventSourceResponse)
         """
-        event = {
+        event_data = {
             "type": "complete",
             "tool": self.tool_name,
             "session_id": self.session_id,
             "result": result
         }
         logger.info(f"SSE completion: {self.tool_name}")
-        return event
+        return {"event": "complete", "data": json.dumps(event_data)}
 
-async def sse_event_generator(mcp: FastMCP, session_id: str) -> AsyncIterator[dict]:
+    async def error(self, error_message: str) -> dict:
+        """
+        Emit error event.
+
+        Args:
+            error_message: Error description
+
+        Returns:
+            Error event dict (keyed for EventSourceResponse)
+        """
+        event_data = {
+            "type": "error",
+            "tool": self.tool_name,
+            "session_id": self.session_id,
+            "error": error_message
+        }
+        logger.error(f"SSE error: {self.tool_name} - {error_message}")
+        return {"event": "error", "data": json.dumps(event_data)}
+
+async def sse_event_generator(mcp: FastMCP, session_id: str, tool_name: str = None, arguments: dict = None) -> AsyncIterator[dict]:
     """
     Generate SSE events for tool execution with progress updates.
 
     Args:
         mcp: FastMCP server instance
         session_id: Unique session ID for this SSE connection
+        tool_name: Optional tool name to execute
+        arguments: Optional tool arguments
 
     Yields:
-        SSE event dicts (progress, complete, error)
+        SSE event dicts (progress, complete, error) formatted for EventSourceResponse
     """
     import asyncio
 
     logger.info(f"SSE connection established: session={session_id}")
 
     try:
-        # Send keepalive ping every 30 seconds
-        while True:
-            yield {"event": "ping", "data": "keepalive"}
-            await asyncio.sleep(30)
+        if tool_name and arguments:
+            # Execute tool and stream progress
+            emitter = SSEProgressEmitter(tool_name, session_id)
+            
+            try:
+                # Emit initial progress
+                yield await emitter.emit(0, "Starting tool execution...")
+                
+                # Execute tool via FastMCP
+                # Note: Real progress tracking would require FastMCP callback hooks
+                # For now, emit progress checkpoints during execution
+                yield await emitter.emit(25, "Initializing...")
+                
+                result = await mcp.call_tool(tool_name, arguments)
+                
+                yield await emitter.emit(75, "Processing results...")
+                
+                # Emit completion with result
+                yield await emitter.complete(result)
+                
+            except Exception as e:
+                # Emit error event
+                yield await emitter.error(str(e))
+                raise
+        else:
+            # Keepalive mode: Send ping every 30 seconds
+            while True:
+                yield {"event": "ping", "data": "keepalive"}
+                await asyncio.sleep(30)
 
     except asyncio.CancelledError:
         logger.info(f"SSE connection closed: session={session_id}")
@@ -123,13 +194,35 @@ def configure_sse_transport(mcp: FastMCP, app):
     import uuid
 
     @app.get("/mcp/sse")
-    async def sse_endpoint(request: Request):
-        """SSE endpoint for streaming MCP tool execution."""
+    async def sse_endpoint(
+        request: Request,
+        tool: str = None,  # Optional: tool name to execute
+        arguments: str = None  # Optional: JSON-encoded arguments
+    ):
+        """
+        SSE endpoint for streaming MCP tool execution.
+        
+        Query Parameters:
+          - tool: Tool name to execute (optional, for keepalive-only use omit)
+          - arguments: JSON-encoded tool arguments (optional)
+        
+        Returns:
+          EventSourceResponse with streaming progress events
+        """
         session_id = str(uuid.uuid4())
-        logger.info(f"SSE endpoint accessed: session={session_id}")
+        logger.info(f"SSE endpoint accessed: session={session_id}, tool={tool}")
+
+        # Parse arguments if provided
+        tool_args = None
+        if arguments:
+            try:
+                tool_args = json.loads(arguments)
+            except json.JSONDecodeError as e:
+                logger.error(f"Invalid arguments JSON: {e}")
+                tool_args = None
 
         return EventSourceResponse(
-            sse_event_generator(mcp, session_id),
+            sse_event_generator(mcp, session_id, tool, tool_args),
             headers={
                 "Cache-Control": "no-cache",
                 "X-Accel-Buffering": "no"  # Disable nginx buffering
@@ -528,12 +621,116 @@ fi
 
 ## Deliverables
 
-- SSE transport configuration: `/opt/docling-mcp/application/docling_mcp/transports/sse_config.py`
-- stdio transport configuration: `/opt/docling-mcp/application/docling_mcp/transports/stdio_config.py`
-- Updated server.py with multi-transport support and command-line arguments
-- SSE test client: `/opt/docling-mcp/test-sse-client.py`
-- stdio test script: `/opt/docling-mcp/test-stdio-client.sh`
-- Claude Desktop configuration example: `/opt/docling-mcp/claude-desktop-config-example.json`
+- **Dependency**: sse-starlette>=1.8.0 added to requirements.txt
+- **SSE transport configuration**: `/opt/docling-mcp/application/docling_mcp/transports/sse_config.py`
+- **stdio transport configuration**: `/opt/docling-mcp/application/docling_mcp/transports/stdio_config.py`
+- **Updated server.py**: Multi-transport support with command-line arguments
+- **SSE test client**: `/opt/docling-mcp/test-sse-client.py`
+- **stdio test script**: `/opt/docling-mcp/test-stdio-client.sh`
+- **Claude Desktop configuration**: `/opt/docling-mcp/claude-desktop-config-example.json`
+
+## SSE Endpoint Documentation
+
+### Endpoint
+
+- **URL**: `GET /mcp/sse`
+- **Protocol**: Server-Sent Events (SSE) over HTTP
+- **Port**: 8000 (default MCP service port)
+
+### Query Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `tool` | string | No | Tool name to execute (omit for keepalive-only mode) |
+| `arguments` | string | No | JSON-encoded tool arguments |
+
+### Event Types
+
+The SSE endpoint emits the following event types:
+
+| Event | Data Format | Description |
+|-------|-------------|-------------|
+| `ping` | `"keepalive"` (string) | Keepalive ping every 30s |
+| `progress` | JSON object | Tool execution progress update |
+| `complete` | JSON object | Tool execution completion with result |
+| `error` | JSON object | Tool execution error |
+
+### Event Data Schemas
+
+**Progress Event:**
+```json
+{
+  "type": "progress",
+  "tool": "convert_document",
+  "session_id": "uuid-here",
+  "percentage": 25,
+  "message": "Initializing..."
+}
+```
+
+**Complete Event:**
+```json
+{
+  "type": "complete",
+  "tool": "convert_document",
+  "session_id": "uuid-here",
+  "result": {
+    "content": [{"type": "text", "text": "..."}]
+  }
+}
+```
+
+**Error Event:**
+```json
+{
+  "type": "error",
+  "tool": "convert_document",
+  "session_id": "uuid-here",
+  "error": "Error message here"
+}
+```
+
+### Usage Examples
+
+**Keepalive Mode (no tool execution):**
+```bash
+curl -N http://192.168.10.217:8000/mcp/sse
+# Receives ping events every 30 seconds
+```
+
+**Tool Execution with Progress:**
+```bash
+curl -N "http://192.168.10.217:8000/mcp/sse?tool=convert_document&arguments=%7B%22source%22%3A%22test.pdf%22%7D"
+# Receives progress → complete events
+```
+
+**Python Client:**
+```python
+import sseclient
+import requests
+
+response = requests.get(
+    "http://192.168.10.217:8000/mcp/sse",
+    params={"tool": "convert_document", "arguments": '{"source":"test.pdf"}'},
+    stream=True
+)
+
+client = sseclient.SSEClient(response)
+for event in client.events():
+    print(f"{event.event}: {event.data}")
+```
+
+### Required Dependency
+
+**Package**: `sse-starlette>=1.8.0`
+
+This dependency provides the `EventSourceResponse` class used by the SSE transport. It must be installed in the virtual environment:
+
+```bash
+pip install sse-starlette>=1.8.0
+```
+
+The dependency is automatically added to `requirements.txt` during task execution.
 
 ## Verification
 
@@ -542,13 +739,19 @@ fi
 ```bash
 cd /opt/docling-mcp/application
 
+# 0. sse-starlette dependency installed
+pip show sse-starlette && echo "PASS: sse-starlette dependency installed"
+
 # 1. SSE transport module imports
 python -c "from docling_mcp.transports.sse_config import configure_sse_transport" && echo "PASS: SSE transport imports"
 
 # 2. stdio transport module imports
 python -c "from docling_mcp.transports.stdio_config import configure_stdio_transport" && echo "PASS: stdio transport imports"
 
-# 3. Server supports --transport argument
+# 3. EventSourceResponse can be imported
+python -c "from sse_starlette.sse import EventSourceResponse" && echo "PASS: EventSourceResponse available"
+
+# 4. Server supports --transport argument
 python -m docling_mcp.server --help | grep -q "\-\-transport" && echo "PASS: Server has --transport argument"
 
 # 4. SSE transport test (run server first in separate terminal)

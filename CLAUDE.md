@@ -984,3 +984,63 @@ grep -r "<search-term>" /home/agent0/HX-Infrastructure/
 
 **Last Updated**: 2025-11-23
 **Version**: 1.1 (Corrected agent hierarchy, counts, and workflow references)
+
+---
+
+## 🛡️ ENFORCEMENT HOOKS - AUTOMATIC PROTECTION
+
+**Location:** `.claude/hooks/`
+
+This project has **enforcement hooks** that automatically prevent known violations. These hooks run automatically — you cannot bypass them.
+
+### Active Hooks
+
+| Hook | Event | What It Does |
+|------|-------|--------------|
+| `hx-session-context-hook.py` | SessionStart | Injects lessons learned and philosophy reminders at every session start |
+| `hx-philosophy-guard-hook.py` | UserPromptSubmit | **BLOCKS** prompts mentioning firewalls, automation, ansible playbooks |
+| `hx-file-location-guard-hook.py` | PreToolUse (Write/Edit) | **BLOCKS** writes to incorrect file locations |
+
+### What Gets Blocked Automatically
+
+**Philosophy Violations (BLOCKED at prompt level):**
+- ❌ Any mention of firewall configuration
+- ❌ Ansible playbooks (only Vault allowed)
+- ❌ Automation scripts, backup automation, deployment scripts
+- ❌ Any automated solutions (manual procedures only)
+
+**File Location Violations (BLOCKED at write level):**
+- ❌ `charter.md` in project root (must be in `charter/`)
+- ❌ `node-spec.md` in project root (must be in `specification/`)
+- ❌ `services-deployed.md` in project root (must be in `inventory/`)
+- ❌ UPPERCASE filenames anywhere in `nodes/`
+- ❌ `status-reports/` outside of `specification/`
+
+### What Gets Injected Automatically
+
+At **every session start**, you receive reminders about:
+- Infrastructure philosophy (firewalls disabled, manual procedures only)
+- File structure rules (correct subdirectory placement)
+- All 23 "Never Again" commitments from lessons-learned.md
+
+### Why Hooks Exist
+
+After **5 rounds of corrections** on the hx-docling-mcp-server project, it became clear that documentation alone (CLAUDE.md, lessons-learned.md) was insufficient. These hooks provide:
+
+1. **Enforcement** — Violations blocked before they happen
+2. **Context Injection** — Critical reminders at session start
+3. **Prevention** — Stop repeat failures at the source
+
+### If You See a Hook Block
+
+When a hook blocks your action, you will see an error message explaining:
+- What was blocked
+- Why it was blocked
+- Reference to lessons-learned.md
+
+**Do not attempt to work around hooks.** They exist because these violations have occurred repeatedly.
+
+**Reference:** `/home/agent0/HX-Infrastructure/lessons-learned.md` — Full history of violations and commitments
+
+---
+

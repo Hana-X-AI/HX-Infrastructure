@@ -10,7 +10,7 @@
 
 ## Description
 
-Example code in james-mcp-tools.md contains hardcoded Qdrant IP address `192.168.10.223` instead of using environment variable or hostname reference.
+Example code in james-mcp-tools.md contains hardcoded Qdrant IP address `192.168.10.207` instead of using environment variable or hostname reference.
 
 ## Impact
 
@@ -30,10 +30,10 @@ Lines: ~210
 **Before:**
 ```python
 qdrant_config={
-    "host": "192.168.10.223",
+    "host": "192.168.10.207",
     "port": 6333,
-    "collection_entities": "docling_entities",
-    "collection_relationships": "docling_relationships"
+    "collection_entities": "hx_docling_mcp_entities",
+    "collection_relationships": "hx_docling_mcp_relationships"
 }
 ```
 
@@ -44,8 +44,8 @@ qdrant_config={
 qdrant_config={
     "host": os.getenv("QDRANT_HOST", "hx-qdrant-server.hx.dev.local"),
     "port": int(os.getenv("QDRANT_PORT", "6333")),
-    "collection_entities": "docling_entities",
-    "collection_relationships": "docling_relationships"
+    "collection_entities": "hx_docling_mcp_entities",
+    "collection_relationships": "hx_docling_mcp_relationships"
 }
 ```
 

@@ -63,7 +63,7 @@ if [[ -n "$CHARTER_PATH" && -f "$CHARTER_PATH" ]]; then
         PASSED_GATES=$((PASSED_GATES + 1))
     else
         FAILED_GATES=$((FAILED_GATES + 1))
-        echo -e "${RED}Gate 1 FAILED${NC}"
+        echo -e "${RED}Gate 1 FAILED${NC}" >&2
     fi
 else
     echo -e "${YELLOW}SKIPPED: No charter path provided${NC}"
@@ -79,7 +79,7 @@ if [[ -n "$CONTENT_FILE" && -f "$CONTENT_FILE" ]]; then
         PASSED_GATES=$((PASSED_GATES + 1))
     else
         FAILED_GATES=$((FAILED_GATES + 1))
-        echo -e "${RED}Gate 2 FAILED${NC}"
+        echo -e "${RED}Gate 2 FAILED${NC}" >&2
     fi
 else
     echo -e "${YELLOW}SKIPPED: No content file provided${NC}"
@@ -95,7 +95,7 @@ if [[ -n "$CONTENT_FILE" && -f "$CONTENT_FILE" ]]; then
         PASSED_GATES=$((PASSED_GATES + 1))
     else
         FAILED_GATES=$((FAILED_GATES + 1))
-        echo -e "${RED}Gate 3 FAILED${NC}"
+        echo -e "${RED}Gate 3 FAILED${NC}" >&2
     fi
 else
     echo -e "${YELLOW}SKIPPED: No content file provided${NC}"
@@ -111,7 +111,7 @@ if [[ -n "$CHARTER_PATH" && -f "$CHARTER_PATH" && -n "$CONTENT_FILE" && -f "$CON
         PASSED_GATES=$((PASSED_GATES + 1))
     else
         FAILED_GATES=$((FAILED_GATES + 1))
-        echo -e "${RED}Gate 4 FAILED${NC}"
+        echo -e "${RED}Gate 4 FAILED${NC}" >&2
     fi
 else
     echo -e "${YELLOW}SKIPPED: Requires both charter and content file${NC}"
@@ -126,7 +126,7 @@ if bash "$GATE_DIR/05-status-report-uniqueness-validator.sh"; then
     PASSED_GATES=$((PASSED_GATES + 1))
 else
     FAILED_GATES=$((FAILED_GATES + 1))
-    echo -e "${RED}Gate 5 FAILED${NC}"
+    echo -e "${RED}Gate 5 FAILED${NC}" >&2
 fi
 echo ""
 

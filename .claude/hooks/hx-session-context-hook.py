@@ -8,6 +8,7 @@ This ensures Agent Zero is reminded of past failures BEFORE making new mistakes.
 """
 
 import json
+import os
 import sys
 
 CRITICAL_REMINDERS = """
@@ -39,20 +40,55 @@ CRITICAL_REMINDERS = """
 - ❌ Files in project root (use proper subdirectories)
 - ❌ UPPERCASE filenames (use lowercase-with-hyphens)
 
-**Reference:** /home/agent0/HX-Infrastructure/lessons-learned.md (23 "Never Again" commitments)
+**Reference:** {lessons_path} (23 "Never Again" commitments)
 """
 
+def get_lessons_path():
+    """
+    Compute the path to lessons-learned.md relative to the repository root.
+    Supports environment variable override for flexibility.
+    """
+    # Allow environment variable override
+    if 'LESSONS_PATH' in os.environ:
+        return os.environ['LESSONS_PATH']
+    
+    # Compute relative to script location: .claude/hooks/ -> repo root
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    repo_root = os.path.dirname(os.path.dirname(script_dir))  # Go up two levels
+    lessons_path = os.path.join(repo_root, 'lessons-learned.md')
+    
+    # Validate file exists
+    if not os.path.isfile(lessons_path):
+        print(f"[WARNING] lessons-learned.md not found at expected location: {lessons_path}", file=sys.stderr)
+        return "lessons-learned.md (path not resolved)"
+    
+    return lessons_path
+
 def main():
+    # Attempt to read input (optional for SessionStart hooks)
+    input_data = None
     try:
         input_data = json.load(sys.stdin)
-    except json.JSONDecodeError:
-        sys.exit(0)
+    except json.JSONDecodeError as e:
+        # Input is optional for SessionStart - log but continue
+        print(f"[DEBUG] No valid JSON input received (this is normal for SessionStart): {e}", file=sys.stderr)
+    except Exception as e:
+        # Unexpected errors should be logged and exit with error code
+        print(f"[ERROR] Unexpected error reading hook input: {e}", file=sys.stderr)
+        sys.exit(1)
 
+    # Resolve lessons-learned.md path portably
+    lessons_path = get_lessons_path()
+    
+    # Format the context with the resolved path
+    context_message = CRITICAL_REMINDERS.format(lessons_path=lessons_path)
+    
     # Inject critical context at session start
+    # Note: input_data is available if provided, but not required for this hook
     print(json.dumps({
         "hookSpecificOutput": {
             "hookEventName": "SessionStart",
-            "additionalContext": CRITICAL_REMINDERS
+            "additionalContext": context_message
         }
     }))
     sys.exit(0)

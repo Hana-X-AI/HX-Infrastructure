@@ -175,8 +175,8 @@ This document provides detailed specifications for all 19 MCP tools to replace t
       "qdrant_collection_ids": {
         "type": "object",
         "properties": {
-          "entities_collection": {"type": "string", "default": "docling_entities"},
-          "relationships_collection": {"type": "string", "default": "docling_relationships"}
+          "entities_collection": {"type": "string", "default": "hx_docling_mcp_entities"},
+          "relationships_collection": {"type": "string", "default": "hx_docling_mcp_relationships"}
         }
       },
       "processing_metadata": {
@@ -209,8 +209,8 @@ rag = LightRAG(
     qdrant_config={
         "host": os.getenv("QDRANT_HOST", "hx-qdrant-server.hx.dev.local"),
         "port": int(os.getenv("QDRANT_PORT", "6333")),
-        "collection_entities": "docling_entities",
-        "collection_relationships": "docling_relationships"
+        "collection_entities": "hx_docling_mcp_entities",
+        "collection_relationships": "hx_docling_mcp_relationships"
     }
 )
 
@@ -266,7 +266,7 @@ for chunk in chunks:
         for entity in entities_chunk:
             # Search Qdrant for similar entities (cosine similarity)
             duplicates = qdrant.search(
-                collection_name="docling_entities",
+                collection_name="hx_docling_mcp_entities",
                 query_vector=entity['embedding'],
                 query_filter={"entity_type": entity['type']},
                 limit=5,
@@ -277,7 +277,7 @@ for chunk in chunks:
                 # Merge with existing entity (increment mention_count, aggregate aliases)
                 existing_entity_id = duplicates[0].id
                 qdrant.update_payload(
-                    collection_name="docling_entities",
+                    collection_name="hx_docling_mcp_entities",
                     point_id=existing_entity_id,
                     payload={
                         "mention_count": existing_entity.mention_count + 1,
@@ -288,7 +288,7 @@ for chunk in chunks:
             else:
                 # Insert new entity into Qdrant
                 qdrant.upsert(
-                    collection_name="docling_entities",
+                    collection_name="hx_docling_mcp_entities",
                     points=[{
                         "id": generate_uuid(),
                         "vector": entity['embedding'],
@@ -356,7 +356,7 @@ for chunk in chunks:
 
         # Step 4: Insert relationship into Qdrant
         qdrant.upsert(
-            collection_name="docling_relationships",
+            collection_name="hx_docling_mcp_relationships",
             points=[{
                 "id": generate_uuid(),
                 "vector": rel_embedding,
@@ -380,7 +380,7 @@ for chunk in chunks:
         # Step 5: If bidirectional, insert reverse relationship
         if is_symmetric_relationship(rel['predicate']):
             qdrant.upsert(
-                collection_name="docling_relationships",
+                collection_name="hx_docling_mcp_relationships",
                 points=[{...}]  # Same as above but subject/object swapped
             )
 ```
@@ -389,8 +389,8 @@ for chunk in chunks:
 ```python
 # After extraction completes, calculate graph statistics
 graph_stats = {
-    "entity_count": qdrant.count(collection_name="docling_entities", filter={"document_id": doc_ids}),
-    "relationship_count": qdrant.count(collection_name="docling_relationships", filter={"document_id": doc_ids}),
+    "entity_count": qdrant.count(collection_name="hx_docling_mcp_entities", filter={"document_id": doc_ids}),
+    "relationship_count": qdrant.count(collection_name="hx_docling_mcp_relationships", filter={"document_id": doc_ids}),
     "graph_density": relationship_count / entity_count if entity_count > 0 else 0,  # Target ≥2.0
     "entity_coverage": (unique_entities_with_mentions / total_words) * 100  # Target ≥10%
 }
