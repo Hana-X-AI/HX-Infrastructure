@@ -30,8 +30,8 @@ Verify LiteLLM Gateway connection and model routing for entity extraction.
 
 **Action**:
 ```bash
-curl -s http://192.168.10.212:4000/health
-curl -s http://192.168.10.212:4000/v1/models
+curl -s http://hx-litellm-server.hx.dev.local:4000/health
+curl -s http://hx-litellm-server.hx.dev.local:4000/v1/models
 ```
 
 **Expected**: LiteLLM responds, shows available models
@@ -42,9 +42,9 @@ curl -s http://192.168.10.212:4000/v1/models
 
 **Action**:
 ```bash
-curl -s http://192.168.10.212:4000/v1/models | jq '.data[] | select(.id | contains("gemma3:27b"))'
-curl -s http://192.168.10.212:4000/v1/models | jq '.data[] | select(.id | contains("gpt-oss:20b"))'
-curl -s http://192.168.10.212:4000/v1/models | jq '.data[] | select(.id | contains("granite-docling:258m"))'
+curl -s http://hx-litellm-server.hx.dev.local:4000/v1/models | jq '.data[] | select(.id | contains("gemma3:27b"))'
+curl -s http://hx-litellm-server.hx.dev.local:4000/v1/models | jq '.data[] | select(.id | contains("gpt-oss:20b"))'
+curl -s http://hx-litellm-server.hx.dev.local:4000/v1/models | jq '.data[] | select(.id | contains("granite-docling:258m"))'
 ```
 
 **Expected**: gemma3:27b, gpt-oss:20b, granite-docling:258m all available
@@ -57,7 +57,7 @@ curl -s http://192.168.10.212:4000/v1/models | jq '.data[] | select(.id | contai
 
 **Action**:
 ```bash
-curl -X POST http://192.168.10.212:4000/v1/chat/completions \
+curl -X POST http://hx-litellm-server.hx.dev.local:4000/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "ollama/gemma3:27b",
@@ -77,7 +77,7 @@ curl -X POST http://192.168.10.212:4000/v1/chat/completions \
 sudo journalctl -u docling-mcp.service -n 50 | grep "LiteLLM"
 
 # Verify environment variable set
-grep "LITELLM_BASE_URL=http://192.168.10.212:4000" /etc/docling-mcp/.env
+grep "LITELLM_BASE_URL=http://hx-litellm-server.hx.dev.local:4000" /etc/docling-mcp/.env
 ```
 
 **Expected**: Service configured to use LiteLLM gateway

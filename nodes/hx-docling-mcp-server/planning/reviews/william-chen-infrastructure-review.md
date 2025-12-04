@@ -128,7 +128,7 @@ This infrastructure review evaluates the hx-docling-mcp-server deployment plan f
 4. **Task Breakdown Example - Tasks 001-005 (lines 752-756)**
    ```markdown
    **1. Pre-Deployment Tasks**:
-   - **Task 001**: Verify node capacity (CPU, RAM, disk space on 192.168.10.217)
+   - **Task 001**: Verify node capacity (CPU, RAM, disk space on hx-docling-mcp-server.hx.dev.local)
    - **Task 002**: Backup existing configurations (if hx-docling-mcp-server has prior configs)
    - **Task 003**: Create directory structure (/opt, /var/lib, /var/log, /etc)
    - **Task 004**: Verify Samba AD service account available (docling-mcp@hx.dev.local)
@@ -278,12 +278,12 @@ This plan CORRECTLY treats manual procedures as:
 
 3. **Target Node Configuration (lines 32-33)**
    ```markdown
-   **Target Node(s)**: hx-docling-mcp-server (192.168.10.217)
+   **Target Node(s)**: hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local)
    **Node OS**: Ubuntu 24.04 LTS (bare-metal)
    ```
 
    **Infrastructure Assessment:** ✅ CORRECT
-   - Dedicated bare-metal node (192.168.10.217)
+   - Dedicated bare-metal node (hx-docling-mcp-server.hx.dev.local)
    - Ubuntu 24.04 LTS (standard HX-Infrastructure OS)
    - No container runtime mentioned
 
@@ -1046,7 +1046,7 @@ validation command
 Execute this checklist BEFORE starting Task 001:
 
 ## Node Availability
-- [ ] hx-docling-mcp-server (192.168.10.217) is accessible via SSH
+- [ ] hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local) is accessible via SSH
 - [ ] Node is running Ubuntu 24.04 LTS
 - [ ] Current user has sudo privileges
 
@@ -1056,9 +1056,9 @@ Execute this checklist BEFORE starting Task 001:
 - [ ] Disk: 10GB+ available (check with: df -h)
 
 ## Network Connectivity
-- [ ] Can reach hx-litellm-server (192.168.10.212:4000)
-- [ ] Can reach hx-qdrant-server (192.168.10.207:6333)
-- [ ] Can reach hx-redis-server (192.168.10.210:6379)
+- [ ] Can reach hx-litellm-server (hx-litellm-server.hx.dev.local:4000)
+- [ ] Can reach hx-qdrant-server (hx-qdrant-server.hx.dev.local:6333)
+- [ ] Can reach hx-redis-server (hx-redis-server.hx.dev.local:6379)
 
 ## Service Dependencies
 - [ ] hx-litellm-server is operational

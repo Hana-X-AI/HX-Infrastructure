@@ -12,7 +12,7 @@
 
 Task 029 (Configure SSE & stdio Transports) contains multiple portability and configuration issues:
 
-1. **Hardcoded SSE endpoint IP** (line 408): Test client has `http://192.168.10.217:8000/mcp/sse` hardcoded
+1. **Hardcoded SSE endpoint IP** (line 408): Test client has `http://hx-docling-mcp-server.hx.dev.local:8000/mcp/sse` hardcoded
 2. **Environment-specific absolute paths** (lines 470, 472): Claude Desktop config has `/opt/docling-mcp/application` hardcoded
 3. **Missing user/group handling** (lines 144, 289, 434, 452, 507): 5 `chown` commands fail if service account doesn't exist
 4. **Undocumented dependency**: `sseclient-py` package not documented
@@ -42,7 +42,7 @@ import requests
 
 def test_sse_transport():
     """Test SSE endpoint for streaming events."""
-    url = "http://192.168.10.217:8000/mcp/sse"
+    url = "http://hx-docling-mcp-server.hx.dev.local:8000/mcp/sse"
     print(f"Connecting to SSE endpoint: {url}")
 ```
 

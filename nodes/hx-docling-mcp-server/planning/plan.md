@@ -1,15 +1,15 @@
 # Deployment Plan: Docling MCP Server
 
-**Project**: hx-docling-mcp-server | **Date**: 2025-11-27 | **Charter**: `/home/agent0/HX-Infrastructure/nodes/hx-docling-mcp-server/charter/charter.md`
+**Project**: hx-docling-mcp-server | **Date**: 2025-11-27 (Created), 2025-12-04 (Operational) | **Charter**: `/home/agent0/HX-Infrastructure/nodes/hx-docling-mcp-server/charter/charter.md`
 **Specification**: `/home/agent0/HX-Infrastructure/nodes/hx-docling-mcp-server/specification/node-spec.md` (7,801 lines, APPROVED)
-**Status**: Phase 2 - Planning Complete
+**Status**: ✅ COMPLETE - Service Deployed and OPERATIONAL
 
 ## Summary
 
 This deployment plan implements the Docling MCP Server as defined in the approved project charter (dated 2025-11-25). The service provides MCP protocol access to advanced document processing capabilities (PDF/DOCX/images → DoclingDocument format) with integrated knowledge graph generation via LightRAG. The deployment follows HX-Infrastructure standards for bare-metal deployment with systemd service management, manual procedures documentation, and test-driven promotion to operational status.
 
 **Key Charter Requirements**:
-- **Bare-Metal Deployment**: No Docker, systemd service management on hx-docling-mcp-server (192.168.10.217)
+- **Bare-Metal Deployment**: No Docker, systemd service management on hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local)
 - **Manual Procedures**: All deployment steps documented for human execution, NO automation scripts
 - **Test-Driven**: 100% test coverage (unit, integration, E2E, multimodal) mandatory before operational promotion
 - **Phased Scope**: Stages 1-2 only (document ingestion + knowledge graph generation), Stages 3-5 deferred to Phase 2
@@ -29,7 +29,7 @@ This deployment plan implements the Docling MCP Server as defined in the approve
 
 **Service Type**: MCP Server (Model Context Protocol gateway for document processing)
 **Technology/Version**: Python 3.10+, FastMCP framework, docling~=2.25, LightRAG
-**Target Node(s)**: hx-docling-mcp-server (192.168.10.217)
+**Target Node(s)**: hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local)
 **Node OS**: Ubuntu 24.04 LTS (bare-metal)
 **Installation Method**: Python virtual environment (/opt/docling-mcp/venv), pip install from PyPI
 **Port Requirements**: 8000 (HTTP MCP endpoint), 8443 (HTTPS if certificates configured)
@@ -42,7 +42,7 @@ This deployment plan implements the Docling MCP Server as defined in the approve
 **Network Requirements**: Internal network only (192.168.10.0/24), no external access required
 **Dependencies**:
 - **System**: Python 3.10+, poppler-utils, tesseract-ocr, libmagic1, build-essential, systemd
-- **Services**: hx-litellm-server (192.168.10.212:4000), hx-qdrant-server (192.168.10.207:6333), hx-redis-server (192.168.10.210:6379)
+- **Services**: hx-litellm-server (hx-litellm-server.hx.dev.local:4000), hx-qdrant-server (hx-qdrant-server.hx.dev.local:6333), hx-redis-server (hx-redis-server.hx.dev.local:6379)
 - **Identity**: Samba AD service account `docling-mcp@hx.dev.local` (CREATED - see status-report.md)
 
 **Resource Targets**:
@@ -137,7 +137,7 @@ This deployment plan implements the Docling MCP Server as defined in the approve
 /home/agent0/HX-Infrastructure/inventory/
 ├── nodes.md                          # Update node status (add hx-docling-mcp-server)
 ├── services.md                       # Add service entry (docling-mcp.service)
-└── network-topology.md               # Update if network changes (192.168.10.217)
+└── network-topology.md               # Update if network changes (hx-docling-mcp-server.hx.dev.local)
 ```
 
 ## Phase 0: Research & Requirements Validation
@@ -173,7 +173,7 @@ Per charter section "Knowledge Resources" (lines 434-448), comprehensive knowled
 
 ### 2. Node Compatibility Research
 
-**Objective**: Verify hx-docling-mcp-server (192.168.10.217) can support service requirements
+**Objective**: Verify hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local) can support service requirements
 
 **Compatibility Checks**:
 - **OS Compatibility**: Ubuntu 24.04 LTS confirmed (charter line 418)
@@ -217,12 +217,12 @@ Per charter section "Knowledge Resources" (lines 434-448), comprehensive knowled
 - pydantic~=2.10 (data validation)
 
 **Service Dependencies** (all operational per charter lines 421-428):
-- hx-litellm-server (192.168.10.212:4000)
-- hx-ollama1-server (192.168.10.204) - gemma3:27b, gpt-oss:20b
-- hx-ollama2-server (192.168.10.205) - qwen3-coder:30b
-- hx-ollama3-server (192.168.10.206) - ibm/granite-docling:258m, bge-m3:567m
-- hx-qdrant-server (192.168.10.207:6333)
-- hx-redis-server (192.168.10.210:6379)
+- hx-litellm-server (hx-litellm-server.hx.dev.local:4000)
+- hx-ollama1-server (hx-ollama1-server.hx.dev.local) - gemma3:27b, gpt-oss:20b
+- hx-ollama2-server (hx-ollama2-server.hx.dev.local) - qwen3-coder:30b
+- hx-ollama3-server (hx-ollama3-server.hx.dev.local) - ibm/granite-docling:258m, bge-m3:567m
+- hx-qdrant-server (hx-qdrant-server.hx.dev.local:6333)
+- hx-redis-server (hx-redis-server.hx.dev.local:6379)
 
 **Research Tasks**:
 - Document apt package installation order
@@ -241,19 +241,19 @@ Per charter section "Knowledge Resources" (lines 434-448), comprehensive knowled
 
 **Integration Points** (from charter lines 319-325):
 
-**LiteLLM Gateway Integration** (192.168.10.212:4000):
+**LiteLLM Gateway Integration** (hx-litellm-server.hx.dev.local:4000):
 - Research LLM routing configuration (OpenAI-compatible API)
 - Document API authentication requirements (if any)
 - Verify Ollama model availability via LiteLLM (gemma3:27b, gpt-oss:20b, qwen3-coder:30b, granite-docling:258m)
 - Research error handling and retry patterns
 
-**Qdrant Vector Database Integration** (192.168.10.207:6333):
+**Qdrant Vector Database Integration** (hx-qdrant-server.hx.dev.local:6333):
 - Research LightRAG Qdrant storage backend configuration
 - Document collection creation for knowledge graphs (entities, relationships)
 - Verify vector dimension requirements (match bge-m3:567m embedding model)
 - Research dual-level retrieval pattern (low-level entities + high-level themes)
 
-**Redis Integration** (192.168.10.210:6379):
+**Redis Integration** (hx-redis-server.hx.dev.local:6379):
 - Research session management patterns (session ID, TTL)
 - Document Redis data structures for MCP session state
 - Verify connection pooling configuration
@@ -335,7 +335,7 @@ Per charter section "Knowledge Resources" (lines 434-448), comprehensive knowled
 - Mitigations: [Use Ollama1 models (27B+) instead of granite-docling (258M) for LightRAG]
 
 ## 2. Node Compatibility
-- Decision: [hx-docling-mcp-server (192.168.10.217) confirmed compatible]
+- Decision: [hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local) confirmed compatible]
 - Resource Validation: [CPU, RAM, disk confirmed adequate]
 - System Dependencies: [All apt packages available in Ubuntu 24.04 repos]
 
@@ -371,7 +371,7 @@ Per charter section "Knowledge Resources" (lines 434-448), comprehensive knowled
 **Architecture Components to Document**:
 
 **Node Placement and Resource Allocation**:
-- **Primary Service**: docling-mcp.service on hx-docling-mcp-server (192.168.10.217)
+- **Primary Service**: docling-mcp.service on hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local)
 - **CPU Allocation**: 2-4 cores (verify node capacity in deployment-research.md)
 - **Memory Allocation**: 4-8GB RAM (verify available in deployment-research.md)
 - **Disk Allocation**:
@@ -381,8 +381,8 @@ Per charter section "Knowledge Resources" (lines 434-448), comprehensive knowled
   - `/etc/docling-mcp/`: 10MB (configuration)
 
 **Network Configuration**:
-- **Primary Endpoint**: HTTP 192.168.10.217:8000 (MCP protocol)
-- **Optional HTTPS**: 192.168.10.217:8443 (if TLS configured)
+- **Primary Endpoint**: HTTP hx-docling-mcp-server.hx.dev.local:8000 (MCP protocol)
+- **Optional HTTPS**: hx-docling-mcp-server.hx.dev.local:8443 (if TLS configured)
 - **Interface Binding**: Internal interface only (not 0.0.0.0)
 - **Firewall Rules**: N/A (firewalls DISABLED per HX-Infrastructure standard)
 - **DNS Registration**: N/A (IP-based access via internal network)
@@ -432,7 +432,7 @@ Per charter section "Knowledge Resources" (lines 434-448), comprehensive knowled
 ```bash
 # Service Identity
 SERVICE_NAME=docling-mcp
-SERVICE_HOST=0.0.0.0  # WARNING: Change to 192.168.10.217 for internal-only binding
+SERVICE_HOST=0.0.0.0  # WARNING: Change to hx-docling-mcp-server.hx.dev.local for internal-only binding
 SERVICE_PORT=8000
 SERVICE_HTTPS_PORT=8443  # Optional, only if TLS configured
 
@@ -451,7 +451,7 @@ DEBUG=false
 **LiteLLM Gateway Configuration**:
 ```bash
 # LiteLLM Integration
-LITELLM_BASE_URL=http://192.168.10.212:4000
+LITELLM_BASE_URL=http://hx-litellm-server.hx.dev.local:4000
 LITELLM_API_KEY=<from_ansible_vault>  # Stored in /home/agent0/HX-Infrastructure/services/operational/hx-docling-mcp/vault/credentials.yml
 LITELLM_TIMEOUT=120  # seconds
 
@@ -464,7 +464,7 @@ LITELLM_DOCLING_MODEL=ollama/granite-docling:258m  # For docling processing only
 **Qdrant Configuration**:
 ```bash
 # Qdrant Vector Database
-QDRANT_HOST=192.168.10.207
+QDRANT_HOST=hx-qdrant-server.hx.dev.local
 QDRANT_PORT=6333
 QDRANT_GRPC_PORT=6334
 QDRANT_COLLECTION_PREFIX=docling_mcp_  # Prefix for collection names
@@ -474,7 +474,7 @@ QDRANT_TIMEOUT=60  # seconds
 **Redis Configuration**:
 ```bash
 # Redis Session Management
-REDIS_HOST=192.168.10.210
+REDIS_HOST=hx-redis-server.hx.dev.local
 REDIS_PORT=6379
 REDIS_DB=0
 REDIS_PASSWORD=<from_ansible_vault>  # If authentication enabled
@@ -533,7 +533,7 @@ Environment="PATH=/opt/docling-mcp/venv/bin:/usr/local/bin:/usr/bin:/bin"
 EnvironmentFile=/etc/docling-mcp/.env
 
 ExecStartPre=/bin/bash -c 'test -n "$LITELLM_BASE_URL"'
-ExecStartPre=/usr/bin/curl -f http://192.168.10.212:4000/health
+ExecStartPre=/usr/bin/curl -f http://hx-litellm-server.hx.dev.local:4000/health
 ExecStartPre=/bin/bash -c 'test -r /etc/docling-mcp/.env'
 ExecStartPre=/bin/bash -c 'avail=$(df -P /var/lib/docling-mcp | tail -1 | awk "{print \$4}"); [ "$avail" -gt 1048576 ] || { echo "Insufficient disk space" >&2; exit 1; }'
 ExecStart=/opt/docling-mcp/venv/bin/python -m docling_mcp.server
@@ -587,7 +587,7 @@ samba_password: "[SEE VAULT: vault/credentials.yml]"  # Standard HX-Infrastructu
 **Configuration Validation Approach**:
 - **Pre-Start Validation**: systemd ExecStartPre directives (inline commands, not separate script):
   - Check required environment variables: `ExecStartPre=/bin/bash -c 'test -n "$LITELLM_BASE_URL"'`
-  - Check service dependencies reachable: `ExecStartPre=/usr/bin/curl -f http://192.168.10.212:4000/health`
+  - Check service dependencies reachable: `ExecStartPre=/usr/bin/curl -f http://hx-litellm-server.hx.dev.local:4000/health`
   - Check file permissions: `ExecStartPre=/bin/bash -c 'test -r /etc/docling-mcp/.env'`
   - Check disk space adequate: `ExecStartPre=/bin/bash -c 'avail=$(df -P /var/lib/docling-mcp | tail -1 | awk "{print \$4}"); [ "$avail" -gt 1048576 ] || { echo "Insufficient disk space" >&2; exit 1; }'`
 - **Runtime Validation**: Application validates configuration at startup
@@ -604,7 +604,7 @@ samba_password: "[SEE VAULT: vault/credentials.yml]"  # Standard HX-Infrastructu
 **Test Plan Components**:
 
 **Test Environment Requirements**:
-- **Test Node**: hx-docling-mcp-server (192.168.10.217) in non-operational state
+- **Test Node**: hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local) in non-operational state
 - **Test Dependencies**: Access to LiteLLM, Qdrant, Redis, Ollama1/2/3 services
 - **Test Data**: Sample documents (PDF, DOCX, PPTX, XLSX, images) for multimodal testing
 - **Test Isolation**: Separate Qdrant collections for test data
@@ -760,7 +760,7 @@ class Test[ComponentName]:
 ### Task Categories
 
 **1. Pre-Deployment Tasks**:
-- **Task 001**: Verify node capacity (CPU, RAM, disk space on 192.168.10.217)
+- **Task 001**: Verify node capacity (CPU, RAM, disk space on hx-docling-mcp-server.hx.dev.local)
 - **Task 002**: Backup existing configurations (if hx-docling-mcp-server has prior configs)
 - **Task 003**: Create directory structure (/opt, /var/lib, /var/log, /etc)
 - **Task 004**: Verify Samba AD service account available (docling-mcp@hx.dev.local)

@@ -183,7 +183,7 @@ Python Dependencies Documentation
 =================================
 
 Installation Date: $(date)
-Node: hx-docling-mcp-server (192.168.10.217)
+Node: hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local)
 Python Version: $(source /opt/docling-mcp/venv/bin/activate && python --version)
 ...
 EOF
@@ -199,7 +199,7 @@ Python Dependencies Documentation
 =================================
 
 Installation Date: [Run: date]
-Node: hx-docling-mcp-server (192.168.10.217)
+Node: hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local)
 Python Version: [Run: source /opt/docling-mcp/venv/bin/activate && python --version]
 ...
 EOF

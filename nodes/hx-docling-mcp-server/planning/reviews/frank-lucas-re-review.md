@@ -69,7 +69,7 @@ This security re-review evaluates whether corrections made to the hx-docling-mcp
 
 **No New Security Concerns:** Firewall removal is architecturally correct per HX-Infrastructure standard
 
-**Previous Recommendation Still Valid:** Internal-only binding (192.168.10.217) remains the primary network security control
+**Previous Recommendation Still Valid:** Internal-only binding (hx-docling-mcp-server.hx.dev.local) remains the primary network security control
 
 ---
 
@@ -136,7 +136,7 @@ This security re-review evaluates whether corrections made to the hx-docling-mcp
 - **Validation Still Occurs:** Environment variables, dependencies, permissions checked
 - **Security Validation Maintained:**
   - `ExecStartPre=/bin/bash -c 'test -n "$LITELLM_BASE_URL"'` ✅ VALID
-  - `ExecStartPre=/usr/bin/curl -f http://192.168.10.212:4000/health` ✅ VALID
+  - `ExecStartPre=/usr/bin/curl -f http://hx-litellm-server.hx.dev.local:4000/health` ✅ VALID
   - `ExecStartPre=/bin/bash -c 'test -r /etc/docling-mcp/.env'` ✅ VALID
 
 **Security Best Practice:**
@@ -213,8 +213,8 @@ This security re-review evaluates whether corrections made to the hx-docling-mcp
 
 **Analysis:**
 - Alex Rivera's corrections did NOT modify network binding configuration
-- Plan still shows `SERVICE_HOST=0.0.0.0 # WARNING: Change to 192.168.10.217` (line 435)
-- **Recommendation Remains:** Default should be `192.168.10.217` (internal-only binding)
+- Plan still shows `SERVICE_HOST=0.0.0.0 # WARNING: Change to hx-docling-mcp-server.hx.dev.local` (line 435)
+- **Recommendation Remains:** Default should be `hx-docling-mcp-server.hx.dev.local` (internal-only binding)
 - **Alternative Enhancement:** Add inline ExecStartPre validation (see Correction 4 analysis above)
 
 **Action Required:** Update configuration-spec.md to default to internal binding
@@ -234,7 +234,7 @@ This security re-review evaluates whether corrections made to the hx-docling-mcp
 
 **Recommended Addition to Systemd Unit:**
 ```ini
-ExecStartPre=/bin/bash -c 'grep -q "SERVICE_HOST=192.168.10.217" /etc/docling-mcp/.env || (echo "ERROR: SERVICE_HOST must bind to internal interface 192.168.10.217" && exit 1)'
+ExecStartPre=/bin/bash -c 'grep -q "SERVICE_HOST=hx-docling-mcp-server.hx.dev.local" /etc/docling-mcp/.env || (echo "ERROR: SERVICE_HOST must bind to internal interface hx-docling-mcp-server.hx.dev.local" && exit 1)'
 ```
 
 **Action Required:** Add to configuration-spec.md systemd unit template
@@ -249,7 +249,7 @@ ExecStartPre=/bin/bash -c 'grep -q "SERVICE_HOST=192.168.10.217" /etc/docling-mc
 
 **Analysis:**
 - Corrections did not impact TLS configuration (remains optional for Phase 1)
-- Internal CA infrastructure ready: hx-ca-server (192.168.10.201) ✅
+- Internal CA infrastructure ready: hx-ca-server ✅
 - CA passphrase documented: `Longhorn88` ✅
 - Certificate generation procedure established ✅
 
@@ -331,7 +331,7 @@ ExecStartPre=/bin/bash -c 'grep -q "SERVICE_HOST=192.168.10.217" /etc/docling-mc
 3. ✅ **Password Compliance:** Standard `[SEE VAULT: vault/credentials.yml]` per HX-Infrastructure development policy (UNCHANGED)
 4. ✅ **Secrets Management:** Ansible Vault structure follows HX-Infrastructure standards (UNCHANGED)
 5. ✅ **Credential Storage:** No plaintext credentials in documentation (UNCHANGED)
-6. ✅ **Network Security:** Internal-only binding (192.168.10.217), no external exposure (UNCHANGED)
+6. ✅ **Network Security:** Internal-only binding (hx-docling-mcp-server.hx.dev.local), no external exposure (UNCHANGED)
 7. ✅ **Firewall Policy:** DISABLED per HX-Infrastructure philosophy (IMPROVED - contradiction removed)
 8. ✅ **Certificate Management:** Optional TLS for Phase 1, infrastructure ready for Phase 2 (UNCHANGED)
 9. ✅ **Systemd Hardening:** Excellent security directives maintained (UNCHANGED)

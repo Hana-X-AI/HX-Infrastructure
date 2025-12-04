@@ -72,7 +72,7 @@ pgrep -f "docling_mcp"
 **Action**:
 ```bash
 sudo netstat -tulpn | grep :8000
-curl -s http://192.168.10.217:8000/health
+curl -s http://hx-docling-mcp-server.hx.dev.local:8000/health
 ```
 
 **Expected**: Port 8000 listening, health endpoint responds

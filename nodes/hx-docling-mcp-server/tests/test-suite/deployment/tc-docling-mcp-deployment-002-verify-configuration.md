@@ -19,7 +19,7 @@ Verify all configuration files are created, properly formatted, and contain requ
 
 - Task 008 (Configure Environment Files) executed
 - Task 010 (Configure environment files - TBD) executed
-- SSH access to hx-docling-mcp-server (192.168.10.217)
+- SSH access to hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local)
 
 ---
 
@@ -47,9 +47,9 @@ test "$(stat -c '%a' /etc/docling-mcp/.env)" = "600" && echo "PASS: .env permiss
 
 # Verify required environment variables present
 grep -q "SERVICE_NAME=docling-mcp" /etc/docling-mcp/.env && echo "PASS: SERVICE_NAME set"
-grep -q "LITELLM_BASE_URL=http://192.168.10.212:4000" /etc/docling-mcp/.env && echo "PASS: LITELLM_BASE_URL set"
-grep -q "QDRANT_HOST=192.168.10.207" /etc/docling-mcp/.env && echo "PASS: QDRANT_HOST set"
-grep -q "REDIS_HOST=192.168.10.210" /etc/docling-mcp/.env && echo "PASS: REDIS_HOST set"
+grep -q "LITELLM_BASE_URL=http://hx-litellm-server.hx.dev.local:4000" /etc/docling-mcp/.env && echo "PASS: LITELLM_BASE_URL set"
+grep -q "QDRANT_HOST=hx-qdrant-server.hx.dev.local" /etc/docling-mcp/.env && echo "PASS: QDRANT_HOST set"
+grep -q "REDIS_HOST=hx-redis-server.hx.dev.local" /etc/docling-mcp/.env && echo "PASS: REDIS_HOST set"
 ```
 
 **Expected Result**:

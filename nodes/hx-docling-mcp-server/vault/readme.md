@@ -2,7 +2,7 @@
 
 ## Overview
 
-This directory contains Ansible Vault encrypted credentials for hx-docling-mcp-server (192.168.10.217).
+This directory contains Ansible Vault encrypted credentials for hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local).
 
 ## Files
 
@@ -40,7 +40,7 @@ ansible-vault view vault/credentials.yml --vault-password-file=vault/.vault_pass
 ### View Credentials (Server)
 
 ```bash
-# On hx-docling-mcp-server (192.168.10.217)
+# On hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local)
 sudo cat /opt/docling-mcp/vault/.vault_password  # View vault password
 # Ansible-vault not installed on server - application reads password file directly
 ```
@@ -73,12 +73,12 @@ ansible-vault rekey vault/credentials.yml --vault-password-file=vault/.vault_pas
 
 ```bash
 # Copy vault password to server (one-time)
-scp vault/.vault_password agent0@192.168.10.217:/tmp/.vault_password_temp
-ssh agent0@192.168.10.217 'sudo mv /tmp/.vault_password_temp /opt/docling-mcp/vault/.vault_password && sudo chown docling-mcp:domain\ users /opt/docling-mcp/vault/.vault_password && sudo chmod 600 /opt/docling-mcp/vault/.vault_password'
+scp vault/.vault_password agent0@hx-docling-mcp-server.hx.dev.local:/tmp/.vault_password_temp
+ssh agent0@hx-docling-mcp-server.hx.dev.local 'sudo mv /tmp/.vault_password_temp /opt/docling-mcp/vault/.vault_password && sudo chown docling-mcp:domain\ users /opt/docling-mcp/vault/.vault_password && sudo chmod 600 /opt/docling-mcp/vault/.vault_password'
 
 # Copy encrypted credentials
-scp vault/credentials.yml agent0@192.168.10.217:/tmp/credentials.yml_temp
-ssh agent0@192.168.10.217 'sudo mv /tmp/credentials.yml_temp /opt/docling-mcp/vault/credentials.yml && sudo chown docling-mcp:domain\ users /opt/docling-mcp/vault/credentials.yml && sudo chmod 600 /opt/docling-mcp/vault/credentials.yml'
+scp vault/credentials.yml agent0@hx-docling-mcp-server.hx.dev.local:/tmp/credentials.yml_temp
+ssh agent0@hx-docling-mcp-server.hx.dev.local 'sudo mv /tmp/credentials.yml_temp /opt/docling-mcp/vault/credentials.yml && sudo chown docling-mcp:domain\ users /opt/docling-mcp/vault/credentials.yml && sudo chmod 600 /opt/docling-mcp/vault/credentials.yml'
 ```
 
 ### Update Credentials
@@ -88,8 +88,8 @@ ssh agent0@192.168.10.217 'sudo mv /tmp/credentials.yml_temp /opt/docling-mcp/va
 ansible-vault edit vault/credentials.yml --vault-password-file=vault/.vault_password
 
 # Deploy updated file
-scp vault/credentials.yml agent0@192.168.10.217:/tmp/credentials.yml_new
-ssh agent0@192.168.10.217 'sudo mv /tmp/credentials.yml_new /opt/docling-mcp/vault/credentials.yml && sudo chown docling-mcp:domain\ users /opt/docling-mcp/vault/credentials.yml && sudo chmod 600 /opt/docling-mcp/vault/credentials.yml'
+scp vault/credentials.yml agent0@hx-docling-mcp-server.hx.dev.local:/tmp/credentials.yml_new
+ssh agent0@hx-docling-mcp-server.hx.dev.local 'sudo mv /tmp/credentials.yml_new /opt/docling-mcp/vault/credentials.yml && sudo chown docling-mcp:domain\ users /opt/docling-mcp/vault/credentials.yml && sudo chmod 600 /opt/docling-mcp/vault/credentials.yml'
 ```
 
 ## Troubleshooting
@@ -109,18 +109,18 @@ echo "Major8859!" | ansible-vault view vault/credentials.yml --vault-password-fi
 
 ```bash
 # On server, check file permissions
-ssh agent0@192.168.10.217 'sudo ls -la /opt/docling-mcp/vault/'
+ssh agent0@hx-docling-mcp-server.hx.dev.local 'sudo ls -la /opt/docling-mcp/vault/'
 # Should show: -rw------- docling-mcp domain users
 
 # Fix permissions if needed
-ssh agent0@192.168.10.217 'sudo chown docling-mcp:domain\ users /opt/docling-mcp/vault/.vault_password /opt/docling-mcp/vault/credentials.yml && sudo chmod 600 /opt/docling-mcp/vault/.vault_password /opt/docling-mcp/vault/credentials.yml'
+ssh agent0@hx-docling-mcp-server.hx.dev.local 'sudo chown docling-mcp:domain\ users /opt/docling-mcp/vault/.vault_password /opt/docling-mcp/vault/credentials.yml && sudo chmod 600 /opt/docling-mcp/vault/.vault_password /opt/docling-mcp/vault/credentials.yml'
 ```
 
 ## References
 
 - **Credentials Standards**: `/home/agent0/HX-Infrastructure/standards/credentials-vault-management.md`
 - **Service Account**: Created via TASK-001 (Create Samba AD Service Account)
-- **Server Location**: `hx-docling-mcp-server.hx.dev.local` (192.168.10.217)
+- **Server Location**: `hx-docling-mcp-server.hx.dev.local` (hx-docling-mcp-server.hx.dev.local)
 - **Vault Location**: `/opt/docling-mcp/vault/`
 
 ---

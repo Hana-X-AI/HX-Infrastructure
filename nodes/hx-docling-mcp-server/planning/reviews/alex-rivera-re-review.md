@@ -91,7 +91,7 @@ Line 4770: - Frequency: Manual daily backup procedure (documented in MAINTENANCE
 ```markdown
 Line 587: - **Pre-Start Validation**: systemd ExecStartPre directives (inline commands, not separate script):
 Line 588:   - Check required environment variables: `ExecStartPre=/bin/bash -c 'test -n "$LITELLM_BASE_URL"'`
-Line 589:   - Check service dependencies reachable: `ExecStartPre=/usr/bin/curl -f http://192.168.10.212:4000/health`
+Line 589:   - Check service dependencies reachable: `ExecStartPre=/usr/bin/curl -f http://hx-litellm-server.hx.dev.local:4000/health`
 Line 590:   - Check file permissions: `ExecStartPre=/bin/bash -c 'test -r /etc/docling-mcp/.env'`
 Line 591:   - Check disk space adequate: `ExecStartPre=/bin/bash -c 'test $(df /var/lib/docling-mcp | tail -1 | awk "{print \$4}") -gt 1048576'`
 ```
@@ -114,7 +114,7 @@ Line 591:   - Check disk space adequate: `ExecStartPre=/bin/bash -c 'test $(df /
 **Correction Verification**:
 ```ini
 Line 535: ExecStartPre=/bin/bash -c 'test -n "$LITELLM_BASE_URL"'
-Line 536: ExecStartPre=/usr/bin/curl -f http://192.168.10.212:4000/health
+Line 536: ExecStartPre=/usr/bin/curl -f http://hx-litellm-server.hx.dev.local:4000/health
 Line 537: ExecStartPre=/bin/bash -c 'test -r /etc/docling-mcp/.env'
 Line 538: ExecStart=/opt/docling-mcp/venv/bin/python -m docling_mcp.server
 Line 539: ExecReload=/bin/kill -HUP $MAINPID

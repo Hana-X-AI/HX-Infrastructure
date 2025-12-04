@@ -207,7 +207,7 @@ TEXT TO ANALYZE:
 }
 ```
 
-**Environment Variable**: `LITELLM_BASE_URL` (default: `http://192.168.10.212:4000`)
+**Environment Variable**: `LITELLM_BASE_URL` (default: `http://hx-litellm-server.hx.dev.local:4000`)
 
 **Parameter Rationale:**
 - **max_tokens: 8192**: Sufficient for large entity lists from 4K-token chunks (typical response ~2-3K tokens)
@@ -396,11 +396,11 @@ TEXT TO ANALYZE:
 
 **Metric 2: Vector Similarity (Semantic Embedding Cosine Similarity)**
 
-- **Embedding Model**: `bge-m3:567m` (Ollama3 @ 192.168.10.206)
+- **Embedding Model**: `bge-m3:567m` (Ollama3 @ hx-ollama3-server.hx.dev.local)
   - **Model Type**: Multilingual general-purpose embedding (1024 dimensions)
   - **Strengths**: Captures semantic equivalence beyond lexical matching
 - **Embedding Endpoint**: `POST ${OLLAMA3_BASE_URL}/api/embeddings`
-- **Environment Variable**: `OLLAMA3_BASE_URL` (default: `http://192.168.10.206:11434`)
+- **Environment Variable**: `OLLAMA3_BASE_URL` (default: `http://hx-ollama3-server.hx.dev.local:11434`)
 - **Embedding Batch Size**: Max 64 entities per API call (reduce API overhead)
 - **Similarity Metric**: Cosine similarity (normalized dot product, range 0.0-1.0)
 - **Threshold**: 0.90 for matching (high threshold to prevent false positives)

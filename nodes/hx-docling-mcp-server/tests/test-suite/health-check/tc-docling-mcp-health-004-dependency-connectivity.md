@@ -29,7 +29,7 @@ Verify all dependency services (LiteLLM, Qdrant, Redis) are reachable and health
 
 **Action**:
 ```bash
-curl -s -o /dev/null -w "%{http_code}" http://192.168.10.212:4000/health
+curl -s -o /dev/null -w "%{http_code}" http://hx-litellm-server.hx.dev.local:4000/health
 ```
 
 **Expected**: HTTP 200
@@ -40,7 +40,7 @@ curl -s -o /dev/null -w "%{http_code}" http://192.168.10.212:4000/health
 
 **Action**:
 ```bash
-curl -s -o /dev/null -w "%{http_code}" http://192.168.10.207:6333/health
+curl -s -o /dev/null -w "%{http_code}" http://hx-qdrant-server.hx.dev.local:6333/health
 ```
 
 **Expected**: HTTP 200
@@ -51,7 +51,7 @@ curl -s -o /dev/null -w "%{http_code}" http://192.168.10.207:6333/health
 
 **Action**:
 ```bash
-redis-cli -h 192.168.10.210 -p 6379 PING
+redis-cli -h hx-redis-server.hx.dev.local -p 6379 PING
 ```
 
 **Expected**: PONG
@@ -63,7 +63,7 @@ redis-cli -h 192.168.10.210 -p 6379 PING
 **Action**:
 ```bash
 # Check health endpoint shows dependency status
-curl -s http://192.168.10.217:8000/health | jq '.dependencies'
+curl -s http://hx-docling-mcp-server.hx.dev.local:8000/health | jq '.dependencies'
 ```
 
 **Expected**: Dependency health status reflected accurately

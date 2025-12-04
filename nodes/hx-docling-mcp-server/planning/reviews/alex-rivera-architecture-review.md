@@ -81,7 +81,7 @@ This architectural review evaluates the hx-docling-mcp-server deployment plan fo
    - Python 3.10+ compatibility verified across all dependencies
 
 3. **Node Compatibility Research**
-   - hx-docling-mcp-server (192.168.10.217) verified compatible
+   - hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local) verified compatible
    - Resource requirements documented: 2-4 cores, 4-8GB RAM, 10GB+ disk
    - System dependencies mapped (poppler-utils, tesseract-ocr, libmagic1, build-essential)
    - Disk layout validated (`/opt/`, `/var/lib/`, `/var/log/`, `/etc/`)
@@ -92,8 +92,8 @@ This architectural review evaluates the hx-docling-mcp-server deployment plan fo
    - Service dependency startup order CORRECTLY designed (network-online.target only, application-level retry logic)
 
 5. **Deployment Architecture Components**
-   - Node placement: hx-docling-mcp-server (192.168.10.217) dedicated
-   - Network configuration: HTTP 192.168.10.217:8000 (internal interface binding)
+   - Node placement: hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local) dedicated
+   - Network configuration: HTTP hx-docling-mcp-server.hx.dev.local:8000 (internal interface binding)
    - Storage configuration: Proper directory structure with appropriate sizes
    - Log rotation policies: Daily rotation, 30-day retention
    - Service dependencies documented with systemd After= directive (CORRECT)
@@ -119,8 +119,8 @@ This architectural review evaluates the hx-docling-mcp-server deployment plan fo
 **What the Plan Says:**
 ```markdown
 **Network Configuration**:
-- **Primary Endpoint**: HTTP 192.168.10.217:8000 (MCP protocol)
-- **Optional HTTPS**: 192.168.10.217:8443 (if TLS configured)
+- **Primary Endpoint**: HTTP hx-docling-mcp-server.hx.dev.local:8000 (MCP protocol)
+- **Optional HTTPS**: hx-docling-mcp-server.hx.dev.local:8443 (if TLS configured)
 - **Interface Binding**: Internal interface only (not 0.0.0.0)
 - **Firewall Rules**: N/A (firewalls DISABLED per HX-Infrastructure standard)  # ✅ CORRECT
 - **DNS Registration**: N/A (IP-based access via internal network)

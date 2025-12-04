@@ -25,7 +25,7 @@ sudo netstat -tulpn | grep :8000
 sudo lsof -i :8000
 ```
 
-**Expected**: Port 8000 listening on 192.168.10.217 or 0.0.0.0
+**Expected**: Port 8000 listening on hx-docling-mcp-server.hx.dev.local or 0.0.0.0
 
 ---
 
@@ -33,11 +33,15 @@ sudo lsof -i :8000
 
 **Action**:
 ```bash
-# If configuration specifies internal-only binding to 192.168.10.217
-netstat -tulpn | grep :8000 | grep "192.168.10.217" && echo "PASS: Bound to internal IP"
+# Check if service is bound to specific internal IP (192.168.10.217) or all interfaces (0.0.0.0)
+# Using -n flag for numeric output, so grep for IPs not hostnames
+netstat -tulpn | grep :8000 | grep -E "(192\.168\.10\.217|0\.0\.0\.0|127\.0\.0\.1)" && echo "PASS: Bound to internal/localhost IP"
+
+# Alternative: Use ss without -n to see hostnames
+# ss -tulp | grep :8000
 ```
 
-**Expected**: Service bound to 192.168.10.217 (internal network only)
+**Expected**: Service bound to 192.168.10.217 (internal IP), 0.0.0.0 (all interfaces), or 127.0.0.1 (localhost only)
 
 ---
 
@@ -45,7 +49,7 @@ netstat -tulpn | grep :8000 | grep "192.168.10.217" && echo "PASS: Bound to inte
 
 **Action**:
 ```bash
-curl -s -o /dev/null -w "%{http_code}" http://192.168.10.217:8000/health
+curl -s -o /dev/null -w "%{http_code}" http://hx-docling-mcp-server.hx.dev.local:8000/health
 ```
 
 **Expected**: HTTP 200 or 503 (service responds)

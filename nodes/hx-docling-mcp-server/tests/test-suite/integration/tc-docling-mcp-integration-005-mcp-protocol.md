@@ -31,7 +31,7 @@ Verify MCP protocol compliance across all three transports (HTTP, SSE, stdio).
 
 **Action**:
 ```bash
-curl -X POST http://192.168.10.217:8000/mcp \
+curl -X POST http://hx-docling-mcp-server.hx.dev.local:8000/mcp \
   -H "Content-Type: application/json" \
   -d '{
     "jsonrpc": "2.0",
@@ -62,7 +62,7 @@ curl -X POST http://192.168.10.217:8000/mcp \
 
 **Action**:
 ```bash
-curl -X POST http://192.168.10.217:8000/mcp \
+curl -X POST http://hx-docling-mcp-server.hx.dev.local:8000/mcp \
   -H "Content-Type: application/json" \
   -d '{
     "jsonrpc": "2.0",
@@ -83,7 +83,7 @@ curl -X POST http://192.168.10.217:8000/mcp \
 
 **Action**:
 ```bash
-curl -X POST http://192.168.10.217:8000/mcp \
+curl -X POST http://hx-docling-mcp-server.hx.dev.local:8000/mcp \
   -H "Content-Type: application/json" \
   -d '{
     "jsonrpc": "2.0",
@@ -116,7 +116,7 @@ curl -X POST http://192.168.10.217:8000/mcp \
 
 **Action**:
 ```bash
-curl -N http://192.168.10.217:8000/mcp/sse
+curl -N http://hx-docling-mcp-server.hx.dev.local:8000/mcp/sse
 ```
 
 **Expected**: SSE stream established (if SSE transport enabled)

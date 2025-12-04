@@ -43,7 +43,7 @@ Verify LightRAG knowledge graph engine integration for entity extraction and Qdr
 **Action**:
 ```bash
 # Invoke generate_knowledge_graph tool (which uses LightRAG)
-curl -X POST http://192.168.10.217:8000/mcp/tools/call \
+curl -X POST http://hx-docling-mcp-server.hx.dev.local:8000/mcp/tools/call \
   -H "Content-Type: application/json" \
   -d '{
     "jsonrpc": "2.0",
@@ -67,7 +67,7 @@ curl -X POST http://192.168.10.217:8000/mcp/tools/call \
 **Action**:
 ```bash
 # Query Qdrant for entities
-curl -X POST http://192.168.10.207:6333/collections/docling_mcp_entities/points/scroll \
+curl -X POST http://hx-qdrant-server.hx.dev.local:6333/collections/docling_mcp_entities/points/scroll \
   -H "Content-Type: application/json" \
   -d '{"limit": 10}'
 ```

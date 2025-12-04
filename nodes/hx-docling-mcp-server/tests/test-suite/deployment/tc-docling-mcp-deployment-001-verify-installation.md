@@ -11,14 +11,14 @@
 
 ## Test Objective
 
-Verify that the Docling MCP Server is correctly installed on hx-docling-mcp-server (192.168.10.217) with all required components in place.
+Verify that the Docling MCP Server is correctly installed on hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local) with all required components in place.
 
 ---
 
 ## Prerequisites
 
 - Deployment tasks 001-013 executed (Tasks in `/home/agent0/HX-Infrastructure/nodes/hx-docling-mcp-server/tasks/`)
-- SSH access to hx-docling-mcp-server (192.168.10.217)
+- SSH access to hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local)
 - `sudo` privileges for validation commands
 
 ---
@@ -267,7 +267,7 @@ Overall Status: PASS
 **Required Test Files**: None (validation only)
 
 **Test Environment**:
-- Node: hx-docling-mcp-server (192.168.10.217)
+- Node: hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local)
 - OS: Ubuntu 24.04 LTS
 - Python: 3.11+
 
@@ -300,7 +300,7 @@ Overall Status: PASS
 Test Execution: tc-docling-mcp-deployment-001
 Date: YYYY-MM-DD
 Executor: <name>
-Environment: hx-docling-mcp-server (192.168.10.217)
+Environment: hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local)
 
 Step 1 - Virtual Environment: [PASS/FAIL]
 Step 2 - FastMCP Framework: [PASS/FAIL]

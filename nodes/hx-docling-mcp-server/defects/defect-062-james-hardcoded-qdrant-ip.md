@@ -10,17 +10,17 @@
 
 ## Description
 
-Example code in james-mcp-tools.md contains hardcoded Qdrant IP address `192.168.10.207` instead of using environment variable or hostname reference.
+Example code in james-mcp-tools.md contains hardcoded Qdrant hostname `hx-qdrant-server.hx.dev.local` instead of using environment variable or configurable reference. While this is a hostname (not an IP address), it should still be configurable via environment variables for flexibility across different deployments.
 
 ## Impact
 
-- **Maintenance**: Hardcoded IPs create fragility when infrastructure changes
+- **Maintenance**: Hardcoded hostnames create fragility when infrastructure changes or different environments use alternate service names
 - **Portability**: Cannot deploy to different environments without code modification
-- **Best Practices**: Violates HX-Infrastructure standards (use hostnames, not IPs)
+- **Best Practices**: Violates HX-Infrastructure standards (use configurable environment variables with sensible defaults)
 
 ## Root Cause
 
-Example code written with specific IP instead of configurable reference.
+Example code written with hardcoded hostname instead of configurable environment variable reference.
 
 ## Location
 
@@ -30,7 +30,7 @@ Lines: ~210
 **Before:**
 ```python
 qdrant_config={
-    "host": "192.168.10.207",
+    "host": "hx-qdrant-server.hx.dev.local",
     "port": 6333,
     "collection_entities": "hx_docling_mcp_entities",
     "collection_relationships": "hx_docling_mcp_relationships"
@@ -57,10 +57,10 @@ Changed to:
 
 ## Testing
 
-- ✅ Verified no remaining hardcoded IPs in file
+- ✅ Verified no remaining hardcoded hostnames in file
 - ✅ Example code now follows HX-Infrastructure standards
 
 ## Prevention
 
-- Code review checklist item: No hardcoded IP addresses in example code
-- Use environment variables with hostname defaults
+- Code review checklist item: No hardcoded hostnames or connection strings in example code
+- Use environment variables with sensible hostname defaults

@@ -29,7 +29,7 @@ Verify /health endpoint responds correctly with status information.
 
 **Action**:
 ```bash
-curl -s -w "\nResponse time: %{time_total}s\n" http://192.168.10.217:8000/health
+curl -s -w "\nResponse time: %{time_total}s\n" http://hx-docling-mcp-server.hx.dev.local:8000/health
 ```
 
 **Expected**:
@@ -57,7 +57,7 @@ curl -s -w "\nResponse time: %{time_total}s\n" http://192.168.10.217:8000/health
 
 **Action**:
 ```bash
-curl -s http://192.168.10.217:8000/health | jq '.dependencies'
+curl -s http://hx-docling-mcp-server.hx.dev.local:8000/health | jq '.dependencies'
 ```
 
 **Expected**: All dependencies showing "healthy"

@@ -30,7 +30,7 @@ Verify `convert_document` MCP tool correctly converts DOCX to DoclingDocument JS
 
 **Action**:
 ```bash
-curl -X POST http://192.168.10.217:8000/mcp/tools/call \
+curl -X POST http://hx-docling-mcp-server.hx.dev.local:8000/mcp/tools/call \
   -H "Content-Type: application/json" \
   -d '{
     "jsonrpc": "2.0",

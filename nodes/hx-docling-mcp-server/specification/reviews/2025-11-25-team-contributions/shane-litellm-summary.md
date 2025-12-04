@@ -173,11 +173,11 @@ When Redis is unavailable, the circuit breaker uses **in-memory state with perio
 ## Integration Points
 
 **Dependencies**:
-- **hx-litellm-server** (192.168.10.212:4000): LLM routing gateway
-- **hx-ollama1-server** (192.168.10.204): gemma3:27b, gpt-oss:20b
-- **hx-ollama2-server** (192.168.10.205): qwen3-coder:30b
-- **hx-redis-server** (192.168.10.210): Extraction cache, circuit breaker state
-- **hx-qdrant-server** (192.168.10.207): Entity/relationship storage
+- **hx-litellm-server** (hx-litellm-server.hx.dev.local:4000): LLM routing gateway
+- **hx-ollama1-server** (hx-ollama1-server.hx.dev.local): gemma3:27b, gpt-oss:20b
+- **hx-ollama2-server** (hx-ollama2-server.hx.dev.local): qwen3-coder:30b
+- **hx-redis-server** (hx-redis-server.hx.dev.local): Extraction cache, circuit breaker state
+- **hx-qdrant-server** (hx-qdrant-server.hx.dev.local): Entity/relationship storage
 
 **Cost Model**:
 - Tier 1 (Free): All Ollama1/2 models - zero cost
@@ -200,14 +200,14 @@ When Redis is unavailable, the circuit breaker uses **in-memory state with perio
 **Verification**:
 ```bash
 # Test connectivity to all dependent services
-ping -c 3 192.168.10.212  # hx-litellm-server
-ping -c 3 192.168.10.204  # hx-ollama1-server
-ping -c 3 192.168.10.205  # hx-ollama2-server
-ping -c 3 192.168.10.210  # hx-redis-server
-ping -c 3 192.168.10.207  # hx-qdrant-server
+ping -c 3 hx-litellm-server.hx.dev.local  # hx-litellm-server
+ping -c 3 hx-ollama1-server.hx.dev.local  # hx-ollama1-server
+ping -c 3 hx-ollama2-server.hx.dev.local  # hx-ollama2-server
+ping -c 3 hx-redis-server.hx.dev.local  # hx-redis-server
+ping -c 3 hx-qdrant-server.hx.dev.local  # hx-qdrant-server
 
 # Test LiteLLM API endpoint
-curl -f http://192.168.10.212:4000/health
+curl -f http://hx-litellm-server.hx.dev.local:4000/health
 ```
 
 ### DNS Configuration
@@ -247,26 +247,26 @@ dig +short hx-litellm-server.hx.dev.local
 **Verification**:
 ```bash
 # Check loaded models on Ollama1
-curl http://192.168.10.204:11434/api/tags | jq '.models[].name'
+curl http://hx-ollama1-server.hx.dev.local:11434/api/tags | jq '.models[].name'
 # Expected output should include: gemma3:27b, gpt-oss:20b
 
 # Check loaded models on Ollama2
-curl http://192.168.10.205:11434/api/tags | jq '.models[].name'
+curl http://hx-ollama2-server.hx.dev.local:11434/api/tags | jq '.models[].name'
 # Expected output should include: qwen3-coder:30b
 
 # Test model inference via LiteLLM Router
-curl -X POST http://192.168.10.212:4000/v1/chat/completions \
+curl -X POST http://hx-litellm-server.hx.dev.local:4000/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{"model": "ollama_chat/gemma3:27b", "messages": [{"role": "user", "content": "test"}]}'
 ```
 
 **Pre-Deployment Checklist Summary**:
-- [ ] All 5 service IPs are reachable (192.168.10.212, 204, 205, 221, 223)
+- [ ] All 5 service IPs are reachable (hx-litellm-server.hx.dev.local, 204, 205, 221, 223)
 - [ ] DNS resolution working for all hx.dev.local hostnames
 - [ ] Deployment target is bare-metal Ubuntu Server 24.04 LTS
 - [ ] gemma3:27b and gpt-oss:20b loaded on hx-ollama1-server
 - [ ] qwen3-coder:30b loaded on hx-ollama2-server
-- [ ] LiteLLM Router health endpoint responding (192.168.10.212:4000/health)
+- [ ] LiteLLM Router health endpoint responding (hx-litellm-server.hx.dev.local:4000/health)
 
 ---
 

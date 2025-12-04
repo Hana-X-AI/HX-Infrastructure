@@ -17,9 +17,9 @@
 **Priority**: CRITICAL - Service will not start with wrong IPs
 
 **Wrong → Correct**:
-- `192.168.10.212` → `192.168.10.212` (hx-litellm-server) - 109 occurrences
-- `192.168.10.207` → `192.168.10.207` (hx-qdrant-server) - 59 occurrences
-- `192.168.10.210` → `192.168.10.210` (hx-redis-server) - 77 occurrences
+- `hx-litellm-server.hx.dev.local` → `hx-litellm-server.hx.dev.local` (hx-litellm-server) - 109 occurrences
+- `hx-qdrant-server.hx.dev.local` → `hx-qdrant-server.hx.dev.local` (hx-qdrant-server) - 59 occurrences
+- `hx-redis-server.hx.dev.local` → `hx-redis-server.hx.dev.local` (hx-redis-server) - 77 occurrences
 
 **Affected File Categories**:
 1. Specification files (`specification/node-spec.md`, `specification/reviews/*`)
@@ -33,13 +33,13 @@
 cd /home/agent0/HX-Infrastructure/nodes/hx-docling-mcp-server
 
 # Fix LiteLLM IP (109 occurrences)
-find . -type f -name "*.md" -exec sed -i 's/192\.168\.10\.213/192.168.10.212/g' {} \;
+find . -type f -name "*.md" -exec sed -i 's/192\.168\.10\.213/hx-litellm-server.hx.dev.local/g' {} \;
 
 # Fix Qdrant IP (59 occurrences)
-find . -type f -name "*.md" -exec sed -i 's/192\.168\.10\.223/192.168.10.207/g' {} \;
+find . -type f -name "*.md" -exec sed -i 's/192\.168\.10\.223/hx-qdrant-server.hx.dev.local/g' {} \;
 
 # Fix Redis IP (77 occurrences)
-find . -type f -name "*.md" -exec sed -i 's/192\.168\.10\.221/192.168.10.210/g' {} \;
+find . -type f -name "*.md" -exec sed -i 's/192\.168\.10\.221/hx-redis-server.hx.dev.local/g' {} \;
 
 # Verify all occurrences fixed
 grep -r "192\.168\.10\.213\|192\.168\.10\.223\|192\.168\.10\.221" . --include="*.md"
@@ -59,7 +59,7 @@ grep -r "192\.168\.10\.213\|192\.168\.10\.223\|192\.168\.10\.221" . --include="*
 
 **Priority**: CRITICAL - Architectural violation, duplicate deployment
 
-**Issue**: Spec plans to install LightRAG as local Python package (`lightrag==0.2.0`) when hx-literag-server (192.168.10.220) is already ✅ OPERATIONAL.
+**Issue**: Spec plans to install LightRAG as local Python package (`lightrag==0.2.0`) when hx-literag-server (hx-literag-server.hx.dev.local) is already ✅ OPERATIONAL.
 
 **Files to Update**:
 
@@ -83,7 +83,7 @@ grep -r "192\.168\.10\.213\|192\.168\.10\.223\|192\.168\.10\.221" . --include="*
 
 **Correct Architecture**:
 ```
-Docling MCP Server → HTTP API → hx-literag-server (192.168.10.220)
+Docling MCP Server → HTTP API → hx-literag-server (hx-literag-server.hx.dev.local)
   (document processing)            (knowledge graph generation)
 ```
 
@@ -94,7 +94,7 @@ Docling MCP Server (with embedded LightRAG library)
 
 **Environment Variable to Add**:
 ```bash
-LIGHTRAG_API_URL=http://192.168.10.220:8000
+LIGHTRAG_API_URL=http://hx-literag-server.hx.dev.local:8000
 ```
 
 **Verification**:
@@ -153,13 +153,13 @@ find . -type f -name "*.md" -exec sed -i 's|nodes/hx-docling-mcp-server/charter\
 
 ## HIGH PRIORITY (Architectural Corrections)
 
-### TASK-H1: Document Relationship with Existing hx-docling-server (192.168.10.216)
+### TASK-H1: Document Relationship with Existing hx-docling-server (hx-docling-server.hx.dev.local)
 
 **Priority**: HIGH - Architectural clarity needed
 
 **Issue**: Two Docling-related nodes exist but relationship is undocumented:
-- `hx-docling-server` (192.168.10.216) - ✅ Operational
-- `hx-docling-mcp-server` (192.168.10.217) - ⬜ Planned
+- `hx-docling-server` (hx-docling-server.hx.dev.local) - ✅ Operational
+- `hx-docling-mcp-server` (hx-docling-mcp-server.hx.dev.local) - ⬜ Planned
 
 **Questions to Answer in Spec**:
 1. What is the relationship between the two servers?
@@ -176,7 +176,7 @@ find . -type f -name "*.md" -exec sed -i 's|nodes/hx-docling-mcp-server/charter\
 ```markdown
 ## Relationship with hx-docling-server
 
-**Existing Service**: hx-docling-server (192.168.10.216) - ✅ Operational
+**Existing Service**: hx-docling-server (hx-docling-server.hx.dev.local) - ✅ Operational
 
 **Relationship**: [TO BE CLARIFIED - Need to investigate actual hx-docling-server functionality]
 
@@ -472,12 +472,12 @@ Vault management: /home/agent0/HX-Infrastructure/standards/credentials-vault-man
 
 **Priority**: MEDIUM - Configuration completeness
 
-**Issue**: hx-literag-server (192.168.10.220) missing from environment variables section.
+**Issue**: hx-literag-server (hx-literag-server.hx.dev.local) missing from environment variables section.
 
 **Where to Add** (`specification/node-spec.md`, Lines 894-897):
 ```bash
 # LightRAG Knowledge Graph Service
-LIGHTRAG_API_URL=http://192.168.10.220:8000
+LIGHTRAG_API_URL=http://hx-literag-server.hx.dev.local:8000
 ```
 
 **Context**: After removing local LightRAG installation (TASK-C2), need HTTP API endpoint configuration.
@@ -626,7 +626,7 @@ echo "vault/.vault_password" >> .gitignore
 
 **Priority**: LOW - Accuracy validation
 
-**Issue**: Resource specs provided without verifying actual hx-docling-mcp-server (192.168.10.217) resources.
+**Issue**: Resource specs provided without verifying actual hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local) resources.
 
 **Spec Claims** (Lines 630-652):
 - CPU: 2 cores minimum, 4 cores recommended
@@ -636,7 +636,7 @@ echo "vault/.vault_password" >> .gitignore
 **Action Required**:
 ```bash
 # SSH to hx-docling-mcp-server and check actual resources
-ssh agent0@192.168.10.217
+ssh agent0@hx-docling-mcp-server.hx.dev.local
 
 # Check CPU
 lscpu | grep "^CPU(s):"

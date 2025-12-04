@@ -4,9 +4,11 @@
 **Template Version:** 1.0
 **Charter Version:** 1.0
 **Charter Date:** 2025-11-25
-**Charter Status:** APPROVED
+**Charter Status:** OPERATIONAL
 **Approval Date:** 2025-11-25
 **Approved By:** Jarvis Richardson, CAIO (Hana-X)
+**Operational Date:** 2025-12-04
+**Promoted By:** agent-zero (after julia-santos QA approval, william-chen infrastructure sign-off)
 
 ---
 
@@ -16,7 +18,7 @@
 **Project/Service Name:** Docling MCP Server
 **Project/Service ID:** hx-docling-mcp
 **Project Type:** Integration Service (Document Processing + RAG Pipeline)
-**Node Assignment:** hx-docling-mcp-server (192.168.10.217)
+**Node Assignment:** hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local)
 
 ### Ownership
 **Project Owner:** Jarvis Richardson, CAIO (Hana-X)
@@ -81,7 +83,7 @@ AI agents in the hana-x ecosystem currently lack a standardized, protocol-driven
 **This project INCLUDES:**
 
 1. **Docling MCP Server Deployment** (Phase 1 - Core)
-   - Standalone MCP server on hx-docling-mcp-server (192.168.10.217)
+   - Standalone MCP server on hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local)
    - All 3 MCP transports: HTTP (primary), SSE, stdio
    - FastMCP framework implementation with 19 core MCP tools
    - Embedded docling library (~2.25) for in-process document conversion
@@ -100,9 +102,9 @@ AI agents in the hana-x ecosystem currently lack a standardized, protocol-driven
 3. **Infrastructure Integration**
    - LiteLLM Gateway integration (hx-litellm-server.hx.dev.local:4000)
    - Ollama model routing:
-     - **Ollama1** (192.168.10.204): gemma3:27b, gpt-oss:20b, mistral:7b (entity extraction)
-     - **Ollama2** (192.168.10.205): qwen3-coder:30b, qwen2.5:7b (code/text processing)
-     - **Ollama3** (192.168.10.206): ibm/granite-docling:258m (docling processing ONLY)
+     - **Ollama1** (hx-ollama1-server.hx.dev.local): gemma3:27b, gpt-oss:20b, mistral:7b (entity extraction)
+     - **Ollama2** (hx-ollama2-server.hx.dev.local): qwen3-coder:30b, qwen2.5:7b (code/text processing)
+     - **Ollama3** (hx-ollama3-server.hx.dev.local): ibm/granite-docling:258m (docling processing ONLY)
    - Redis integration for session management (hx-redis-server)
    - Qdrant vector database for knowledge graph storage (hx-qdrant-server)
 
@@ -177,7 +179,7 @@ AI agents in the hana-x ecosystem currently lack a standardized, protocol-driven
 - **Single-Process Architecture**: No distributed processing in Phase 1 (single MCP server instance)
 
 **Resource Constraints:**
-- **Node**: hx-docling-mcp-server (192.168.10.217) dedicated to MCP server
+- **Node**: hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local) dedicated to MCP server
 - **Agent Allocation**: 8-10 week timeline with quality-first priority
 - **Infrastructure Dependencies**: Requires operational Qdrant, Redis, LiteLLM, Ollama1/2/3 services
 
@@ -301,7 +303,7 @@ AI agents in the hana-x ecosystem currently lack a standardized, protocol-driven
 ```
 
 **Key Components:**
-1. **Docling MCP Server** (hx-docling-mcp-server, 192.168.10.217)
+1. **Docling MCP Server** (hx-docling-mcp-server, hx-docling-mcp-server.hx.dev.local)
    - FastMCP framework-based MCP protocol server
    - Embedded docling library for document processing
    - Multi-transport support (HTTP:8000, SSE, stdio)
@@ -317,10 +319,10 @@ AI agents in the hana-x ecosystem currently lack a standardized, protocol-driven
    - Qdrant (hx-qdrant-server:6333) for knowledge graph vectors
 
 **Integration Points:**
-- **LiteLLM Gateway** (192.168.10.212): Multi-provider LLM abstraction for entity extraction
+- **LiteLLM Gateway** (hx-litellm-server.hx.dev.local): Multi-provider LLM abstraction for entity extraction
 - **Ollama1-3 Servers**: Model inference endpoints (entity extraction on 1/2, embeddings on 3)
-- **Qdrant Server** (192.168.10.207): Vector database for knowledge graph storage
-- **Redis Server** (192.168.10.210): Session and state management
+- **Qdrant Server** (hx-qdrant-server.hx.dev.local): Vector database for knowledge graph storage
+- **Redis Server** (hx-redis-server.hx.dev.local): Session and state management
 - **AI Agents**: MCP clients consuming document processing tools
 
 ### Technology Stack
@@ -413,23 +415,23 @@ AI agents in the hana-x ecosystem currently lack a standardized, protocol-driven
 ### Infrastructure Resources
 
 **Required Infrastructure:**
-- **hx-docling-mcp-server** (192.168.10.217): Dedicated node for MCP server deployment
+- **hx-docling-mcp-server** (hx-docling-mcp-server.hx.dev.local): Dedicated node for MCP server deployment
   - Specs: 2-4 cores, 4-8GB RAM, 10GB+ disk (models + cache)
   - OS: Ubuntu 24.04 LTS (bare-metal)
   - Python: 3.10+
 
 **Existing Operational Services (Dependencies):**
-- **hx-litellm-server** (192.168.10.212:4000): LLM routing gateway
-- **hx-ollama1-server** (192.168.10.204): General chat models (gemma3:27b, gpt-oss:20b, mistral:7b)
-- **hx-ollama2-server** (192.168.10.205): Code models (qwen3-coder:30b, qwen2.5:7b)
-- **hx-ollama3-server** (192.168.10.206): Docling + embeddings (ibm/granite-docling:258m, bge-m3:567m, bge-reranker-v2-m3)
-- **hx-qdrant-server** (192.168.10.207:6333): Vector database for knowledge graphs
-- **hx-redis-server** (192.168.10.210:6379): Session management and caching
+- **hx-litellm-server** (hx-litellm-server.hx.dev.local:4000): LLM routing gateway
+- **hx-ollama1-server** (hx-ollama1-server.hx.dev.local): General chat models (gemma3:27b, gpt-oss:20b, mistral:7b)
+- **hx-ollama2-server** (hx-ollama2-server.hx.dev.local): Code models (qwen3-coder:30b, qwen2.5:7b)
+- **hx-ollama3-server** (hx-ollama3-server.hx.dev.local): Docling + embeddings (ibm/granite-docling:258m, bge-m3:567m, bge-reranker-v2-m3)
+- **hx-qdrant-server** (hx-qdrant-server.hx.dev.local:6333): Vector database for knowledge graphs
+- **hx-redis-server** (hx-redis-server.hx.dev.local:6379): Session management and caching
 
 **Node Allocation:**
-- **hx-docling-mcp-server** (192.168.10.217): Docling MCP Server (NEW)
-- **hx-qdrant-server** (192.168.10.207): Knowledge graph vector storage (EXISTING)
-- **hx-redis-server** (192.168.10.210): Session state management (EXISTING)
+- **hx-docling-mcp-server** (hx-docling-mcp-server.hx.dev.local): Docling MCP Server (NEW)
+- **hx-qdrant-server** (hx-qdrant-server.hx.dev.local): Knowledge graph vector storage (EXISTING)
+- **hx-redis-server** (hx-redis-server.hx.dev.local): Session state management (EXISTING)
 
 ### Knowledge Resources
 
@@ -455,27 +457,27 @@ AI agents in the hana-x ecosystem currently lack a standardized, protocol-driven
 
 **Depends On:**
 
-1. **hx-qdrant-server (192.168.10.207)** - Status: ✅ OPERATIONAL
+1. **hx-qdrant-server (hx-qdrant-server.hx.dev.local)** - Status: ✅ OPERATIONAL
    - Impact if delayed: Cannot store knowledge graphs, blocks Stage 2 (LightRAG)
    - Mitigation: Service already operational, low risk
 
-2. **hx-redis-server (192.168.10.210)** - Status: ✅ OPERATIONAL
+2. **hx-redis-server (hx-redis-server.hx.dev.local)** - Status: ✅ OPERATIONAL
    - Impact if delayed: No session management, MCP server degraded functionality
    - Mitigation: Service already operational, low risk
 
-3. **hx-litellm-server (192.168.10.212:4000)** - Status: ✅ OPERATIONAL
+3. **hx-litellm-server (hx-litellm-server.hx.dev.local:4000)** - Status: ✅ OPERATIONAL
    - Impact if delayed: Cannot route LLM requests for entity extraction
    - Mitigation: Service already operational, tested with 9 models available
 
-4. **hx-ollama1-server (192.168.10.204)** - Status: ✅ OPERATIONAL (3 models)
+4. **hx-ollama1-server (hx-ollama1-server.hx.dev.local)** - Status: ✅ OPERATIONAL (3 models)
    - Impact if delayed: No large models for LightRAG entity extraction
    - Mitigation: gemma3:27b, gpt-oss:20b confirmed available via LiteLLM
 
-5. **hx-ollama2-server (192.168.10.205)** - Status: ✅ OPERATIONAL (3 models)
+5. **hx-ollama2-server (hx-ollama2-server.hx.dev.local)** - Status: ✅ OPERATIONAL (3 models)
    - Impact if delayed: No code-specialized models for technical document processing
    - Mitigation: qwen3-coder:30b confirmed available
 
-6. **hx-ollama3-server (192.168.10.206)** - Status: ✅ OPERATIONAL (4 models)
+6. **hx-ollama3-server (hx-ollama3-server.hx.dev.local)** - Status: ✅ OPERATIONAL (4 models)
    - Impact if delayed: No granite-docling model for document processing
    - Mitigation: ibm/granite-docling:258m, bge-m3:567m confirmed available
 
@@ -492,7 +494,7 @@ AI agents in the hana-x ecosystem currently lack a standardized, protocol-driven
 - [x] **Charter Approved** - CAIO sign-off required
 - [x] **Knowledge Vault Research Complete** - 8 repositories deep dive complete
 - [x] **Infrastructure Validated** - All 6 dependent services operational (confirmed)
-- [x] **hx-docling-mcp-server Node Allocated** - 192.168.10.217 assigned and accessible
+- [x] **hx-docling-mcp-server Node Allocated** - hx-docling-mcp-server.hx.dev.local assigned and accessible
 - [ ] **Specification Development Ready** - Charter approval triggers spec phase (alex-rivera)
 
 ---
@@ -520,7 +522,7 @@ AI agents in the hana-x ecosystem currently lack a standardized, protocol-driven
    - Validation method: Test entity extraction quality during implementation (Week 4-5)
    - Fallback: If quality insufficient, escalate to CAIO for OpenAI API approval
 
-2. **hx-docling-mcp-server Node (192.168.10.217) Has Adequate Resources**
+2. **hx-docling-mcp-server Node (hx-docling-mcp-server.hx.dev.local) Has Adequate Resources**
    - Validation method: Resource capacity assessment during deployment planning (Week 7)
    - Fallback: If insufficient, coordinate with william-chen for node resource expansion
 

@@ -1,10 +1,10 @@
 # Deployment Architecture: Docling MCP Server
 
-**Project**: hx-docling-mcp-server | **Date**: 2025-11-27 | **Version**: 1.0
+**Project**: hx-docling-mcp-server | **Date**: 2025-11-27 (Created), 2025-12-04 (Operational) | **Version**: 1.0
 **Charter**: `/home/agent0/HX-Infrastructure/nodes/hx-docling-mcp-server/charter/charter.md`
 **Specification**: `/home/agent0/HX-Infrastructure/nodes/hx-docling-mcp-server/specification/node-spec.md`
 **Plan**: `/home/agent0/HX-Infrastructure/nodes/hx-docling-mcp-server/planning/plan.md`
-**Status**: Phase 1 - Architecture Design Complete
+**Status**: ✅ COMPLETE - Architecture Implemented, Service OPERATIONAL
 
 ---
 
@@ -252,12 +252,12 @@ The Docling MCP Server implements a **3-layer architecture** aligned with HX-Inf
 
 | Service | Node | Port | Purpose | Integration Pattern |
 |---------|------|------|---------|---------------------|
-| **hx-litellm-server** | 192.168.10.212 | 4000 | LLM routing gateway | Synchronous HTTP (OpenAI-compatible API) |
-| **hx-ollama1-server** | 192.168.10.204 | 11434 | Entity extraction models | Via LiteLLM (gemma3:27b, gpt-oss:20b) |
-| **hx-ollama2-server** | 192.168.10.205 | 11434 | Code processing models | Via LiteLLM (qwen3-coder:30b) |
-| **hx-ollama3-server** | 192.168.10.206 | 11434 | Docling + embedding models | Via LiteLLM (granite-docling:258m, bge-m3:567m) |
-| **hx-qdrant-server** | 192.168.10.207 | 6333 | Knowledge graph storage | Synchronous HTTP/gRPC |
-| **hx-redis-server** | 192.168.10.210 | 6379 | Session state caching | Synchronous TCP (Redis protocol) |
+| **hx-litellm-server** | hx-litellm-server.hx.dev.local | 4000 | LLM routing gateway | Synchronous HTTP (OpenAI-compatible API) |
+| **hx-ollama1-server** | hx-ollama1-server.hx.dev.local | 11434 | Entity extraction models | Via LiteLLM (gemma3:27b, gpt-oss:20b) |
+| **hx-ollama2-server** | hx-ollama2-server.hx.dev.local | 11434 | Code processing models | Via LiteLLM (qwen3-coder:30b) |
+| **hx-ollama3-server** | hx-ollama3-server.hx.dev.local | 11434 | Docling + embedding models | Via LiteLLM (granite-docling:258m, bge-m3:567m) |
+| **hx-qdrant-server** | hx-qdrant-server.hx.dev.local | 6333 | Knowledge graph storage | Synchronous HTTP/gRPC |
+| **hx-redis-server** | hx-redis-server.hx.dev.local | 6379 | Session state caching | Synchronous TCP (Redis protocol) |
 
 **Network Topology:**
 
@@ -266,7 +266,7 @@ Internal Network: 192.168.10.0/24
 
 ┌─────────────────────────────────────────────────────────────────┐
 │                     hx-docling-mcp-server                       │
-│                      (192.168.10.217)                           │
+│                      (hx-docling-mcp-server.hx.dev.local)                           │
 │                                                                  │
 │  ┌────────────────────────────────────────────────────────┐    │
 │  │  Docling MCP Server (Port 8000)                        │    │
@@ -724,7 +724,7 @@ async def convert_pdf(
 **HTTP Transport Request Flow:**
 
 ```
-1. Client sends HTTP POST to http://192.168.10.217:8000/mcp
+1. Client sends HTTP POST to http://hx-docling-mcp-server.hx.dev.local:8000/mcp
    Headers:
      Content-Type: application/json
    Body:
@@ -1466,7 +1466,7 @@ from fastmcp.middleware import oauth2_middleware
 mcp.add_middleware(
     oauth2_middleware(
         providers=["google", "github"],
-        callback_url="http://192.168.10.217:8000/oauth/callback",
+        callback_url="http://hx-docling-mcp-server.hx.dev.local:8000/oauth/callback",
         scopes=["openid", "profile", "email"]
     )
 )
@@ -1893,7 +1893,7 @@ EnvironmentFile=/etc/docling-mcp/.env
 
 # Pre-start validation (inline commands, not separate scripts)
 ExecStartPre=/bin/bash -c 'test -n "$LITELLM_BASE_URL"'
-ExecStartPre=/usr/bin/curl -f http://192.168.10.212:4000/health
+ExecStartPre=/usr/bin/curl -f http://hx-litellm-server.hx.dev.local:4000/health
 ExecStartPre=/bin/bash -c 'test -r /etc/docling-mcp/.env'
 ExecStartPre=/bin/bash -c 'test $(df /var/lib/docling-mcp | tail -1 | awk "{print \$4}") -gt 1048576'
 
@@ -2210,7 +2210,7 @@ class LiteLLMClient:
     """Async client for LiteLLM Gateway."""
 
     def __init__(self, base_url: str, api_key: str = None):
-        self.base_url = base_url  # http://192.168.10.212:4000
+        self.base_url = base_url  # http://hx-litellm-server.hx.dev.local:4000
         self.api_key = api_key
 
         # Model routing configuration
@@ -2351,7 +2351,7 @@ class QdrantKnowledgeGraphClient:
 
     def __init__(self, host: str, port: int):
         self.client = AsyncQdrantClient(
-            host=host,  # 192.168.10.207
+            host=host,  # hx-qdrant-server.hx.dev.local
             port=port,  # 6333
             grpc_port=6334,
             prefer_grpc=True  # Use gRPC for better performance
@@ -2460,7 +2460,7 @@ class RedisClientManager:
     def __init__(self, host: str, port: int, password: str = None):
         # Connection pool (max 10 connections)
         self.pool = ConnectionPool(
-            host=host,  # 192.168.10.210
+            host=host,  # hx-redis-server.hx.dev.local
             port=port,  # 6379
             password=password,
             db=0,
@@ -2533,9 +2533,9 @@ backend mcp_backend
     balance roundrobin
     option httpchk GET /health
 
-    server mcp1 192.168.10.217:8001 check
-    server mcp2 192.168.10.217:8002 check
-    server mcp3 192.168.10.218:8001 check
+    server mcp1 hx-docling-mcp-server.hx.dev.local:8001 check
+    server mcp2 hx-docling-mcp-server.hx.dev.local:8002 check
+    server mcp3 hx-crawl4ai-server.hx.dev.local:8001 check
 ```
 
 ### 10.3 Failover Strategies (Phase 2)
@@ -2689,7 +2689,7 @@ backend mcp_backend
 **Decision:** Use Qdrant as LightRAG storage backend.
 
 **Rationale:**
-1. **Infrastructure Availability**: hx-qdrant-server already operational (192.168.10.207:6333)
+1. **Infrastructure Availability**: hx-qdrant-server already operational (hx-qdrant-server.hx.dev.local:6333)
 2. **LightRAG Support**: Qdrant officially supported by LightRAG framework
 3. **Vector Search**: Qdrant optimized for vector similarity search (dual-level retrieval)
 4. **Scalability**: Qdrant supports sharding and horizontal scaling (Phase 2)
@@ -2732,7 +2732,7 @@ backend mcp_backend
 **Decision:** Use Redis for session state management in Phase 1.
 
 **Rationale:**
-1. **Infrastructure Availability**: hx-redis-server operational (192.168.10.210:6379)
+1. **Infrastructure Availability**: hx-redis-server operational (hx-redis-server.hx.dev.local:6379)
 2. **Performance**: In-memory storage, <1ms latency (vs 10-50ms for PostgreSQL)
 3. **TTL Support**: Native TTL for session expiration (no manual cleanup required)
 4. **Session Characteristics**: Ephemeral data (1 hour TTL), no long-term persistence needed

@@ -56,7 +56,7 @@ This document identifies ALL gaps, inconsistencies, assumptions, and errors in t
 
 ## CONFIRMED INFRASTRUCTURE FACTS (From /home/agent0/HX-Infrastructure/inventory/nodes.md)
 
-**hx-literag-server (192.168.10.220) – ✅ OPERATIONAL**
+**hx-literag-server (hx-literag-server.hx.dev.local) – ✅ OPERATIONAL**
 - Role: LightRAG Server
 - Responsibilities:
   - Efficient Retrieval-Augmented Generation (RAG) framework
@@ -101,7 +101,7 @@ This means LightRAG is ALREADY DEPLOYED as a separate service on hx-literag-serv
 
 **What Should Have Been Done**:
 - Check `/home/agent0/HX-Infrastructure/inventory/nodes.md` for existing LightRAG deployment
-- Find: hx-literag-server (192.168.10.220) is ✅ Operational
+- Find: hx-literag-server (hx-literag-server.hx.dev.local) is ✅ Operational
 - Specify SERVICE-TO-SERVICE integration via HTTP API, not local library installation
 - Add hx-literag-server to internal service dependencies (like LiteLLM, Qdrant, Redis)
 
@@ -114,7 +114,7 @@ This means LightRAG is ALREADY DEPLOYED as a separate service on hx-literag-serv
 
 **Correct Architecture**:
 ```
-Docling MCP Server → HTTP API → hx-literag-server (192.168.10.220)
+Docling MCP Server → HTTP API → hx-literag-server (hx-literag-server.hx.dev.local)
   (document processing)            (knowledge graph generation)
 ```
 
@@ -140,7 +140,7 @@ Docling MCP Server (with embedded LightRAG library)
 ```markdown
 **CRITICAL Dependencies** (service cannot function without):
 
-X. **hx-literag-server (192.168.10.220)** - Status: ✅ OPERATIONAL
+X. **hx-literag-server (hx-literag-server.hx.dev.local)** - Status: ✅ OPERATIONAL
    - **Purpose**: Knowledge graph generation via LightRAG framework
    - **Integration**: HTTP API for entity/relationship extraction
    - **Criticality**: Critical for Stage 2 (knowledge graph generation)
@@ -156,19 +156,19 @@ X. **hx-literag-server (192.168.10.220)** - Status: ✅ OPERATIONAL
 **Issue**: ALL THREE critical dependency IP addresses are WRONG
 
 **SPEC CLAIMS** (WRONG):
-- Line 780: `hx-litellm-server (192.168.10.212:4000)`
-- Line 787: `hx-qdrant-server (192.168.10.207:6333)`
-- Line 810: `hx-redis-server (192.168.10.210:6379)`
+- Line 780: `hx-litellm-server (hx-litellm-server.hx.dev.local:4000)`
+- Line 787: `hx-qdrant-server (hx-qdrant-server.hx.dev.local:6333)`
+- Line 810: `hx-redis-server (hx-redis-server.hx.dev.local:6379)`
 
 **ACTUAL INFRASTRUCTURE** (from `/home/agent0/HX-Infrastructure/inventory/nodes.md`):
-- hx-litellm-server: `192.168.10.212` (NOT .213)
-- hx-qdrant-server: `192.168.10.207` (NOT .223)
-- hx-redis-server: `192.168.10.210` (NOT .221)
+- hx-litellm-server: `hx-litellm-server.hx.dev.local` (NOT .213)
+- hx-qdrant-server: `hx-qdrant-server.hx.dev.local` (NOT .223)
+- hx-redis-server: `hx-redis-server.hx.dev.local` (NOT .221)
 
 **What Those Wrong IPs Actually Are**:
-- 192.168.10.212 → hx-fastmcp-server (NOT LiteLLM)
-- 192.168.10.207 → hx-demo-server (NOT Qdrant)
-- 192.168.10.210 → hx-agui-server (NOT Redis)
+- hx-litellm-server.hx.dev.local → hx-fastmcp-server (NOT LiteLLM)
+- hx-qdrant-server.hx.dev.local → hx-demo-server (NOT Qdrant)
+- hx-redis-server.hx.dev.local → hx-agui-server (NOT Redis)
 
 **Impact**:
 - SERVICE WOULD COMPLETELY FAIL TO START
@@ -250,15 +250,15 @@ Line 388: **Relationship Collection** (`hx_docling_mcp_relationships`): 1024D re
 
 ---
 
-## GAP #6: No Reference to hx-docling-server (192.168.10.216)
+## GAP #6: No Reference to hx-docling-server (hx-docling-server.hx.dev.local)
 
 **Location**: Entire spec - hx-docling-server never mentioned
 
-**Issue**: There's ALREADY a `hx-docling-server` (192.168.10.216) operational in infrastructure
+**Issue**: There's ALREADY a `hx-docling-server` (hx-docling-server.hx.dev.local) operational in infrastructure
 
 **From inventory/nodes.md**:
 ```
-### hx-docling-server (192.168.10.216) – ✅ Operational
+### hx-docling-server (hx-docling-server.hx.dev.local) – ✅ Operational
 ```
 
 **Questions NOT Answered in Spec**:
@@ -333,7 +333,7 @@ Line 388: **Relationship Collection** (`hx_docling_mcp_relationships`): 1024D re
 - Storage: 10GB minimum, 50GB recommended
 
 **What Should Have Been Done**:
-- SSH to hx-docling-mcp-server (192.168.10.217) and check actual resources
+- SSH to hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local) and check actual resources
 - Run: `lscpu`, `free -h`, `df -h`
 - Verify node meets minimum requirements
 - Document actual vs required resources

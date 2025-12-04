@@ -4,11 +4,12 @@
 **Template Version:** 1.0
 **Specification Version:** 1.0
 **Created:** 2025-11-25
-**Status:** Specification Phase Complete
+**Operational Date:** 2025-12-04
+**Status:** ✅ COMPLETE - Service Implemented and OPERATIONAL
 **Architect:** alex-rivera (Platform Architect)
 **Contributors:** albert-singh (Docling Processing), andy-taylor (LightRAG Extraction), marcus-johnson (LightRAG Configuration), shane-black (LiteLLM Integration), james-rodriguez (MCP Tools)
 **Project ID:** hx-docling-mcp
-**Node Assignment:** hx-docling-mcp-server (192.168.10.217)
+**Node Assignment:** hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local)
 **Charter Reference:** `/home/agent0/HX-Infrastructure/nodes/hx-docling-mcp-server/charter/charter.md` (Status: APPROVED)
 
 ---
@@ -18,10 +19,10 @@
 This specification defines **WHAT** the Docling MCP Server does and **WHY** it's needed, without prescribing **HOW** to deploy it (implementation details deferred to plan.md and deployment procedures).
 
 **Context Chain:**
-- **Charter** (`charter.md`) - Defined project vision, scope, strategic alignment (APPROVED)
-- **This Document** - Defines service requirements, architecture, and capabilities (DRAFT)
-- **Architecture** (`architecture.md`) - Will define technical design and component integration (FUTURE)
-- **Plan** (`plan.md`) - Will define deployment procedures and implementation steps (FUTURE)
+- **Charter** (`charter.md`) - Defined project vision, scope, strategic alignment (OPERATIONAL)
+- **This Document** - Defines service requirements, architecture, and capabilities (IMPLEMENTED)
+- **Architecture** (`planning/deployment-architecture.md`) - Technical design and component integration (COMPLETE)
+- **Plan** (`planning/plan.md`) - Deployment procedures and implementation steps (COMPLETE)
 
 ---
 
@@ -41,7 +42,7 @@ The Docling MCP Server is a standalone document processing service that exposes 
 - **Reduced Integration Complexity**: Single MCP endpoint replaces multiple ad-hoc document processing integrations
 
 **Deployment Context:**
-- **Target Node**: hx-docling-mcp-server (192.168.10.217)
+- **Target Node**: hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local)
 - **Deployment Philosophy**: Bare-metal deployment with systemd service management (no Docker for production)
 - **Timeline**: 8-10 weeks (quality over speed)
 - **Scope**: Phase 1 delivers Stages 1-2 (ingestion + knowledge structuring); Stages 3-5 (embeddings, indexing, retrieval) deferred to Phase 2
@@ -54,14 +55,14 @@ HX-Infrastructure deploys Docling capabilities across two specialized servers:
 
 | Server | IP | Status | Purpose | Primary Interface |
 |--------|----|---------|---------|--------------------|
-| **hx-docling-server** | 192.168.10.216 | ✅ Operational | Document worker node | Direct API (HTTP/REST) |
-| **hx-docling-mcp-server** | 192.168.10.217 | ⬜ Planned | MCP protocol gateway | MCP (HTTP/SSE/stdio) |
+| **hx-docling-server** | hx-docling-server.hx.dev.local | ✅ Operational | Document worker node | Direct API (HTTP/REST) |
+| **hx-docling-mcp-server** | hx-docling-mcp-server.hx.dev.local | ⬜ Planned | MCP protocol gateway | MCP (HTTP/SSE/stdio) |
 
 **Coordination Strategy:**
 
 The two servers serve **complementary, non-overlapping** roles:
 
-1. **hx-docling-server (192.168.10.216)** - Document Processing Worker:
+1. **hx-docling-server (hx-docling-server.hx.dev.local)** - Document Processing Worker:
    - **Role**: Bare-metal Docling worker for internal document processing tasks
    - **Primary Responsibilities**:
      - Internal document retrieval and parsing
@@ -72,7 +73,7 @@ The two servers serve **complementary, non-overlapping** roles:
    - **Interface**: Direct HTTP REST API for document processing jobs
    - **Status**: ✅ Already operational, processing documents for HX-Infrastructure services
 
-2. **hx-docling-mcp-server (192.168.10.217)** - MCP Protocol Gateway:
+2. **hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local)** - MCP Protocol Gateway:
    - **Role**: MCP-standardized interface for AI agent integration
    - **Primary Responsibilities**:
      - Expose document processing capabilities via MCP protocol
@@ -683,7 +684,7 @@ The Docling MCP Server provides AI agents with a standardized MCP interface for 
 
 #### Target Node
 
-- **Target Node**: hx-docling-mcp-server (192.168.10.217)
+- **Target Node**: hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local)
 - **Operating System**: Ubuntu 24.04 LTS (bare-metal installation)
 - **Hostname**: hx-docling-mcp-server.hx.dev.local (DNS via hx-dc-server)
 - **Network**: Internal hx.dev.local network, no public internet exposure
@@ -710,7 +711,7 @@ The Docling MCP Server provides AI agents with a standardized MCP interface for 
 - **Network**:
   - **Bandwidth**: 100Mbps minimum (document downloads, Qdrant writes)
   - **Ports**: TCP 8000 (MCP HTTP server)
-  - **Outbound Access**: Required to LiteLLM (192.168.10.212:4000), Qdrant (192.168.10.207:6333), Redis (192.168.10.210:6379)
+  - **Outbound Access**: Required to LiteLLM (hx-litellm-server.hx.dev.local:4000), Qdrant (hx-qdrant-server.hx.dev.local:6333), Redis (hx-redis-server.hx.dev.local:6379)
 
 #### System Dependencies
 
@@ -838,28 +839,28 @@ The Docling MCP Server provides AI agents with a standardized MCP interface for 
 
 **CRITICAL Dependencies** (service cannot function without):
 
-1. **hx-litellm-server (192.168.10.212:4000)** - Status: ✅ OPERATIONAL
+1. **hx-litellm-server (hx-litellm-server.hx.dev.local:4000)** - Status: ✅ OPERATIONAL
    - **Purpose**: Multi-provider LLM abstraction for entity extraction
    - **Integration**: HTTP API calls for chat completions (LightRAG entity extraction)
    - **Models Required**: gemma3:27b (Ollama1), qwen3-coder:30b (Ollama2)
    - **Criticality**: Critical for Stage 2 (knowledge graph generation); Stage 1 (document conversion) can operate without
    - **Fallback**: If unavailable, disable knowledge graph generation, allow document conversion only
 
-2. **hx-qdrant-server (192.168.10.207:6333)** - Status: ✅ OPERATIONAL
+2. **hx-qdrant-server (hx-qdrant-server.hx.dev.local:6333)** - Status: ✅ OPERATIONAL
    - **Purpose**: Vector database for knowledge graph storage
    - **Integration**: HTTP API for collection management, vector upsert, search
    - **Collections**: `hx_docling_mcp_entities`, `hx_docling_mcp_relationships`
    - **Criticality**: Critical for Stage 2 (knowledge graph storage); Stage 1 independent
    - **Fallback**: If unavailable, return error for knowledge graph tools, allow document conversion
 
-3. **hx-ollama1-server (192.168.10.204:11434)** - Status: ✅ OPERATIONAL
+3. **hx-ollama1-server (hx-ollama1-server.hx.dev.local:11434)** - Status: ✅ OPERATIONAL
    - **Purpose**: Large language models for entity extraction
    - **Integration**: Via LiteLLM gateway (indirect dependency)
    - **Models**: gemma3:27b (primary), gpt-oss:20b (fallback)
    - **Criticality**: Critical for high-quality entity extraction
    - **Fallback**: Use Ollama2 models (lower quality) if Ollama1 unavailable
 
-4. **hx-ollama2-server (192.168.10.205:11434)** - Status: ✅ OPERATIONAL
+4. **hx-ollama2-server (hx-ollama2-server.hx.dev.local:11434)** - Status: ✅ OPERATIONAL
    - **Purpose**: Code-specialized models for technical document processing
    - **Integration**: Via LiteLLM gateway (indirect dependency)
    - **Models**: qwen3-coder:30b (technical docs), qwen2.5:7b (fallback)
@@ -868,21 +869,21 @@ The Docling MCP Server provides AI agents with a standardized MCP interface for 
 
 **HIGH Priority Dependencies** (service degraded without):
 
-5. **hx-redis-server (192.168.10.210:6379)** - Status: ✅ OPERATIONAL
+5. **hx-redis-server (hx-redis-server.hx.dev.local:6379)** - Status: ✅ OPERATIONAL
    - **Purpose**: Session state management for multi-step workflows
    - **Integration**: Redis connection pool, key-value storage
    - **Data Stored**: Session metadata, document processing status, temporary cache
    - **Criticality**: High for session-based workflows; can operate stateless without
    - **Fallback**: Graceful degradation - disable session tools, operate in stateless mode
 
-6. **hx-literag-server (192.168.10.220:8000)** - Status: ✅ OPERATIONAL
+6. **hx-literag-server (hx-literag-server.hx.dev.local:8000)** - Status: ✅ OPERATIONAL
    - **Purpose**: LightRAG knowledge graph generation via HTTP API
    - **Integration**: HTTP API for document chunking, entity extraction, relationship mapping
    - **Endpoints**: `/chunk`, `/extract_entities`, `/extract_relationships`
    - **Criticality**: Critical for Stage 2 (knowledge graph generation); Stage 1 (document conversion) can operate without
    - **Fallback**: If unavailable, disable knowledge graph tools, allow document conversion only
 
-7. **hx-ollama3-server (192.168.10.206:11434)** - Status: ✅ OPERATIONAL
+7. **hx-ollama3-server (hx-ollama3-server.hx.dev.local:11434)** - Status: ✅ OPERATIONAL
    - **Purpose**: Embedding models for vector generation (Phase 2 primary use)
    - **Integration**: Via LiteLLM gateway (indirect dependency)
    - **Models**: ibm/granite-docling:258m (document processing - LOW priority), bge-m3:567m (embeddings - Phase 2)
@@ -891,13 +892,13 @@ The Docling MCP Server provides AI agents with a standardized MCP interface for 
 
 #### Infrastructure Dependencies
 
-7. **hx-dc-server (192.168.10.201)** - Status: ✅ OPERATIONAL
+7. **hx-dc-server** - Status: ✅ OPERATIONAL
    - **Purpose**: DNS resolution for service discovery
    - **Integration**: System-level DNS resolution (hx.dev.local domain)
    - **Criticality**: Critical for resolving hostnames (hx-litellm-server.hx.dev.local, etc.)
    - **Fallback**: Use IP addresses directly if DNS unavailable (requires config change)
 
-8. **hx-ca-server (192.168.10.202)** - Status: ✅ OPERATIONAL
+8. **hx-ca-server** - Status: ✅ OPERATIONAL
    - **Purpose**: TLS certificates for internal service communication (Phase 2)
    - **Integration**: Certificate files in `/etc/ssl/hx/`
    - **Criticality**: Low for Phase 1 (no TLS), High for Phase 2 (mTLS between services)
@@ -959,11 +960,11 @@ The Docling MCP Server provides AI agents with a standardized MCP interface for 
 #### Environment Variables
 
 **Required** (service fails to start if missing):
-- `LITELLM_API_BASE`: LiteLLM gateway base URL (default: `http://192.168.10.212:4000`)
-- `LIGHTRAG_API_URL`: hx-literag-server API base URL (default: `http://192.168.10.220:8000`)
-- `QDRANT_HOST`: Qdrant server hostname (default: `192.168.10.207`)
+- `LITELLM_API_BASE`: LiteLLM gateway base URL (default: `http://hx-litellm-server.hx.dev.local:4000`)
+- `LIGHTRAG_API_URL`: hx-literag-server API base URL (default: `http://hx-literag-server.hx.dev.local:8000`)
+- `QDRANT_HOST`: Qdrant server hostname (default: `hx-qdrant-server.hx.dev.local`)
 - `QDRANT_PORT`: Qdrant server port (default: `6333`)
-- `REDIS_HOST`: Redis server hostname (default: `192.168.10.210`)
+- `REDIS_HOST`: Redis server hostname (default: `hx-redis-server.hx.dev.local`)
 - `REDIS_PORT`: Redis server port (default: `6379`)
 
 **Optional** (defaults provided):
@@ -1009,7 +1010,7 @@ class RedisSettings(BaseModel):
     """Redis connection and session management configuration."""
 
     host: str = Field(
-        default="192.168.10.210",
+        default="hx-redis-server.hx.dev.local",
         description="Redis server hostname or IP address"
     )
     port: int = Field(
@@ -1121,7 +1122,7 @@ class QdrantSettings(BaseModel):
     """Qdrant vector database connection configuration."""
 
     host: str = Field(
-        default="192.168.10.207",
+        default="hx-qdrant-server.hx.dev.local",
         description="Qdrant server hostname or IP address"
     )
     port: int = Field(
@@ -1157,7 +1158,7 @@ class LLMSettings(BaseModel):
     """LLM configuration for entity extraction via LiteLLM gateway."""
 
     litellm_api_base: HttpUrl = Field(
-        default="http://192.168.10.212:4000",
+        default="http://hx-litellm-server.hx.dev.local:4000",
         description="LiteLLM gateway base URL for model routing"
     )
     entity_extraction_model: Annotated[str, StringConstraints(pattern=r"^[a-z0-9:-]+$")] = Field(
@@ -1351,14 +1352,14 @@ class DoclingMCPConfig(BaseSettings):
 - **Network Zone**: Trusted internal network (hx.dev.local, 192.168.10.0/24)
 - **No DMZ Exposure**: Service not accessible from DMZ or public internet
 - **No External Dependencies**: All service integrations are internal (no external API calls)
-- **Service Discovery**: DNS resolution via hx-dc-server (192.168.10.200) only
+- **Service Discovery**: DNS resolution via hx-dc-server (hx-dc-server.hx.dev.local) only
 
 **TLS/SSL Strategy**:
 - **Phase 1**: No TLS (internal network trust assumption)
   - **Rationale**: All communication within trusted 192.168.10.0/24 network, physically isolated development environment
   - **Risk Acceptance**: Network-level security sufficient for development/initial deployment
 - **Phase 2**: mTLS (mutual TLS) for all service-to-service communication
-  - **Certificate Authority**: hx-ca-server (192.168.10.201) internal CA
+  - **Certificate Authority**: hx-ca-server internal CA
   - **Certificate Types**: Server certificates for MCP HTTP server, client certificates for LiteLLM/Qdrant/Redis connections
   - **TLS Version**: TLS 1.3 minimum (stronger security, improved performance)
   - **Cipher Suites**: Modern cipher suites only (no deprecated algorithms)
@@ -1511,13 +1512,13 @@ class DoclingMCPConfig(BaseSettings):
 ---
 # LiteLLM Gateway Credentials (if LiteLLM authentication enabled)
 litellm:
-  api_base: "http://192.168.10.212:4000"
+  api_base: "http://hx-litellm-server.hx.dev.local:4000"
   api_key: "{{ vault_litellm_api_key }}"  # Placeholder for future
   timeout_seconds: 60
 
 # Qdrant Vector Database Credentials (if Qdrant authentication enabled)
 qdrant:
-  host: "192.168.10.207"
+  host: "hx-qdrant-server.hx.dev.local"
   port: 6333
   api_key: "{{ vault_qdrant_api_key }}"  # Placeholder for future
   collection_entities: "hx_docling_mcp_entities"
@@ -1526,7 +1527,7 @@ qdrant:
 
 # Redis Session Store Credentials (if Redis authentication enabled)
 redis:
-  host: "192.168.10.210"
+  host: "hx-redis-server.hx.dev.local"
   port: 6379
   password: "{{ vault_redis_password }}"  # Placeholder for future
   db: 0  # Database index for Docling MCP sessions
@@ -1623,7 +1624,7 @@ Standard password: See `vault/credentials.yml` (Ansible Vault encrypted)
     "parameters_hash": "sha256:a1b2c3...",  # Hash of sanitized parameters
     "result": "success",
     "duration_ms": 3500,
-    "source_ip": "192.168.10.215"
+    "source_ip": "hx-n8n-server.hx.dev.local"
   }
   ```
 - **Retention**: 30 days (compliance requirement), 90 days in centralized logging (Phase 2)
@@ -1641,7 +1642,7 @@ Standard password: See `vault/credentials.yml` (Ansible Vault encrypted)
   - Working directory restricted (`/var/lib/docling-mcp`, no access to `/root`, `/home`)
 
 **Certificate Management** (Phase 2):
-- **Certificate Authority**: hx-ca-server (192.168.10.201) internal CA
+- **Certificate Authority**: hx-ca-server internal CA
 - **Certificate Lifecycle**:
   - **Generation**: Coordinate with frank-lucas (Security Specialist) for CSR creation
   - **Signing**: CA signs certificates with 365-day validity
@@ -1655,7 +1656,7 @@ Standard password: See `vault/credentials.yml` (Ansible Vault encrypted)
     6. Install new certificates to `/etc/ssl/hx/`
     7. Update file permissions: `chown docling-mcp:docling-mcp /etc/ssl/hx/*.crt`
     8. Start service: `systemctl start docling-mcp.service`
-    9. Verify health check: `curl https://192.168.10.217:8443/health`
+    9. Verify health check: `curl https://hx-docling-mcp-server.hx.dev.local:8443/health`
     10. Document rotation in change log
   - **Revocation**: CRL (Certificate Revocation List) checked on startup
 - **Certificate Types Required**:
@@ -1668,7 +1669,7 @@ Standard password: See `vault/credentials.yml` (Ansible Vault encrypted)
 #### Health Checks
 
 **Primary Health Check**: HTTP endpoint `/health`
-- **URL**: `http://192.168.10.217:8000/health`
+- **URL**: `http://hx-docling-mcp-server.hx.dev.local:8000/health`
 - **Response Format**: JSON
   ```json
   {
@@ -1785,7 +1786,7 @@ Standard password: See `vault/credentials.yml` (Ansible Vault encrypted)
 ### Deployment Success
 
 - **SC-001**: MCP server responds to health check within 2 seconds with `status: "healthy"`
-  - **Validation Method**: Execute `curl http://192.168.10.217:8000/health` 10 times, measure response time and status
+  - **Validation Method**: Execute `curl http://hx-docling-mcp-server.hx.dev.local:8000/health` 10 times, measure response time and status
   - **Expected Result**: 10/10 requests return 200 OK, response time <2s, JSON contains `status: "healthy"`, dependency health checks pass
   - **Automated Test**: TC-INT-005 (LiteLLM connectivity), TC-INT-006 (Qdrant connectivity), TC-INT-007 (Redis connectivity)
   - **Test Execution**: Run during every deployment validation phase
@@ -1917,7 +1918,7 @@ Standard password: See `vault/credentials.yml` (Ansible Vault encrypted)
 │  ┌─────────────────┐          ┌──────────────────────────────────┐         │
 │  │  AI Agents      │──MCP────▶│   Docling MCP Server             │         │
 │  │  (MCP Clients)  │          │   (hx-docling-mcp-server)        │         │
-│  │                 │          │   192.168.10.217:8000            │         │
+│  │                 │          │   hx-docling-mcp-server.hx.dev.local:8000            │         │
 │  └─────────────────┘          └──────────────────────────────────┘         │
 │         │                                  │                                │
 │         │                                  │                                │
@@ -1927,7 +1928,7 @@ Standard password: See `vault/credentials.yml` (Ansible Vault encrypted)
 │         │          ┌────────────────────┐   ┌───────────────────┐         │
 │         │          │  LiteLLM Gateway   │   │  Qdrant Vector DB  │         │
 │         │          │  (LLM Abstraction) │   │  (Knowledge Graph) │         │
-│         │          │  192.168.10.212    │   │  192.168.10.207    │         │
+│         │          │  hx-litellm-server.hx.dev.local    │   │  hx-qdrant-server.hx.dev.local    │         │
 │         │          └────────────────────┘   └───────────────────┘         │
 │         │                     │                          │                 │
 │         │                     │                          │                 │
@@ -1943,7 +1944,7 @@ Standard password: See `vault/credentials.yml` (Ansible Vault encrypted)
 │         │                        ┌──────────────────┐                      │
 │         └───────────────────────▶│  Redis Cache     │                      │
 │                                   │  (Sessions)      │                      │
-│                                   │  192.168.10.210  │                      │
+│                                   │  hx-redis-server.hx.dev.local  │                      │
 │                                   └──────────────────┘                      │
 └────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -4046,9 +4047,9 @@ LITELLM_BASE_URL=http://hx-litellm-server.hx.dev.local:4000
 LITELLM_API_KEY=  # Optional, not required for Phase 1
 
 # Ollama Endpoints (for direct access if needed)
-OLLAMA1_BASE_URL=http://192.168.10.204:11434  # gemma3:27b, gpt-oss:20b
-OLLAMA2_BASE_URL=http://192.168.10.205:11434  # qwen3-coder:30b
-OLLAMA3_BASE_URL=http://192.168.10.206:11434  # bge-m3:567m (embeddings only)
+OLLAMA1_BASE_URL=http://hx-ollama1-server.hx.dev.local:11434  # gemma3:27b, gpt-oss:20b
+OLLAMA2_BASE_URL=http://hx-ollama2-server.hx.dev.local:11434  # qwen3-coder:30b
+OLLAMA3_BASE_URL=http://hx-ollama3-server.hx.dev.local:11434  # bge-m3:567m (embeddings only)
 
 # Entity Extraction Configuration
 ENTITY_EXTRACTION_MODEL=gemma3:27b
@@ -4422,17 +4423,17 @@ dedup_review:{document_id}
 - **Backoff Strategy**: Exponential backoff with jitter (initial 1s, max 60s, multiplier 2.0, jitter ±20%)
 
 **Model Selection Strategy**:
-- **Primary Model (General Text)**: `gemma3:27b` via Ollama1 (192.168.10.204)
+- **Primary Model (General Text)**: `gemma3:27b` via Ollama1 (hx-ollama1-server.hx.dev.local)
   - Use case: General document entity extraction (business documents, reports, articles)
   - Model routing: LiteLLM routes to `ollama/gemma3:27b` → Ollama1 backend
   - Latency: ~2-5 seconds for 1K token entity extraction (P95)
   - Quality: High accuracy for named entities (PERSON, ORG, LOCATION, DATE)
-- **Secondary Model (Technical/Code)**: `qwen3-coder:30b` via Ollama2 (192.168.10.205)
+- **Secondary Model (Technical/Code)**: `qwen3-coder:30b` via Ollama2 (hx-ollama2-server.hx.dev.local)
   - Use case: Technical documentation, source code, API documentation entity extraction
   - Model routing: LiteLLM routes to `ollama/qwen3-coder:30b` → Ollama2 backend
   - Latency: ~3-7 seconds for 1K token entity extraction (P95)
   - Quality: Excellent for technical entities (FUNCTION, CLASS, API_ENDPOINT, DEPENDENCY)
-- **Fallback Model**: `gpt-oss:20b` via Ollama1 (192.168.10.204)
+- **Fallback Model**: `gpt-oss:20b` via Ollama1 (hx-ollama1-server.hx.dev.local)
   - Use case: Fallback when primary models unavailable or overloaded
   - Model routing: LiteLLM Router automatically falls back on 503/timeout
   - Latency: ~1-3 seconds for 1K token entity extraction (faster, lower quality)
@@ -4887,7 +4888,7 @@ async def track_token_usage(response: Dict[str, Any], model: str, latency_ms: fl
 ### Deployment Architecture
 
 **Single-Node Deployment** (Phase 1):
-- **Node**: hx-docling-mcp-server (192.168.10.217)
+- **Node**: hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local)
 - **Process Model**: Single Python process (Uvicorn ASGI server)
 - **Concurrency**: Asyncio-based concurrency (4 worker coroutines by default)
 - **State**: Stateless (session state in Redis, knowledge graphs in Qdrant)
@@ -4962,7 +4963,7 @@ WantedBy=multi-user.target
 **Deployment Procedure Outline** (Detailed plan in `plan.md`):
 
 **Phase 1: Pre-Deployment Preparation**
-1. Validate node accessibility (SSH access to 192.168.10.217)
+1. Validate node accessibility (SSH access to hx-docling-mcp-server.hx.dev.local)
 2. Verify OS version (Ubuntu 24.04 LTS confirmed)
 3. Check resource availability (CPU, memory, disk space meet requirements)
 4. Validate dependency service status (LiteLLM, Qdrant, Redis, Ollama1/2/3 operational)
@@ -4970,7 +4971,7 @@ WantedBy=multi-user.target
 
 **Phase 2: System Configuration**
 
-**NOTE:** Service account `docling-mcp@hx.dev.local` must be created FIRST on hx-dc-server (192.168.10.200) by frank-lucas (Security Specialist) using `samba-tool user create` per HX-Infrastructure identity standards. See Security Architecture section for Samba AD account details.
+**NOTE:** Service account `docling-mcp@hx.dev.local` must be created FIRST on hx-dc-server (hx-dc-server.hx.dev.local) by frank-lucas (Security Specialist) using `samba-tool user create` per HX-Infrastructure identity standards. See Security Architecture section for Samba AD account details.
 
 1. Install system dependencies:
    - Python 3.11 runtime
@@ -5033,7 +5034,7 @@ WantedBy=multi-user.target
 1. Enable service for automatic startup (`systemctl enable docling-mcp.service`)
 2. Start service (`systemctl start docling-mcp.service`)
 3. Monitor startup logs (`journalctl -u docling-mcp.service -f`)
-4. Validate health check endpoint responds (`curl http://192.168.10.217:8000/health`)
+4. Validate health check endpoint responds (`curl http://hx-docling-mcp-server.hx.dev.local:8000/health`)
 5. Execute integration tests (MCP tool discovery, sample document conversion)
 6. Verify dependency integrations (LiteLLM, Qdrant, Redis connectivity tests)
 
@@ -7304,9 +7305,9 @@ def test_confidence_score_range():
 - **Test Data**: Requests for gemma3:27b (Ollama1), qwen3-coder:30b (Ollama2)
 - **Test Steps**:
   1. Send completion request for gemma3:27b via LiteLLM
-  2. Verify routing to Ollama1 (192.168.10.204)
+  2. Verify routing to Ollama1 (hx-ollama1-server.hx.dev.local)
   3. Send completion request for qwen3-coder:30b via LiteLLM
-  4. Verify routing to Ollama2 (192.168.10.205)
+  4. Verify routing to Ollama2 (hx-ollama2-server.hx.dev.local)
 - **Expected Result**: LiteLLM correctly routes requests to appropriate Ollama servers
 - **Pass Criteria**: Both requests succeed, routing confirmed via LiteLLM logs or response headers
 - **Validation Method**: LiteLLM routing logs, Ollama server access logs
@@ -7896,7 +7897,7 @@ def test_confidence_score_range():
 
 **QG-009: Health Check Validation**
 - **Requirement**: Health check endpoint responds within 2s, reports healthy status
-- **Validation**: `curl http://192.168.10.217:8000/health` (run 10 times)
+- **Validation**: `curl http://hx-docling-mcp-server.hx.dev.local:8000/health` (run 10 times)
 - **Pass Criteria**: 10/10 requests succeed, response time <2s, status = "healthy", all dependencies healthy
 - **Blocker**: YES - deployment blocked if health check fails or slow
 
@@ -8009,13 +8010,13 @@ def test_confidence_score_range():
 - [x] Success criteria are measurable (all SCs have quantitative targets)
 - [x] Scope is clearly bounded (Stages 1-2 in scope, Stages 3-5 out of scope for Phase 1)
 - [x] Dependencies identified and validated (all 6 services operational, confirmed in charter)
-- [x] Node requirements specified (hx-docling-mcp-server, 192.168.10.217, resource allocations)
+- [x] Node requirements specified (hx-docling-mcp-server, hx-docling-mcp-server.hx.dev.local, resource allocations)
 - [x] Security requirements defined (network-level security, Phase 1 no authentication, Ansible Vault for secrets)
 - [x] Monitoring requirements clear (health checks, metrics, logging, alerting)
 
 ### Infrastructure Alignment
 - [x] Aligns with HX Infrastructure constitution (Charter validation: COMPLIANT with all 8 principles)
-- [x] Node capacity verified (Charter confirms node allocated: 192.168.10.217)
+- [x] Node capacity verified (Charter confirms node allocated: hx-docling-mcp-server.hx.dev.local)
 - [x] Network topology considered (hx.dev.local internal network isolation, no firewalls per HX-Infrastructure policy)
 - [x] Naming conventions followed (hx-docling-mcp-server, service naming standards)
 - [x] Bare-metal deployment philosophy (systemd service management, no Docker for production)

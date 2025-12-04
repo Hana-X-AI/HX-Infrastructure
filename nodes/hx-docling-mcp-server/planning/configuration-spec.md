@@ -1,11 +1,11 @@
 # Configuration Specification: Docling MCP Server
 
-**Project**: hx-docling-mcp-server | **Date**: 2025-11-27 | **Version**: 1.0
+**Project**: hx-docling-mcp-server | **Date**: 2025-11-27 (Created), 2025-12-04 (Operational) | **Version**: 1.0
 **Charter**: `/home/agent0/HX-Infrastructure/nodes/hx-docling-mcp-server/charter/charter.md`
 **Specification**: `/home/agent0/HX-Infrastructure/nodes/hx-docling-mcp-server/specification/node-spec.md`
 **Plan**: `/home/agent0/HX-Infrastructure/nodes/hx-docling-mcp-server/planning/plan.md`
 **Architecture**: `/home/agent0/HX-Infrastructure/nodes/hx-docling-mcp-server/planning/deployment-architecture.md`
-**Status**: Phase 1 - Configuration Specification Complete
+**Status**: ✅ COMPLETE - Configuration Applied, Service OPERATIONAL
 
 ---
 
@@ -31,7 +31,7 @@
 ### 1.1 Server Identity
 
 **Hostname**: `hx-docling-mcp-server.hx.dev.local`
-**IP Address**: `192.168.10.217` (static, assigned from HX-Infrastructure internal network)
+**IP Address**: `hx-docling-mcp-server.hx.dev.local` (static, assigned from HX-Infrastructure internal network)
 **Domain**: `hx.dev.local` (Samba AD domain)
 
 ### 1.2 Operating System
@@ -85,28 +85,42 @@ network:
   ethernets:
     ens160:  # Interface name (verify with: ip link show)
       addresses:
-        - 192.168.10.217/24
+        - 192.168.10.217/24  # Static IPv4 address in CIDR notation
       routes:
         - to: default
           via: 192.168.10.1
       nameservers:
         addresses:
-          - 192.168.10.5   # hx-dc1-server (Primary DC)
-          - 192.168.10.6   # hx-dc2-server (Secondary DC)
+          - 192.168.10.200   # Primary DNS (hx-dc-server)
         search:
           - hx.dev.local
 ```
 
 **DNS Configuration**:
-- Primary DNS: 192.168.10.5 (hx-dc1-server - Samba AD DC)
-- Secondary DNS: 192.168.10.6 (hx-dc2-server - Samba AD DC)
+- Primary DNS: 192.168.10.200 (hx-dc-server - Samba AD DC)
 - Search domain: hx.dev.local
+
+**Note**: Secondary DNS (hx-dc2-server) not yet deployed in infrastructure. Add when available.
+
+**Validation**: After applying changes, validate with:
+```bash
+# Test configuration
+sudo netplan try
+
+# Apply if successful
+sudo netplan apply
+
+# Verify connectivity
+ping -c 3 192.168.10.1     # Gateway
+ping -c 3 192.168.10.200   # DNS server
+nslookup hx-docling-mcp-server.hx.dev.local 192.168.10.200
+```
 
 **Hostname Resolution**:
 ```bash
 # /etc/hosts
 127.0.0.1       localhost
-192.168.10.217  hx-docling-mcp-server.hx.dev.local hx-docling-mcp-server
+hx-docling-mcp-server.hx.dev.local  hx-docling-mcp-server.hx.dev.local hx-docling-mcp-server
 
 # IPv6 (disabled)
 # ::1 localhost ip6-localhost ip6-loopback
@@ -128,7 +142,7 @@ network:
 # Example ufw rules (NOT APPLIED):
 # sudo ufw allow from 192.168.10.0/24 to any port 8000 proto tcp
 # sudo ufw allow from 192.168.10.0/24 to any port 8443 proto tcp
-# sudo ufw allow from 192.168.10.100 to any port 22 proto tcp
+# sudo ufw allow from hx-control-node.hx.dev.local to any port 22 proto tcp
 ```
 
 ---
@@ -539,7 +553,7 @@ EnvironmentFile=/etc/docling-mcp/.env
 
 # Pre-start validation checks (inline commands only - NO separate scripts)
 ExecStartPre=/bin/bash -c 'test -n "$LITELLM_BASE_URL" || (echo "ERROR: LITELLM_BASE_URL not set" && exit 1)'
-ExecStartPre=/usr/bin/curl -f -s -m 5 http://192.168.10.212:4000/health || (echo "ERROR: LiteLLM health check failed" && exit 1)
+ExecStartPre=/usr/bin/curl -f -s -m 5 http://hx-litellm-server.hx.dev.local:4000/health || (echo "ERROR: LiteLLM health check failed" && exit 1)
 ExecStartPre=/bin/bash -c 'test -r /etc/docling-mcp/.env || (echo "ERROR: .env file not readable" && exit 1)'
 ExecStartPre=/bin/bash -c 'test $(df /var/lib/docling-mcp | tail -1 | awk "{print \\$4}") -gt 1048576 || (echo "ERROR: Insufficient disk space (<1GB)" && exit 1)'
 ExecStartPre=/bin/bash -c 'test -d /opt/docling-mcp/venv || (echo "ERROR: Virtual environment not found" && exit 1)'
@@ -756,7 +770,7 @@ sudo systemctl status docling-mcp.service
 # Service Identity
 # =============================================================================
 SERVICE_NAME=docling-mcp
-SERVICE_HOST=192.168.10.217
+SERVICE_HOST=hx-docling-mcp-server.hx.dev.local
 SERVICE_PORT=8000
 SERVICE_HTTPS_PORT=8443
 
@@ -767,7 +781,7 @@ MCP_TRANSPORTS=http,sse,stdio
 MCP_HTTP_ENABLED=true
 MCP_SSE_ENABLED=true
 MCP_STDIO_ENABLED=true
-MCP_HTTP_BIND=192.168.10.217
+MCP_HTTP_BIND=hx-docling-mcp-server.hx.dev.local
 MCP_HTTP_PORT=8000
 
 # =============================================================================
@@ -781,7 +795,7 @@ PYTHONUNBUFFERED=1
 # =============================================================================
 # LiteLLM Gateway Configuration
 # =============================================================================
-LITELLM_BASE_URL=http://192.168.10.212:4000
+LITELLM_BASE_URL=http://hx-litellm-server.hx.dev.local:4000
 LITELLM_API_KEY=<from_ansible_vault>
 LITELLM_TIMEOUT=120
 LITELLM_MAX_RETRIES=3
@@ -796,7 +810,7 @@ LITELLM_EMBEDDING_MODEL=ollama/bge-m3:567m
 # =============================================================================
 # Qdrant Vector Database Configuration
 # =============================================================================
-QDRANT_HOST=192.168.10.207
+QDRANT_HOST=hx-qdrant-server.hx.dev.local
 QDRANT_PORT=6333
 QDRANT_GRPC_PORT=6334
 QDRANT_COLLECTION_PREFIX=docling_mcp_
@@ -813,7 +827,7 @@ QDRANT_REPLICATION_FACTOR=1
 # =============================================================================
 # Redis Cache Configuration
 # =============================================================================
-REDIS_HOST=192.168.10.210
+REDIS_HOST=hx-redis-server.hx.dev.local
 REDIS_PORT=6379
 REDIS_DB=0
 REDIS_PASSWORD=<from_ansible_vault>
@@ -915,19 +929,19 @@ SAMBA_PASSWORD=<from_ansible_vault>
 
 # Service Identity
 SERVICE_NAME=docling-mcp
-SERVICE_HOST=192.168.10.217
+SERVICE_HOST=hx-docling-mcp-server.hx.dev.local
 SERVICE_PORT=8000
 
 # LiteLLM Gateway
-LITELLM_BASE_URL=http://192.168.10.212:4000
+LITELLM_BASE_URL=http://hx-litellm-server.hx.dev.local:4000
 LITELLM_API_KEY=<INSERT_FROM_VAULT>
 
 # Qdrant Vector Database
-QDRANT_HOST=192.168.10.207
+QDRANT_HOST=hx-qdrant-server.hx.dev.local
 QDRANT_PORT=6333
 
 # Redis Cache
-REDIS_HOST=192.168.10.210
+REDIS_HOST=hx-redis-server.hx.dev.local
 REDIS_PORT=6379
 REDIS_PASSWORD=<INSERT_FROM_VAULT_IF_AUTH_ENABLED>
 
@@ -951,7 +965,7 @@ ExecStartPre=/bin/bash -c 'test -n "$QDRANT_HOST"'
 ExecStartPre=/bin/bash -c 'test -n "$REDIS_HOST"'
 
 # 2. Check LiteLLM health
-ExecStartPre=/usr/bin/curl -f -s -m 5 http://192.168.10.212:4000/health
+ExecStartPre=/usr/bin/curl -f -s -m 5 http://hx-litellm-server.hx.dev.local:4000/health
 
 # 3. Check .env file readable
 ExecStartPre=/bin/bash -c 'test -r /etc/docling-mcp/.env'
@@ -1234,7 +1248,7 @@ datefmt=%Y-%m-%d %H:%M:%S
 
 **DNS Configuration**:
 - **Hostname**: hx-docling-mcp-server.hx.dev.local
-- **IP Address**: 192.168.10.217
+- **IP Address**: hx-docling-mcp-server.hx.dev.local
 - **Record Type**: A (IPv4 address)
 - **Managed By**: Samba AD DNS (hx-dc1-server, hx-dc2-server)
 
@@ -1245,18 +1259,18 @@ datefmt=%Y-%m-%d %H:%M:%S
 nslookup hx-docling-mcp-server.hx.dev.local
 
 # Expected output:
-# Server:         192.168.10.5
-# Address:        192.168.10.5#53
+# Server:         hx-dc-server.hx.dev.local
+# Address:        hx-dc-server.hx.dev.local#53
 #
 # Name:   hx-docling-mcp-server.hx.dev.local
-# Address: 192.168.10.217
+# Address: hx-docling-mcp-server.hx.dev.local
 
 # Reverse lookup
-nslookup 192.168.10.217
+nslookup hx-docling-mcp-server.hx.dev.local
 
 # Expected output:
-# Server:         192.168.10.5
-# Address:        192.168.10.5#53
+# Server:         hx-dc-server.hx.dev.local
+# Address:        hx-dc-server.hx.dev.local#53
 #
 # 217.10.168.192.in-addr.arpa     name = hx-docling-mcp-server.hx.dev.local.
 ```
@@ -1359,13 +1373,13 @@ sudo chmod 644 /etc/docling-mcp/certs/ca.crt
 
 **HTTP MCP Endpoint** (primary):
 - **Protocol**: HTTP
-- **IP**: 192.168.10.217
+- **IP**: hx-docling-mcp-server.hx.dev.local
 - **Port**: 8000
 - **Bind**: Internal interface only (NOT 0.0.0.0)
 
 **HTTPS MCP Endpoint** (optional):
 - **Protocol**: HTTPS (TLS)
-- **IP**: 192.168.10.217
+- **IP**: hx-docling-mcp-server.hx.dev.local
 - **Port**: 8443
 - **Bind**: Internal interface only
 
@@ -1382,24 +1396,24 @@ sudo chmod 644 /etc/docling-mcp/certs/ca.crt
 ```bash
 # Inbound (REFERENCE ONLY - NOT CONFIGURED)
 # Allow MCP HTTP from internal network
-sudo ufw allow from 192.168.10.0/24 to 192.168.10.217 port 8000 proto tcp comment "Docling MCP HTTP"
+sudo ufw allow from 192.168.10.0/24 to hx-docling-mcp-server.hx.dev.local port 8000 proto tcp comment "Docling MCP HTTP"
 
 # Allow MCP HTTPS from internal network (if TLS enabled)
-sudo ufw allow from 192.168.10.0/24 to 192.168.10.217 port 8443 proto tcp comment "Docling MCP HTTPS"
+sudo ufw allow from 192.168.10.0/24 to hx-docling-mcp-server.hx.dev.local port 8443 proto tcp comment "Docling MCP HTTPS"
 
 # Allow SSH from admin workstation
-sudo ufw allow from 192.168.10.100 to 192.168.10.217 port 22 proto tcp comment "SSH management"
+sudo ufw allow from hx-control-node.hx.dev.local to hx-docling-mcp-server.hx.dev.local port 22 proto tcp comment "SSH management"
 
 # Outbound (REFERENCE ONLY - NOT CONFIGURED)
 # Allow connections to LiteLLM
-sudo ufw allow out to 192.168.10.212 port 4000 proto tcp comment "LiteLLM Gateway"
+sudo ufw allow out to hx-litellm-server.hx.dev.local port 4000 proto tcp comment "LiteLLM Gateway"
 
 # Allow connections to Qdrant
-sudo ufw allow out to 192.168.10.207 port 6333 proto tcp comment "Qdrant HTTP"
-sudo ufw allow out to 192.168.10.207 port 6334 proto tcp comment "Qdrant gRPC"
+sudo ufw allow out to hx-qdrant-server.hx.dev.local port 6333 proto tcp comment "Qdrant HTTP"
+sudo ufw allow out to hx-qdrant-server.hx.dev.local port 6334 proto tcp comment "Qdrant gRPC"
 
 # Allow connections to Redis
-sudo ufw allow out to 192.168.10.210 port 6379 proto tcp comment "Redis"
+sudo ufw allow out to hx-redis-server.hx.dev.local port 6379 proto tcp comment "Redis"
 ```
 
 ### 9.3 Network Interface Configuration
@@ -1414,7 +1428,7 @@ mcp = FastMCP("docling-mcp-server")
 # Bind to internal interface only (NOT 0.0.0.0)
 mcp.add_transport(
     "http",
-    host="192.168.10.217",  # Specific IP, not 0.0.0.0
+    host="hx-docling-mcp-server.hx.dev.local",  # Specific IP, not 0.0.0.0
     port=8000
 )
 
@@ -1422,7 +1436,7 @@ mcp.add_transport(
 if os.getenv("TLS_ENABLED") == "true":
     mcp.add_transport(
         "https",
-        host="192.168.10.217",
+        host="hx-docling-mcp-server.hx.dev.local",
         port=8443,
         ssl_certfile="/etc/docling-mcp/certs/server.crt",
         ssl_keyfile="/etc/docling-mcp/certs/server.key"
@@ -1432,31 +1446,31 @@ if os.getenv("TLS_ENABLED") == "true":
 ### 9.4 DNS Resolution Requirements
 
 **Forward Resolution**:
-- **hx-docling-mcp-server.hx.dev.local** → 192.168.10.217
+- **hx-docling-mcp-server.hx.dev.local** → hx-docling-mcp-server.hx.dev.local
 
 **Dependency Resolution** (must resolve correctly):
-- **hx-litellm-server.hx.dev.local** → 192.168.10.212
-- **hx-qdrant-server.hx.dev.local** → 192.168.10.207
-- **hx-redis-server.hx.dev.local** → 192.168.10.210
+- **hx-litellm-server.hx.dev.local** → hx-litellm-server.hx.dev.local
+- **hx-qdrant-server.hx.dev.local** → hx-qdrant-server.hx.dev.local
+- **hx-redis-server.hx.dev.local** → hx-redis-server.hx.dev.local
 
 **DNS Verification** (manual procedure):
 
 ```bash
 # Verify own hostname
 nslookup hx-docling-mcp-server.hx.dev.local
-# Expected: 192.168.10.217
+# Expected: hx-docling-mcp-server.hx.dev.local
 
 # Verify LiteLLM resolution
 nslookup hx-litellm-server.hx.dev.local
-# Expected: 192.168.10.212
+# Expected: hx-litellm-server.hx.dev.local
 
 # Verify Qdrant resolution
 nslookup hx-qdrant-server.hx.dev.local
-# Expected: 192.168.10.207
+# Expected: hx-qdrant-server.hx.dev.local
 
 # Verify Redis resolution
 nslookup hx-redis-server.hx.dev.local
-# Expected: 192.168.10.210
+# Expected: hx-redis-server.hx.dev.local
 ```
 
 ---
@@ -1603,7 +1617,7 @@ du -sh /var/lib/docling-mcp/cache
 ### 11.1 LiteLLM Gateway Integration
 
 **Service**: hx-litellm-server
-**Node**: 192.168.10.212
+**Node**: hx-litellm-server.hx.dev.local
 **Port**: 4000
 **Protocol**: HTTP (OpenAI-compatible API)
 
@@ -1611,7 +1625,7 @@ du -sh /var/lib/docling-mcp/cache
 
 ```bash
 # Environment variables (.env)
-LITELLM_BASE_URL=http://192.168.10.212:4000
+LITELLM_BASE_URL=http://hx-litellm-server.hx.dev.local:4000
 LITELLM_API_KEY=<from_ansible_vault>
 LITELLM_TIMEOUT=120
 LITELLM_MAX_RETRIES=3
@@ -1644,10 +1658,10 @@ LITELLM_EMBEDDING_MODEL=ollama/bge-m3:567m
 
 ```bash
 # LiteLLM health endpoint
-LITELLM_HEALTH_URL=http://192.168.10.212:4000/health
+LITELLM_HEALTH_URL=http://hx-litellm-server.hx.dev.local:4000/health
 
 # Pre-start validation (systemd ExecStartPre)
-ExecStartPre=/usr/bin/curl -f -s -m 5 http://192.168.10.212:4000/health
+ExecStartPre=/usr/bin/curl -f -s -m 5 http://hx-litellm-server.hx.dev.local:4000/health
 ```
 
 **Retry Logic** (application-level):
@@ -1687,7 +1701,7 @@ class LiteLLMClient:
 ### 11.2 Qdrant Vector Database Integration
 
 **Service**: hx-qdrant-server
-**Node**: 192.168.10.207
+**Node**: hx-qdrant-server.hx.dev.local
 **Port**: 6333 (HTTP), 6334 (gRPC)
 **Protocol**: HTTP/gRPC
 
@@ -1695,7 +1709,7 @@ class LiteLLMClient:
 
 ```bash
 # Environment variables (.env)
-QDRANT_HOST=192.168.10.207
+QDRANT_HOST=hx-qdrant-server.hx.dev.local
 QDRANT_PORT=6333
 QDRANT_GRPC_PORT=6334
 QDRANT_COLLECTION_PREFIX=docling_mcp_
@@ -1723,19 +1737,19 @@ QDRANT_REPLICATION_FACTOR=1     # Single-node (no replication)
 
 ```bash
 # Verify Qdrant accessible
-curl -f http://192.168.10.207:6333/health
+curl -f http://hx-qdrant-server.hx.dev.local:6333/health
 
 # List collections
-curl http://192.168.10.207:6333/collections
+curl http://hx-qdrant-server.hx.dev.local:6333/collections
 
 # Check collection info
-curl http://192.168.10.207:6333/collections/docling_mcp_entities
+curl http://hx-qdrant-server.hx.dev.local:6333/collections/docling_mcp_entities
 ```
 
 ### 11.3 Redis Integration
 
 **Service**: hx-redis-server
-**Node**: 192.168.10.210
+**Node**: hx-redis-server.hx.dev.local
 **Port**: 6379
 **Protocol**: TCP (Redis protocol)
 
@@ -1743,7 +1757,7 @@ curl http://192.168.10.207:6333/collections/docling_mcp_entities
 
 ```bash
 # Environment variables (.env)
-REDIS_HOST=192.168.10.210
+REDIS_HOST=hx-redis-server.hx.dev.local
 REDIS_PORT=6379
 REDIS_DB=0
 REDIS_PASSWORD=<from_ansible_vault>  # If authentication enabled
@@ -1774,16 +1788,16 @@ EXPIRE ratelimit:client1:convert_pdf 60
 
 ```bash
 # Verify Redis accessible
-redis-cli -h 192.168.10.210 -p 6379 ping
+redis-cli -h hx-redis-server.hx.dev.local -p 6379 ping
 # Expected: PONG
 
 # Check Redis info
-redis-cli -h 192.168.10.210 -p 6379 info
+redis-cli -h hx-redis-server.hx.dev.local -p 6379 info
 
 # Test key operations
-redis-cli -h 192.168.10.210 -p 6379 SET test:key "test value"
-redis-cli -h 192.168.10.210 -p 6379 GET test:key
-redis-cli -h 192.168.10.210 -p 6379 DEL test:key
+redis-cli -h hx-redis-server.hx.dev.local -p 6379 SET test:key "test value"
+redis-cli -h hx-redis-server.hx.dev.local -p 6379 GET test:key
+redis-cli -h hx-redis-server.hx.dev.local -p 6379 DEL test:key
 ```
 
 ### 11.4 MCP Client Integration
@@ -1793,12 +1807,12 @@ redis-cli -h 192.168.10.210 -p 6379 DEL test:key
 **HTTP Transport**:
 ```bash
 # MCP HTTP endpoint
-URL: http://192.168.10.217:8000/mcp
+URL: http://hx-docling-mcp-server.hx.dev.local:8000/mcp
 Method: POST
 Content-Type: application/json
 
 # Example request
-curl -X POST http://192.168.10.217:8000/mcp \
+curl -X POST http://hx-docling-mcp-server.hx.dev.local:8000/mcp \
   -H "Content-Type: application/json" \
   -d '{
     "jsonrpc": "2.0",
@@ -1811,7 +1825,7 @@ curl -X POST http://192.168.10.217:8000/mcp \
 **SSE Transport** (Server-Sent Events):
 ```bash
 # MCP SSE endpoint (streaming)
-URL: http://192.168.10.217:8000/mcp/sse
+URL: http://hx-docling-mcp-server.hx.dev.local:8000/mcp/sse
 ```
 
 **stdio Transport** (process communication):
@@ -1826,7 +1840,7 @@ URL: http://192.168.10.217:8000/mcp/sse
 
 ### 12.1 Health Check Endpoint
 
-**Health Endpoint**: `http://192.168.10.217:8000/health`
+**Health Endpoint**: `http://hx-docling-mcp-server.hx.dev.local:8000/health`
 
 **Health Check Response**:
 
@@ -1861,18 +1875,18 @@ URL: http://192.168.10.217:8000/mcp/sse
 
 ```bash
 # Check service health
-curl -f http://192.168.10.217:8000/health
+curl -f http://hx-docling-mcp-server.hx.dev.local:8000/health
 
 # Verbose health check
-curl -v http://192.168.10.217:8000/health | jq
+curl -v http://hx-docling-mcp-server.hx.dev.local:8000/health | jq
 
 # Monitor health continuously
-watch -n 5 'curl -s http://192.168.10.217:8000/health | jq .status'
+watch -n 5 'curl -s http://hx-docling-mcp-server.hx.dev.local:8000/health | jq .status'
 ```
 
 ### 12.2 Prometheus Metrics (Phase 2)
 
-**Metrics Endpoint**: `http://192.168.10.217:8000/metrics` (optional, Phase 2)
+**Metrics Endpoint**: `http://hx-docling-mcp-server.hx.dev.local:8000/metrics` (optional, Phase 2)
 
 **Example Metrics**:
 ```

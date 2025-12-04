@@ -21,8 +21,8 @@ Verify service can connect to all required integration points (LiteLLM, Qdrant, 
 
 **Action**:
 ```bash
-curl -s http://192.168.10.212:4000/health
-curl -s http://192.168.10.212:4000/v1/models | jq '.data[] | select(.id | contains("gemma3"))'
+curl -s http://hx-litellm-server.hx.dev.local:4000/health
+curl -s http://hx-litellm-server.hx.dev.local:4000/v1/models | jq '.data[] | select(.id | contains("gemma3"))'
 ```
 
 **Expected**: LiteLLM responds, gemma3:27b model available
@@ -33,8 +33,8 @@ curl -s http://192.168.10.212:4000/v1/models | jq '.data[] | select(.id | contai
 
 **Action**:
 ```bash
-curl -s http://192.168.10.207:6333/health
-curl -s http://192.168.10.207:6333/collections
+curl -s http://hx-qdrant-server.hx.dev.local:6333/health
+curl -s http://hx-qdrant-server.hx.dev.local:6333/collections
 ```
 
 **Expected**: Qdrant responds with healthy status
@@ -45,7 +45,7 @@ curl -s http://192.168.10.207:6333/collections
 
 **Action**:
 ```bash
-redis-cli -h 192.168.10.210 -p 6379 PING
+redis-cli -h hx-redis-server.hx.dev.local -p 6379 PING
 ```
 
 **Expected**: Returns "PONG"

@@ -12,7 +12,7 @@
 
 Task 035 (MCP Protocol Compliance Testing) contains three issues:
 
-1. **Hardcoded MCP endpoint IP** (lines 17, 42): Test code has hardcoded `http://192.168.10.217:8000/mcp`
+1. **Hardcoded MCP endpoint IP** (lines 17, 42): Test code has hardcoded `http://hx-docling-mcp-server.hx.dev.local:8000/mcp`
 2. **Inflexible test environment**: Cannot run tests against different deployments without code changes
 3. **Missing user/group handling** (line 283): `chown` command fails if `docling-mcp@hx.dev.local` user doesn't exist
 
@@ -34,7 +34,7 @@ Task 035 (MCP Protocol Compliance Testing) contains three issues:
 
 **Before:**
 ```markdown
-- Server running and accessible at `http://192.168.10.217:8000/mcp`
+- Server running and accessible at `http://hx-docling-mcp-server.hx.dev.local:8000/mcp`
 ```
 
 **After:**
@@ -51,7 +51,7 @@ import requests
 import json
 from typing import Dict, Any
 
-MCP_ENDPOINT = "http://192.168.10.217:8000/mcp"
+MCP_ENDPOINT = "http://hx-docling-mcp-server.hx.dev.local:8000/mcp"
 TIMEOUT = 30
 ```
 

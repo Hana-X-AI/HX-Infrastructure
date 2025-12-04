@@ -39,10 +39,10 @@ Documentation written with absolute paths and IP addresses instead of relative r
 
 ### Issue 2: Hardcoded IPs in Documentation (Lines 37, 42, 47, 79, 95, 108, 122, 135)
 **Before:**
-- `via Ollama1 (192.168.10.204)`
-- `via Ollama2 (192.168.10.205)`
-- `Ollama1 server (192.168.10.204)`
-- `Ollama2 server (192.168.10.205)`
+- `via Ollama1 (hx-ollama1-server.hx.dev.local)`
+- `via Ollama2 (hx-ollama2-server.hx.dev.local)`
+- `Ollama1 server (hx-ollama1-server.hx.dev.local)`
+- `Ollama2 server (hx-ollama2-server.hx.dev.local)`
 
 **After:**
 - `via hx-ollama1-server`

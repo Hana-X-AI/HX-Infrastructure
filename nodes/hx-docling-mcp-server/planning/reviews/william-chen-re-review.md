@@ -224,7 +224,7 @@ Plan line 536 previously referenced `/opt/docling-mcp/scripts/pre-start-checks.s
 **Correction Applied (Plan lines 535-537):**
 ```ini
 ExecStartPre=/bin/bash -c 'test -n "$LITELLM_BASE_URL"'
-ExecStartPre=/usr/bin/curl -f http://192.168.10.212:4000/health
+ExecStartPre=/usr/bin/curl -f http://hx-litellm-server.hx.dev.local:4000/health
 ExecStartPre=/bin/bash -c 'test -r /etc/docling-mcp/.env'
 ExecStart=/opt/docling-mcp/venv/bin/python -m docling_mcp.server
 ExecReload=/bin/kill -HUP $MAINPID
@@ -235,7 +235,7 @@ ExecReload=/bin/kill -HUP $MAINPID
 **Configuration Validation Approach**:
 - **Pre-Start Validation**: systemd ExecStartPre directives (inline commands, not separate script):
   - Check required environment variables: `ExecStartPre=/bin/bash -c 'test -n "$LITELLM_BASE_URL"'`
-  - Check service dependencies reachable: `ExecStartPre=/usr/bin/curl -f http://192.168.10.212:4000/health`
+  - Check service dependencies reachable: `ExecStartPre=/usr/bin/curl -f http://hx-litellm-server.hx.dev.local:4000/health`
   - Check file permissions: `ExecStartPre=/bin/bash -c 'test -r /etc/docling-mcp/.env'`
   - Check disk space adequate: `ExecStartPre=/bin/bash -c 'test $(df /var/lib/docling-mcp | tail -1 | awk "{print \$4}") -gt 1048576'`
 - **Runtime Validation**: Application validates configuration at startup
@@ -260,7 +260,7 @@ ExecReload=/bin/kill -HUP $MAINPID
 
 **Validation Checks Analysis:**
 - ✅ **Environment Variable Check:** `test -n "$LITELLM_BASE_URL"` - Ensures critical env vars set
-- ✅ **Service Connectivity:** `curl -f http://192.168.10.212:4000/health` - Validates LiteLLM reachable
+- ✅ **Service Connectivity:** `curl -f http://hx-litellm-server.hx.dev.local:4000/health` - Validates LiteLLM reachable
 - ✅ **File Permissions:** `test -r /etc/docling-mcp/.env` - Ensures config file readable
 - ✅ **Disk Space:** `test $(df /var/lib/docling-mcp | tail -1 | awk '{print $4}') -gt 1048576` - Ensures 1GB+ available
 

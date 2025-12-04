@@ -30,7 +30,7 @@ Verify Redis cache connection and session management functionality.
 
 **Action**:
 ```bash
-redis-cli -h 192.168.10.210 -p 6379 PING
+redis-cli -h hx-redis-server.hx.dev.local -p 6379 PING
 ```
 
 **Expected**: Returns "PONG"
@@ -41,9 +41,9 @@ redis-cli -h 192.168.10.210 -p 6379 PING
 
 **Action**:
 ```bash
-redis-cli -h 192.168.10.210 -p 6379 SET test-session-001 "test data" EX 60
-redis-cli -h 192.168.10.210 -p 6379 GET test-session-001
-redis-cli -h 192.168.10.210 -p 6379 DEL test-session-001
+redis-cli -h hx-redis-server.hx.dev.local -p 6379 SET test-session-001 "test data" EX 60
+redis-cli -h hx-redis-server.hx.dev.local -p 6379 GET test-session-001
+redis-cli -h hx-redis-server.hx.dev.local -p 6379 DEL test-session-001
 ```
 
 **Expected**: SET/GET/DEL operations successful

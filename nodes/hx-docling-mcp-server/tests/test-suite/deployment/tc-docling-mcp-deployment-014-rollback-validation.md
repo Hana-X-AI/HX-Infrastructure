@@ -46,7 +46,7 @@ This test MUST be executed during non-operational phase and MUST PASS before ope
 # Capture current service state
 systemctl status docling-mcp.service > /tmp/pre-rollback-status.txt
 sudo netstat -tulpn | grep :8000 > /tmp/pre-rollback-ports.txt
-curl -s http://192.168.10.217:8000/health > /tmp/pre-rollback-health.json
+curl -s http://hx-docling-mcp-server.hx.dev.local:8000/health > /tmp/pre-rollback-health.json
 ls -la /opt/docling-mcp/venv > /tmp/pre-rollback-venv.txt
 ```
 
@@ -116,11 +116,11 @@ systemctl status docling-mcp.service 2>&1 | grep -q "could not be found" && echo
 
 # After re-deployment, compare to pre-rollback state
 systemctl status docling-mcp.service > /tmp/post-rollback-status.txt
-curl -s http://192.168.10.217:8000/health > /tmp/post-rollback-health.json
+curl -s http://hx-docling-mcp-server.hx.dev.local:8000/health > /tmp/post-rollback-health.json
 
 # Verify service operational again
 systemctl is-active docling-mcp.service
-curl -s http://192.168.10.217:8000/health | jq '.status'
+curl -s http://hx-docling-mcp-server.hx.dev.local:8000/health | jq '.status'
 ```
 
 **Expected**: Service operational again, health endpoint responds identically
@@ -136,7 +136,7 @@ curl -s http://192.168.10.217:8000/health | jq '.status'
 # Verify no system damage from rollback
 df -h  # Check disk space unchanged
 sudo systemctl status  # Check systemd still functional
-ping -c 3 192.168.10.212  # Check network still functional
+ping -c 3 hx-litellm-server.hx.dev.local  # Check network still functional
 ```
 
 **Expected**: Node fully functional, no system damage

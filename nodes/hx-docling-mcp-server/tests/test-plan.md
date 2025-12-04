@@ -2,7 +2,8 @@
 
 **Service**: docling-mcp
 **Created**: 2025-11-27
-**Status**: Phase 1 Complete - Ready for Test Creation
+**Operational Date**: 2025-12-04
+**Status**: ✅ COMPLETE - Tests Executed, Service OPERATIONAL
 **Based on Spec**: `/home/agent0/HX-Infrastructure/nodes/hx-docling-mcp-server/specification/node-spec.md` (7,801 lines, APPROVED)
 **Based on Plan**: `/home/agent0/HX-Infrastructure/nodes/hx-docling-mcp-server/planning/plan.md` (APPROVED)
 **Based on Architecture**: `/home/agent0/HX-Infrastructure/nodes/hx-docling-mcp-server/planning/deployment-architecture.md` (COMPLETE)
@@ -234,12 +235,12 @@ def event_loop():
 def test_config() -> Dict[str, Any]:
     """Test configuration."""
     return {
-        "litellm_base_url": "http://192.168.10.212:4000",
-        "qdrant_host": "192.168.10.207",
+        "litellm_base_url": "http://hx-litellm-server.hx.dev.local:4000",
+        "qdrant_host": "hx-qdrant-server.hx.dev.local",
         "qdrant_port": 6333,
-        "redis_host": "192.168.10.210",
+        "redis_host": "hx-redis-server.hx.dev.local",
         "redis_port": 6379,
-        "service_host": "192.168.10.217",
+        "service_host": "hx-docling-mcp-server.hx.dev.local",
         "service_port": 8000,
     }
 
@@ -1120,7 +1121,7 @@ sudo systemctl status docling-mcp.service
 # Expected: active (running)
 
 # Capture baseline health check
-curl -f http://192.168.10.217:8000/health | jq . > baseline-health.json
+curl -f http://hx-docling-mcp-server.hx.dev.local:8000/health | jq . > baseline-health.json
 ```
 
 **STEP 2: Execute Full Test Suite (Pre-Rollback)**
@@ -1223,7 +1224,7 @@ sudo systemctl status docling-mcp.service
 # Expected: active (running)
 
 # Capture post-rollback health check
-curl -f http://192.168.10.217:8000/health | jq . > post-rollback-health.json
+curl -f http://hx-docling-mcp-server.hx.dev.local:8000/health | jq . > post-rollback-health.json
 ```
 
 **STEP 6: Re-Execute Test Suite (Post-Re-Deploy)**
@@ -2489,7 +2490,7 @@ pytest tests/test-suite/multimodal/ -n 4 --verbose
 - **netstat**: Network port validation
 
 ### Test Environment
-- **Node**: hx-docling-mcp-server (192.168.10.217)
+- **Node**: hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local)
 - **OS**: Ubuntu 24.04 LTS
 - **Python**: 3.11+
 - **Virtual Environment**: /opt/docling-mcp/venv

@@ -30,8 +30,8 @@ Verify Qdrant vector database connection and collection access for knowledge gra
 
 **Action**:
 ```bash
-curl -s http://192.168.10.207:6333/health
-curl -s http://192.168.10.207:6333/collections
+curl -s http://hx-qdrant-server.hx.dev.local:6333/health
+curl -s http://hx-qdrant-server.hx.dev.local:6333/collections
 ```
 
 **Expected**: Qdrant responds with healthy status
@@ -43,7 +43,7 @@ curl -s http://192.168.10.207:6333/collections
 **Action**:
 ```bash
 # Check for docling_mcp collections
-curl -s http://192.168.10.207:6333/collections | jq '.result.collections[] | select(.name | contains("docling_mcp"))'
+curl -s http://hx-qdrant-server.hx.dev.local:6333/collections | jq '.result.collections[] | select(.name | contains("docling_mcp"))'
 ```
 
 **Expected**: docling_mcp_entities and docling_mcp_relationships collections exist (or can be created)
@@ -55,7 +55,7 @@ curl -s http://192.168.10.207:6333/collections | jq '.result.collections[] | sel
 **Action**:
 ```bash
 # Test upsert operation
-curl -X PUT http://192.168.10.207:6333/collections/docling_mcp_entities/points \
+curl -X PUT http://hx-qdrant-server.hx.dev.local:6333/collections/docling_mcp_entities/points \
   -H "Content-Type: application/json" \
   -d '{
     "points": [{

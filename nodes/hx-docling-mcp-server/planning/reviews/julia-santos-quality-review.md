@@ -243,7 +243,7 @@ tests/test-suite/
 **Test Plan Components**:
 
 **Test Environment Requirements**:
-- **Test Node**: hx-docling-mcp-server (192.168.10.217) in non-operational state
+- **Test Node**: hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local) in non-operational state
 - **Test Dependencies**: Access to LiteLLM, Qdrant, Redis, Ollama1/2/3 services
 - **Test Data**: Sample documents (PDF, DOCX, PPTX, XLSX, images) for multimodal testing
 - **Test Isolation**: Separate Qdrant collections for test data

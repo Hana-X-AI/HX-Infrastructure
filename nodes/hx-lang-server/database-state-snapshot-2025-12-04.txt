@@ -1,0 +1,75 @@
+=========================================
+DATABASE CONFIGURATION
+=========================================
+    datname     |  size   | datconnlimit | encoding | datcollate  |  datctype   | datallowconn 
+----------------+---------+--------------+----------+-------------+-------------+--------------
+ hx_lang_server | 7579 kB |           50 | UTF8     | en_US.UTF-8 | en_US.UTF-8 | t
+(1 row)
+
+
+=========================================
+USER CONFIGURATION
+=========================================
+    usename     | usesysid | usecreatedb | usesuper | userepl | usebypassrls 
+----------------+----------+-------------+----------+---------+--------------
+ hx_lang_server |    24630 | f           | f        | f       | f
+(1 row)
+
+    rolname     | rolconnlimit 
+----------------+--------------
+ hx_lang_server |           20
+(1 row)
+
+
+=========================================
+SCHEMA CONFIGURATION
+=========================================
+ schema_name |       owner       
+-------------+-------------------
+ public      | pg_database_owner
+(1 row)
+
+
+=========================================
+USER CONFIGURATION SETTINGS
+=========================================
+    rolname     |             rolconfig             
+----------------+-----------------------------------
+ hx_lang_server | {"search_path=langgraph, public"}
+(1 row)
+
+
+=========================================
+DATABASE PRIVILEGES
+=========================================
+    datname     |                             datacl                             
+----------------+----------------------------------------------------------------
+ hx_lang_server | {=Tc/postgres,postgres=CTc/postgres,hx_lang_server=c/postgres}
+(1 row)
+
+
+=========================================
+SCHEMA PRIVILEGES
+=========================================
+ nspname |                            nspacl                             
+---------+---------------------------------------------------------------
+ public  | {pg_database_owner=UC/pg_database_owner,=U/pg_database_owner}
+(1 row)
+
+
+=========================================
+TABLES IN LANGGRAPH SCHEMA
+=========================================
+ schemaname | tablename | tableowner 
+------------+-----------+------------
+(0 rows)
+
+
+=========================================
+CONNECTION TEST
+=========================================
+ current_database | current_user | pg_backend_pid | inet_server_addr 
+------------------+--------------+----------------+------------------
+ postgres         | postgres     |         674970 | 192.168.10.209
+(1 row)
+

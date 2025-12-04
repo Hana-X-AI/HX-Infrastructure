@@ -103,7 +103,7 @@ samba-tool user create docling-mcp '[SEE VAULT: vault/credentials.yml]' \
 ```
 
 **Verification from Status Report:**
-- ✅ Service account `docling-mcp@hx.dev.local` CREATED via `samba-tool` on hx-dc-server (192.168.10.200)
+- ✅ Service account `docling-mcp@hx.dev.local` CREATED via `samba-tool` on hx-dc-server (hx-dc-server.hx.dev.local)
 - ✅ Account replication verified via `wbinfo -i docling-mcp@hx.dev.local`
 - ✅ Password set to standard `[SEE VAULT: vault/credentials.yml]` per HX-Infrastructure policy
 - ✅ UID assigned: 1114201140 (Samba DC auto-assigned from domain pool)
@@ -215,7 +215,7 @@ This applies to **ALL** domain service accounts including:
 **LiteLLM Gateway Configuration**:
 ```bash
 # LiteLLM Integration
-LITELLM_BASE_URL=http://192.168.10.212:4000
+LITELLM_BASE_URL=http://hx-litellm-server.hx.dev.local:4000
 LITELLM_API_KEY=<from_ansible_vault>  # Stored in /home/agent0/HX-Infrastructure/services/operational/hx-docling-mcp/vault/credentials.yml
 LITELLM_TIMEOUT=120  # seconds
 
@@ -230,7 +230,7 @@ LITELLM_DOCLING_MODEL=ollama/granite-docling:258m  # For docling processing only
 **Redis Configuration**:
 ```bash
 # Redis Session Management
-REDIS_HOST=192.168.10.210
+REDIS_HOST=hx-redis-server.hx.dev.local
 REDIS_PORT=6379
 REDIS_DB=0
 REDIS_PASSWORD=<from_ansible_vault>  # If authentication enabled
@@ -292,7 +292,7 @@ REDIS_SESSION_TTL=3600  # Session TTL in seconds
 ```bash
 # Service Identity
 SERVICE_NAME=docling-mcp
-SERVICE_HOST=0.0.0.0  # WARNING: Change to 192.168.10.217 for internal-only binding
+SERVICE_HOST=0.0.0.0  # WARNING: Change to hx-docling-mcp-server.hx.dev.local for internal-only binding
 SERVICE_PORT=8000
 SERVICE_HTTPS_PORT=8443  # Optional, only if TLS configured
 ```
@@ -300,8 +300,8 @@ SERVICE_HTTPS_PORT=8443  # Optional, only if TLS configured
 **Evidence from Plan (lines 383-389):**
 ```markdown
 **Network Configuration**:
-- **Primary Endpoint**: HTTP 192.168.10.217:8000 (MCP protocol)
-- **Optional HTTPS**: 192.168.10.217:8443 (if TLS configured)
+- **Primary Endpoint**: HTTP hx-docling-mcp-server.hx.dev.local:8000 (MCP protocol)
+- **Optional HTTPS**: hx-docling-mcp-server.hx.dev.local:8443 (if TLS configured)
 - **Interface Binding**: Internal interface only (not 0.0.0.0)
 - **Firewall Rules**: N/A (firewalls DISABLED per HX-Infrastructure standard)
 - **DNS Registration**: N/A (IP-based access via internal network)
@@ -316,11 +316,11 @@ SERVICE_HTTPS_PORT=8443  # Optional, only if TLS configured
 ```
 
 **Compliance Check:**
-- ✅ **CORRECT:** Internal-only binding documented (192.168.10.217, not 0.0.0.0)
+- ✅ **CORRECT:** Internal-only binding documented (hx-docling-mcp-server.hx.dev.local, not 0.0.0.0)
 - ✅ **CORRECT:** WARNING included in environment variable example to change from 0.0.0.0
 - ✅ **CORRECT:** Network isolation to 192.168.10.0/24 subnet
 - ✅ **CORRECT:** No external network exposure
-- ⚠️ **RECOMMENDATION:** Default `SERVICE_HOST=0.0.0.0` in example should be `SERVICE_HOST=192.168.10.217` to prevent accidental exposure
+- ⚠️ **RECOMMENDATION:** Default `SERVICE_HOST=0.0.0.0` in example should be `SERVICE_HOST=hx-docling-mcp-server.hx.dev.local` to prevent accidental exposure
 
 **Security Risk:**
 - **LOW RISK:** Default value in example is `0.0.0.0`, but documentation clearly warns to change it
@@ -386,8 +386,8 @@ SERVICE_HTTPS_PORT=8443  # Optional, only if TLS configured
 **Evidence from Plan (lines 385-386):**
 ```markdown
 **Network Configuration**:
-- **Primary Endpoint**: HTTP 192.168.10.217:8000 (MCP protocol)
-- **Optional HTTPS**: 192.168.10.217:8443 (if TLS configured)
+- **Primary Endpoint**: HTTP hx-docling-mcp-server.hx.dev.local:8000 (MCP protocol)
+- **Optional HTTPS**: hx-docling-mcp-server.hx.dev.local:8443 (if TLS configured)
 ```
 
 **Evidence from Plan (line 436):**
@@ -402,14 +402,14 @@ SERVICE_HTTPS_PORT=8443  # Optional, only if TLS configured
 - ✅ **CORRECT:** Certificate installation research deferred to implementation phase
 
 **Certificate Management Readiness:**
-- ✅ Internal CA available: hx-ca-server (192.168.10.201)
+- ✅ Internal CA available: hx-ca-server
 - ✅ CA passphrase documented: `Longhorn88` (from credentials.md line 1270)
 - ✅ Certificate generation procedure established (per credentials.md lines 1277-1291)
 - ✅ Certificate delivery mechanism: scp from hx-ca-server to target node
 
 **Certificate Generation Procedure (if TLS enabled):**
 ```bash
-# On hx-ca-server (192.168.10.201)
+# On hx-ca-server
 cd ~/easy-rsa-pki
 openssl genrsa -out hx-docling-mcp-server.key 4096
 openssl req -new -key hx-docling-mcp-server.key -out hx-docling-mcp-server.csr \
@@ -421,7 +421,7 @@ openssl x509 -req -in hx-docling-mcp-server.csr \
 
 # Deliver to target server
 scp hx-docling-mcp-server.crt hx-docling-mcp-server.key ca-cert.pem \
-  agent0@192.168.10.217:/tmp/
+  agent0@hx-docling-mcp-server.hx.dev.local:/tmp/
 ```
 
 **Coordination with William Chen (Infrastructure Specialist):**
@@ -481,7 +481,7 @@ scp hx-docling-mcp-server.crt hx-docling-mcp-server.key ca-cert.pem \
 - **Impact:** MEDIUM (internal network only, no external exposure)
 - **Mitigation:**
   - Network isolation to 192.168.10.0/24 subnet
-  - Internal-only binding (192.168.10.217)
+  - Internal-only binding (hx-docling-mcp-server.hx.dev.local)
   - Phase 2: TLS enablement with internal CA certificates
 - **Security Posture:** ✅ ACCEPTABLE for development (internal network isolation)
 
@@ -576,12 +576,12 @@ ReadOnlyPaths=/etc/docling-mcp
 
 **Current State (line 435):**
 ```bash
-SERVICE_HOST=0.0.0.0  # WARNING: Change to 192.168.10.217 for internal-only binding
+SERVICE_HOST=0.0.0.0  # WARNING: Change to hx-docling-mcp-server.hx.dev.local for internal-only binding
 ```
 
 **Recommended Change:**
 ```bash
-SERVICE_HOST=192.168.10.217  # Internal-only binding (change to 0.0.0.0 only if external access required)
+SERVICE_HOST=hx-docling-mcp-server.hx.dev.local  # Internal-only binding (change to 0.0.0.0 only if external access required)
 ```
 
 **Rationale:**
@@ -609,7 +609,7 @@ SERVICE_HOST=192.168.10.217  # Internal-only binding (change to 0.0.0.0 only if 
 # Check 1: Validate service binds to internal interface only
 if grep -q "SERVICE_HOST=0.0.0.0" /etc/docling-mcp/.env; then
   echo "ERROR: SERVICE_HOST=0.0.0.0 binds to all interfaces (security risk)"
-  echo "Change to SERVICE_HOST=192.168.10.217 for internal-only binding"
+  echo "Change to SERVICE_HOST=hx-docling-mcp-server.hx.dev.local for internal-only binding"
   exit 1
 fi
 
@@ -713,7 +713,7 @@ Add section to `/home/agent0/HX-Infrastructure/nodes/hx-docling-mcp-server/deplo
 
 5. Verify service health:
    ```bash
-   curl http://192.168.10.217:8000/health
+   curl http://hx-docling-mcp-server.hx.dev.local:8000/health
    ```
 
 6. Update dependent services (coordinate with integration owners)
@@ -791,7 +791,7 @@ sudo systemctl status docling-mcp.service
 3. ✅ **Password Compliance:** Standard `[SEE VAULT: vault/credentials.yml]` per HX-Infrastructure development policy
 4. ✅ **Secrets Management:** Ansible Vault structure follows HX-Infrastructure standards
 5. ✅ **Credential Storage:** No plaintext credentials in documentation or configuration files
-6. ✅ **Network Security:** Internal-only binding (192.168.10.217), no external exposure
+6. ✅ **Network Security:** Internal-only binding (hx-docling-mcp-server.hx.dev.local), no external exposure
 7. ✅ **Firewall Policy:** DISABLED per HX-Infrastructure philosophy (CORRECT)
 8. ✅ **Certificate Management:** Optional TLS for Phase 1, infrastructure ready for Phase 2
 9. ✅ **Systemd Hardening:** Excellent security directives (ProtectSystem, ProtectHome, PrivateTmp)
@@ -801,7 +801,7 @@ sudo systemctl status docling-mcp.service
 
 **5 Recommendations for Enhanced Security Posture:**
 
-1. **MEDIUM:** Change default `SERVICE_HOST` from `0.0.0.0` to `192.168.10.217` (security by default)
+1. **MEDIUM:** Change default `SERVICE_HOST` from `0.0.0.0` to `hx-docling-mcp-server.hx.dev.local` (security by default)
 2. **LOW:** Add pre-start network binding validation (defense in depth)
 3. **LOW:** Document TLS enablement procedure for Phase 2 (future readiness)
 4. **LOW:** Add credential rotation procedure to operational runbook (security hygiene)
@@ -816,8 +816,8 @@ sudo systemctl status docling-mcp.service
 ### Handoff to William Chen (Infrastructure Specialist)
 
 **Certificate Installation (if TLS enabled in Phase 2):**
-1. Frank Lucas generates certificate on hx-ca-server (192.168.10.201)
-2. Frank delivers certificate files via scp to hx-docling-mcp-server (192.168.10.217)
+1. Frank Lucas generates certificate on hx-ca-server
+2. Frank delivers certificate files via scp to hx-docling-mcp-server (hx-docling-mcp-server.hx.dev.local)
 3. **William Chen installs certificates:**
    - Install paths: `/etc/docling-mcp/ssl/server.crt`, `/etc/docling-mcp/ssl/server.key`, `/etc/docling-mcp/ssl/ca.crt`
    - File permissions: `chmod 600` for private key, `chmod 644` for certificates
