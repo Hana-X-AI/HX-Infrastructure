@@ -33,9 +33,9 @@ Phase 2 transitions from `BLOCKED` to `READY` only after the fleet-wide Phase 1 
 
 ## Registry
 
-| Server | FQDN | IP | CPU | RAM | GPU / VRAM | Primary Storage | Discovery | Assigned Role | Workload / Model | Phase 2 |
-|---|---|---|---|---|---|---|---|---|---|---|
-|  |  |  |  |  |  |  |  |  |  | BLOCKED |
+| Server | FQDN | IP  | CPU | RAM | GPU / VRAM | Primary Storage | Discovery | Assigned Role | Workload / Model | Phase 2 |
+| ------ | ---- | --- | --- | --- | ---------- | --------------- | --------- | ------------- | ---------------- | ------- |
+|        |      |     |     |     |            |                 |           |               |                  | BLOCKED |
 
 ## Phase 1 Gate
 

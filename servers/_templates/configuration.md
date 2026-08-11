@@ -1,4 +1,4 @@
-﻿# <server-name> — Configured State
+﻿# `<server-name>` — Configured State
 
 **Phase:** 2
 **Configuration date:**
@@ -17,32 +17,38 @@ servers/<server-name>/discovery.md
 Do not modify the discovery record.
 
 ## Role Objective
+
 -
 
 ## Final Configuration
 
 ### Operating System
+
 - Hostname:
 - Kernel:
 - Relevant packages / runtimes:
 
 ### Network
+
 - IPv4:
 - Gateway:
 - DNS:
 - Listening services / ports:
 
 ### Storage
+
 - Filesystems:
 - Mounts:
 - Role-specific layout:
 
 ### GPU / Accelerators
+
 - Driver:
 - Runtime:
 - Relevant configuration:
 
 ### Role-Specific Software
+
 - Software:
 - Version:
 - Configuration paths:
@@ -50,10 +56,11 @@ Do not modify the discovery record.
 ### Services
 
 | Service | Purpose | Enabled | Active |
-|---|---|---|---|
-|  |  |  |  |
+| ------- | ------- | ------- | ------ |
+|         |         |         |        |
 
 ## Validation
+
 ```text
 [ ] Base system healthy
 [ ] Network healthy
@@ -66,8 +73,9 @@ Do not modify the discovery record.
 ## Material Change Record
 
 | Timestamp | Previous State | Change | Files / Commands | Validation | Rollback | Unresolved Issues |
-|---|---|---|---|---|---|---|
-|  |  |  |  |  |  |  |
+| --------- | -------------- | ------ | ---------------- | ---------- | -------- | ----------------- |
+|           |                |        |                  |            |          |                   |
 
 ## Sources
+
 -

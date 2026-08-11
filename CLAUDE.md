@@ -40,7 +40,6 @@ When Phase 2 begins for a server:
 
 Keep documentation concise and factual. Avoid speculative architecture, exhaustive runbooks, and unnecessary planning documents.
 
-
 ## Documentation and MCP Use
 
 Context7 MCP is the project documentation-retrieval service.
