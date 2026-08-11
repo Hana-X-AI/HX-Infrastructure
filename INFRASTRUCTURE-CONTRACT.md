@@ -1,0 +1,788 @@
+﻿# HX Local Infrastructure Automation Contract
+
+**Status:** Baseline standard
+**Scope:** HX local development and test infrastructure
+**Environment:** Bare-metal, on-premises, non-cloud
+**Primary network edge:** ASUS RT-AX57 running stock ASUSWRT
+**Primary server OS:** Ubuntu Server 24.04 LTS
+**Local DNS namespace:** `hx.local.arpa`
+
+---
+
+## 1. Purpose
+
+This contract defines the operating rules for infrastructure automation across the HX local development and test environment.
+
+It exists to ensure that automation agents, scripts, and operators:
+
+- understand the actual HX network topology;
+- do not apply cloud assumptions to a local bare-metal environment;
+- distinguish ASUSWRT behavior from standard Ubuntu/OpenSSH behavior;
+- preserve remote access during network changes;
+- use static addressing consistently;
+- treat generated ASUSWRT configuration files correctly;
+- make package changes deterministically;
+- use stable storage identifiers;
+- validate every material change.
+
+This document is an infrastructure contract, not a generic home-lab guide.
+
+---
+
+## 2. Environment Boundaries
+
+HX infrastructure is currently:
+
+```text
+Internet
+  |
+  v
+Sagemcom cable modem
+  - bridge mode
+  |
+  v
+ASUS RT-AX57
+  - ASUSWRT
+  - NAT
+  - firewall
+  - dnsmasq
+  - Dropbear SSH
+  |
+  v
+HX LAN
+  - 192.168.50.0/24
+  - static addressing
+  - local domain: hx.local.arpa
+  |
+  v
+Ubuntu 24.04 servers
+```
+
+The environment does **not** currently use:
+
+- AWS
+- Azure
+- GCP
+- Kubernetes
+- Helm
+- cloud-managed switches
+- cloud-native service meshes
+- cloud load balancers
+- cloud-managed DNS
+- enterprise SDN controllers
+
+Automation must not introduce assumptions from those environments unless explicitly requested.
+
+---
+
+## 3. HX Network Baseline
+
+### Primary LAN
+
+```text
+Network:        192.168.50.0/24
+Router:         192.168.50.1
+Gateway:        192.168.50.1
+DNS resolver:   192.168.50.1
+DNS namespace:  hx.local.arpa
+DHCP:           disabled on primary LAN
+Addressing:     static
+```
+
+### Static address allocation
+
+```text
+192.168.50.1       ASUS router / gateway / DNS
+192.168.50.2-139   available static assignments
+192.168.50.140-199 servers / infrastructure
+192.168.50.200-254 future / special-purpose
+192.168.50.255     broadcast
+```
+
+### Server naming
+
+Server FQDNs must use:
+
+```text
+<hostname>.hx.local.arpa
+```
+
+Do not use `.local` for HX unicast DNS.
+
+---
+
+## 4. Core Automation Principles
+
+### 4.1 Inspect before modify
+
+Every automation task must have two explicit phases:
+
+#### Discovery
+
+- identify the platform;
+- inspect current state;
+- determine the active configuration source;
+- determine persistence behavior;
+- record version information;
+- identify the active management path.
+
+#### Mutation
+
+- back up affected configuration;
+- validate the proposed configuration;
+- apply the smallest necessary change;
+- verify behavior;
+- record the resulting state.
+
+Never make a persistent change based on an assumption that has not been verified on the target host.
+
+### 4.2 Separate generated state from persistent state
+
+Generated runtime files are not configuration sources of truth unless explicitly documented as such.
+
+### 4.3 Preserve access
+
+Any change that can affect:
+
+- IP addressing;
+- routing;
+- SSH;
+- DNS;
+- firewall state;
+- storage mounts used by the OS;
+
+must include rollback or recovery planning before application.
+
+### 4.4 Prefer deterministic operations
+
+Automation must be:
+
+- explicit;
+- repeatable;
+- idempotent where practical;
+- version-aware;
+- minimally interactive.
+
+---
+
+## 5. ASUSWRT Network Edge Contract
+
+### 5.1 Platform
+
+The HX network edge is:
+
+```text
+ASUS RT-AX57
+ASUSWRT
+LAN IP: 192.168.50.1
+SSH: Dropbear
+DNS: dnsmasq
+Primary DHCP: disabled
+```
+
+### 5.2 Dropbear SSH
+
+ASUSWRT uses **Dropbear**, not OpenSSH `sshd`.
+
+Automation targeting the router must not assume:
+
+```text
+/etc/ssh/sshd_config
+sshd -t
+systemctl restart ssh
+systemctl restart sshd
+```
+
+apply to the router.
+
+Do not apply OpenSSH daemon configuration parameters to Dropbear unless the option is explicitly supported by the installed Dropbear implementation.
+
+Before SSH changes, inspect:
+
+```sh
+ps | grep dropbear
+netstat -lnp 2>/dev/null | grep dropbear
+```
+
+or equivalent tools available in ASUSWRT.
+
+### 5.3 dnsmasq
+
+ASUSWRT uses `dnsmasq` for DNS and, where enabled, DHCP.
+
+The primary HX LAN uses **static addressing only**.
+
+Therefore:
+
+- do not create `dhcp-host=` entries for primary-LAN servers;
+- do not use ASUS DHCP reservations to manage server addresses;
+- do not enable primary-LAN DHCP as part of host automation;
+- server IPs must be configured statically on the server itself.
+
+### 5.4 Generated ASUSWRT configuration
+
+On stock ASUSWRT, files such as:
+
+```text
+/etc/dnsmasq.conf
+/etc/hosts
+```
+
+may be generated or regenerated by ASUSWRT.
+
+Automation must treat them as **volatile/generated** unless a tested persistent mechanism has been explicitly established.
+
+Do not assume that editing:
+
+```text
+/etc/dnsmasq.conf
+```
+
+will survive:
+
+- service restart;
+- router reboot;
+- GUI configuration apply;
+- firmware update.
+
+Do not implement persistent DNS configuration by directly editing generated files unless the persistence path has been verified.
+
+### 5.5 HX DNS
+
+The router is the primary HX DNS resolver:
+
+```text
+192.168.50.1
+```
+
+The local namespace is:
+
+```text
+hx.local.arpa
+```
+
+DNS records must correspond to real assigned static addresses.
+
+Do not create placeholder records for servers that are not configured.
+
+Validation examples:
+
+```bash
+dig @192.168.50.1 <host>.hx.local.arpa
+```
+
+or:
+
+```bash
+nslookup <host>.hx.local.arpa 192.168.50.1
+```
+
+### 5.6 Router change validation
+
+Before a material router change:
+
+1. capture current IP/routing/DNS state;
+2. confirm SSH access;
+3. identify whether the target file is generated or persistent;
+4. determine rollback path.
+
+After a change:
+
+```bash
+ping 192.168.50.1
+```
+
+Then validate DNS using an approved `hx.local.arpa` record once persistent router-side DNS has been established (see act-001):
+
+```bash
+dig @192.168.50.1 <known-host>.hx.local.arpa
+```
+
+or:
+
+```bash
+nslookup <known-host>.hx.local.arpa 192.168.50.1
+```
+
+---
+
+## 6. Ubuntu Server Contract
+
+### 6.1 Target operating system
+
+HX servers are standardized on:
+
+```text
+Ubuntu Server 24.04 LTS
+```
+
+Before applying server automation:
+
+```bash
+cat /etc/os-release
+uname -r
+uname -m
+```
+
+If the host is not Ubuntu 24.04, stop unless an exception has been approved.
+
+### 6.2 Service management
+
+Use `systemd` service semantics on Ubuntu.
+
+Preferred patterns:
+
+```bash
+systemctl status <service> --no-pager
+systemctl is-enabled <service>
+systemctl is-active <service>
+systemctl enable --now <service>
+systemctl disable --now <service>
+systemctl restart <service>
+```
+
+Do not assume SysV init behavior.
+
+---
+
+## 7. Ubuntu Package Management Contract
+
+### 7.1 General rule
+
+Noninteractive package operations are allowed when the transaction is:
+
+- inside approved automation scope;
+- understood before execution;
+- based on an explicit package list or approved upgrade operation;
+- validated afterward.
+
+Automation does **not** need human confirmation for every `-y` operation.
+
+### 7.2 Approved automated usage
+
+Examples:
+
+```bash
+apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
+DEBIAN_FRONTEND=noninteractive apt-get -y full-upgrade
+apt-get -y autoremove
+apt-get -y autoclean
+```
+
+Explicit package installation:
+
+```bash
+DEBIAN_FRONTEND=noninteractive apt-get install -y <package>
+```
+
+### 7.3 Safety rule
+
+Do not use `-y` blindly for an unreviewed destructive or broad package transaction.
+
+Before a high-impact install/removal, inspect with an appropriate dry-run or simulation where available.
+
+Examples:
+
+```bash
+apt-get -s install <package>
+apt-get -s remove <package>
+apt-get -s full-upgrade
+```
+
+Package automation must not assume `cloud-init`, unattended upgrades, or a cloud configuration manager is enforcing state.
+
+---
+
+## 8. Static Network Configuration Contract
+
+### 8.1 No primary-LAN DHCP
+
+HX primary-LAN servers must use static addressing.
+
+Expected server network configuration:
+
+```text
+IPv4:   192.168.50.x/24
+Gateway: 192.168.50.1
+DNS:     192.168.50.1
+Domain:  hx.local.arpa
+```
+
+Server/infrastructure allocations begin at:
+
+```text
+192.168.50.140
+```
+
+### 8.2 Netplan
+
+Ubuntu 24.04 networking must be managed through the installed Netplan configuration unless an explicitly approved alternate implementation exists.
+
+Before modifying:
+
+```bash
+ls -la /etc/netplan
+cat /etc/netplan/*.yaml
+ip -br address
+ip route
+resolvectl status
+```
+
+Never assume interface names such as:
+
+```text
+eth0
+ens160
+enp1s0
+```
+
+Identify the actual interface.
+
+### 8.3 Required change sequence
+
+For active management interfaces:
+
+1. inspect current state;
+2. back up Netplan YAML;
+3. generate proposed config;
+4. validate syntax;
+5. apply using a rollback-safe method where possible;
+6. verify connectivity immediately.
+
+Required validation:
+
+```bash
+netplan generate
+```
+
+Where appropriate:
+
+```bash
+netplan try
+```
+
+Then verify:
+
+```bash
+ip -br address
+ip route
+ping -c 3 192.168.50.1
+resolvectl status
+```
+
+---
+
+## 9. Local Automation Script Contract
+
+### 9.1 Preferred languages
+
+Default to:
+
+```text
+Bash
+Python
+```
+
+Use:
+
+```bash
+#!/usr/bin/env bash
+```
+
+for Bash scripts unless there is a specific reason not to.
+
+### 9.2 Bash baseline
+
+For nontrivial Bash scripts:
+
+```bash
+set -euo pipefail
+```
+
+should be considered, but only when the script has been written to handle those semantics correctly.
+
+Do not add strict-mode flags mechanically if they break intended command probing.
+
+### 9.3 Network-impacting scripts
+
+Any script capable of altering:
+
+- IP addresses;
+- routes;
+- DNS;
+- network interfaces;
+- SSH exposure;
+
+must provide either:
+
+- a meaningful `--dry-run`; or
+- a verified rollback/recovery mechanism.
+
+A fake `--dry-run` that merely prints commands without validating configuration is insufficient.
+
+For Netplan changes, prefer native validation and rollback mechanisms over custom script behavior.
+
+---
+
+## 10. Storage and Mount Contract
+
+### 10.1 Persistent mounts
+
+Persistent filesystems must be explicitly defined in:
+
+```text
+/etc/fstab
+```
+
+### 10.2 Stable identifiers
+
+Prefer stable filesystem identifiers such as:
+
+```text
+UUID=<filesystem-uuid>
+```
+
+Do **not** rely on:
+
+```text
+/dev/sdX
+```
+
+for persistent mounts unless there is a documented hardware-specific reason.
+
+Device ordering can change across:
+
+- reboot;
+- controller initialization;
+- hardware changes;
+- kernel changes.
+
+### 10.3 Storage discovery
+
+Before creating or modifying a mount:
+
+```bash
+lsblk -f
+blkid
+findmnt
+df -hT
+```
+
+For physical inventory:
+
+```bash
+lsblk -o NAME,MODEL,SERIAL,SIZE,TYPE,FSTYPE,MOUNTPOINTS,TRAN
+```
+
+### 10.4 fstab validation
+
+Before rebooting:
+
+```bash
+findmnt --verify
+```
+
+When practical, test mounts:
+
+```bash
+mount -a
+```
+
+Do not reboot after an `/etc/fstab` change until validation succeeds.
+
+### 10.5 Storage mutation boundary
+
+Automation must not:
+
+- repartition disks;
+- format filesystems;
+- create RAID;
+- modify LVM topology;
+- destroy existing volumes;
+
+without explicit approval.
+
+---
+
+## 11. SSH and Administrative Access Contract
+
+### 11.1 Ubuntu hosts
+
+Ubuntu servers use OpenSSH.
+
+Router and server SSH configurations must not be conflated.
+
+### 11.2 Router
+
+```text
+ASUSWRT -> Dropbear
+```
+
+### 11.3 Servers
+
+```text
+Ubuntu 24.04 -> OpenSSH
+```
+
+Any automation must first determine which platform it is targeting.
+
+### 11.4 Remote access safety
+
+Before modifying SSH configuration on a server:
+
+1. keep the current session open;
+2. validate configuration syntax;
+3. confirm an alternate recovery path where possible;
+4. restart/reload only after validation.
+
+For OpenSSH:
+
+```bash
+sshd -t
+```
+
+or the installed equivalent must succeed before reload/restart.
+
+---
+
+## 12. Validation Contract
+
+Every material change must include post-change validation.
+
+### Network
+
+```bash
+ip -br address
+ip route
+ping -c 3 192.168.50.1
+```
+
+### DNS
+
+```bash
+resolvectl status
+```
+
+Once persistent `hx.local.arpa` DNS records have been established (see act-001):
+
+```bash
+dig @192.168.50.1 <known-host>.hx.local.arpa
+```
+
+### SSH
+
+```bash
+ss -lntp | grep ':22'
+```
+
+on Ubuntu where appropriate.
+
+### Storage
+
+```bash
+findmnt
+df -hT
+findmnt --verify
+```
+
+### Services
+
+```bash
+systemctl status <service> --no-pager
+systemctl is-active <service>
+```
+
+---
+
+## 13. Prohibited Assumptions
+
+Automation must not assume:
+
+- DHCP is available on the primary HX LAN;
+- ASUSWRT `/etc/dnsmasq.conf` is persistent;
+- ASUSWRT `/etc/hosts` is persistent;
+- Dropbear accepts OpenSSH `sshd_config` directives;
+- Ubuntu interface names are predictable;
+- `/dev/sdX` identifiers are stable;
+- cloud-init is managing persistent HX server state;
+- Kubernetes exists;
+- cloud DNS exists;
+- managed network controllers exist;
+- servers can be safely readdressed without preserving the management path.
+
+---
+
+## 14. High-Impact Change Gate
+
+The following require explicit inspection, backup, validation, and rollback planning:
+
+- static IP changes;
+- gateway changes;
+- DNS resolver changes;
+- SSH daemon changes;
+- sudoers changes;
+- firewall changes;
+- persistent storage mounts;
+- partition/LVM/RAID changes;
+- package repository changes;
+- kernel or driver changes;
+- router DNS changes;
+- router SSH changes.
+
+Automation must stop rather than improvise if safe rollback cannot be established.
+
+---
+
+## 15. Documentation Requirements
+
+Material infrastructure changes must be documented.
+
+At minimum record:
+
+- target host/device;
+- timestamp;
+- previous state;
+- changed state;
+- configuration files touched;
+- commands or automation used;
+- validation result;
+- rollback method;
+- unresolved issues.
+
+Do not store:
+
+- passwords;
+- private SSH keys;
+- API tokens;
+- secret material;
+
+in infrastructure Markdown records.
+
+---
+
+## 16. HX Infrastructure Standard Summary
+
+The HX local infrastructure contract is:
+
+```text
+Local bare-metal infrastructure
+        |
+        +-- ASUS RT-AX57 / ASUSWRT
+        |     +-- 192.168.50.1
+        |     +-- dnsmasq
+        |     +-- Dropbear
+        |     +-- primary DHCP disabled
+        |     +-- hx.local.arpa DNS
+        |
+        +-- Ubuntu Server 24.04
+              +-- static IPv4
+              +-- systemd
+              +-- controlled noninteractive apt
+              +-- UUID-based persistent mounts
+              +-- rollback-safe network automation
+```
+
+The guiding rule is:
+
+> **Inspect first, modify minimally, validate immediately, and never assume cloud or enterprise-network behavior exists in HX local infrastructure.**
