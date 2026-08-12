@@ -30,7 +30,17 @@ if ($normalized.EndsWith("/server-registry.md")) {
         exit 0
     }
 
-    $text = Get-Content -LiteralPath $filePath -Raw
+    # Validate the actual fleet-table header row. Searching the whole document would
+    # let explanatory prose satisfy the check after the table itself was damaged.
+    $table = Get-HxRegistryTable $filePath
+    if ($null -eq $table) {
+        Write-HxJson @{
+            decision = "block"
+            reason = "SERVER-REGISTRY.md no longer contains a fleet table header row beginning with '| Server |'. Preserve the fleet registry schema."
+        }
+        exit 0
+    }
+
     $requiredColumns = @(
         "Server",
         "FQDN",
@@ -45,17 +55,12 @@ if ($normalized.EndsWith("/server-registry.md")) {
         "Phase 2"
     )
 
-    $missing = @()
-    foreach ($column in $requiredColumns) {
-        if ($text -notmatch [regex]::Escape($column)) {
-            $missing += $column
-        }
-    }
+    $missing = @($requiredColumns | Where-Object { $table.Columns -notcontains $_ })
 
     if ($missing.Count -gt 0) {
         Write-HxJson @{
             decision = "block"
-            reason = ("SERVER-REGISTRY.md is missing required columns: " + ($missing -join ", ") + ". Preserve the fleet registry schema.")
+            reason = ("SERVER-REGISTRY.md fleet table is missing required columns: " + ($missing -join ", ") + ". Preserve the fleet registry schema.")
         }
         exit 0
     }

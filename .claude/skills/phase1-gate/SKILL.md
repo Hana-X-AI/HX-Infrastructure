@@ -59,7 +59,7 @@ roles assigned: <n>
 roles unassigned: <n>
 
 phase 1: complete | not complete
-phase 2: open | blocked
+phase 2: ready | blocked
 ```
 
 Then list only the blockers, if any.

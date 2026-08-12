@@ -1,4 +1,24 @@
 ﻿{
+    "permissions":  {
+        "deny":  [
+            "Bash(mkfs *)",
+            "Bash(mkfs.*)",
+            "Bash(sudo mkfs *)",
+            "Bash(sudo mkfs.*)",
+            "Bash(wipefs *)",
+            "Bash(sudo wipefs *)",
+            "Bash(sgdisk *)",
+            "Bash(sudo sgdisk *)",
+            "Bash(pvcreate *)",
+            "Bash(sudo pvcreate *)",
+            "Bash(vgcreate *)",
+            "Bash(sudo vgcreate *)",
+            "Bash(lvcreate *)",
+            "Bash(sudo lvcreate *)",
+            "Bash(mdadm --create *)",
+            "Bash(sudo mdadm --create *)"
+        ]
+    },
     "hooks":  {
                   "SessionStart":  [
                                        {
@@ -78,7 +98,7 @@
                                    ],
                   "Notification":  [
                                        {
-                                           "matcher":  "permission_prompt|idle_prompt|agent_needs_input|agent_completed",
+                                           "matcher":  "idle_prompt|agent_needs_input",
                                            "hooks":  [
                                                          {
                                                              "type":  "command",

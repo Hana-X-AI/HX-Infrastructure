@@ -44,9 +44,9 @@ Review and correct:
 .claude/hooks/hx-common.ps1
 .claude/hooks/hx-validate-discovery.ps1
 .claude/hooks/hx-validate-subagent.ps1
-claude-hooks/hooks/hx-common.ps1
-claude-hooks/hooks/hx-validate-discovery.ps1
-claude-hooks/hooks/hx-validate-subagent.ps1
+claude-hooks/claude-hooks/hooks/hx-common.ps1
+claude-hooks/claude-hooks/hooks/hx-validate-discovery.ps1
+claude-hooks/claude-hooks/hooks/hx-validate-subagent.ps1
 ```
 
 ### Required change
@@ -99,7 +99,7 @@ Review and correct:
 
 ```text
 .claude/hooks/hx-phase1-guard.ps1
-claude-hooks/hooks/hx-phase1-guard.ps1
+claude-hooks/claude-hooks/hooks/hx-phase1-guard.ps1
 ```
 
 ### Required change

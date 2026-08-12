@@ -8,6 +8,7 @@ $ErrorActionPreference = "Stop"
 $script:pass = 0
 $script:fail = 0
 $script:results = @()
+$HookTimeoutMs = 30000
 
 function Assert-True {
     param([string]$Name, [bool]$Condition)
@@ -42,16 +43,28 @@ function Invoke-Hook {
     $process = New-Object System.Diagnostics.Process
     $process.StartInfo = $startInfo
     [void]$process.Start()
+
+    # Begin draining both output pipes before writing stdin. Reading synchronously
+    # after the write deadlocks as soon as a hook emits a decision on stdout.
+    $stdoutTask = $process.StandardOutput.ReadToEndAsync()
+    $stderrTask = $process.StandardError.ReadToEndAsync()
+
     $process.StandardInput.WriteLine(($Payload | ConvertTo-Json -Depth 12 -Compress))
     $process.StandardInput.Close()
-    $stdout = $process.StandardOutput.ReadToEnd().Trim()
-    $stderr = $process.StandardError.ReadToEnd().Trim()
-    $process.WaitForExit()
+
+    if (-not $process.WaitForExit($HookTimeoutMs)) {
+        try { $process.Kill() } catch { }
+        return [pscustomobject]@{
+            ExitCode = -999
+            StdOut = ""
+            StdErr = "HOOK TIMEOUT after $HookTimeoutMs ms: $ScriptPath"
+        }
+    }
 
     return [pscustomobject]@{
         ExitCode = $process.ExitCode
-        StdOut = $stdout
-        StdErr = $stderr
+        StdOut = $stdoutTask.Result.Trim()
+        StdErr = $stderrTask.Result.Trim()
     }
 }
 
@@ -478,6 +491,346 @@ Assert-True "parse: JSON files" $allJson
 
 # .env ignored
 Assert-True ".env in .gitignore" ((Get-Content "$root\.gitignore" -Raw) -match '\.env')
+
+# ---------- F4: registry validator anchored to the real fleet table ----------
+
+$registryHeader = "| Server | FQDN | IP | CPU | RAM | GPU / VRAM | Primary Storage | Discovery | Assigned Role | Workload / Model | Phase 2 |"
+$registrySeparator = "| ------ | ---- | --- | --- | --- | ---------- | --------------- | --------- | ------------- | ---------------- | ------- |"
+# Prose that names every required column. It must never satisfy the schema check.
+$registryProse = @"
+The fleet table records Server, FQDN, IP, CPU, RAM, GPU / VRAM, Primary Storage,
+Discovery, Assigned Role, Workload / Model and Phase 2 for each discovered host.
+"@
+
+function New-HxRegistryFixture {
+    param([string]$Name, [string]$Body)
+    $fixtureRoot = Join-Path $tmpDir $Name
+    New-Item -ItemType Directory -Path $fixtureRoot -Force | Out-Null
+    $fixturePath = Join-Path $fixtureRoot "SERVER-REGISTRY.md"
+    Set-Content -Path $fixturePath -Value $Body -Encoding UTF8
+    return $fixturePath
+}
+
+$intactRegistry = New-HxRegistryFixture "registry-intact" @"
+# HX Server Registry
+
+$registryProse
+
+$registryHeader
+$registrySeparator
+| hx-01 | hx-01.hx.local.arpa | 192.168.50.140 | Xeon | 128 GB | none | 2 TB NVMe | COMPLETE | inference | Qwen | BLOCKED |
+
+**Phase 1 Status:** IN PROGRESS
+**Phase 2 Status:** BLOCKED
+"@
+$intactResult = Invoke-Hook $postHook @{
+    hook_event_name = "PostToolUse"; tool_name = "Edit"; tool_input = @{ file_path = $intactRegistry }
+} $tmpDir
+Assert-True "F4: intact fleet table is accepted" (
+    $intactResult.ExitCode -eq 0 -and [string]::IsNullOrWhiteSpace($intactResult.StdOut)
+)
+
+# Header row present but a required column renamed. Prose still names the original.
+$renamedRegistry = New-HxRegistryFixture "registry-renamed" @"
+# HX Server Registry
+
+$registryProse
+
+| Server | FQDN | IP | CPU | RAM | GPU / VRAM | Primary Storage | Discovery | Role | Workload / Model | Phase 2 |
+$registrySeparator
+| hx-01 | hx-01.hx.local.arpa | 192.168.50.140 | Xeon | 128 GB | none | 2 TB NVMe | COMPLETE | inference | Qwen | BLOCKED |
+"@
+$renamedResult = Invoke-Hook $postHook @{
+    hook_event_name = "PostToolUse"; tool_name = "Edit"; tool_input = @{ file_path = $renamedRegistry }
+} $tmpDir
+$renamedJson = $renamedResult.StdOut | ConvertFrom-Json
+Assert-True "F4: renamed header column is detected despite matching prose" (
+    $renamedJson.decision -eq "block" -and $renamedJson.reason -match 'Assigned Role'
+)
+
+# Fleet table removed entirely. Prose alone must not satisfy the check.
+$noTableRegistry = New-HxRegistryFixture "registry-no-table" @"
+# HX Server Registry
+
+$registryProse
+
+**Phase 1 Status:** IN PROGRESS
+**Phase 2 Status:** BLOCKED
+"@
+$noTableResult = Invoke-Hook $postHook @{
+    hook_event_name = "PostToolUse"; tool_name = "Edit"; tool_input = @{ file_path = $noTableRegistry }
+} $tmpDir
+$noTableJson = $noTableResult.StdOut | ConvertFrom-Json
+Assert-True "F4: missing fleet table is detected" (
+    $noTableJson.decision -eq "block" -and $noTableJson.reason -match 'header row'
+)
+
+# The live project registry must still pass its own schema check.
+$liveRegistryResult = Invoke-Hook $postHook @{
+    hook_event_name = "PostToolUse"; tool_name = "Edit"; tool_input = @{ file_path = "$root\SERVER-REGISTRY.md" }
+} $root
+Assert-True "F4: live SERVER-REGISTRY.md passes the anchored check" (
+    $liveRegistryResult.ExitCode -eq 0 -and [string]::IsNullOrWhiteSpace($liveRegistryResult.StdOut)
+)
+
+# ---------- F3: Phase 1 guard category coverage ----------
+# One blocked case and one similar read-only case for every guard category.
+
+$guardCategories = @(
+    @{ Category = "package installation/upgrades"; Blocked = "DEBIAN_FRONTEND=noninteractive apt-get install -y curl"; Allowed = "apt-cache policy curl" },
+    @{ Category = "service mutation";              Blocked = "systemctl restart ssh";                                 Allowed = "systemctl list-unit-files --state=enabled --no-pager" },
+    @{ Category = "network configuration";         Blocked = "netplan apply";                                          Allowed = "netplan get" },
+    @{ Category = "firewall mutation";             Blocked = "ufw allow 22/tcp";                                       Allowed = "ufw status verbose" },
+    @{ Category = "GPU driver installation";       Blocked = "ubuntu-drivers install";                                 Allowed = "ubuntu-drivers devices" },
+    @{ Category = "disk formatting/partitioning";  Blocked = "mkfs.ext4 /dev/sdb1";                                    Allowed = "parted -l" },
+    @{ Category = "partition table mutation";      Blocked = "fdisk /dev/sdb";                                         Allowed = "fdisk -l" },
+    @{ Category = "RAID mutation";                 Blocked = "mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sda /dev/sdb"; Allowed = "mdadm --detail --scan" },
+    @{ Category = "hostname mutation";             Blocked = "hostnamectl set-hostname hx-01";                         Allowed = "hostnamectl status" },
+    @{ Category = "model downloads";               Blocked = "hf download Qwen/Qwen2.5-7B-Instruct";                   Allowed = "hf auth whoami" },
+    @{ Category = "Ollama mutation";               Blocked = "ollama pull llama3";                                     Allowed = "ollama list" },
+    @{ Category = "vLLM serve";                    Blocked = "vllm serve Qwen/Qwen2.5-7B-Instruct";                    Allowed = "vllm --version" },
+    @{ Category = "vLLM installation";             Blocked = "pip install vllm";                                       Allowed = "pip show vllm" },
+    @{ Category = "configuration.md writes";       Blocked = "echo x > servers/hx-test/configuration.md";              Allowed = "echo x > servers/hx-test/discovery.md" }
+)
+
+foreach ($guardCategory in $guardCategories) {
+    $blockedResult = Invoke-Hook $guardHook @{
+        hook_event_name = "PreToolUse"
+        tool_name = "Bash"
+        tool_input = @{ command = $guardCategory.Blocked }
+    } $tmpDir
+    $blockedJson = $blockedResult.StdOut | ConvertFrom-Json
+    Assert-True "F3: $($guardCategory.Category) is blocked" (
+        $blockedResult.ExitCode -eq 0 -and
+        [string]::IsNullOrWhiteSpace($blockedResult.StdErr) -and
+        $blockedJson.hookSpecificOutput.permissionDecision -eq "deny"
+    )
+
+    $allowedResult = Invoke-Hook $guardHook @{
+        hook_event_name = "PreToolUse"
+        tool_name = "Bash"
+        tool_input = @{ command = $guardCategory.Allowed }
+    } $tmpDir
+    Assert-True "F3: $($guardCategory.Category) read-only form is allowed" (
+        $allowedResult.ExitCode -eq 0 -and
+        [string]::IsNullOrWhiteSpace($allowedResult.StdErr) -and
+        [string]::IsNullOrWhiteSpace($allowedResult.StdOut)
+    )
+}
+
+# Additional read-only storage discovery commands must stay permitted.
+foreach ($readOnlyStorage in @("lsblk -f", "blkid", "sfdisk -l", "parted --list", "findmnt --verify")) {
+    $readOnlyResult = Invoke-Hook $guardHook @{
+        hook_event_name = "PreToolUse"
+        tool_name = "Bash"
+        tool_input = @{ command = $readOnlyStorage }
+    } $tmpDir
+    Assert-True "F3: read-only storage command is allowed: $readOnlyStorage" (
+        $readOnlyResult.ExitCode -eq 0 -and [string]::IsNullOrWhiteSpace($readOnlyResult.StdOut)
+    )
+}
+
+# ---------- F3: session-state hook ----------
+
+$sessionHook = "$root\.claude\hooks\hx-session-state.ps1"
+$sessionRoot = Join-Path $tmpDir "session-state"
+New-Item -ItemType Directory -Path $sessionRoot -Force | Out-Null
+Set-Content -Path (Join-Path $sessionRoot "SERVER-REGISTRY.md") -Encoding UTF8 -Value @"
+# HX Server Registry
+
+Fleet-level source of truth for discovery status and Phase 2 status.
+
+| Server | FQDN | IP | CPU | RAM | GPU / VRAM | Primary Storage | Discovery | Assigned Role | Workload / Model | Phase 2 |
+| ------ | ---- | --- | --- | --- | ---------- | --------------- | --------- | ------------- | ---------------- | ------- |
+| hx-01 | hx-01.hx.local.arpa | 192.168.50.140 | Xeon Silver | 128 GB | none | 2 TB NVMe | COMPLETE | inference | Qwen | BLOCKED |
+| hx-02 | hx-02.hx.local.arpa | 192.168.50.141 | Xeon Silver | 64 GB | none | 1 TB NVMe | IN PROGRESS | | | BLOCKED |
+|  |  |  |  |  |  |  |  |  |  | BLOCKED |
+
+**Phase 1 Status:** IN PROGRESS
+**Phase 2 Status:** BLOCKED
+"@
+
+$sessionResult = Invoke-Hook $sessionHook @{ hook_event_name = "SessionStart" } $sessionRoot
+$sessionJson = $sessionResult.StdOut | ConvertFrom-Json
+$sessionContext = [string]$sessionJson.hookSpecificOutput.additionalContext
+Assert-True "F3: session-state exits zero with no strict-mode error" (
+    $sessionResult.ExitCode -eq 0 -and [string]::IsNullOrWhiteSpace($sessionResult.StdErr)
+)
+Assert-True "F3: session-state counts populated rows only" ($sessionContext -match 'servers in registry:\s*2')
+Assert-True "F3: session-state counts completed discovery" ($sessionContext -match 'discovery complete:\s*1')
+Assert-True "F3: session-state counts assigned roles" ($sessionContext -match 'roles assigned:\s*1')
+Assert-True "F3: session-state reports both phase values" (
+    $sessionContext -match 'phase 1:\s*IN PROGRESS' -and $sessionContext -match 'phase 2:\s*BLOCKED'
+)
+
+$emptySessionRoot = Join-Path $tmpDir "session-state-empty"
+New-Item -ItemType Directory -Path $emptySessionRoot -Force | Out-Null
+$emptySessionResult = Invoke-Hook $sessionHook @{ hook_event_name = "SessionStart" } $emptySessionRoot
+$emptySessionJson = $emptySessionResult.StdOut | ConvertFrom-Json
+$emptySessionContext = [string]$emptySessionJson.hookSpecificOutput.additionalContext
+Assert-True "F3: session-state handles a missing registry" (
+    $emptySessionResult.ExitCode -eq 0 -and
+    [string]::IsNullOrWhiteSpace($emptySessionResult.StdErr) -and
+    $emptySessionContext -match 'servers in registry:\s*0' -and
+    $emptySessionContext -match 'phase 1:\s*UNKNOWN'
+)
+
+# ---------- F2: SubagentStop identity and missing-field handling ----------
+# Live SubagentStop payloads confirmed that Claude Code supplies agent_type and
+# last_assistant_message, and honors the ^server-discovery$ matcher. The hook
+# still checks identity itself and refuses to pass when the message is absent.
+
+$otherAgentResult = Invoke-Hook $subagentHook @{
+    hook_event_name = "SubagentStop"
+    agent_type = "Explore"
+    last_assistant_message = "Listed two template files. No discovery record involved."
+} $tmpDir
+Assert-True "F2: unrelated subagent is not blocked" (
+    $otherAgentResult.ExitCode -eq 0 -and
+    [string]::IsNullOrWhiteSpace($otherAgentResult.StdOut) -and
+    [string]::IsNullOrWhiteSpace($otherAgentResult.StdErr)
+)
+
+$discoveryAgentValid = Invoke-Hook $subagentHook @{
+    hook_event_name = "SubagentStop"
+    agent_type = "server-discovery"
+    last_assistant_message = "Discovery saved to servers/test-server/discovery.md"
+} $tmpDir
+Assert-True "F2: server-discovery with a complete record is released" (
+    $discoveryAgentValid.ExitCode -eq 0 -and
+    [string]::IsNullOrWhiteSpace($discoveryAgentValid.StdOut)
+)
+
+$discoveryAgentIncomplete = Invoke-Hook $subagentHook @{
+    hook_event_name = "SubagentStop"
+    agent_type = "server-discovery"
+    last_assistant_message = "Discovery saved to servers/one-issue/discovery.md"
+} $tmpDir
+$discoveryAgentIncompleteJson = $discoveryAgentIncomplete.StdOut | ConvertFrom-Json
+Assert-True "F2: incomplete discovery is still blocked" ($discoveryAgentIncompleteJson.decision -eq "block")
+
+$missingMessageResult = Invoke-Hook $subagentHook @{
+    hook_event_name = "SubagentStop"
+    agent_type = "server-discovery"
+} $tmpDir
+$missingMessageJson = $missingMessageResult.StdOut | ConvertFrom-Json
+Assert-True "F2: missing final message blocks instead of failing open" (
+    $missingMessageResult.ExitCode -eq 0 -and
+    $missingMessageJson.decision -eq "block" -and
+    [string]::IsNullOrWhiteSpace($missingMessageResult.StdErr)
+)
+
+$noAgentTypeValid = Invoke-Hook $subagentHook @{
+    hook_event_name = "SubagentStop"
+    last_assistant_message = "Discovery saved to servers/test-server/discovery.md"
+} $tmpDir
+Assert-True "F2: absent agent_type still validates the record" (
+    $noAgentTypeValid.ExitCode -eq 0 -and
+    [string]::IsNullOrWhiteSpace($noAgentTypeValid.StdOut)
+)
+
+$noAgentTypeIncomplete = Invoke-Hook $subagentHook @{
+    hook_event_name = "SubagentStop"
+    last_assistant_message = "Discovery saved to servers/one-issue/discovery.md"
+} $tmpDir
+$noAgentTypeIncompleteJson = $noAgentTypeIncomplete.StdOut | ConvertFrom-Json
+Assert-True "F2: absent agent_type still blocks an incomplete record" ($noAgentTypeIncompleteJson.decision -eq "block")
+
+# ---------- F1: Phase 2 unblock vocabulary ----------
+# The guard releases only on the canonical SERVER-REGISTRY.md lifecycle values.
+
+$phase2States = @(
+    @{ Value = "BLOCKED";     GuardActive = $true  },
+    @{ Value = "READY";       GuardActive = $false },
+    @{ Value = "IN PROGRESS"; GuardActive = $false },
+    @{ Value = "COMPLETE";    GuardActive = $false }
+)
+
+foreach ($phase2State in $phase2States) {
+    $stateRoot = Join-Path $tmpDir ("phase2-" + ($phase2State.Value -replace '\s', '-'))
+    New-Item -ItemType Directory -Path $stateRoot -Force | Out-Null
+    Set-Content -Path (Join-Path $stateRoot "SERVER-REGISTRY.md") -Encoding UTF8 -Value (
+        "# HX Server Registry`r`n`r`n**Phase 1 Status:** IN PROGRESS`r`n**Phase 2 Status:** " + $phase2State.Value
+    )
+
+    $stateResult = Invoke-Hook $guardHook @{
+        hook_event_name = "PreToolUse"
+        tool_name = "Bash"
+        tool_input = @{ command = "apt-get install -y curl" }
+    } $stateRoot
+
+    Assert-True "F1: $($phase2State.Value) exits zero" ($stateResult.ExitCode -eq 0)
+    Assert-True "F1: $($phase2State.Value) has no strict-mode error" ([string]::IsNullOrWhiteSpace($stateResult.StdErr))
+
+    if ($phase2State.GuardActive) {
+        $stateJson = $stateResult.StdOut | ConvertFrom-Json
+        Assert-True "F1: $($phase2State.Value) keeps the guard active" (
+            $stateJson.hookSpecificOutput.permissionDecision -eq "deny" -and
+            -not [string]::IsNullOrWhiteSpace($stateJson.hookSpecificOutput.permissionDecisionReason)
+        )
+    } else {
+        Assert-True "F1: $($phase2State.Value) releases the guard" ([string]::IsNullOrWhiteSpace($stateResult.StdOut))
+    }
+}
+
+$noRegistryRoot = Join-Path $tmpDir "phase2-no-registry"
+New-Item -ItemType Directory -Path $noRegistryRoot -Force | Out-Null
+$noRegistryResult = Invoke-Hook $guardHook @{
+    hook_event_name = "PreToolUse"
+    tool_name = "Bash"
+    tool_input = @{ command = "apt-get install -y curl" }
+} $noRegistryRoot
+$noRegistryJson = $noRegistryResult.StdOut | ConvertFrom-Json
+Assert-True "F1: missing registry keeps the guard active" (
+    $noRegistryResult.ExitCode -eq 0 -and
+    $noRegistryJson.hookSpecificOutput.permissionDecision -eq "deny"
+)
+
+Assert-True "F1: OPEN is not reintroduced into the registry" (
+    (Get-Content "$root\SERVER-REGISTRY.md" -Raw) -notmatch '(?im)^\s*\*\*Phase 2 Status:\*\*\s*OPEN\s*$'
+)
+Assert-True "F1: hook no longer gates on OPEN" (
+    (Get-Content "$root\.claude\hooks\hx-common.ps1" -Raw) -match 'READY\|IN PROGRESS\|COMPLETE'
+)
+
+# ---------- Items 5 and 7: notification scope, deny rules, settings parity ----------
+
+$settingsObject = Get-Content "$root\.claude\settings.json" -Raw | ConvertFrom-Json
+$fragmentObject = Get-Content "$root\claude-hooks\claude-hooks\settings.fragment.json" -Raw | ConvertFrom-Json
+
+$notificationMatcher = [string]$settingsObject.hooks.Notification[0].matcher
+Assert-True "item 5: notification hook no longer fires on permission prompts" (
+    $notificationMatcher -notmatch 'permission_prompt' -and
+    $notificationMatcher -notmatch 'agent_completed'
+)
+Assert-True "item 5: notification hook still fires when input is needed" (
+    $notificationMatcher -match 'idle_prompt' -and $notificationMatcher -match 'agent_needs_input'
+)
+
+Assert-True "item 5: settings and packaged fragment hooks stay in sync" (
+    ($settingsObject.hooks | ConvertTo-Json -Depth 30 -Compress) -eq
+    ($fragmentObject.hooks | ConvertTo-Json -Depth 30 -Compress)
+)
+
+$denyRules = @($settingsObject.permissions.deny)
+$requiredDeny = @("mkfs", "wipefs", "sgdisk", "pvcreate", "vgcreate", "lvcreate", "mdadm --create")
+$missingDeny = @($requiredDeny | Where-Object { $rule = $_; -not ($denyRules | Where-Object { $_ -like "*$rule*" }) })
+Assert-True "item 7: contract-mandated storage operations have deny rules" ($missingDeny.Count -eq 0)
+
+$registryText = Get-Content "$root\SERVER-REGISTRY.md" -Raw
+Assert-True "item 7: registry has no empty placeholder row" (
+    $registryText -notmatch '(?m)^\|\s*(\|\s*)+\|\s*BLOCKED\s*\|\s*$'
+)
+
+$auditSkillText = Get-Content "$root\.claude\skills\audit-discovery\SKILL.md" -Raw
+Assert-True "item 7: audit/hook strictness difference is documented" (
+    $auditSkillText -match 'stricter than the `PostToolUse` and `SubagentStop` hook validators'
+)
+
+$remediationDoc = Get-Content "$root\governance\reports\GITHUB-REMEDIATION-INSTRUCTIONS.md" -Raw
+Assert-True "item 7: packaged hook paths are correct" (
+    $remediationDoc -notmatch '(?<!claude-hooks/)claude-hooks/hooks/'
+)
 
 # Cleanup
 Remove-Item $tmpDir -Recurse -Force -ErrorAction SilentlyContinue

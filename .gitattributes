@@ -1,0 +1,12 @@
+# This repository stores files exactly as written, with CRLF endings.
+#
+# The tooling is Windows PowerShell, and the active hooks under .claude/hooks
+# are byte-compared against their packaged copies under claude-hooks. Any
+# end-of-line conversion would break that parity check and rewrite every blob.
+#
+# The initial baseline was committed with CRLF already in the objects, so with
+# a global core.autocrlf=true and core.safecrlf=true, git refuses the round trip
+# and no further commit is possible. Disabling text conversion resolves that
+# without rewriting the existing history.
+
+* -text

@@ -9,6 +9,21 @@ function Read-HxHookInput {
     return ($raw | ConvertFrom-Json)
 }
 
+function Get-HxInputProperty {
+    param($InputObject, [string]$Name)
+
+    if ($null -eq $InputObject) {
+        return $null
+    }
+
+    $property = $InputObject.PSObject.Properties[$Name]
+    if ($null -eq $property) {
+        return $null
+    }
+
+    return $property.Value
+}
+
 function Get-HxProjectRoot {
     param($InputObject)
 
@@ -42,7 +57,29 @@ function Test-HxPhase2Open {
     }
 
     $text = Get-Content -LiteralPath $registry -Raw
-    return ($text -match '(?im)^\s*\*\*Phase 2 Status:\*\*\s*OPEN\s*$')
+    return ($text -match '(?im)^\s*\*\*Phase 2 Status:\*\*\s*(READY|IN PROGRESS|COMPLETE)\s*$')
+}
+
+function Get-HxRegistryTable {
+    param([string]$RegistryPath)
+
+    if (-not (Test-Path -LiteralPath $RegistryPath)) {
+        return $null
+    }
+
+    $lines = @(Get-Content -LiteralPath $RegistryPath)
+
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -match '^\s*\|\s*Server\s*\|') {
+            return [pscustomobject]@{
+                Lines = $lines
+                HeaderIndex = $i
+                Columns = @($lines[$i].Trim().Trim([char]'|').Split([char]'|') | ForEach-Object { $_.Trim() })
+            }
+        }
+    }
+
+    return $null
 }
 
 function Write-HxJson {

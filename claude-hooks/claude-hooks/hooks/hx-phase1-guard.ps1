@@ -29,8 +29,14 @@ elseif ($tool -eq "Bash" -or $tool -eq "PowerShell") {
         '(?i)\bnetplan\s+(apply|try|set)\b',
         '(?i)\b(ufw)\s+(enable|disable|reset|allow|deny|delete)\b',
         '(?i)\b(ubuntu-drivers)\s+install\b',
-        '(?i)\b(mkfs(\.\w+)?|wipefs|fdisk|cfdisk|sfdisk|parted|sgdisk|pvcreate|vgcreate|lvcreate)\b',
-        '(?i)\bmdadm\b.*\b(--create|--assemble|--add|--remove|--fail)\b',
+        '(?i)\b(mkfs(\.\w+)?|wipefs|cfdisk|sgdisk|pvcreate|vgcreate|lvcreate)\b',
+        # fdisk, sfdisk and parted are blocked except for their read-only listing form,
+        # which is legitimate Phase 1 discovery. sgdisk is excluded above because its
+        # -l switch is --load-backup, not a listing operation.
+        '(?i)\b(fdisk|sfdisk|parted)\b(?!\s+(-l|--list)\b)',
+        # The flag alternation is anchored on whitespace, not \b: there is no word
+        # boundary between a space and a leading '-', so \b(--create) never matched.
+        '(?i)\bmdadm\b.*(?:^|\s)(--create|--assemble|--add|--remove|--fail)\b',
         '(?i)\bhostnamectl\s+set-hostname\b',
         '(?i)\b(hf|huggingface-cli)\s+download\b',
         '(?i)\b(ollama)\s+(pull|run|serve|create|rm|cp)\b',

@@ -32,6 +32,8 @@ Check that the record contains factual values or an explicit reason a value coul
 
 A section with only unchanged template placeholders is not complete.
 
+This audit is deliberately stricter than the `PostToolUse` and `SubagentStop` hook validators. Those check that each required section exists and contains substantive content. This audit additionally checks the individual fields listed above. A record can therefore satisfy the hooks and still fail this audit; hook acceptance is the floor, not Phase 1 acceptance.
+
 Acceptable explicit absence examples:
 
 ```text

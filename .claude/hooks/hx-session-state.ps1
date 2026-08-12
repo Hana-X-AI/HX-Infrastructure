@@ -20,19 +20,13 @@ if (Test-Path -LiteralPath $registry) {
         $phase2 = $matches[1].Trim()
     }
 
-    $lines = Get-Content -LiteralPath $registry
-    $headerIndex = -1
-    $headers = @()
+    $table = Get-HxRegistryTable $registry
 
-    for ($i = 0; $i -lt $lines.Count; $i++) {
-        if ($lines[$i] -match '^\|\s*Server\s*\|') {
-            $headerIndex = $i
-            $headers = @($lines[$i].Trim('|').Split('|') | ForEach-Object { $_.Trim() })
-            break
-        }
-    }
+    if ($null -ne $table) {
+        $lines = $table.Lines
+        $headerIndex = $table.HeaderIndex
+        $headers = $table.Columns
 
-    if ($headerIndex -ge 0) {
         $serverCol = [array]::IndexOf($headers, "Server")
         $discoveryCol = [array]::IndexOf($headers, "Discovery")
         $roleCol = [array]::IndexOf($headers, "Assigned Role")
