@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HX-Infrastructure — Deep Merge Reconciliation Feedback</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#090e14;--panel:#111923;--panel2:#16212c;--ink:#e8eef5;--muted:#9eacb9;
+  --line:#2a3948;--green:#60d4ae;--blue:#7bb8ff;--amber:#f1b35e;--red:#ff7d73;
+  --violet:#c8a9ff;--mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+  --sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif
+}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#071019,#090e14 32rem);color:var(--ink);font:15px/1.62 var(--sans)}
+main{max-width:1260px;margin:auto;padding:40px 24px 72px}
+header{background:linear-gradient(135deg,#142330,#0e1720);border:1px solid var(--line);border-radius:14px;padding:30px;box-shadow:0 18px 42px rgba(0,0,0,.24)}
+.eyebrow{font:800 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:12px}
+h1{font-size:36px;line-height:1.1;letter-spacing:-.025em;margin:0 0 12px}h2{font-size:24px;line-height:1.22;margin:0 0 10px;letter-spacing:-.01em}h3{font-size:17px;margin:0 0 7px}
+.sub,.lede{color:var(--muted);max-width:100ch}.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.pill{font:700 11px/1 var(--mono);padding:7px 9px;border:1px solid var(--line);border-radius:999px;background:#0b141d;color:#c8d3dc}
+section{margin-top:30px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}.metric{font-size:25px;font-weight:800;letter-spacing:-.02em}.small{font-size:12.5px;color:var(--muted)}
+.callout{background:var(--panel);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:16px 18px;margin:14px 0}.warn{border-left-color:var(--amber)}.bad{border-left-color:var(--red)}.blue{border-left-color:var(--blue)}
+table{width:100%;border-collapse:separate;border-spacing:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:12px}
+th,td{text-align:left;vertical-align:top;padding:11px 12px;border-bottom:1px solid var(--line)}th{font:800 10.5px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#b7c4cf;background:#0f1720}tr:last-child td{border-bottom:0}
+code,pre{font-family:var(--mono)}code{background:#09121a;border:1px solid #22313f;border-radius:4px;padding:.05em .32em;color:#dce8f2}pre{white-space:pre;overflow:auto;background:#070c11;border:1px solid var(--line);border-radius:10px;padding:18px;line-height:1.5;color:#dae5ef}
+ul,ol{margin:7px 0 0;padding-left:22px}li{margin:5px 0}.badge{display:inline-block;font:800 9.5px/1 var(--mono);text-transform:uppercase;letter-spacing:.06em;padding:5px 7px;border-radius:999px;white-space:nowrap}
+.keep{color:#c4f7d3;background:rgba(96,212,174,.12);border:1px solid rgba(96,212,174,.35)}.adapt{color:#ffe1ae;background:rgba(241,179,94,.12);border:1px solid rgba(241,179,94,.35)}.reject{color:#ffc7c2;background:rgba(255,125,115,.12);border:1px solid rgba(255,125,115,.35)}.verify{color:#eadcff;background:rgba(200,169,255,.12);border:1px solid rgba(200,169,255,.35)}.defer{color:#cce1ff;background:rgba(123,184,255,.12);border:1px solid rgba(123,184,255,.35)}
+.decision{background:linear-gradient(135deg,#11261f,#111a24);border:1px solid #285044;border-radius:12px;padding:20px;margin-top:14px}.decision h3{color:var(--green)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:14px}.toc a{color:var(--blue);text-decoration:none}.toc a:hover{text-decoration:underline}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0}footer{margin-top:42px;border-top:1px solid var(--line);padding-top:18px;color:#7f8e9b;font-size:12px}
+@media(max-width:760px){main{padding:22px 12px 48px}header{padding:22px 18px}h1{font-size:29px}th,td{padding:9px 8px;font-size:13px}}
+</style>
+</head>
+<body><main>
+<header>
+<div class="eyebrow">HX-Infrastructure · final reconciliation review · planning only</div>
+<h1>Deep Reconciliation of the Merge Recommendations</h1>
+<p class="sub">Independent review of the latest Claude AI and Claude Code feedback, reconciled with the legacy archive, the current-repository evidence already reviewed, the owner’s one-repository requirement, the specialist-agent requirement, and current GitHub guidance for sensitive-data history. The purpose is to settle the merge model before a file-by-file migration manifest is produced.</p>
+<div class="meta">
+<span class="pill">author: gpt-5.6 sol</span>
+<span class="pill">2026-08-13 11:37 -05:00</span>
+<span class="pill">human-facing HTML</span>
+<span class="pill">one repo · one active truth · many specialists</span>
+<span class="pill">no repository changes authorized</span>
+</div>
+</header>
+
+<section>
+<h2>1. Executive decision</h2>
+<div class="decision">
+<h3>Recommended final model</h3>
+<p><strong>Use the current 2026 repository lineage as the future active <code>main</code>. Use <code>Hana-X-AI/HX-Infrastructure</code> as the single canonical remote. Preserve the useful 2025 Git lineage only after it has been sanitized. Import legacy engineering knowledge selectively into the current tree. Preserve the specialist-agent capability model broadly, but rebuild active agents against current contracts. Do not raw-merge unrelated histories and do not place a full frozen 2025 project tree under active <code>main</code>.</strong></p>
+<p>This is a controlled consolidation, not a conventional source-tree merge. The goal is not “make every old file fit.” The goal is “keep every expensive piece of knowledge that still has value while eliminating competing truth, stale environment state, exposed credentials, and process duplication.”</p>
+</div>
+<div class="grid">
+<div class="card"><div class="small">Canonical remote</div><div class="metric">Hana-X-AI/HX-Infrastructure</div><div class="small">One remote home after identity/access are verified.</div></div>
+<div class="card"><div class="small">Future active lineage</div><div class="metric">Current 2026 main</div><div class="small">Current fleet facts and governance remain the operating chassis.</div></div>
+<div class="card"><div class="small">Legacy Git lineage</div><div class="metric">Sanitize, then preserve</div><div class="small">Historical commits are valuable, but raw secret-bearing refs are not acceptable as a permanent archival feature.</div></div>
+<div class="card"><div class="small">Legacy active-tree import</div><div class="metric">Selective</div><div class="small">Agents, service knowledge, lessons and useful controls; not the old topology or duplicate governance.</div></div>
+</div>
+</section>
+
+<section>
+<h2>2. What the latest feedback gets right</h2>
+<p class="lede">The two new reviews materially improve the plan. Several positions can now be treated as settled.</p>
+<table>
+<thead><tr><th>Point</th><th>Assessment</th><th>Final position</th></tr></thead>
+<tbody>
+<tr><td>One repository</td><td><span class="badge keep">settled</span></td><td>One canonical GitHub repository, one active <code>main</code>, one infrastructure authority model.</td></tr>
+<tr><td>Current registry/discovery authority</td><td><span class="badge keep">settled</span></td><td><code>SERVER-REGISTRY.md</code> and current server evidence remain authoritative. Legacy node/IP state never overrides them.</td></tr>
+<tr><td>Specialist-agent model</td><td><span class="badge keep">settled</span></td><td>Preserve narrow SME ownership because it reduced implementation drift and was a major source of value in the first environment.</td></tr>
+<tr><td>Lean process</td><td><span class="badge keep">settled</span></td><td>Do not recreate 90-file task trees or parallel RAIDD/defect/status systems. Preserve useful controls, not ceremony.</td></tr>
+<tr><td>Docling + LangGraph depth</td><td><span class="badge keep">settled</span></td><td>These are the richest legacy engineering assets and should be among the first sources mined.</td></tr>
+<tr><td>Legacy environment facts</td><td><span class="badge keep">settled</span></td><td>Old addresses, names, root paths and deployment labels are historical evidence only.</td></tr>
+<tr><td>Secret hygiene</td><td><span class="badge keep">settled</span></td><td>No secret-bearing legacy file is copied into active <code>main</code>. Secret history requires separate treatment.</td></tr>
+<tr><td>Service-oriented tree</td><td><span class="badge keep">settled</span></td><td>A lean <code>services/</code> layer is a better current abstraction than reproducing the old <code>nodes/</code> task hierarchy.</td></tr>
+<tr><td>Migration manifest next</td><td><span class="badge keep">settled</span></td><td>The next execution-quality artifact should classify every meaningful legacy asset and give its exact destination/disposition.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>3. Critical corrections to the latest Claude conclusions</h2>
+
+<div class="callout bad">
+<strong>3.1 “Rotation makes the old branch harmless” is too strong.</strong><br>
+Rotation/revocation is the first mandatory response to an exposed credential, but it does not erase sensitive values from Git objects, cached views, pull-request references, forks, or clones. GitHub’s current guidance explicitly separates secret rotation from history removal. Therefore a raw secret-bearing tag or branch should not be considered a clean archival solution merely because the credential is dead.
+</div>
+
+<div class="callout warn">
+<strong>3.2 “There is no history to merge because the ZIP has no <code>.git</code>” is incomplete.</strong><br>
+That statement is true only of the supplied ZIP. The later live-repository review reports that the private organization repository has 22 historical commits. Therefore the correct distinction is: <em>the ZIP cannot preserve lineage; the live remote can</em>. There is genuine history worth preserving, but that does not justify a raw unrelated-history merge into current <code>main</code>.
+</div>
+
+<div class="callout warn">
+<strong>3.3 A raw legacy tag has the same secret-reachability problem as a raw legacy branch.</strong><br>
+A tag is operationally cleaner than mixing unrelated histories into <code>main</code>, but a tag still keeps the referenced commits reachable. If those commits contain sensitive data, tagging the raw tip intentionally preserves those objects. Preserve a <em>sanitized</em> tag/branch, not the tainted original, in the final canonical repository.
+</div>
+
+<div class="callout warn">
+<strong>3.4 “Ollama → vLLM” is a target-architecture preference, not grounds to discard Ollama expertise.</strong><br>
+The current roadmap is vLLM-oriented on the GPU fleet, but model format, quantization, hardware fit and GGUF evaluation remain relevant. The Ollama/GGUF specialist should survive as an alternate-serving SME. The merge should not turn a current preference into permanent knowledge deletion.
+</div>
+
+<div class="callout warn">
+<strong>3.5 “Ansible ruled out” is not a safe repository-merge conclusion.</strong><br>
+The validated current fleet baseline is native Bash fan-out from <code>hxs-cp</code>; that proves what works today. It does not make Ansible knowledge worthless. Keep Ansible as conditional expertise and leave adoption to a later control-plane decision.
+</div>
+
+<div class="callout blue">
+<strong>3.6 “Identity tier dropped” should be reframed as “not part of the current active topology.”</strong><br>
+Old AD/CA/SSO deployment state should not migrate. DNS, certificate, identity and SSO expertise may still matter later. Preserve the capability and lessons while retiring the 2025 environment assumptions.
+</div>
+</section>
+
+<section>
+<h2>4. Git lineage and secret-history strategy</h2>
+<p class="lede">This is the most important technical part of the consolidation because it determines whether “one repo” becomes a clean long-term home or a permanent container for known sensitive history.</p>
+
+<h3>4.1 Final branch/ref model</h3>
+<pre><code>Hana-X-AI/HX-Infrastructure
+│
+├─ main
+│  └─ current 2026 lineage + curated migration commits
+│
+├─ legacy/2025-sanitized
+│  └─ rewritten 2025 lineage, preserving useful commit history with sensitive values removed
+│
+├─ tag: legacy/pre-relocation-2025-12-04-sanitized
+│  └─ immutable marker on the sanitized legacy tip
+│
+└─ temporary refs during consolidation
+   ├─ import/current-2026-08-13
+   └─ integrate/legacy-knowledge
+   (delete after final validation)</code></pre>
+
+<h3>4.2 What should not exist in the final canonical remote</h3>
+<ul>
+<li>No raw <code>legacy/2025</code> ref pointing to known secret-bearing commits.</li>
+<li>No raw <code>legacy/pre-relocation-2025-12-04</code> tag pointing to known secret-bearing commits.</li>
+<li>No full <code>archive/2025-pre-relocation/</code> source-tree copy under active <code>main</code>.</li>
+<li>No <code>--allow-unrelated-histories</code> merge that makes the 2025 root ancestry part of active <code>main</code>.</li>
+</ul>
+
+<h3>4.3 Why sanitization is preferable to “rotate and keep raw history”</h3>
+<table>
+<thead><tr><th>Option</th><th>Benefit</th><th>Cost / risk</th><th>Recommendation</th></tr></thead>
+<tbody>
+<tr><td>Rotate only, keep raw branch/tag</td><td>Fast, preserves exact SHAs.</td><td>Sensitive data remains intentionally reachable; old values can be copied, indexed or rediscovered; future reviewers must remember why they are “safe.”</td><td><span class="badge reject">reject final state</span></td></tr>
+<tr><td>Delete old history entirely</td><td>Cleanest security posture.</td><td>Loses 2025 decision provenance, defect-resolution history and engineering archaeology.</td><td><span class="badge reject">too destructive</span></td></tr>
+<tr><td>Rewrite 2025 history, preserve sanitized lineage</td><td>Retains commit narrative while removing known sensitive material from preserved refs.</td><td>Commit SHAs change; requires careful rewrite and validation.</td><td><span class="badge keep">recommended</span></td></tr>
+</tbody>
+</table>
+
+<p>The pre-sanitization remote/history should be treated as <strong>quarantine evidence</strong>, not as a second active project repository. If a raw preservation copy is required for forensic reasons, keep it outside the canonical Git namespace with tightly controlled access; it should not be the normal place developers or AI agents clone from.</p>
+
+<h3>4.4 GitHub-specific security implication</h3>
+<p>History rewriting alone does not guarantee that previously exposed content disappears from all GitHub views or from other clones/forks. Current GitHub documentation states that cached views, pull-request references and other copies may retain sensitive data, and that rotation/revocation is the first step. This means the project should define two separate outcomes:</p>
+<ul>
+<li><strong>Canonical repository clean:</strong> no final reachable branch/tag/ref intentionally preserves the known sensitive data.</li>
+<li><strong>Historical exposure remediated as far as practical:</strong> credentials rotated/revoked, rewritten history pushed, collaborator copies cleaned, and GitHub Support contacted if server-side cached/PR references require removal and qualify for support remediation.</li>
+</ul>
+</section>
+
+<section>
+<h2>5. Authority model after the merge</h2>
+<p class="lede">The final repository needs explicit precedence rules so future AI agents do not “average” current and legacy facts.</p>
+<table>
+<thead><tr><th>Authority layer</th><th>Owns</th><th>Legacy may influence?</th></tr></thead>
+<tbody>
+<tr><td><strong>Root/current contracts</strong></td><td>Operating rules, environment contract, goals, agent routing.</td><td>Only through deliberate edits. No legacy file overrides them.</td></tr>
+<tr><td><strong><code>SERVER-REGISTRY.md</code></strong></td><td>Current physical hosts, roles, workload assignments and lifecycle state.</td><td>No automatic migration. Historical service roles are inputs only.</td></tr>
+<tr><td><strong><code>servers/&lt;host&gt;/discovery.md</code></strong></td><td>Immutable as-found evidence.</td><td>No.</td></tr>
+<tr><td><strong><code>servers/&lt;host&gt;/configuration.md</code></strong></td><td>As-built host-specific state.</td><td>Only validated current implementation facts belong here.</td></tr>
+<tr><td><strong><code>services/</code></strong></td><td>Current service design/build/validation knowledge independent of one host’s discovery record.</td><td>Yes, after transformation and provenance tagging.</td></tr>
+<tr><td><strong><code>knowledge/legacy/</code></strong></td><td>Sanitized historical lessons and provenance index.</td><td>This is where historical-only knowledge belongs. It is explicitly non-authoritative.</td></tr>
+<tr><td><strong>Sanitized legacy Git ref</strong></td><td>Historical commit narrative.</td><td>Research/provenance only. Never active operational authority.</td></tr>
+</tbody>
+</table>
+
+<div class="callout">
+<strong>Current-state note:</strong> the latest Claude Code feedback reports that the owner has now ratified architecture v0.3, the role fields are assigned, <code>act-012</code> is closed and Phase 2 is ready. That supersedes the earlier morning snapshot in which the registry was blank. The repository merge should record this as a temporal correction rather than treating the earlier reports as “wrong”; they were accurate to an older inspected state.
+</div>
+</section>
+
+<section>
+<h2>6. Specialist-agent migration — preserve the capability system, not the old environment</h2>
+<p class="lede">The core lesson from the first environment is not “32 personas were good.” It is “narrow domain ownership reduced drift.” Preserve that operating property explicitly.</p>
+<table>
+<thead><tr><th>Capability</th><th>Disposition</th><th>Migration rule</th></tr></thead>
+<tbody>
+<tr><td>Agent Zero / orchestration</td><td><span class="badge keep">rebuild</span></td><td>Coordinator/synthesizer only. It routes work and reconciles SMEs; it does not supersede repository governance.</td></tr>
+<tr><td>Platform architecture</td><td><span class="badge keep">rebuild</span></td><td>Cross-service architecture, integration boundaries, tradeoffs.</td></tr>
+<tr><td>Infrastructure / Ubuntu / systemd</td><td><span class="badge keep">rebuild</span></td><td>Current bare-metal fleet, native SSH/fan-out baseline, service isolation.</td></tr>
+<tr><td>Testing / QA</td><td><span class="badge keep">rebuild</span></td><td>Independent validation; implementation agent should not self-certify.</td></tr>
+<tr><td>DNS / certificates / identity</td><td><span class="badge adapt">reframe</span></td><td>Retain expertise, remove old AD/domain/shared-password assumptions.</td></tr>
+<tr><td>Ollama / GGUF</td><td><span class="badge keep">retain</span></td><td>Alternate/local model serving and quantization expertise; no automatic deployment authority.</td></tr>
+<tr><td>vLLM</td><td><span class="badge keep">add</span></td><td>First-class SME because the current GPU roadmap is vLLM-oriented.</td></tr>
+<tr><td>LiteLLM</td><td><span class="badge keep">rebuild</span></td><td>Gateway, routing, keys, DB, aliases and accounting.</td></tr>
+<tr><td>PostgreSQL</td><td><span class="badge keep">rebuild</span></td><td>Schema ownership, durability, checkpointing, backup/restore.</td></tr>
+<tr><td>Redis</td><td><span class="badge keep">rebuild</span></td><td>Cache, queues, pub/sub, session and coordination patterns.</td></tr>
+<tr><td>Qdrant</td><td><span class="badge keep">rebuild</span></td><td>Collections, persistence, snapshots, dimensions and retrieval performance.</td></tr>
+<tr><td>LangGraph</td><td><span class="badge keep">rebuild</span></td><td>Runtime, checkpoints, workers, tool integration.</td></tr>
+<tr><td>FastMCP / MCP</td><td><span class="badge keep">rebuild</span></td><td>Protocol/server integration. Detailed exposure hardening remains a later workstream.</td></tr>
+<tr><td>Docling + Docling MCP</td><td><span class="badge keep">rebuild</span></td><td>High-priority; preserve parser/runtime and MCP integration lessons separately where useful.</td></tr>
+<tr><td>Crawl4AI + MCP</td><td><span class="badge defer">conditional</span></td><td>Keep while service remains in architecture scope.</td></tr>
+<tr><td>LightRAG / historical LiteRAG</td><td><span class="badge keep">rebuild</span></td><td>Canonicalize current capability name; preserve historical naming in provenance.</td></tr>
+<tr><td>n8n</td><td><span class="badge defer">conditional</span></td><td>Keep workflow automation expertise; activate when implementation reaches the service.</td></tr>
+<tr><td>Observability</td><td><span class="badge keep">rebuild</span></td><td>Current design anticipates a separate observability host.</td></tr>
+<tr><td>Ansible</td><td><span class="badge defer">conditional</span></td><td>Knowledge retained, not assumed. Native fleet-control script remains proven baseline.</td></tr>
+<tr><td>Frontend / Open WebUI / AG-UI</td><td><span class="badge defer">conditional</span></td><td>Application-layer expertise retained but not activated early.</td></tr>
+</tbody>
+</table>
+
+<h3>6.1 Canonical agent identity</h3>
+<p>Use stable capability IDs as routing keys, for example:</p>
+<pre><code>orchestration
+platform-architecture
+infra-linux
+qa-validation
+model-serving-vllm
+model-serving-ollama-gguf
+gateway-litellm
+postgresql
+redis
+qdrant
+langgraph
+mcp-fastmcp
+docling
+docling-mcp
+crawl4ai
+lightrag
+n8n
+observability</code></pre>
+<p>Historical persona names can remain as aliases in metadata so the 2025 contribution trail is understandable. The capability ID—not the persona name—should be authoritative for routing.</p>
+</section>
+
+<section>
+<h2>7. Commands, hooks, quality gates and process assets</h2>
+<p class="lede">The correct evaluation unit is the <em>control objective</em>, not the legacy file. A stale script can encode a valuable idea; a polished procedure can still be redundant.</p>
+<table>
+<thead><tr><th>Legacy class</th><th>Default treatment</th><th>Examples of what survives</th></tr></thead>
+<tbody>
+<tr><td><code>.claude/commands/</code></td><td><span class="badge adapt">triage individually</span></td><td>Useful lint, handoff, status synthesis, spec/task helpers may become current skills/commands. Phase machinery and duplicate orchestration do not survive unchanged.</td></tr>
+<tr><td>Python hooks</td><td><span class="badge adapt">rewrite controls</span></td><td>IP/hostname validation, secret prevention, path safety if still useful. Do not simply edit old literals and call them current.</td></tr>
+<tr><td>Quality gates</td><td><span class="badge adapt">map to tests/policies</span></td><td>High-value assertions become current tests or lightweight preflight checks. Old topology assumptions are removed.</td></tr>
+<tr><td>Standards</td><td><span class="badge adapt">deduplicate</span></td><td>Merge genuinely stronger rules into current documentation standards/contracts; avoid parallel standards trees where current files already own the subject.</td></tr>
+<tr><td>Procedures</td><td><span class="badge adapt">service-specific salvage</span></td><td>Reusable operational sequences become service docs or skills; old node/IP examples stay historical.</td></tr>
+<tr><td>Templates</td><td><span class="badge adapt">only missing patterns</span></td><td>One lean service template, provenance header, validation/gotchas pattern. Do not import a library of redundant document types.</td></tr>
+<tr><td>RAIDD / defects / backlog / status logs</td><td><span class="badge reject">do not reactivate</span></td><td>Extract still-relevant lessons/issues into current logs, then leave the old systems historical.</td></tr>
+</tbody>
+</table>
+
+<div class="callout warn">
+<strong>IP validator correction:</strong> do not merely change a hardcoded <code>192.168.10.x</code> list to <code>192.168.50.x</code>. Rebuild the control so it reads the authoritative registry/host map. That converts a brittle stale-file fix into a durable anti-drift control.
+</div>
+</section>
+
+<section>
+<h2>8. sdd-core and “lean” are not mutually exclusive</h2>
+<p class="lede">One Claude review argues that because <code>.specify/</code> is not currently present, sdd-core should not be adopted. That conclusion is too mechanical.</p>
+<p>The standing Hana-X modernization direction is to use sdd-core concepts as the execution backbone: file-driven specifications, global governance, and local context routing. The merge should therefore distinguish <em>execution philosophy</em> from <em>directory proliferation</em>.</p>
+<ul>
+<li>Do <strong>not</strong> create an empty 14-folder knowledge hierarchy just because a framework can support it.</li>
+<li>Do preserve the sdd-core principles where they improve agent execution: explicit source-of-truth files, local instructions, spec-before-change, and inherited architectural constraints.</li>
+<li>If/when the current repo formalizes <code>.specify/memory/constitution.md</code> or <code>knowledge/instructions.md</code>, those files must absorb the current repository’s authority model rather than reintroduce the legacy constitution hierarchy.</li>
+<li>Lean means “few authoritative artifacts with high information density,” not “no execution framework.”</li>
+</ul>
+</section>
+
+<section>
+<h2>9. Recommended merged repository structure</h2>
+<pre><code>HX-Infrastructure/
+├─ README.md
+├─ AGENTS.md
+├─ CLAUDE.md
+├─ GOALS-AND-OBJECTIVES.md
+├─ INFRASTRUCTURE-CONTRACT.md
+├─ SERVER-REGISTRY.md
+├─ INSTALL.md
+│
+├─ .claude/
+│  ├─ agents/
+│  │  ├─ orchestration.md
+│  │  ├─ platform-architecture.md
+│  │  ├─ infra-linux.md
+│  │  ├─ qa-validation.md
+│  │  └─ tech/
+│  │     ├─ model-serving-vllm.md
+│  │     ├─ model-serving-ollama-gguf.md
+│  │     ├─ litellm.md
+│  │     ├─ postgresql.md
+│  │     ├─ redis.md
+│  │     ├─ qdrant.md
+│  │     ├─ langgraph.md
+│  │     ├─ fastmcp.md
+│  │     ├─ docling.md
+│  │     ├─ docling-mcp.md
+│  │     ├─ crawl4ai.md
+│  │     ├─ lightrag.md
+│  │     ├─ n8n.md
+│  │     └─ observability.md
+│  ├─ skills/
+│  ├─ hooks/
+│  └─ settings.json
+│
+├─ governance/
+│  ├─ actions-and-issues.md
+│  ├─ risk-acceptances.md
+│  ├─ lessons-learned.md
+│  ├─ documentation-standards.md
+│  ├─ agent-roster.md
+│  ├─ migrations/
+│  │  └─ legacy-2025/
+│  │     ├─ manifest.md
+│  │     └─ provenance-index.md
+│  ├─ reports/
+│  └─ site/
+│
+├─ servers/
+│  ├─ _templates/
+│  ├─ hxs-1/
+│  │  ├─ discovery.md
+│  │  └─ configuration.md
+│  ├─ ...
+│  ├─ hxs-15/
+│  └─ hxs-cp/
+│
+├─ services/
+│  ├─ _template/
+│  │  └─ service.md
+│  ├─ litellm/
+│  │  └─ service.md
+│  ├─ postgresql/
+│  │  └─ service.md
+│  ├─ redis/
+│  │  └─ service.md
+│  ├─ qdrant/
+│  │  └─ service.md
+│  ├─ langgraph/
+│  │  └─ service.md
+│  ├─ fastmcp/
+│  │  └─ service.md
+│  ├─ docling/
+│  │  └─ service.md
+│  ├─ docling-mcp/
+│  │  └─ service.md
+│  ├─ crawl4ai/
+│  │  └─ service.md
+│  ├─ lightrag/
+│  │  └─ service.md
+│  └─ n8n/
+│     └─ service.md
+│
+├─ knowledge/
+│  └─ legacy/
+│     └─ 2025/
+│        ├─ README.md              # non-authoritative boundary
+│        ├─ service-lessons.md    # sanitized distilled lessons
+│        ├─ defect-patterns.md    # recurring failure classes
+│        └─ naming-crosswalk.md   # old names -> current concepts
+│
+├─ tests/
+└─ tools/</code></pre>
+
+<h3>9.1 Why <code>service.md</code> instead of only <code>build.md</code></h3>
+<p>A service file should remain useful before, during and after implementation. It should carry:</p>
+<ul>
+<li>status (<code>planned</code>, <code>implemented</code>, <code>validated</code>, <code>retired</code>);</li>
+<li>target host(s) from the registry;</li>
+<li>owning SME;</li>
+<li>architecture/dependencies;</li>
+<li>configuration conventions;</li>
+<li>installation/build sequence where applicable;</li>
+<li>validation criteria;</li>
+<li>gotchas/legacy lessons;</li>
+<li>provenance.</li>
+</ul>
+<p>Host-specific final state still belongs in <code>servers/&lt;host&gt;/configuration.md</code>. This prevents the service layer from becoming a second server inventory.</p>
+</section>
+
+<section>
+<h2>10. Proposed migration sequence</h2>
+<ol>
+<li><strong>Freeze evidence.</strong> Record current local HEAD, worktree state, remote state, current registry state and latest approved architecture state.</li>
+<li><strong>Rotate/revoke known exposed credentials.</strong> Treat all legacy secret values as burned. Do not repeat them in migration artifacts.</li>
+<li><strong>Acquire the live 2025 Git repository read-only.</strong> Confirm the reported 22-commit history, branches, tags, PR references and exact secret-bearing paths/commits.</li>
+<li><strong>Sanitize the legacy lineage.</strong> Remove/replace known sensitive values/files across history; validate the rewritten history; preserve the result as <code>legacy/2025-sanitized</code>.</li>
+<li><strong>Protect current work off-machine.</strong> Push the current 2026 lineage to a non-default import branch in the canonical remote while consolidation is being validated.</li>
+<li><strong>Establish the future <code>main</code>.</strong> Make current 2026 lineage the active mainline after the remote/branch transition is verified.</li>
+<li><strong>Build the file-by-file migration manifest.</strong> Every legacy asset gets disposition, destination, transform rules, owning SME, secret status and provenance.</li>
+<li><strong>Rebuild the specialist roster.</strong> Recover original profiles from the live history if present; otherwise reconstruct from inventory/orchestration/contribution evidence. Strip environment state.</li>
+<li><strong>Triage commands/hooks/gates.</strong> Migrate control objectives one by one into current skills/hooks/tests.</li>
+<li><strong>Mine service knowledge.</strong> Start with Docling/Docling MCP and LangGraph, then shared-state services and other directly mapped services.</li>
+<li><strong>Create current service files.</strong> Use lean <code>service.md</code> artifacts with status, host mapping, SME owner, validation and legacy provenance.</li>
+<li><strong>Run authority-conflict and secret scans.</strong> Reject migrated content that presents old IPs/domains/paths/status as current.</li>
+<li><strong>Run current regression/governance checks.</strong> Existing tests and HTML site/build validation remain blocking.</li>
+<li><strong>Merge curated integration branch.</strong> Land only explainable, reviewed migration commits into current <code>main</code>.</li>
+<li><strong>Delete temporary refs.</strong> Keep only active <code>main</code>, sanitized legacy lineage and deliberate release/provenance tags.</li>
+</ol>
+</section>
+
+<section>
+<h2>11. File-by-file migration manifest schema</h2>
+<p>The next artifact should not be prose-only. It should be structured so another AI can execute it deterministically.</p>
+<table>
+<thead><tr><th>Field</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td><code>legacy_path</code></td><td>Exact source path in 2025 material.</td></tr>
+<tr><td><code>asset_type</code></td><td>agent / hook / command / gate / standard / procedure / template / service / lesson / inventory / log.</td></tr>
+<tr><td><code>disposition</code></td><td><code>adopt</code>, <code>adapt</code>, <code>covered</code>, <code>historical-only</code>, <code>defer</code>, <code>retire</code>.</td></tr>
+<tr><td><code>target_path</code></td><td>Exact current destination, if any.</td></tr>
+<tr><td><code>owner_capability</code></td><td>SME responsible for technical review.</td></tr>
+<tr><td><code>authority_class</code></td><td>current-authoritative / current-supporting / historical-non-authoritative.</td></tr>
+<tr><td><code>secret_risk</code></td><td>none / inspect / confirmed-sensitive.</td></tr>
+<tr><td><code>fact_transform</code></td><td>Required hostname/IP/domain/path/service-name changes. Never blind search/replace.</td></tr>
+<tr><td><code>content_transform</code></td><td>What concepts survive and what stale assumptions are removed.</td></tr>
+<tr><td><code>provenance</code></td><td>Legacy commit/path/defect IDs used as source evidence.</td></tr>
+<tr><td><code>validation</code></td><td>How to prove the migrated artifact is correct.</td></tr>
+<tr><td><code>status</code></td><td>unreviewed / reviewed / migrated / validated / rejected.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>12. Definition of done</h2>
+<ul>
+<li>Exactly one canonical remote repository is used for active HX-Infrastructure development.</li>
+<li>Future active <code>main</code> is the current 2026 lineage, not an unrelated-history mixture.</li>
+<li>A sanitized 2025 lineage is available for provenance without intentionally preserving known sensitive values in final reachable refs.</li>
+<li>No full raw 2025 project tree is nested under active <code>main</code>.</li>
+<li><code>SERVER-REGISTRY.md</code> remains the host/role source of truth.</li>
+<li>Discovery records remain immutable as-found evidence.</li>
+<li>Host configuration and service design are separated cleanly.</li>
+<li>The specialist-agent capability catalogue is restored broadly and currentized.</li>
+<li>Legacy commands/hooks/gates have explicit file-by-file dispositions.</li>
+<li>Docling and LangGraph engineering knowledge is available in sanitized current form.</li>
+<li>Old environment literals are either absent from active material or explicitly marked historical.</li>
+<li>No secret-bearing legacy file or value appears in migrated current content.</li>
+<li>Current tests/governance rendering still pass.</li>
+<li>Every migration commit can be explained by a manifest row and current owner/capability.</li>
+<li>There is no second constitution, second action log, second inventory, second deployment-state truth, or second active orchestration authority.</li>
+</ul>
+</section>
+
+<section>
+<h2>13. Final recommendation to the other AIs</h2>
+<div class="decision">
+<h3>Stop debating merge shape; move to the migration manifest.</h3>
+<p>The major architectural decisions are now sufficiently converged. The next useful work is not another general merge essay. It is a complete inventory of legacy assets with deterministic dispositions.</p>
+<p><strong>Preserve history, but sanitize it. Preserve agents, but rebuild them. Preserve controls, but rewrite them against current authority. Preserve service knowledge, but separate technology design from host as-built state. Preserve lessons, not old environment facts. Keep the process lean, but not ambiguous.</strong></p>
+</div>
+</section>
+
+<section>
+<h2>14. Evidence basis</h2>
+<ul>
+<li><code>claude_20260813_1125_mergerecommendationsfeedbackdeep.html</code> — latest Claude AI deep reconciliation.</li>
+<li><code>merge-plan-feedback.html</code> — Claude Code follow-up review using live-repository observations.</li>
+<li><code>repo-merge-recommendation.md</code> — earlier Claude Code merge recommendation.</li>
+<li><code>gpt-5-6-sol_2026-08-13_1121_hx-infrastructure-claude-merge-feedback-report.html</code> — prior GPT deep assessment.</li>
+<li><code>HX-Infrastructure_Phased_Build_Roadmap_v0.1.md</code> — current architecture/build sequencing evidence.</li>
+<li>GitHub Docs, “Removing sensitive data from a repository” — current guidance used to validate the history/secret conclusions.</li>
+<li>GitHub Docs, protected branches/default branches — current guidance used to validate the safe branch-transition assumptions.</li>
+</ul>
+</section>
+
+<footer>
+HX-Infrastructure · deep merge reconciliation feedback · gpt-5.6 sol · 2026-08-13 11:37 -05:00 · planning/review only. No Git, server, registry or infrastructure change was performed or authorized by this report.
+</footer>
+</main></body></html>

@@ -182,7 +182,7 @@ Do not add orchestration platforms, databases, model-serving software, or unrela
 
 Once the basic control plane is proven, possible additions include:
 
-- Ansible or another lightweight orchestration layer;
+- a lightweight orchestration layer, if one proves necessary. **Not Ansible.** Ruled out by owner decision on 2026-08-13 as more trouble than it is worth; it is not to be proposed again in any plan, roadmap or recommendation;
 - centralized deployment history;
 - automated fleet health checks;
 - controlled secrets management;
