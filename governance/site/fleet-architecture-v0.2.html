@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HX Fleet — Tech-Stack Alignment</title>
+<title>HX Fleet Architecture v0.2</title>
 <style>
   :root {
     --ground:   #fbfbf9;
@@ -177,7 +177,7 @@
       <nav class="nav">
         <a href="index.html">Governance</a>
         <a href="hx-fleet-inventory.html">Fleet inventory</a>
-        <a href="fleet-architecture-candidate-v0.1.html" aria-current="page">Architecture</a>
+        <a href="fleet-architecture-v0.2.html" aria-current="page">Architecture v0.2</a>
         <a href="hx-stack-alignment-v0.1-frozen.html">v0.1 frozen</a>
         <a href="hx-validation-findings.html">Validation</a>
         <a href="hx-recommendations.html">Recommendations</a>
@@ -187,8 +187,8 @@
       </nav>
       <button type="button" class="toggle" id="theme-toggle">Dark mode</button>
     </div>
-    <p class="eyebrow">HX-Alignment &middot; Candidate v0.1 &middot; Fleet role mapping</p>
-    <h1>Tech-Stack Alignment &mdash; Hana-X on the Real Fleet</h1>
+    <p class="eyebrow">HX-Alignment &middot; v0.2 &middot; current architecture</p>
+    <h1>Fleet Architecture v0.2</h1>
     <p>
       The Hana-X Solutions Architecture, mapped onto the fifteen physical hosts the fleet
       actually has. Placements are constrained by the hardware inventory: <strong>four</strong>
@@ -221,9 +221,9 @@
     <p>
       <strong>The GPU hosts each hold a distinct AI function.</strong> <code>hxs-1</code> is the
       reasoning flagship, <code>hxs-2</code> is coding, <code>hxs-3</code> is the
-      <em>agent-intelligence node</em> &mdash; agent execution plus the LiteRAG graph and
+      <em>agent-intelligence node</em> &mdash; agent execution plus the LightRAG graph and
       experimentation headroom &mdash; and <code>hxs-4</code> is the <em>retrieval &amp; utility
-      node</em>, co-locating Qdrant with the embedding and rerank models. Qdrant and LiteRAG used
+      node</em>, co-locating Qdrant with the embedding and rerank models. Qdrant and LightRAG used
       to sit on CPU hosts; moving them beside the GPUs that feed them freed <code>hxs-10</code>,
       which now serves the web frontends.
     </p>
@@ -262,7 +262,7 @@
       matched pair the same way (TP=2, decided).
       <code>hxs-4</code>'s pair is mismatched (16&nbsp;GB + 8&nbsp;GB), so it never pools &mdash;
       its cards are independent slots. Note that <code>hxs-3</code> and <code>hxs-4</code> also host
-      data services (LiteRAG and Qdrant respectively) on their CPU/RAM/NVMe, beside the models
+      data services (LightRAG and Qdrant respectively) on their CPU/RAM/NVMe, beside the models
       that feed them.
     </p>
 
@@ -292,14 +292,14 @@
             <td class="vram">32,622 MiB<span class="qual">2 &times; RTX 5060 Ti, matched</span></td>
             <td>PCIe 3, i7-5960X<span class="qual"><span class="mark">2014 platform</span>, 66 GB</span></td>
             <td>Coding<span class="qual">Qwen2.5-Coder-32B</span></td>
-            <td class="mono">TP&nbsp;=&nbsp;2, AWQ Int4<span class="qual">~18&ndash;20 GB weights + KV</span></td>
+            <td class="mono">TP&nbsp;=&nbsp;2, AWQ Int4<span class="qual">~18&ndash;20 GB weights + KV. <strong>Cap <code>--max-model-len</code> 16&ndash;24K</strong> &mdash; PCIe-3 all-reduce is the bottleneck here</span></td>
             <td><span class="ok">fits, tight</span></td>
           </tr>
           <tr class="tier-gpu">
             <td class="host">hxs-3</td>
             <td class="vram">32,622 MiB<span class="qual">2 &times; RTX 5060 Ti 16 GB, matched</span></td>
             <td>i7-5960X, 66 GB<span class="qual">3.6 TB NVMe root; <span class="mark">1.8 TB SATA SSD unallocated</span></span></td>
-            <td>Agent intelligence node<span class="qual">Agent execution + graph retrieval + experimentation. gpt-oss-20b (agent/tool exec); LiteRAG graph &amp; retrieval processing and working memory on the 66 GB CPU/RAM; 1.8 TB SSD is the candidate device for graph data, working datasets, caches &amp; intermediate processing</span></td>
+            <td>Agent intelligence node<span class="qual">Agent execution + graph retrieval + experimentation. gpt-oss-20b (agent/tool exec); LightRAG graph &amp; retrieval processing and working memory on the 66 GB CPU/RAM; 1.8 TB SSD is the candidate device for graph data, working datasets, caches &amp; intermediate processing</span></td>
             <td class="mono">TP&nbsp;=&nbsp;2<span class="qual">gpt-oss pooled across both cards for maximum context (decided)</span></td>
             <td><span class="ok">fits</span></td>
           </tr>
@@ -307,7 +307,7 @@
             <td class="host">hxs-4</td>
             <td class="vram">24,462 MiB<span class="qual">RTX 5060 Ti 16 GB + RTX 5060 8 GB, <span class="mark">mismatched</span></span></td>
             <td>i7-14700F, 32 GB<span class="qual">931.5 GB NVMe root; <span class="mark">476.9 GB NVMe unallocated &rarr; Qdrant</span></span></td>
-            <td>Retrieval &amp; AI utility node<span class="qual">Qdrant + Qdrant Web-UI (on the dedicated 476.9 GB NVMe); 16 GB card: Qwen2.5-3B query-expansion / small utility LLM (+ Llama-3.2-3B chat); 8 GB card: BGE-M3 / Nomic-Embed embeddings + BGE-Reranker-v2-m3. Co-locates embed &rarr; store &rarr; rerank.</span></td>
+            <td>Retrieval &amp; AI utility node<span class="qual">Qdrant + Qdrant Web-UI (on the dedicated 476.9 GB NVMe); 16 GB card: Qwen2.5-3B query-expansion / small utility LLM (+ Llama-3.2-3B chat); 8 GB card: BGE-M3 / Nomic-Embed embeddings + BGE-Reranker-v2-m3, served by <strong>TEI or Infinity, not vLLM</strong>. Co-locates embed &rarr; store &rarr; rerank.</span></td>
             <td class="mono">2 single-GPU<span class="qual">independent slots, no TP across the mismatched pair</span></td>
             <td><span class="ok">fits</span></td>
           </tr>
@@ -322,7 +322,7 @@
       Six model roles cover the pipeline in the spec's Flows A and B. Every large model is 4-bit
       quantized; a 32B model at half-byte-per-weight is ~16&nbsp;GB of weights, which exceeds a
       single 16&nbsp;GB card and forces tensor-parallelism across a host's two GPUs. (Qdrant and
-      LiteRAG are data services, not models &mdash; see the tier tables.)
+      LightRAG are data services, not models &mdash; see the tier tables.)
     </p>
 
     <div class="tablewrap">
@@ -441,7 +441,7 @@
             <td class="host">hxs-10</td>
             <td class="mono">i5-7500 &middot; 32 GB</td>
             <td>Web application</td>
-            <td>Open WebUI &mdash; primary chat interface &mdash; plus deployed CopilotKit / AG-UI frontends. <span class="qual">Host freed when Qdrant &amp; LiteRAG moved to the GPU tier.</span></td>
+            <td>Open WebUI &mdash; primary chat interface &mdash; plus deployed CopilotKit / AG-UI frontends. <span class="qual">Host freed when Qdrant &amp; LightRAG moved to the GPU tier.</span></td>
           </tr>
           <tr class="tier-cpu">
             <td class="host">hxs-11</td>
@@ -508,6 +508,38 @@
   </section>
 
   <section>
+    <h2>What changed in v0.2</h2>
+    <p class="lede">
+      v0.2 folds in the owner decisions taken on 2026-08-13 and the outcome of the research and
+      validation pass run against the frozen v0.1 baseline. Five of the seven proposed changes were
+      accepted; two were overruled by the project owner. Nothing moved to a different host &mdash;
+      every change is configuration, naming or a guardrail.
+    </p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th scope="col">Change</th><th scope="col">Source</th><th scope="col">Outcome</th></tr></thead>
+        <tbody>
+          <tr><td><strong>LightRAG is the correct name.</strong> All references corrected from LiteRAG</td><td>Validation, thread 02</td><td><span class="ok">accepted</span></td></tr>
+          <tr><td><strong>Cap <code>--max-model-len</code> at 16&ndash;24K on <code>hxs-2</code>.</strong> A TP=2 32B all-reduces every layer, and hxs-2 is the PCIe-3 host</td><td>Validation, thread 01</td><td><span class="ok">accepted</span></td></tr>
+          <tr><td><strong>Serve embeddings and rerank with TEI or Infinity, not vLLM</strong>, on hxs-4's 8&nbsp;GB card &mdash; purpose-built and lighter</td><td>Validation, thread 01</td><td><span class="ok">accepted</span></td></tr>
+          <tr><td><strong>Pin the embedding model and <code>EMBEDDING_DIM</code> before any bulk ingest.</strong> LightRAG's backend and embedding dimension are immutable once documents are indexed, and a mismatch silently corrupts the store</td><td>Validation, thread 02</td><td><span class="ok">accepted</span></td></tr>
+          <tr><td><strong>Front every networked MCP server with a reverse proxy</strong> enforcing bearer token or mTLS plus an Origin allow-list, bound to the LAN interface. They ship no auth and bind <code>0.0.0.0</code></td><td>Validation, thread 06</td><td><span class="ok">accepted</span></td></tr>
+          <tr><td><strong>Pin the GPU toolchain:</strong> vLLM &ge;0.11.x, PyTorch 2.9+cu128, CUDA 12.8, driver &ge;575, and <code>VLLM_FLASH_ATTN_VERSION=2</code> &mdash; FlashAttention-3 is unsupported on Blackwell</td><td>Validation, thread 01</td><td><span class="ok">accepted</span></td></tr>
+          <tr><td><strong>Mem0 specifics:</strong> its own Qdrant collection distinct from RAG, SQLite history on a backed-up path, and no reliance on Mem0 graph memory &mdash; removed from OSS. The graph lives in LightRAG</td><td>Validation, thread 05</td><td><span class="ok">accepted</span></td></tr>
+          <tr><td><strong>LiteLLM on SQLite.</strong> The validation pass called this a blocker and proposed moving to the hxs-9 Postgres</td><td>Validation, thread 03</td><td><span class="mark">overruled</span> &mdash; the project owner researched this directly and confirmed LiteLLM supports SQLite. <code>hxs-8</code> keeps LiteLLM + SQLite as originally specified</td></tr>
+          <tr><td><strong>gpt-oss-20b on a single card.</strong> The pass found its MXFP4 weights are ~13&nbsp;GB and fit one 16&nbsp;GB card, freeing the second for experimental inference</td><td>Validation, thread 01</td><td><span class="mark">overruled</span> &mdash; <code>hxs-3</code> stays at TP=2. The decision was taken deliberately for maximum tool-calling context and remains closed</td></tr>
+          <tr><td><strong><code>hxs-cp</code> runs no platform services but keeps its control-plane tooling</strong>, and is listed outside the fleet rather than among the small-form-factor hosts</td><td>Owner decision</td><td><span class="ok">accepted</span></td></tr>
+          <tr><td><strong><code>hxs-dev</code> and <code>hxs-test</code> are role labels, not hostnames</strong>, and will not enter <code>hx.local.arpa</code></td><td>Owner decision</td><td><span class="ok">accepted</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lede">
+      The frozen <strong>v0.1</strong> baseline is retained unchanged so the validation findings stay
+      traceable to what they were checked against. This document supersedes it for current work.
+    </p>
+  </section>
+
+  <section>
     <h2>Crosswalk &mdash; spec's logical names to physical hosts</h2>
     <p class="lede">
       The original spec used logical labels (<code>hxs-dev</code>, <code>hxs-test</code>,
@@ -530,7 +562,7 @@
           <tr><td class="mono">Servers 6&ndash;7</td><td>GPT-OSS agent exec (2 GPU nodes)</td><td class="mono">hxs-3 (agent-intelligence node, TP=2)</td></tr>
           <tr><td class="mono">Server 8</td><td>Coding &amp; chat models</td><td class="mono">hxs-2 (coder) + hxs-4 16 GB card (utility/chat)</td></tr>
           <tr><td class="mono">Server 9</td><td>Embeddings &amp; reranker</td><td class="mono">hxs-4 &middot; 8 GB card</td></tr>
-          <tr><td class="mono">LiteRAG</td><td>Graph retrieval engine</td><td class="mono">hxs-3 (co-located with agent execution)</td></tr>
+          <tr><td class="mono">LightRAG</td><td>Graph retrieval engine</td><td class="mono">hxs-3 (co-located with agent execution)</td></tr>
           <tr><td class="mono">Qdrant + Web-UI</td><td>Vector DB &amp; dashboard</td><td class="mono">hxs-4 (dedicated 476.9 GB NVMe)</td></tr>
           <tr><td class="mono">LiteLLM (+ SQLite)</td><td>Unified model API gateway</td><td class="mono">hxs-8</td></tr>
           <tr><td class="mono">Open WebUI / frontends</td><td>Human-facing web apps</td><td class="mono">hxs-10</td></tr>
@@ -579,7 +611,7 @@
       </div>
       <div class="finding settled">
         <h3>Retrieval co-located with its models</h3>
-        <p>Qdrant now sits on <code>hxs-4</code> beside the embedding and rerank models it serves, on a dedicated 476.9 GB NVMe &mdash; embed &rarr; store &rarr; rerank on one host. LiteRAG sits on <code>hxs-3</code> beside agent execution, with the 1.8 TB SSD as its graph-data device. Both GPU hosts have ample RAM (32 / 66 GB) for these services.</p>
+        <p>Qdrant now sits on <code>hxs-4</code> beside the embedding and rerank models it serves, on a dedicated 476.9 GB NVMe &mdash; embed &rarr; store &rarr; rerank on one host. LightRAG sits on <code>hxs-3</code> beside agent execution, with the 1.8 TB SSD as its graph-data device. Both GPU hosts have ample RAM (32 / 66 GB) for these services.</p>
       </div>
       <div class="finding settled">
         <h3>Control plane runs no platform services</h3>
@@ -606,7 +638,7 @@
   </section>
 
   <footer>
-    HX-Alignment &middot; candidate v0.1 &middot; dev / test environment &middot; compiled 2026-08-13 &middot;
+    HX-Alignment &middot; v0.2 &middot; dev / test environment &middot; compiled 2026-08-13 &middot;
     hardware per <code>SERVER-REGISTRY.md</code>.
   </footer>
 

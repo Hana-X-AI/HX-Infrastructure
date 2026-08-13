@@ -88,7 +88,7 @@
       <nav class="nav">
         <a href="index.html">Governance</a>
         <a href="hx-fleet-inventory.html">Fleet inventory</a>
-        <a href="fleet-architecture-candidate-v0.1.html">Architecture</a>
+        <a href="fleet-architecture-v0.2.html">Architecture v0.2</a>
         <a href="hx-stack-alignment-v0.1-frozen.html">v0.1 frozen</a>
         <a href="hx-validation-findings.html">Validation</a>
         <a href="hx-recommendations.html" aria-current="page">Recommendations</a>
@@ -109,9 +109,10 @@
 
   <dl class="strip">
     <div class="cell"><dt>Recommendations</dt><dd>9</dd></div>
-    <div class="cell"><dt>Do first</dt><dd>4</dd></div>
-    <div class="cell"><dt>Worth doing</dt><dd>3</dd></div>
+    <div class="cell"><dt>Do first</dt><dd>3</dd></div>
+    <div class="cell"><dt>Worth doing</dt><dd>2</dd></div>
     <div class="cell"><dt>Consider</dt><dd>2</dd></div>
+    <div class="cell"><dt>Resolved</dt><dd>2</dd></div>
     <div class="cell"><dt>Cost hardware</dt><dd>1</dd></div>
   </dl>
 
@@ -141,8 +142,8 @@
       <article class="rec p1">
         <div class="rec-head">
           <span class="rid">R2</span>
-          <h3>Resolve the LiteRAG / LightRAG naming conflict before anything is built</h3>
-          <span class="pill p1">do first</span><span class="cost">one decision</span>
+          <h3>Resolve the LiteRAG / LightRAG naming conflict &mdash; resolved</h3>
+          <span class="pill p2">resolved</span><span class="cost">decided 2026-08-13</span>
         </div>
         <div class="field"><span class="field-label">Why</span><p>The two documents disagree. The
         architecture candidate now says <strong>LiteRAG</strong> on your instruction; the
@@ -150,9 +151,7 @@
         call LiteRAG a misnomer, citing that project's <code>env.example</code>, API-server docs
         and issue&nbsp;#2233. Configuration keys such as
         <code>LIGHTRAG_VECTOR_STORAGE</code> follow whichever is actually correct.</p></div>
-        <div class="field sub"><span class="field-label">Do</span><p>Settle which product is
-        intended, then make every document agree. If they are two different projects, say so
-        explicitly, because the names are one character apart and will be confused again.</p></div>
+        <div class="field sub"><span class="field-label">Outcome</span><p><strong>LightRAG is correct</strong>, decided 2026-08-13. All references corrected in v0.2.</p></div>
       </article>
 
       <article class="rec p1">
@@ -219,8 +218,8 @@
       <article class="rec p2">
         <div class="rec-head">
           <span class="rid">R6</span>
-          <h3>Reconcile the architecture documents before building from them</h3>
-          <span class="pill p2">worth doing</span><span class="cost">document pass</span>
+          <h3>Reconcile the architecture documents &mdash; resolved</h3>
+          <span class="pill p2">resolved</span><span class="cost">done 2026-08-13</span>
         </div>
         <div class="field"><span class="field-label">Why</span><p>There are now two copies of the
         same architecture. <code>hx-stack-alignment-v0.1-frozen.html</code> is the frozen v0.1
@@ -228,10 +227,7 @@
         <code>fleet-architecture-candidate-v0.1.html</code> carries your applied decisions and is
         therefore no longer v0.1. The validation pass then produced seven further changes for a
         v0.2. Three documents currently describe the same fleet differently.</p></div>
-        <div class="field sub"><span class="field-label">Do</span><p>Keep the frozen v0.1 as the
-        immutable baseline, fold both your decisions and the seven validation changes into a
-        single <code>v0.2</code>, and retire the middle copy. One current document, one frozen
-        baseline.</p></div>
+        <div class="field sub"><span class="field-label">Outcome</span><p><strong>Done.</strong> v0.2 folds in the owner decisions and the five accepted validation changes; the middle copy is retired; the frozen v0.1 is kept as the immutable baseline.</p></div>
       </article>
 
       <article class="rec p2">
@@ -298,11 +294,11 @@
         <thead><tr><th scope="col">#</th><th scope="col">Recommendation</th><th scope="col">Priority</th><th scope="col">Cost</th><th scope="col">Related</th></tr></thead>
         <tbody>
           <tr><td><code>R1</code></td><td>SMART monitoring fleet-wide</td><td>Do first</td><td>Package install</td><td>—</td></tr>
-          <tr><td><code>R2</code></td><td>Resolve LiteRAG / LightRAG naming</td><td>Do first</td><td>One decision</td><td>—</td></tr>
+          <tr><td><code>R2</code></td><td>Resolve LiteRAG / LightRAG naming</td><td>Resolved</td><td>Decided — LightRAG</td><td>v0.2</td></tr>
           <tr><td><code>R3</code></td><td>Off-machine copy of the repository</td><td>Do first</td><td>Destination decision</td><td><code>act-005</code></td></tr>
           <tr><td><code>R4</code></td><td>Harden the control-plane laptop</td><td>Do first</td><td>Config + adapter</td><td>—</td></tr>
           <tr><td><code>R5</code></td><td>Shared fleet storage from idle capacity</td><td>Worth doing</td><td>No hardware</td><td>—</td></tr>
-          <tr><td><code>R6</code></td><td>Reconcile the architecture documents</td><td>Worth doing</td><td>Document pass</td><td>—</td></tr>
+          <tr><td><code>R6</code></td><td>Reconcile the architecture documents</td><td>Resolved</td><td>Done — v0.2 issued</td><td>v0.2</td></tr>
           <tr><td><code>R7</code></td><td>Decide whether test needs virtualization</td><td>Worth doing</td><td>Firmware change</td><td><code>iss-011</code></td></tr>
           <tr><td><code>R8</code></td><td>Give the largest host something to do</td><td>Consider</td><td>Planning</td><td>—</td></tr>
           <tr><td><code>R9</code></td><td>Close out the quarantined regression suite</td><td>Consider</td><td>One reboot</td><td><code>iss-010</code></td></tr>
