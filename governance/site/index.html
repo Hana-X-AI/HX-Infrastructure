@@ -175,10 +175,11 @@
   <header class="masthead">
     <p class="eyebrow">HX-Infrastructure</p>
     <h1>Governance</h1>
-    <p>The record of how this fleet was built: what was found on each machine, what is
-    tracked, what was learned, and the rules the documents themselves follow. Every page here
-    is generated from or mirrors a Markdown file in <code>governance/</code>, which stays the
-    source of truth.</p>
+    <p>The record of how this fleet was built and how it is being consolidated: what was found
+    on each machine, what is tracked, what was learned, and the rules the documents themselves
+    follow. Phase 1 discovery is complete and all fifteen servers carry an assigned role.
+    <strong>Phase 2 &mdash; repository consolidation and alignment &mdash; is underway;</strong>
+    server implementation is Phase 3.</p>
   </header>
 
   <dl class="strip">
@@ -187,7 +188,8 @@
     <div class="cell"><dt>Discovery</dt><dd>15 / 15</dd></div>
     <div class="cell"><dt>Roles assigned</dt><dd>15 / 15</dd></div>
     <div class="cell"><dt>Phase 1</dt><dd>Complete</dd></div>
-    <div class="cell"><dt>Phase 2</dt><dd>Ready</dd></div>
+    <div class="cell"><dt>Legacy files</dt><dd>522</dd></div>
+    <div class="cell"><dt>Phase 2</dt><dd>Consolidation</dd></div>
   </dl>
 
   <section>
@@ -257,14 +259,29 @@
 
   <section>
     <h2>Repository merge &mdash; assessments</h2>
-    <p class="lede">Four documents from three reviewers, converging on one plan. The baseline is the agreed sequence; the others record how it was reached.</p>
+    <p class="lede">Seven documents from three reviewers, converging on one plan and then on an
+    executable ledger. The manifest and its change-set are the working artifacts; the rest record
+    how the plan was reached and independently checked.</p>
     <div class="cards">
+
+      <a class="card" href="https://claude.ai/code/artifact/8c8aaee7-5921-48dc-acb9-da3810366414">
+        <h3>Current-Repo Change-Set v1</h3>
+        <p>The parallel edit-set the 522-row ledger does not cover &mdash; the phase guard, the
+        registry's Phase 2 column and its readers, the test suite, and the credential in history.</p>
+        <span class="meta">Claude &middot; companion to the manifest</span>
+      </a>
+
+      <a class="card" href="https://claude.ai/code/artifact/5094e47b-744e-40da-bc22-ab90e200aa8c">
+        <h3>Manifest v2 Validation</h3>
+        <p>Machine check of the ledger against a live query of the org repository. Exact
+        coverage &mdash; 522 of 522, nothing missing, nothing invented &mdash; plus two findings.</p>
+        <span class="meta">Claude Code &middot; 522/522 verified</span>
+      </a>
 
       <a class="card" href="https://claude.ai/code/artifact/5a7b2386-0339-4b27-abea-cff7b4f4c70f">
         <h3>File-by-File Migration Manifest</h3>
-        <p>The disposition of every legacy asset class &mdash; 26 commands, 6 hooks, 6 gates, 10
-        standards, 18 templates, 17 procedures and both node trees &mdash; across seven
-        disposition types.</p>
+        <p>The disposition of every legacy asset class across seven disposition types. Superseded by
+        the v2 dual-layer ledger, which carries one deterministic record per file.</p>
         <span class="meta">Claude &middot; 12:54</span>
       </a>
 
@@ -325,7 +342,10 @@
 
   <section>
     <h2>Where the project stands</h2>
-    <p class="lede">Phase 1 was discovery and documentation only. It ended at a seven-condition gate, and all seven are now met.</p>
+    <p class="lede">Phase 1 was discovery and documentation only. It ended at a seven-condition
+    gate, all seven of which were met on 2026-08-13. The gate is <strong>retired as a control and
+    kept as a record</strong> &mdash; it stands as evidence that discovery finished properly before
+    any configuration began.</p>
     <div class="scroll">
       <table>
         <thead>
@@ -342,7 +362,10 @@
         </tbody>
       </table>
     </div>
-    <p class="lede"><strong>Phase 1 is complete and Phase 2 is open.</strong> The project owner ratified the role mapping in architecture v0.3 on 2026-08-13 and <code>act-012</code> is closed. The Phase 1 command guard is released as a direct consequence &mdash; package installation, service management, network, storage and driver commands are no longer denied fleet-wide.</p>
+    <p class="lede"><strong>Phase 1 is complete; Phase 2 is open.</strong> The owner ratified the
+    role mapping on 2026-08-13 and <code>act-012</code> is closed. Phase 2 now means repository
+    consolidation and alignment &mdash; folding the 2025 pre-relocation project into this one
+    &mdash; and server implementation becomes Phase 3.</p>
   </section>
 
 

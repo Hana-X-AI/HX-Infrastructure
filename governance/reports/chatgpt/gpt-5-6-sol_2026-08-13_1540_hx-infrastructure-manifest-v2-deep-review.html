@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HX-Infrastructure — Migration Manifest v2 Deep Review</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#080d13;--panel:#101923;--panel2:#15212c;--ink:#e8eef5;--muted:#9cabb8;
+  --line:#2a3947;--green:#61d5ae;--blue:#7cb8ff;--amber:#efb25e;--red:#ff7b72;
+  --violet:#c6a8ff;--mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+  --sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif
+}
+*{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#07111a,#080d13 36rem);color:var(--ink);font:15px/1.62 var(--sans)}
+main{max-width:1280px;margin:auto;padding:40px 24px 78px}
+header{background:linear-gradient(135deg,#142633,#0d161f);border:1px solid var(--line);border-radius:14px;padding:30px;box-shadow:0 18px 42px rgba(0,0,0,.25)}
+.eyebrow{font:800 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:12px}
+h1{font-size:37px;line-height:1.08;letter-spacing:-.027em;margin:0 0 12px}h2{font-size:24px;line-height:1.2;letter-spacing:-.015em;margin:0 0 9px}h3{font-size:17px;margin:0 0 7px}
+.sub,.lede{color:var(--muted);max-width:105ch}.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.pill{font:700 11px/1 var(--mono);padding:7px 9px;border:1px solid var(--line);border-radius:999px;background:#0a131c;color:#cad5df}
+section{margin-top:32px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:14px;margin-top:14px}.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}.metric{font-size:24px;font-weight:800;letter-spacing:-.02em}.small{font-size:12.5px;color:var(--muted)}
+.callout{background:var(--panel);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:16px 18px;margin:14px 0}.warn{border-left-color:var(--amber)}.bad{border-left-color:var(--red)}.blue{border-left-color:var(--blue)}.violet{border-left-color:var(--violet)}
+table{width:100%;border-collapse:separate;border-spacing:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:12px}
+th,td{text-align:left;vertical-align:top;padding:11px 12px;border-bottom:1px solid var(--line)}th{font:800 10.5px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#b8c5cf;background:#0e1720}tr:last-child td{border-bottom:0}
+code,pre{font-family:var(--mono)}code{background:#08121a;border:1px solid #22313f;border-radius:4px;padding:.05em .32em;color:#dce8f2}pre{white-space:pre;overflow:auto;background:#070c11;border:1px solid var(--line);border-radius:10px;padding:18px;line-height:1.5;color:#dae5ef}
+ul,ol{margin:7px 0 0;padding-left:22px}li{margin:5px 0}
+.badge{display:inline-block;font:800 9.5px/1 var(--mono);text-transform:uppercase;letter-spacing:.06em;padding:5px 7px;border-radius:999px;white-space:nowrap}
+.pass{color:#c8f7d9;background:rgba(97,213,174,.12);border:1px solid rgba(97,213,174,.35)}.fix{color:#ffe0ad;background:rgba(239,178,94,.12);border:1px solid rgba(239,178,94,.35)}.block{color:#ffc7c2;background:rgba(255,123,114,.12);border:1px solid rgba(255,123,114,.35)}.info{color:#d2e6ff;background:rgba(124,184,255,.12);border:1px solid rgba(124,184,255,.35)}
+.decision{background:linear-gradient(135deg,#10261f,#101a24);border:1px solid #295246;border-radius:12px;padding:20px;margin-top:14px}.decision h3{color:var(--green)}
+.rank{font-weight:800;font-family:var(--mono)}.p0{color:var(--red)}.p1{color:var(--amber)}.p2{color:var(--blue)}
+footer{margin-top:44px;border-top:1px solid var(--line);padding-top:18px;color:#7f8e9b;font-size:12px}
+@media(max-width:760px){main{padding:22px 12px 48px}header{padding:22px 18px}h1{font-size:29px}th,td{padding:9px 8px;font-size:13px}}
+</style>
+</head>
+<body><main>
+<header>
+<div class="eyebrow">HX-Infrastructure · repository consolidation · manifest v2 semantic audit</div>
+<h1>Deep Review of Migration Manifest v2</h1>
+<p class="sub">The dual-layer JSONL + generated HTML design is correct and should be retained. This review goes below coverage and formatting into the classifier semantics: what actually enters current <code>main</code>, how sensitive historical material is handled, whether legacy controls are being over-retained, whether current authority is encoded strongly enough, and whether an executor can complete the migration without inventing decisions.</p>
+<div class="meta">
+<span class="pill">author: gpt-5.6 sol</span>
+<span class="pill">2026-08-13 15:40 -05:00</span>
+<span class="pill">JSONL records parsed: 522</span>
+<span class="pill">unique paths: 522</span>
+<span class="pill">unique IDs: 522</span>
+<span class="pill">status: approve architecture · require v2.1 policy patch</span>
+</div>
+</header>
+
+<section>
+<h2>1. Executive verdict</h2>
+<div class="decision">
+<h3>Keep the ledger. Change what “historical” means.</h3>
+<p><strong>V2 solves the file-accountability problem and introduces a very good execution substrate. It should become the canonical migration ledger.</strong> The JSONL is valid, has exactly one row per legacy file, the IDs and paths are unique, and the HTML rollups are derived from the data rather than hand-maintained.</p>
+<p>But the classifier has changed the merge model in a way I do not recommend: <strong>430 historical files plus 3 retired files are assigned target paths under <code>governance/migrations/legacy-2025/</code> in the current working tree.</strong> That means 433 of 522 legacy files would physically reappear inside current <code>main</code>. It is technically one Git repository, but operationally it is the old project nested inside the new one—the exact “shadow repository” outcome the previous reviews converged against.</p>
+<p><strong>Recommended v2.1 rule:</strong> <code>historical</code> means “preserved by the sanitized legacy Git ref and indexed from current main,” not “copied into current main.” Current <code>main</code> keeps the ledger, provenance index, distilled lessons, reconstructed agents, current service documents and selected adapted controls. The sanitized historical branch keeps the old file-level record.</p>
+</div>
+
+<div class="grid">
+<div class="card"><div class="small">Ledger integrity</div><div class="metric">522 / 522</div><div class="small">Valid JSONL, one unique ID and path per legacy file.</div></div>
+<div class="card"><div class="small">V2 current-tree archive targets</div><div class="metric">433 files</div><div class="small">430 historical + 3 retired currently point into the active repository archive path.</div></div>
+<div class="card"><div class="small">Active transformations</div><div class="metric">88 files</div><div class="small">76 adapt + 12 reconstruct.</div></div>
+<div class="card"><div class="small">Confirmed secret-reference rows</div><div class="metric">30</div><div class="small">22 historical, 3 retired, 2 adapted, 2 reconstructed, 1 excluded.</div></div>
+<div class="card"><div class="small">Environment dependency = none</div><div class="metric">502 files</div><div class="small">Too optimistic for a repository known to contain extensive old network/path/environment literals.</div></div>
+</div>
+</section>
+
+<section>
+<h2>2. What v2 fixes correctly</h2>
+<table>
+<thead><tr><th>Area</th><th>Verdict</th><th>Comment</th></tr></thead>
+<tbody>
+<tr><td>One row per legacy file</td><td><span class="badge pass">solved</span></td><td>The most important mechanical improvement. No file can disappear merely because its group was summarized.</td></tr>
+<tr><td>Generated HTML</td><td><span class="badge pass">keep</span></td><td>Excellent design. Human summaries should be rendered from the ledger so counts cannot drift independently.</td></tr>
+<tr><td>Canonical disposition vs transformation method</td><td><span class="badge pass">keep</span></td><td>Separating “what happens” from “how it is transformed” is the correct data model.</td></tr>
+<tr><td>Secret IDs instead of literal values</td><td><span class="badge pass">solved in v2 artifacts</span></td><td>The known reused credential literal is absent from the uploaded JSONL/HTML and represented by an opaque ID.</td></tr>
+<tr><td>No fixed old test count</td><td><span class="badge pass">solved</span></td><td>Correct after retiring the old deployment gate.</td></tr>
+<tr><td><code>service.md</code> durable target</td><td><span class="badge pass">keep</span></td><td>Better than a build-only document. Service knowledge remains usable after installation.</td></tr>
+<tr><td>Capability-first agent reconstruction</td><td><span class="badge pass">keep</span></td><td>The legacy profiles are absent, so reconstruction from actual evidence remains the right path.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>3. P0 — Do not commit a raw 522-file import branch into the canonical repository</h2>
+<div class="callout bad">
+<strong>The v2 execution order begins by landing all 522 legacy files verbatim on <code>import/legacy-2025</code>, then removing/scrubbing sensitive material afterward.</strong> This is unsafe if that branch is committed in the canonical repository, because a later deletion or edit does not remove the earlier Git objects. The first import commit would itself become the secret-bearing history we have been trying to avoid.
+</div>
+<p>The correct order is:</p>
+<ol>
+<li>Acquire the historical repository or archive in a <strong>quarantine working area outside the canonical repository</strong>.</li>
+<li>Rotate/revoke known exposed values.</li>
+<li>Run broad secret discovery across files and, for the historical Git repository, across all history.</li>
+<li>Rewrite/sanitize the historical lineage in quarantine.</li>
+<li>Validate that the sanitized lineage is clean.</li>
+<li>Only then introduce <code>legacy/2025-sanitized</code> to the canonical remote.</li>
+<li>Never create a raw <code>import/legacy-2025</code> ref in the final canonical repository.</li>
+</ol>
+<p>If a temporary raw branch is useful during analysis, it should live only in an isolated local/quarantine repository and be destroyed after the sanitized derivative is verified.</p>
+</section>
+
+<section>
+<h2>4. P0 — Do not copy the 430-file historical tree into current main</h2>
+<p>V2 defines historical files as “preserved read-only under <code>governance/migrations/legacy-2025/</code>.” The ledger confirms that every one of the 430 historical rows targets that active-tree prefix, and the 3 retired rows do as well.</p>
+<div class="two">
+<div class="card">
+<h3>What should be in current main</h3>
+<ul>
+<li><code>manifest.jsonl</code></li>
+<li>generated migration HTML</li>
+<li>provenance/index mapping old path → sanitized legacy ref/commit</li>
+<li>small sanitized legacy lesson documents</li>
+<li>current <code>services/*/service.md</code></li>
+<li>reconstructed specialist agents</li>
+<li>selected adapted skills/hooks/tests</li>
+</ul>
+</div>
+<div class="card">
+<h3>What should not be in current main</h3>
+<ul>
+<li>the 198-file Docling historical tree</li>
+<li>the 213-file LangGraph historical tree</li>
+<li>old root trackers and status snapshots</li>
+<li>old topology/inventory trees</li>
+<li>terminal-capture junk</li>
+<li>retired vault/provisioning material</li>
+<li>legacy CLAUDE/README copies simply for archival convenience</li>
+</ul>
+</div>
+</div>
+<div class="callout blue">
+<strong>The sanitized legacy branch is the archive.</strong> The current tree needs an index into it, not another copy of it. This gives us one repository without making <code>main</code> look like two projects placed beside each other.
+</div>
+</section>
+
+<section>
+<h2>5. P0 — Secret classification is incomplete</h2>
+<p>V2 correctly tracks 30 references to <code>legacy-secret-001</code>, but the earlier evidence identified more than one exposed credential class. V2’s narrative indicates the deterministic detector was narrowed to the reused known token because broader regex results were noisy. That is fine as one detector, but it cannot become the full secret inventory.</p>
+<p><strong>Required v2.1 change:</strong> separate exact-known-secret detection from generic secret discovery.</p>
+<pre><code>secret_refs: ["legacy-secret-001", "legacy-secret-002"]
+secret_scan:
+  exact_known_values: true
+  high_entropy_tokens: true
+  assignment_patterns: true
+  env_secret_names: true
+  private_key_markers: true
+  bearer_tokens: true
+  provider_key_patterns: true
+  manual_review: required-on-hit</code></pre>
+<p>Do not place the literal values in the ledger. The scanning runtime receives those values securely and emits only IDs/findings.</p>
+</section>
+
+<section>
+<h2>6. P0/P1 — Secret-bearing historical rows cannot be “read-only archived” without a sanitation model</h2>
+<p>Of the 30 rows marked <code>secret_risk=confirmed</code>, the ledger currently classifies 22 as <code>historical</code> and 3 as <code>retire</code>. Those 25 rows target current-tree archive paths. This creates two mutually exclusive meanings of “read-only”:</p>
+<ul>
+<li>If copied <strong>verbatim</strong>, they reintroduce sensitive values.</li>
+<li>If <strong>scrubbed</strong>, they are no longer verbatim/read-only source artifacts and their checksum no longer proves identity with the original.</li>
+</ul>
+<p>The fix is to keep three identities distinct:</p>
+<table>
+<thead><tr><th>Identity</th><th>Where</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td>Raw historical source</td><td>Quarantine only</td><td>Incident/history evidence; never normal agent context.</td></tr>
+<tr><td>Sanitized historical source</td><td><code>legacy/2025-sanitized</code></td><td>Historical provenance and archaeology.</td></tr>
+<tr><td>Current distilled/adapted artifact</td><td>Current <code>main</code></td><td>Operational knowledge and current implementation guidance.</td></tr>
+</tbody>
+</table>
+<p>The ledger should store both source and sanitized hashes where a file is rewritten.</p>
+</section>
+
+<section>
+<h2>7. P1 — The deterministic classifier over-generalizes policy classes</h2>
+<p>The JSONL is mechanically complete, but several policy rules flatten decisions that were intentionally file-specific in the earlier reviews. This is the main semantic-review work still required.</p>
+
+<h3>7.1 Legacy command set</h3>
+<p>All 20 non-agent commands are classified <code>adapt</code>. That is too broad.</p>
+<table>
+<thead><tr><th>Concept</th><th>Recommended v2.1 treatment</th></tr></thead>
+<tbody>
+<tr><td>Knowledge research</td><td><strong>Adapt</strong> into a lean research skill.</td></tr>
+<tr><td>Test-suite generation</td><td><strong>Adapt</strong> into a lean test-generation skill.</td></tr>
+<tr><td>Context preparation</td><td><strong>Adapt</strong>.</td></tr>
+<tr><td>Handoff</td><td><strong>Adapt</strong>.</td></tr>
+<tr><td>Document lint</td><td><strong>Adapt</strong> to current HTML/document rules.</td></tr>
+<tr><td>Spec workflow</td><td><strong>Adapt lightly</strong>: intent, constraints, acceptance before change.</td></tr>
+<tr><td>Task workflow / execution</td><td><strong>Adapt lightly</strong>: decomposition and evidence, no task-tree bureaucracy.</td></tr>
+<tr><td>Project closeout</td><td><strong>Adapt as checklist</strong>.</td></tr>
+<tr><td>Status report</td><td><strong>Reconstruct read-only synthesis</strong>; never become a second status database.</td></tr>
+<tr><td>RAIDD utility</td><td><strong>Covered/retire as a tracker</strong>; carry only useful risk/issue logic into the single current log.</td></tr>
+<tr><td>Artifact tracker</td><td><strong>Evaluate/covered</strong>; do not create another tracking store without a current use case.</td></tr>
+<tr><td>Charter-specific workflow/questions</td><td><strong>Retire</strong> unless a current workflow explicitly needs the underlying questioning pattern.</td></tr>
+</tbody>
+</table>
+
+<h3>7.2 Hooks</h3>
+<p>All six hooks are currently <code>adapt + ip-reconcile</code>. That transformation is not meaningful for several of them.</p>
+<table>
+<thead><tr><th>Hook objective</th><th>Recommended treatment</th></tr></thead>
+<tbody>
+<tr><td>IP/host validator</td><td><strong>Reconstruct</strong> against <code>SERVER-REGISTRY.md</code>; no hardcoded fleet map.</td></tr>
+<tr><td>Password/secret guard</td><td><strong>Reconstruct from scratch</strong> as a generic secret guard; do not copy the broken secret-bearing implementation.</td></tr>
+<tr><td>File-location guard</td><td><strong>Adapt</strong> only still-valid structural rules.</td></tr>
+<tr><td>Session context</td><td><strong>Covered/merge</strong> with current session-state tooling; avoid duplicate context loaders.</td></tr>
+<tr><td>Philosophy guard</td><td><strong>Extract deterministic rules, retire code</strong>.</td></tr>
+<tr><td>Charter-path guard</td><td><strong>Retire</strong> with the old charter machinery.</td></tr>
+</tbody>
+</table>
+
+<h3>7.3 Quality gates</h3>
+<p>All six legacy gates are marked for adaptation into neutral checks. Again, that is too broad.</p>
+<table>
+<thead><tr><th>Gate concept</th><th>Recommended treatment</th></tr></thead>
+<tbody>
+<tr><td>Master runner</td><td><strong>Adapt only if it becomes a thin current test runner</strong>.</td></tr>
+<tr><td>File-location validation</td><td><strong>Adapt</strong>.</td></tr>
+<tr><td>Status-report uniqueness</td><td><strong>Adapt</strong> as a single-truth structural assertion.</td></tr>
+<tr><td>Charter review gate</td><td><strong>Retire</strong>.</td></tr>
+<tr><td>Charter reference validator</td><td><strong>Retire</strong>.</td></tr>
+<tr><td>Infrastructure philosophy gate</td><td><strong>Extract useful deterministic assertions; probably retire the legacy script</strong>.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>8. P1 — Standards, templates and procedures are substantially over-retained</h2>
+
+<h3>Standards</h3>
+<p>V2 marks all ten standards <code>adapt</code>. A lean repository should not preserve a standards library just because it exists.</p>
+<ul>
+<li><strong>Naming conventions:</strong> adapt/merge into the current documentation standard.</li>
+<li><strong>Testing requirements + document quality checklist:</strong> adapt the strongest missing rules.</li>
+<li><strong>Architecture/deployment/documentation/infrastructure-layer/utility standards:</strong> usually <strong>covered</strong>; cherry-pick gaps only.</li>
+<li><strong>Legacy vault/credential-management standard:</strong> <strong>retire</strong>. Do not translate the retired mechanism into a current standard.</li>
+<li><strong>Legacy standards README:</strong> retire.</li>
+</ul>
+
+<h3>Templates</h3>
+<p>All 18 are marked <code>adapt</code>. That contradicts the stated lean goal.</p>
+<ul>
+<li>Collapse the useful service architecture/spec/plan/deployment patterns into <strong>one current service template</strong>.</li>
+<li>Keep a lean test plan/test case pair if current tests benefit.</li>
+<li>Retire charter, RAIDD, old research-vault, duplicated defect/execution/index and process-specific templates unless a real current workflow demands them.</li>
+</ul>
+
+<h3>Procedures</h3>
+<p>All 11 main procedures are marked <code>adapt</code>. They need individual semantics.</p>
+<ul>
+<li>Context loading: adapt.</li>
+<li>Testing research: adapt.</li>
+<li>Network health check: adapt, but registry-driven.</li>
+<li>Spec/task/task-execution/closeout: preserve lightly where they enforce good AI execution discipline.</li>
+<li>Charter workflow: retire.</li>
+<li>Core project team: use as agent-reconstruction evidence, not an active procedure.</li>
+<li>Legacy node deployment workflow: mine reusable sequencing, do not recreate the old node/process model.</li>
+</ul>
+</section>
+
+<section>
+<h2>9. P1 — Environment-dependency metadata is not content-complete</h2>
+<p>The ledger marks <strong>502 of 522 rows</strong> as <code>environment_dependency=none</code>; only 12 are marked for the old model-serving runtime, 6 for the old network and 2 for the retired orchestration mechanism. That cannot safely represent a legacy repository previously measured to contain widespread old addresses, hostnames, root paths and user assumptions.</p>
+<p>Do not use a single categorical field. Add independent content-derived flags:</p>
+<pre><code>"legacy_facts": {
+  "old_ip": true|false,
+  "old_domain": true|false,
+  "old_root_path": true|false,
+  "old_username": true|false,
+  "old_hostname": true|false,
+  "old_service_assignment": true|false,
+  "old_runtime_or_version": true|false,
+  "retired_process_reference": true|false
+}</code></pre>
+<p>These should be generated by scanning content, not inferred from directory names. An adapted file is not eligible for current status until every flagged old fact has been reconciled deliberately.</p>
+</section>
+
+<section>
+<h2>10. P1 — Provenance needs stronger identifiers</h2>
+<p>The current row schema has the path but not enough information to prove exactly which historical object was reviewed. Add:</p>
+<pre><code>"source_repo": "Hana-X-AI/HX-Infrastructure",
+"source_ref": "legacy/2025-sanitized",
+"source_commit": "&lt;sha&gt;",
+"source_sha256": "&lt;raw-or-quarantine-hash&gt;",
+"sanitized_sha256": "&lt;if rewritten&gt;",
+"target_path": "services/docling-mcp/service.md",
+"target_section": "legacy failure lessons",
+"migration_commit": "&lt;filled after execution&gt;"</code></pre>
+<p>If the live Git history cannot map a ZIP file exactly, record the archive snapshot/hash instead of pretending a commit association exists.</p>
+</section>
+
+<section>
+<h2>11. P1 — Exact target paths are required for the 88 active rows</h2>
+<p>The 88 adapt/reconstruct rows currently use a placeholder such as <code>(reconciled active tree)</code>. That is not enough for an execution ledger: the executor still has to decide where the result belongs.</p>
+<p>Before a row can move from <code>needs-review</code> to <code>approved</code>, it should contain either:</p>
+<ul>
+<li>an exact <code>target_path</code>; or</li>
+<li>a <code>target_artifact</code> plus <code>target_section</code> for many-to-one distillation.</li>
+</ul>
+<p>Example: 50 historical LangGraph persistence files may all point to <code>services/langgraph/service.md</code> / <code>Persistence &amp; Checkpointing</code>. That makes the many-to-one transformation explicit and auditable.</p>
+</section>
+
+<section>
+<h2>12. P1 — Validation must match the transformation</h2>
+<p>The current ledger uses mostly three validation values: <code>archive-checksum</code>, <code>diff-review</code>, and <code>rotate+scan-clean</code>. Good start, but too coarse.</p>
+<table>
+<thead><tr><th>Transformation</th><th>Required validation</th></tr></thead>
+<tbody>
+<tr><td>Historical branch preservation</td><td>source/ref/hash verification + secret scan + non-authoritative label.</td></tr>
+<tr><td>Secret sanitation</td><td>known-secret scan + generic scanner + source/sanitized hash pair.</td></tr>
+<tr><td>Agent reconstruction</td><td>agent-contract lint + current-authority inputs + out-of-scope + validation partner.</td></tr>
+<tr><td>Hook/tool reconstruction</td><td>syntax test + fixture test + registry-derived behavior + no stale literals.</td></tr>
+<tr><td>Current service document</td><td>SME review + current registry mapping + source provenance + stale-fact scan.</td></tr>
+<tr><td>Governance merge</td><td>duplicate-authority test + link/render test + current owner review.</td></tr>
+<tr><td>Retire</td><td>prove no current reference/activation depends on the legacy mechanism.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>13. P1 — The disposition distribution itself is a warning signal</h2>
+<p>V2 yields:</p>
+<pre><code>historical   430
+adapt         76
+reconstruct   12
+retire         3
+exclude        1
+covered        0
+adopt          0</code></pre>
+<p><strong>Zero <code>covered</code> is suspicious.</strong> The current repository already has governance, session-state tooling, documentation standards, tests, templates and status mechanisms. A classifier that finds no legacy file genuinely covered by current capability is likely biased toward retention.</p>
+<p>Similarly, only three retirements is too low for a repository containing old charter machinery, duplicate trackers, obsolete templates, superseded topology and large terminal captures. V2.1 should not aim for a target count; it should restore semantic file-by-file review. But I expect the final distribution to contain materially more <code>covered</code> and <code>retire</code>, and far fewer physical current-tree historical copies.</p>
+</section>
+
+<section>
+<h2>14. Proposed v2.1 meaning of each disposition</h2>
+<table>
+<thead><tr><th>Disposition</th><th>Precise meaning</th><th>Current-main file?</th></tr></thead>
+<tbody>
+<tr><td><strong>adopt</strong></td><td>Source artifact is safe/current enough to copy with provenance and minor editorial adjustment only.</td><td>Yes.</td></tr>
+<tr><td><strong>adapt</strong></td><td>Legacy content has current value but must be reconciled and authored into a current artifact.</td><td>Yes, transformed output only.</td></tr>
+<tr><td><strong>reconstruct</strong></td><td>Legacy source is evidence for a newly authored capability; old file is not copied.</td><td>Yes, new output only.</td></tr>
+<tr><td><strong>covered</strong></td><td>Current repository already provides the capability. Mine only missing insight; no new parallel artifact.</td><td>Usually no.</td></tr>
+<tr><td><strong>historical</strong></td><td>Preserve in sanitized legacy ref and provenance index. It is not copied into current main.</td><td><strong>No.</strong></td></tr>
+<tr><td><strong>retire</strong></td><td>Keep only as historical lineage/provenance; no current capability or working-tree copy.</td><td><strong>No.</strong></td></tr>
+<tr><td><strong>exclude</strong></td><td>Not present in sanitized legacy lineage or current main because it contains material that must not survive.</td><td><strong>No.</strong></td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>15. Recommended current-main migration directory</h2>
+<p>Keep the migration controls extremely small:</p>
+<pre><code>governance/
+└─ migrations/
+   └─ legacy-2025/
+      ├─ manifest.jsonl
+      ├─ manifest.html
+      ├─ provenance-index.jsonl
+      ├─ decisions.md
+      └─ README.md</code></pre>
+<p><strong>No 430-file legacy subtree underneath it.</strong></p>
+<p>The historical material remains discoverable through <code>legacy/2025-sanitized</code>. Distilled knowledge lives where users and agents naturally look for it:</p>
+<pre><code>services/&lt;service&gt;/service.md
+knowledge/legacy/2025/service-lessons.md
+knowledge/legacy/2025/defect-patterns.md
+knowledge/legacy/2025/naming-crosswalk.md
+governance/lessons-learned.md
+.claude/agents/&lt;capability&gt;.md
+tests/
+tools/</code></pre>
+</section>
+
+<section>
+<h2>16. Safer execution sequence</h2>
+<ol>
+<li><strong>Lock current authority first.</strong> Confirm all three owner decisions are recorded and committed in the current repository, and establish the new test baseline before proceeding. The three decisions are:
+    <ol>
+      <li><strong>V1 fix decision</strong> (separate <code>archive</code> from <code>distill</code> in the 417 affected rows): required repository state: <code>governance/migrations/legacy-2025/manifest-v2.jsonl</code> updated; evidence: manifest row audit confirms no row has both <code>transform: distill</code> and a 1:1 <code>target_path</code>; gate complete when owner approves the revised manifest and the check passes.</li>
+      <li><strong>V2 scrub-or-accept decision</strong> (change 22 <code>distill</code> rows to <code>scrub-secret</code>, or explicitly accept dead credentials in the archive): required state: decision recorded in <code>governance/actions-and-issues.md</code> and reflected in the manifest; evidence: secret scan of every <code>target_path</code> returns clean, or owner acceptance note is present; gate complete when credential-validation gate status changes from BLOCKED to CLEARED.</li>
+      <li><strong>Execution-sequence approval</strong> (owner confirms Steps 2–12 may proceed): required state: Steps 1 gate checks above both pass, test baseline recorded (suite result stored with commit SHA); evidence: <code>governance/actions-and-issues.md</code> entry with approved-by and timestamp; gate complete when all three sub-gates above are satisfied.</li>
+    </ol>
+    All three decisions and the test baseline must be recorded and validated before any step beyond Step 1 begins.</li>
+<li><strong>Quarantine raw legacy material outside the canonical repo.</strong></li>
+<li><strong>Rotate/revoke historical exposed values.</strong></li>
+<li><strong>Run broad secret discovery</strong>, not only exact-token matching.</li>
+<li><strong>Sanitize historical Git lineage in quarantine.</strong></li>
+<li><strong>Validate and publish only <code>legacy/2025-sanitized</code></strong> as historical provenance.</li>
+<li><strong>Patch manifest to v2.1</strong>: historical targets leave current main; file-specific command/hook/gate/template/procedure dispositions restored; content-fact flags populated; exact target paths set.</li>
+<li><strong>Reconstruct agents and current controls</strong> from approved ledger rows.</li>
+<li><strong>Distill Docling first, then LangGraph</strong> into current service/lesson artifacts; do not copy their old trees.</li>
+<li><strong>Process the long tail</strong> file by file, with the ledger status advanced only after validation.</li>
+<li><strong>Final secret/authority/regression scan across every retained ref.</strong></li>
+<li><strong>Delete quarantine/import/transitional refs</strong> from the canonical repository; keep only current main, sanitized historical lineage and deliberate provenance tags.</li>
+</ol>
+</section>
+
+<section>
+<h2>17. Ledger lifecycle model</h2>
+<p>One <code>status</code> field is not enough. Separate the decision from the execution state:</p>
+<pre><code>"decision_status": "unreviewed | approved | rejected | needs-review",
+"migration_status": "pending | in-progress | migrated | validated | failed",
+"reviewed_by": ["owner", "platform-architect", "service-sme"],
+"reviewed_at": "2026-08-13T...",
+"migration_commit": null</code></pre>
+<p>Group rules may pre-classify a file, but they should start as <code>decision_status=needs-review</code> when the policy is known to be broad. The ledger becomes authoritative only after the semantic review approves each row.</p>
+</section>
+
+<section>
+<h2>18. Definition of done for v2.1</h2>
+<ul>
+<li>522/522 unique source paths remain covered.</li>
+<li>Known and generic secret scans are both clean for every final retained ref.</li>
+<li>No raw import branch containing sensitive history exists in the canonical repository.</li>
+<li>No full or near-full legacy tree exists under current <code>main</code>.</li>
+<li><code>historical</code> and <code>retire</code> rows do not target active-main archive paths.</li>
+<li>Every adapt/reconstruct row has an exact target artifact and owner capability.</li>
+<li>Every row has source provenance sufficient to reproduce the review.</li>
+<li>Legacy fact flags are populated from content scanning, not only path rules.</li>
+<li>Command, hook, gate, standard, template and procedure dispositions are individually semantically reviewed.</li>
+<li>Current capability overlap produces real <code>covered</code> rows where appropriate.</li>
+<li>Retired process/tooling artifacts are not recreated under new names without a demonstrated current need.</li>
+<li>Docling/LangGraph current knowledge is available without browsing their historical trees.</li>
+<li>Current main presents one project, one authority hierarchy and one active automation framework.</li>
+</ul>
+</section>
+
+<section>
+<h2>19. Concise change request for Claude</h2>
+<table>
+<thead><tr><th>Priority</th><th>v2.1 change</th></tr></thead>
+<tbody>
+<tr><td><span class="rank p0">P0</span></td><td>Remove the raw <code>import/legacy-2025</code> commit step from the canonical repository. Sanitize externally first.</td></tr>
+<tr><td><span class="rank p0">P0</span></td><td>Redefine <code>historical</code>/<code>retire</code> as sanitized-legacy-ref only; do not copy 433 files under current <code>governance/migrations/</code>.</td></tr>
+<tr><td><span class="rank p0">P0</span></td><td>Add the second known secret class by ID and generic secret scanning beyond the exact reused-password detector.</td></tr>
+<tr><td><span class="rank p1">P1</span></td><td>Restore file-specific semantics for commands, hooks, gates, standards, templates and procedures; group policies may suggest, not decide.</td></tr>
+<tr><td><span class="rank p1">P1</span></td><td>Add content-derived stale-fact flags; 502 rows cannot safely default to <code>environment_dependency=none</code>.</td></tr>
+<tr><td><span class="rank p1">P1</span></td><td>Add source ref/commit/hash and sanitized hash fields.</td></tr>
+<tr><td><span class="rank p1">P1</span></td><td>Replace <code>(reconciled active tree)</code> with exact target paths/sections before approval.</td></tr>
+<tr><td><span class="rank p1">P1</span></td><td>Make validation transformation-specific and split decision status from migration status.</td></tr>
+<tr><td><span class="rank p2">P2</span></td><td>Regenerate HTML from v2.1 ledger and show counts for current-main outputs vs sanitized-ref-only historical assets.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>20. Final recommendation</h2>
+<div class="decision">
+<h3>Do not throw away v2. Refine it.</h3>
+<p>The hardest mechanical problem is solved. We finally have an exact inventory and a machine-readable control surface. The remaining work is to stop the deterministic classifier from becoming a deterministic way to over-import legacy material.</p>
+<p><strong>The final model should be:</strong> 522-row ledger in current main; sanitized historical lineage in a separate historical ref; a small provenance index; current service knowledge distilled into <code>service.md</code>; capability-first agents reconstructed; current controls rebuilt from authoritative data; and no legacy shadow tree inside the active checkout.</p>
+<p>Once those v2.1 policy corrections are made, I would consider the manifest ready to drive actual migration batches.</p>
+</div>
+</section>
+
+<footer>
+HX-Infrastructure · migration manifest v2 deep review · gpt-5.6 sol · 2026-08-13 15:40 -05:00 · review/planning only. No repository, Git history, registry or server change was performed.
+</footer>
+</main></body></html>

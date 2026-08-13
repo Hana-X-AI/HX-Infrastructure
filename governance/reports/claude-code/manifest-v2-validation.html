@@ -71,7 +71,7 @@
   code { font-family:var(--mono); font-size:0.92em; background:var(--surface); padding:0.05em 0.32em; border-radius:2px; }
   pre { margin:0; overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:3px; padding:0.85rem 1rem; }
   pre code { background:none; padding:0; font-size:var(--step--1); }
-  footer { border-top:1px solid var(--line); padding-top:1rem; font-size:var(--step--2); color:var(--faint); }
+  footer { border-top:1px solid var(--line); padding-top:1rem; font-size:var(--step--2); color:var(--muted); }
   a { color:var(--accent); }
   :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
   @media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important;} }
@@ -102,6 +102,13 @@
     <div class="cell"><dt>Secret literals</dt><dd>0</dd></div>
     <div class="cell"><dt>Findings</dt><dd>2</dd></div>
     <div class="cell"><dt>Verdict</dt><dd>Sound</dd></div>
+  </dl>
+
+  <dl class="strip">
+    <div class="cell"><dt>Repository tree SHA</dt><dd><code>Hana-X-AI/HX-Infrastructure &mdash; commit SHA not recorded at validation time; re-run against a pinned commit to reproduce</code></dd></div>
+    <div class="cell"><dt>Ledger SHA-256</dt><dd><code>not yet measured &mdash; run: sha256sum governance/migrations/legacy-2025/manifest-v2.jsonl</code></dd></div>
+    <div class="cell"><dt>Validated by</dt><dd>Claude Code &mdash; no stable version identifier available</dd></div>
+    <div class="cell"><dt>Validation timestamp</dt><dd>2026-08-13T00:00:00-05:00 (CDT)</dd></div>
   </dl>
 
   <section>
@@ -212,6 +219,12 @@
     <p class="lede">Proceed on this ledger. Fix V1 before execution, since an executor following
     it literally would produce the wrong tree; V2 is a decision rather than a defect. Neither is a
     reason to rebuild — the coverage guarantee is the hard part and it already holds.</p>
+    <p class="lede"><strong>Credential-validation gate:</strong> execution is blocked until every
+    row carrying <code>validation: rotate+scan-clean</code> has either passed that gate
+    (credentials rotated and the full-history secret scan returns clean) or has had a
+    <code>scrub-secret</code> transform applied and re-verified. All 30 such rows must clear
+    this gate before any execution step proceeds. <strong>Current gate status: BLOCKED &mdash;
+    rotation and scan not yet confirmed.</strong></p>
     <p class="lede">Unchanged and still outstanding: <strong>rotate both credentials</strong>
     (<code>iss-012</code>), and finish the history purge on this repository — the rewritten
     history is clean, but the old commits remain reachable until the backup tag and
