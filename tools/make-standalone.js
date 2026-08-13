@@ -98,8 +98,13 @@ ${body}
 // Nothing should still point at an artifact URL in the standalone build.
 for (const file of PAGES) {
   const out = fs.readFileSync(path.join(OUT, file), 'utf8');
-  const stray = out.match(/https:\/\/claude\.ai\/code\/artifact\/[a-f0-9-]+/g);
-  if (stray) { throw new Error(file + ' still contains artifact URLs: ' + stray.join(', ')); }
+  // Only URLs with a local counterpart should have been rewritten. Links to pages
+  // outside this set — the per-AI reports under governance/reports/, for instance —
+  // have nowhere local to point and correctly stay absolute.
+  const rewritable = new Set(Object.keys(LOCAL).map((k) => links[k]).filter(Boolean));
+  const stray = (out.match(/https:\/\/claude\.ai\/code\/artifact\/[a-f0-9-]+/g) || [])
+    .filter((u) => rewritable.has(u));
+  if (stray.length) { throw new Error(file + ' still contains rewritable artifact URLs: ' + stray.join(', ')); }
   for (const target of PAGES) {
     if (target === file) { continue; }
     if (!out.includes('href="' + target + '"')) {

@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HX-Infrastructure — Feedback on Claude Merge Recommendations</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1016;--panel:#121a23;--panel2:#17212c;--ink:#e8eef5;--muted:#9aa8b6;--line:#2b3947;--accent:#62d2b2;--blue:#7db7ff;--warn:#f3b65c;--bad:#ff7d73;--good:#64d67b;--violet:#c8a9ff;--mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;--sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#091018 0,#0b1016 25rem);color:var(--ink);font:15px/1.58 var(--sans)}main{max-width:1240px;margin:auto;padding:40px 24px 70px}header{background:linear-gradient(135deg,#15212c,#0f1821);border:1px solid var(--line);border-radius:14px;padding:30px;box-shadow:0 16px 38px rgba(0,0,0,.24)}.eyebrow{font:800 11px/1 var(--mono);letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}h1{font-size:35px;line-height:1.12;letter-spacing:-.025em;margin:0 0 12px}h2{font-size:23px;line-height:1.2;margin:0 0 10px;letter-spacing:-.01em}h3{font-size:17px;margin:0 0 7px}.sub{max-width:92ch;color:var(--muted);margin:0}.meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}.pill{font:700 11px/1 var(--mono);padding:7px 9px;border:1px solid var(--line);border-radius:999px;background:#0c141d;color:#c3ced8}section{margin-top:30px}.lede{color:var(--muted);max-width:96ch}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:14px;margin-top:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}.metric{font-size:28px;font-weight:780;letter-spacing:-.02em}.small{font-size:12.5px;color:var(--muted)}.callout{background:var(--panel);border-left:3px solid var(--accent);border-radius:0 9px 9px 0;padding:16px 18px;margin-top:14px}.callout.warn{border-left-color:var(--warn)}.callout.bad{border-left-color:var(--bad)}.callout.good{border-left-color:var(--good)}table{width:100%;border-collapse:separate;border-spacing:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:12px}th,td{text-align:left;vertical-align:top;padding:11px 12px;border-bottom:1px solid var(--line)}th{font:800 10.5px/1.25 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#b5c1cc;background:#0f1720}tr:last-child td{border-bottom:0}.badge{display:inline-block;font:800 9.5px/1 var(--mono);text-transform:uppercase;letter-spacing:.06em;padding:5px 7px;border-radius:999px;white-space:nowrap}.adopt{color:#bff4c8;background:rgba(100,214,123,.12);border:1px solid rgba(100,214,123,.34)}.modify{color:#ffe0ac;background:rgba(243,182,92,.12);border:1px solid rgba(243,182,92,.34)}.reject{color:#ffc4bf;background:rgba(255,125,115,.12);border:1px solid rgba(255,125,115,.34)}.defer{color:#c8deff;background:rgba(125,183,255,.12);border:1px solid rgba(125,183,255,.34)}.verify{color:#eadcff;background:rgba(200,169,255,.12);border:1px solid rgba(200,169,255,.34)}code,pre{font-family:var(--mono)}code{background:#0a121a;border:1px solid #22313f;border-radius:4px;padding:.06em .34em;color:#d8e8f7}pre{white-space:pre;overflow:auto;background:#080d12;border:1px solid var(--line);border-radius:10px;padding:18px;line-height:1.48;color:#dce6ef}ul,ol{margin:7px 0 0;padding-left:22px}li{margin:5px 0}.decision{background:linear-gradient(135deg,#13241f,#111b25);border:1px solid #2b4b43;border-radius:12px;padding:20px;margin-top:14px}.decision h3{color:var(--accent)}.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:14px}.score{font-size:22px;font-weight:800}.goodtxt{color:var(--good)}.warntxt{color:var(--warn)}.badtxt{color:var(--bad)}.bluetxt{color:var(--blue)}hr{border:0;border-top:1px solid var(--line);margin:30px 0}footer{margin-top:38px;border-top:1px solid var(--line);padding-top:18px;color:#7e8c99;font-size:12px}.toc a{color:var(--blue);text-decoration:none}.toc a:hover{text-decoration:underline}.nowrap{white-space:nowrap}@media(max-width:760px){main{padding:22px 13px 48px}header{padding:22px 18px}h1{font-size:28px}th,td{padding:9px 8px;font-size:13px}}
+</style>
+</head>
+<body><main>
+<header>
+<div class="eyebrow">HX-Infrastructure · repository consolidation · review artifact</div>
+<h1>Feedback on the Claude Code + Claude AI Merge Recommendations</h1>
+<p class="sub">A deep independent review of the two Claude proposals for consolidating the 2025 HX-Infrastructure project and the 2026 fleet project into one repository. The goal is not to choose one proposal wholesale. The goal is to preserve the strongest ideas from both while protecting current authority, specialist-agent value, Git history, security, and the ability to evolve the platform without importing stale assumptions.</p>
+<div class="meta"><span class="pill">author: gpt-5.6 sol</span><span class="pill">2026-08-13 11:21 -05:00</span><span class="pill">planning only — no merge executed</span><span class="pill">one repo, one active truth</span></div>
+</header>
+
+<section id="executive">
+<h2>1. Executive conclusion</h2>
+<div class="decision"><h3>Recommended direction: hybrid, with a stricter history boundary</h3>
+<p><strong>Use the current 2026 repository as the active chassis and authority model. Use the legacy project as a high-value engineering source and specialist-agent knowledge base. Preserve legacy Git history only after an authenticated review and secret-history sanitation, and do not perform a raw <code>--allow-unrelated-histories</code> merge into active <code>main</code>.</strong></p>
+<p>The strongest final design combines Claude Code's emphasis on preserving provenance, validation, and process depth with Claude AI's emphasis on a clean active tree, service-oriented documentation, and current-registry authority. Both source recommendations contain assumptions that should be rejected or downgraded to "verify" before merge.</p></div>
+<div class="grid">
+<div class="card"><div class="small">Claude Code recommendation</div><div class="metric">7.5 / 10</div><div class="small">Strong Git/process/validation thinking. Too permissive about importing history and legacy process.</div></div>
+<div class="card"><div class="small">Claude AI recommendation</div><div class="metric">7.0 / 10</div><div class="small">Strong authority boundary and lean tree. Too aggressive about discarding hooks/process and prematurely freezes architecture choices.</div></div>
+<div class="card"><div class="small">Recommended merge model</div><div class="metric">Current main + sanitized legacy provenance</div><div class="small">One remote repository, one authoritative active tree, historical lineage retained safely.</div></div>
+<div class="card"><div class="small">Specialist agents</div><div class="metric">Preserve capability model</div><div class="small">Reconstruct clean profiles from historical evidence; do not copy stale profiles verbatim.</div></div>
+</div>
+</section>
+
+<section id="evidence">
+<h2>2. Evidence reviewed</h2>
+<p class="lede">This assessment uses the two supplied Claude recommendations plus a direct local inspection of both project archives and the current Git worktree. The direct audit matters because several counts and assumptions in the recommendations have already drifted.</p>
+<table><thead><tr><th>Evidence</th><th>Observed</th><th>Implication</th></tr></thead><tbody>
+<tr><td>Current Git repository</td><td>14 commits at <code>70ca772</code>; 127 tracked files; one untracked <code>.claude/settings.local.json</code>; no remote configured in the supplied backup.</td><td>Claude Code's "10 commits / ~110 files" is stale; Claude AI's "759 current files" appears to count internal Git/object files rather than the active tracked tree.</td></tr>
+<tr><td>Legacy archive</td><td>522 files in the original extracted project; 504 Markdown files. No <code>.git</code> directory in the supplied ZIP.</td><td>The ZIP alone cannot prove or preserve the old commit lineage. Git-history decisions require an authenticated read-only clone/fetch of the actual old remote.</td></tr>
+<tr><td>Legacy node depth</td><td>198 files under Docling MCP and 213 under Lang server.</td><td>The legacy project contains deep implementation knowledge worth mining, but importing those trees unchanged would recreate the old operating model.</td></tr>
+<tr><td>Legacy automation</td><td>26 command docs, 6 Python hooks, 6 quality-gate scripts, 17 procedures, 10 standards, 18 templates.</td><td>There is enough process value to justify systematic triage, not blanket discard or blanket import.</td></tr>
+<tr><td>Legacy secret exposure</td><td>Plaintext historical passwords are present in multiple docs and agent material; an Ansible Vault file is present; the documented password material makes the old security context untrustworthy.</td><td>Raw legacy history or raw archive material must not enter active history without secret review and sanitation.</td></tr>
+<tr><td>Legacy agent profiles</td><td>The archive documents the roster and points to <code>x-agents/*.md</code>, but the actual <code>x-agents/</code> profile directory is absent from the supplied ZIP.</td><td>"Adopt the agent files" cannot be done from this ZIP. Profiles must be recovered from the old remote or reconstructed from inventory/orchestration/node contribution evidence.</td></tr>
+</tbody></table>
+</section>
+
+<section id="source-comparison">
+<h2>3. Where the two Claude recommendations agree</h2>
+<div class="grid">
+<div class="card"><h3>Current registry remains authoritative</h3><p>Both correctly protect <code>SERVER-REGISTRY.md</code> and current discovery records from being overwritten by historical topology.</p></div>
+<div class="card"><h3>Legacy service knowledge is valuable</h3><p>Both identify Docling, LangGraph, persistence, RAG and integration lessons as expensive knowledge that should not be lost.</p></div>
+<div class="card"><h3>Do not carry credentials forward</h3><p>Both correctly reject the old vault/credential model as active source material.</p></div>
+<div class="card"><h3>Single tracking authority</h3><p>Both favor the current governance log over reviving separate defects, RAIDD, backlog and status-report systems.</p></div>
+<div class="card"><h3>Specialist agents matter</h3><p>Both move away from my first-pass recommendation to discard the old agent system and recognize its value in preventing implementation drift.</p></div>
+<div class="card"><h3>Legacy facts require transformation</h3><p>Neither treats old addresses, hostnames or deployment status as directly reusable current state.</p></div>
+</div>
+</section>
+
+<section id="disagreements">
+<h2>4. Major disagreements — and recommended resolution</h2>
+<table><thead><tr><th>Topic</th><th>Claude Code</th><th>Claude AI</th><th>My recommendation</th></tr></thead><tbody>
+<tr><td><strong>Git history</strong></td><td>Merge unrelated histories and preserve both trails in <code>main</code>.</td><td>Effectively treats current tree as chassis; does not solve old Git lineage.</td><td><span class="badge modify">modify</span> Preserve history only after authenticated remote review + secret sanitation. Prefer a sanitized legacy branch/provenance path rather than a raw unrelated-history merge into active <code>main</code>.</td></tr>
+<tr><td><strong>Legacy process</strong></td><td>Old process framework largely survives after fact updates.</td><td>Keep process lean; mostly distill concepts.</td><td><span class="badge modify">hybrid</span> Keep the strongest workflow capabilities, but map them into the current agent/skill/test model. Do not resurrect a parallel constitution/spec/task/RAIDD hierarchy.</td></tr>
+<tr><td><strong>32-agent system</strong></td><td>Adopt selectively; leaves orchestration out of <code>main</code>.</td><td>Bring the SME roster back, five core plus a curated set.</td><td><span class="badge adopt">preserve</span> Preserve the specialist capability model broadly. Rebuild clean profiles and orchestration rules. Curate activation, not knowledge retention.</td></tr>
+<tr><td><strong>Old hooks</strong></td><td>Keep both Python and PowerShell, retarget Python.</td><td>Do not port legacy hooks.</td><td><span class="badge modify">case by case</span> Do not copy old hook files. Salvage individual control objectives. Rewrite valuable guards against current authoritative data and current hook semantics.</td></tr>
+<tr><td><strong>Phase gate</strong></td><td>Keep current Phase 1/2 gates.</td><td>Claims a "post-pivot — no phase gate" state.</td><td><span class="badge reject">reject AI claim</span> Current repo still explicitly enforces Phase 1/2 in <code>CLAUDE.md</code>, <code>AGENTS.md</code>, registry and hooks. A merge must not silently remove it.</td></tr>
+<tr><td><strong>Ansible</strong></td><td>Old process can survive; Python hooks for control plane.</td><td>States "Ansible ruled out" and excludes it.</td><td><span class="badge defer">defer</span> Current control-plane doc lists Ansible as a possible future capability, not a rejected technology. Preserve Ansible expertise as conditional; do not force or delete it.</td></tr>
+<tr><td><strong>Ollama</strong></td><td>Legacy model-serving knowledge remains in play.</td><td>States Ollama is superseded by vLLM and should stay out.</td><td><span class="badge defer">retain expertise</span> Keep the Ollama SME and historical deployment knowledge. The current architecture favors vLLM, but Ollama expertise remains useful for GGUF/alternate serving evaluation and should not be erased by the merge.</td></tr>
+<tr><td><strong>Archive in active tree</strong></td><td>Places invalidated inventory/network under <code>archive/2025-pre-relocation/</code>.</td><td>Avoids raw archive and favors concise service docs.</td><td><span class="badge modify">minimal archive</span> Keep a provenance manifest and sanitized knowledge in active <code>main</code>. Preserve full sanitized history at Git-history level or dedicated archival branch, not as a second full project tree under <code>main</code>.</td></tr>
+</tbody></table>
+</section>
+
+<section id="critical">
+<h2>5. Critical findings the merge plan must correct</h2>
+<div class="callout bad"><strong>5.1 Raw unrelated-history merge is the largest technical risk in Claude Code's plan.</strong><br>The legacy material contains plaintext historical credentials and an encrypted vault whose surrounding documentation exposes the old credential model. A raw merge makes those historical objects part of the destination repository forever unless history is rewritten. "Private repository" is not an adequate mitigation.</div>
+<div class="callout warn"><strong>5.2 Claude AI silently changes current governance.</strong><br>Its report says the project is "post-pivot — no phase gate," yet the supplied current repo still defines Phase 1 as discovery-only, keeps role assignment manual, and blocks Phase 2 until the fleet gate is satisfied. That is a project decision, not a merge cleanup item.</div>
+<div class="callout warn"><strong>5.3 "Retarget the old IP hook" is not enough.</strong><br>Claude Code proposes changing the legacy validator from <code>192.168.10.x</code> to <code>192.168.50.x</code>. Better: rewrite the control so it reads the current registry dynamically. Hardcoding the new map merely creates the next stale validator.</div>
+<div class="callout warn"><strong>5.4 The old agent catalogue itself has drift.</strong><br>The 32-agent inventory and the orchestration guide do not name exactly the same specialists. Examples include different historical owners for LightRAG and Docling MCP roles. This is evidence that capability should be canonical and human persona/name should be metadata, not the routing key.</div>
+<div class="callout good"><strong>5.5 The legacy agent operating pattern should survive.</strong><br>The best legacy design idea is narrow expert ownership: an Ollama specialist stays on model-serving details, a Docling specialist stays on Docling, a PostgreSQL specialist stays on persistence, and cross-domain integration is synthesized by an orchestrator. That separation is exactly what reduces implementation drift.</div>
+</section>
+
+<section id="agents">
+<h2>6. Specialist-agent migration recommendation</h2>
+<p class="lede">Do not reduce the legacy system to only five generalists plus three technology SMEs. That loses the main benefit the owner identified. Preserve the capability catalogue broadly, but make activation demand-driven and rebuild every active profile against current contracts.</p>
+<table><thead><tr><th>Capability</th><th>Disposition</th><th>Notes</th></tr></thead><tbody>
+<tr><td>Orchestration / synthesis</td><td><span class="badge adopt">rebuild</span></td><td>Agent Zero concept survives as coordinator/synthesizer. It must not become a second governance authority.</td></tr>
+<tr><td>Platform architecture</td><td><span class="badge adopt">rebuild</span></td><td>Preserve architecture trade-off and cross-service integration expertise.</td></tr>
+<tr><td>Infrastructure / Linux / systemd</td><td><span class="badge adopt">rebuild</span></td><td>Directly relevant to bare-metal Ubuntu fleet operation.</td></tr>
+<tr><td>Testing / QA</td><td><span class="badge adopt">rebuild</span></td><td>Retain independent validation role; do not let implementation agents self-certify.</td></tr>
+<tr><td>DNS / certificates / identity</td><td><span class="badge modify">reframe</span></td><td>Preserve domain expertise but remove Samba, old domain, shared-password and old CA assumptions. Identity/SSO remains a separate future design question.</td></tr>
+<tr><td>Ollama / GGUF</td><td><span class="badge adopt">retain</span></td><td>Keep as model-serving SME. It should evaluate Ollama/GGUF when appropriate rather than being deleted because vLLM is currently favored.</td></tr>
+<tr><td>vLLM</td><td><span class="badge adopt">add</span></td><td>New first-class SME because current architecture centers vLLM on GPU hosts.</td></tr>
+<tr><td>LiteLLM</td><td><span class="badge adopt">rebuild</span></td><td>Gateway/routing/auth/cost/DB expertise remains directly relevant.</td></tr>
+<tr><td>LangGraph</td><td><span class="badge adopt">rebuild</span></td><td>Preserve graph/runtime/persistence integration expertise.</td></tr>
+<tr><td>PostgreSQL / Redis / Qdrant</td><td><span class="badge adopt">rebuild</span></td><td>Keep as separate specialists; they have different operational failure modes and tuning concerns.</td></tr>
+<tr><td>FastMCP / MCP integration</td><td><span class="badge adopt">rebuild</span></td><td>Retain protocol/server expertise; hardening remains a later workstream, not a reason to drop the SME.</td></tr>
+<tr><td>Docling + Docling MCP</td><td><span class="badge adopt">rebuild</span></td><td>High-value historical expertise. Keep worker/runtime concerns separate from MCP integration where useful.</td></tr>
+<tr><td>Crawl4AI + MCP</td><td><span class="badge defer">conditional</span></td><td>Retain capability while service remains in candidate/current stack.</td></tr>
+<tr><td>LightRAG</td><td><span class="badge adopt">rebuild</span></td><td>Preserve ingestion/retrieval/graph expertise; reconcile LiteRAG/LightRAG historical naming explicitly.</td></tr>
+<tr><td>n8n</td><td><span class="badge defer">conditional</span></td><td>Retain workflow automation expertise if service remains part of the target platform.</td></tr>
+<tr><td>Open WebUI / CopilotKit / AG-UI / frontend</td><td><span class="badge defer">conditional</span></td><td>Retain as application-layer expertise, but do not activate until corresponding services are in scope.</td></tr>
+<tr><td>Ansible / Docker</td><td><span class="badge defer">conditional</span></td><td>Knowledge retained, tooling not assumed. Current native fleet scripts remain the proven baseline for simple fan-out.</td></tr>
+<tr><td>Observability</td><td><span class="badge adopt">rebuild</span></td><td>Current architecture explicitly anticipates a separate observability server; retain this SME.</td></tr>
+</tbody></table>
+<div class="callout"><strong>Canonicalization rule:</strong> define agents by stable capability IDs such as <code>model-serving-ollama</code>, <code>model-serving-vllm</code>, <code>docling-mcp</code>, <code>postgresql</code>. Historical persona names can remain as aliases/provenance, but routing should not depend on inconsistent legacy names.</div>
+</section>
+
+<section id="hooks">
+<h2>7. Legacy hooks, commands and quality gates — detailed disposition</h2>
+<h3>7.1 Hooks</h3>
+<table><thead><tr><th>Legacy hook</th><th>Audit finding</th><th>Recommendation</th></tr></thead><tbody>
+<tr><td><code>hx-charter-path-hook.py</code></td><td>Tied to obsolete <code>nodes/&lt;node&gt;/charter/charter.md</code> hierarchy.</td><td><span class="badge reject">retire file</span> No current equivalent needed unless a future SDD structure requires a deterministic path check.</td></tr>
+<tr><td><code>hx-file-location-guard-hook.py</code></td><td>Encodes old node document locations and filename rules.</td><td><span class="badge modify">harvest rules</span> Keep only rules still justified; current <code>AGENTS.md</code> path contracts should remain primary.</td></tr>
+<tr><td><code>hx-ip-validator-hook.py</code></td><td>High-value control objective, but hardcodes the old mapping.</td><td><span class="badge adopt">rewrite</span> Build a registry-driven validator that parses <code>SERVER-REGISTRY.md</code>; never hardcode the new map.</td></tr>
+<tr><td><code>hx-password-guard-hook.py</code></td><td>Contains historical secret literals and currently fails Python syntax compilation.</td><td><span class="badge reject">do not copy</span> Rebuild as generic secret scanning/pre-commit policy without embedding known passwords.</td></tr>
+<tr><td><code>hx-philosophy-guard-hook.py</code></td><td>Mixes governance philosophy with executable prompt/path enforcement.</td><td><span class="badge modify">move up-stack</span> Fold zero-assumption/test-evidence principles into contracts/skills; avoid a brittle philosophy hook.</td></tr>
+<tr><td><code>hx-session-context-hook.py</code></td><td>Injects old charter/process context at session start.</td><td><span class="badge modify">replace</span> Current root/child <code>AGENTS.md</code> routing and skills are cleaner context mechanisms.</td></tr>
+</tbody></table>
+<h3 style="margin-top:18px">7.2 Commands and workflows</h3>
+<p>There are 26 legacy command documents. Triage them by capability rather than importing the directory:</p>
+<ul>
+<li><strong>Keep/adapt:</strong> document lint, handoff, context preparation, technical research, test-suite generation, quality validation.</li>
+<li><strong>Fold into current governance:</strong> status reporting, artifact tracking and RAIDD-like tracking where they duplicate <code>governance/actions-and-issues.md</code>, risk acceptance or lessons learned.</li>
+<li><strong>Translate, do not duplicate:</strong> spec/task workflow concepts should eventually align with the established SDD approach rather than creating a second spec framework.</li>
+<li><strong>Retire as active machinery:</strong> legacy phase-specific commands that only make sense inside the old charter/node lifecycle.</li>
+</ul>
+<h3 style="margin-top:18px">7.3 Quality gates</h3>
+<p>Prefer <strong>tests for structural/policy assertions</strong> and <strong>hooks only for immediate high-confidence safety blocks</strong>. This reduces brittle interactive behavior while preserving the old project's useful discipline.</p>
+</section>
+
+<section id="history">
+<h2>8. Git/history strategy — revised recommendation</h2>
+<p class="lede">The project requirement is one repository, not one undifferentiated history. A single GitHub repository can safely preserve both eras without making historical infrastructure state part of the active tree.</p>
+<div class="two">
+<div class="card"><h3 class="goodtxt">Preferred model</h3><ol><li>Confirm the intended organization repository through authenticated Git access.</li><li>Create a safety branch for the current 2026 <code>main</code>.</li><li>Fetch/clone the old remote read-only; do not trust the ZIP as the complete Git source.</li><li>Run full-history secret scanning.</li><li>Rewrite/sanitize old history if credentials/vault material ever entered Git objects.</li><li>Preserve sanitized old history as a dedicated archival branch/tag namespace such as <code>legacy/2025-sanitized</code>.</li><li>Port selected agents/process/service knowledge into current <code>main</code> as new, reviewable commits with provenance references.</li></ol></div>
+<div class="card"><h3 class="badtxt">Do not do</h3><ul><li>Do not immediately <code>git merge --allow-unrelated-histories</code> against an unscanned legacy remote.</li><li>Do not rely on "private repo" as the reason secret-bearing objects are acceptable.</li><li>Do not import the complete old tree under <code>archive/</code> and call that consolidation.</li><li>Do not rewrite all old hostnames/IPs in historical documents and then present them as current documents; that destroys provenance and can create false history.</li><li>Do not close <code>act-005</code> until the destination is authenticated and the off-machine copy is actually verified.</li></ul></div>
+</div>
+<div class="callout warn"><strong>Alternative if the owner requires both histories to be reachable from <code>main</code>:</strong> first sanitize the legacy history and rewrite it into a dedicated subdirectory namespace (for example <code>archive/2025-pre-relocation/</code>) before the unrelated-history merge. This is still less clean than the preferred archival-branch model, but it is materially safer than merging the raw old root directly over the current root.</div>
+</section>
+
+<section id="architecture-assumptions">
+<h2>9. Architecture assumptions that must stay out of the merge decision</h2>
+<table><thead><tr><th>Assumption</th><th>Status</th><th>Why</th></tr></thead><tbody>
+<tr><td>"No phase gate anymore"</td><td><span class="badge reject">not supported</span></td><td>Current contracts and hooks still enforce the Phase 1/Phase 2 model. Removing it requires an explicit governance decision separate from repository consolidation.</td></tr>
+<tr><td>"Ansible is ruled out"</td><td><span class="badge reject">not supported</span></td><td>The current control-plane planning document lists Ansible as a possible future lightweight orchestration capability.</td></tr>
+<tr><td>"Ollama is superseded and can be discarded"</td><td><span class="badge modify">too strong</span></td><td>vLLM is favored for current GPU serving, but Ollama/GGUF remains relevant expertise and may be useful for alternate serving paths, local experiments or future decisions.</td></tr>
+<tr><td>"v0.3 assigned roles are current registry truth"</td><td><span class="badge reject">not yet</span></td><td>The architecture candidate contains a host-role map, but the authoritative registry still records zero assigned roles. Merge work must not bridge that gap silently.</td></tr>
+<tr><td>"Identity tier is out of scope forever"</td><td><span class="badge defer">defer</span></td><td>The old Samba/CA implementation should not be revived by default, but identity, DNS, certificate and SSO capabilities should remain available as future design concerns.</td></tr>
+</tbody></table>
+</section>
+
+<section id="structure">
+<h2>10. Proposed merged repository structure</h2>
+<p class="lede">This structure keeps the current fleet and governance model authoritative, restores specialist-agent depth, introduces service-centric planning/build knowledge, and provides a place for sanitized historical provenance without making the legacy tree a second active project.</p>
+<pre><code>HX-Infrastructure/
+├── README.md
+├── CLAUDE.md
+├── AGENTS.md
+├── GOALS-AND-OBJECTIVES.md
+├── INFRASTRUCTURE-CONTRACT.md
+├── SERVER-REGISTRY.md                   # authoritative host/role lifecycle state
+├── INSTALL.md
+│
+├── .claude/
+│   ├── AGENTS.md
+│   ├── agents/
+│   │   ├── server-discovery.md          # current
+│   │   ├── orchestrator.md              # rebuilt Agent Zero capability
+│   │   ├── platform-architect.md
+│   │   ├── infrastructure-ops.md
+│   │   ├── testing-qa.md
+│   │   ├── dns-cert-identity.md
+│   │   ├── model-serving-ollama.md
+│   │   ├── model-serving-vllm.md
+│   │   ├── litellm.md
+│   │   ├── langgraph.md
+│   │   ├── postgresql.md
+│   │   ├── redis.md
+│   │   ├── qdrant.md
+│   │   ├── fastmcp.md
+│   │   ├── docling.md
+│   │   ├── docling-mcp.md
+│   │   ├── lightrag.md
+│   │   ├── crawl4ai.md
+│   │   ├── n8n.md
+│   │   └── observability.md
+│   ├── skills/                          # reusable workflows; legacy commands map here
+│   ├── hooks/                           # deterministic safety only
+│   └── settings.json
+│
+├── governance/
+│   ├── AGENTS.md
+│   ├── actions-and-issues.md
+│   ├── risk-acceptances.md
+│   ├── lessons-learned.md
+│   ├── documentation-standards.md
+│   ├── agent-roster.html                # human-facing map of active/conditional SMEs
+│   ├── reports/
+│   └── site/
+│
+├── servers/
+│   ├── AGENTS.md
+│   ├── _templates/
+│   ├── hxs-1/ ... hxs-15/
+│   └── hxs-cp/
+│       ├── discovery.md                 # immutable as-found state
+│       └── configuration.md             # only when lifecycle permits
+│
+├── services/                            # service truth/planning, separate from physical host identity
+│   ├── README.md
+│   ├── _template/
+│   │   └── service-plan.md
+│   ├── model-serving/
+│   │   ├── vllm/
+│   │   └── ollama/
+│   ├── litellm/
+│   ├── langgraph/
+│   ├── postgresql/
+│   ├── redis/
+│   ├── qdrant/
+│   ├── docling/
+│   ├── docling-mcp/
+│   ├── lightrag/
+│   ├── crawl4ai/
+│   └── n8n/
+│
+├── knowledge/
+│   └── legacy/
+│       ├── README.md                    # non-authoritative contract + provenance
+│       ├── source-manifest.md           # old paths, source commits/files, redaction notes
+│       ├── agent-capability-map.md       # reconcile 32-agent inventory vs orchestration guide
+│       ├── docling-mcp/
+│       │   ├── architecture-lessons.md
+│       │   ├── defect-lessons.md
+│       │   └── test-lessons.md
+│       └── langgraph/
+│           ├── architecture-lessons.md
+│           ├── persistence-lessons.md
+│           └── implementation-history.md
+│
+├── tests/                               # structural/policy/regression tests
+├── tools/                               # report/build tooling
+└── claude-hooks/                        # packaged current hook distribution if still required
+
+Git refs in the SAME repository (not active-tree folders):
+  main                               current authoritative project
+  import/current-2026-08-13          safety snapshot before merge work
+  legacy/2025-sanitized              sanitized old history, read-only archival lineage
+  integrate/legacy-knowledge         temporary curated migration branch
+</code></pre>
+<div class="callout"><strong>Why both <code>services/</code> and <code>knowledge/legacy/</code>?</strong> <code>services/</code> is current-oriented and may eventually contain approved service plans/configuration guidance. <code>knowledge/legacy/</code> is historical evidence only. This prevents a 2025 Docling deployment claim from masquerading as a 2026 current build specification.</div>
+</section>
+
+<section id="migration">
+<h2>11. Recommended migration sequence</h2>
+<p class="lede">This is a planning sequence, not authorization to execute.</p>
+<table><thead><tr><th>Stage</th><th>Action</th><th>Exit condition</th></tr></thead><tbody>
+<tr><td>0</td><td>Freeze current planning baseline. Record current HEAD, clean/dirty state and untracked local settings disposition.</td><td>Reproducible baseline; no accidental local-only config enters merge.</td></tr>
+<tr><td>1</td><td>Authenticate the intended remote destination and the old organization repository. Resolve the <code>act-005</code> repository-identity question with actual Git remote evidence.</td><td>Remote identity, visibility and ownership verified.</td></tr>
+<tr><td>2</td><td>Clone/fetch legacy Git history read-only and scan every reachable object for secrets, vault material and unsafe binaries.</td><td>Written history-security assessment exists.</td></tr>
+<tr><td>3</td><td>Sanitize/rewrite legacy history if preservation is required. Rotate any historical credential that may still matter.</td><td>No secret-bearing old object enters the consolidated remote.</td></tr>
+<tr><td>4</td><td>Create the active specialist-agent capability map. Recover missing old profiles if available, but rebuild them against current contracts.</td><td>Agent roster has canonical capabilities, current authority references and no old environment facts.</td></tr>
+<tr><td>5</td><td>Triage all 26 commands, 6 hooks, 6 gates, 17 procedures, 10 standards and 18 templates.</td><td>Each item classified <code>adopt</code>, <code>adapt</code>, <code>covered</code>, <code>archive</code> or <code>retire</code>.</td></tr>
+<tr><td>6</td><td>Extract Docling/LangGraph service knowledge into sanitized historical lessons and current service planning inputs.</td><td>No raw old deployment state is presented as current.</td></tr>
+<tr><td>7</td><td>Add selected new agents/skills/tests and service docs on a dedicated integration branch.</td><td>Every new active artifact has a current owner, purpose and verification path.</td></tr>
+<tr><td>8</td><td>Run current regression suite, governance HTML build, path/link validation, secret scan and authority-conflict scan.</td><td>Zero blocking regressions and no duplicate source of truth.</td></tr>
+<tr><td>9</td><td>Merge the curated integration branch to current <code>main</code>. Preserve sanitized old lineage separately in the same repository.</td><td>One remote repo, one active authority tree, history/provenance retained safely.</td></tr>
+</tbody></table>
+</section>
+
+<section id="decision-matrix">
+<h2>12. Final recommendation matrix</h2>
+<table><thead><tr><th>Asset class</th><th>Decision</th><th>Destination / treatment</th></tr></thead><tbody>
+<tr><td>Current Git main/history</td><td><span class="badge adopt">keep</span></td><td>Primary active lineage.</td></tr>
+<tr><td>Legacy Git history</td><td><span class="badge verify">verify + sanitize</span></td><td>Preserve in same remote as sanitized archival lineage; not raw merge into active main.</td></tr>
+<tr><td>Current fleet registry/discovery</td><td><span class="badge adopt">keep authoritative</span></td><td>No legacy overwrite.</td></tr>
+<tr><td>Specialist agent capability model</td><td><span class="badge adopt">keep + expand</span></td><td>Rebuilt in <code>.claude/agents/</code>, capability-first.</td></tr>
+<tr><td>Legacy actual agent profiles</td><td><span class="badge verify">recover first</span></td><td>Missing from ZIP; inspect old remote before reconstruction is finalized.</td></tr>
+<tr><td>Legacy orchestration guide</td><td><span class="badge modify">mine</span></td><td>Extract routing/dependency patterns; reconcile roster drift.</td></tr>
+<tr><td>Legacy commands</td><td><span class="badge modify">triage</span></td><td>Useful workflows become current skills/tests; duplicate ceremony retired.</td></tr>
+<tr><td>Legacy hooks</td><td><span class="badge modify">rewrite selectively</span></td><td>No raw Python hook copied. Registry-driven IP guard and generic secret guard are high value.</td></tr>
+<tr><td>Legacy quality gates</td><td><span class="badge modify">translate</span></td><td>Move structural assertions into tests where possible.</td></tr>
+<tr><td>Legacy standards/templates</td><td><span class="badge modify">dedupe</span></td><td>Only missing concepts/templates enter active tree.</td></tr>
+<tr><td>Docling MCP body of work</td><td><span class="badge adopt">mine deeply</span></td><td>Sanitized service lessons + agent expertise + gotchas/test knowledge.</td></tr>
+<tr><td>LangGraph body of work</td><td><span class="badge adopt">mine deeply</span></td><td>Architecture/persistence/integration lessons; current implementation status rebuilt separately.</td></tr>
+<tr><td>Old network/inventory</td><td><span class="badge defer">historical only</span></td><td>Provenance reference, never active truth.</td></tr>
+<tr><td>Old vault/credential material</td><td><span class="badge reject">exclude</span></td><td>Do not carry into active tree; remove from imported history if necessary.</td></tr>
+<tr><td>Ollama knowledge</td><td><span class="badge adopt">retain</span></td><td>Keep SME/technical knowledge; do not make model-serving decision through merge cleanup.</td></tr>
+<tr><td>Ansible knowledge</td><td><span class="badge defer">conditional</span></td><td>Keep expertise, not requirement.</td></tr>
+<tr><td>Identity/DNS/cert knowledge</td><td><span class="badge modify">reframe</span></td><td>Preserve capability; discard old Samba/shared-secret assumptions.</td></tr>
+<tr><td>Raw old repo tree under active <code>main/archive</code></td><td><span class="badge reject">avoid</span></td><td>Would recreate two projects inside one repository.</td></tr>
+</tbody></table>
+</section>
+
+<section id="feedback">
+<h2>13. Direct feedback to Claude Code</h2>
+<ul>
+<li><strong>Keep:</strong> single org home concept, explicit validation, current registry authority, preservation of useful process depth, correction of stale repository identity if authenticated evidence confirms it.</li>
+<li><strong>Change:</strong> do not merge unrelated histories before a full old-history secret scan. Do not assume a private remote makes secret-bearing history acceptable.</li>
+<li><strong>Change:</strong> replace "retarget old IP validator to 192.168.50.x" with a registry-driven validator.</li>
+<li><strong>Change:</strong> do not treat "old repo wins on process depth" as a blanket conflict rule. Current governance wins by default; legacy process is opt-in capability-by-capability.</li>
+<li><strong>Change:</strong> do not rewrite historical documents' addresses and paths in place and call them current. Preserve history as history; create new current documents from validated facts.</li>
+<li><strong>Expand:</strong> recognize the specialist-agent system as a core engineering asset, not merely a `.claude/commands` exception.</li>
+</ul>
+</section>
+
+<section id="feedback-ai">
+<h2>14. Direct feedback to Claude AI</h2>
+<ul>
+<li><strong>Keep:</strong> clean active tree, <code>services/</code> concept, current registry authority, immutable discovery, one lean build/planning surface per service, agent preservation.</li>
+<li><strong>Change:</strong> the claim "post-pivot — no phase gate" conflicts with the current repo and must be removed unless separately approved.</li>
+<li><strong>Change:</strong> "Ansible ruled out" is too strong; current planning leaves it as a possible future control-plane capability.</li>
+<li><strong>Change:</strong> "Ollama superseded by vLLM" is too strong for a merge decision. Keep the Ollama specialist and GGUF knowledge.</li>
+<li><strong>Change:</strong> do not blanket-exclude legacy hooks/quality gates. The files themselves are stale, but several control objectives are worth rebuilding.</li>
+<li><strong>Expand:</strong> agent migration should preserve a broader specialist capability catalogue, not only five core plus a handful. Activation can remain curated.</li>
+<li><strong>Correct:</strong> the reported 759 current files is not a useful active-repository count; the inspected worktree currently has 127 tracked files.</li>
+</ul>
+</section>
+
+<section id="acceptance">
+<h2>15. Merge acceptance criteria</h2>
+<ul>
+<li>Exactly one active HX-Infrastructure remote repository is used for current work.</li>
+<li>Current <code>main</code> authority contracts remain internally consistent after the merge.</li>
+<li>No historical credential, vault secret, token, password or private key is imported into active history.</li>
+<li>Legacy history, if retained, is scanned and sanitized first.</li>
+<li><code>SERVER-REGISTRY.md</code> remains the sole current host/role lifecycle authority.</li>
+<li>No old <code>192.168.10.x</code>, <code>hx.dev.local</code> or <code>/home/agent0</code> value appears as a current environmental fact.</li>
+<li>Specialist agents are present for all currently relevant platform capabilities, with current contracts and no embedded environment assumptions.</li>
+<li>No specialist agent can independently assign hosts, roles or workloads outside the governing lifecycle.</li>
+<li>Legacy commands/hooks/gates have an explicit migration disposition rather than being copied or discarded by directory.</li>
+<li>Docling and LangGraph lessons are available to current agents without requiring them to traverse hundreds of stale task documents.</li>
+<li>Current tests and governance HTML build still pass after integration.</li>
+<li>The resulting repository is understandable as one project, not two historical trees living side by side.</li>
+</ul>
+</section>
+
+<section id="next">
+<h2>16. Recommended next planning artifact</h2>
+<div class="decision"><h3>Build a file/capability migration manifest before touching Git history.</h3>
+<p>The next artifact should enumerate every legacy automation/process/service asset and assign: <code>adopt</code>, <code>adapt</code>, <code>covered-by-current</code>, <code>historical-only</code>, <code>retire</code>, or <code>defer</code>; exact destination; owning specialist agent; secret-risk flag; and validation method. That manifest should be completed before any unrelated-history merge or bulk copy is attempted.</p></div>
+</section>
+
+<footer>HX-Infrastructure · feedback on Claude merge recommendations · gpt-5.6 sol · 2026-08-13 11:21 -05:00 · planning artifact; no repository changes performed.</footer>
+</main></body></html>

@@ -1,8 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>HX-Infrastructure — Legacy → Current Merge Decision (rev 2)</title>
 <style>
   :root {
@@ -77,8 +72,7 @@
   :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
   @media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important;} }
 </style>
-</head>
-<body>
+
 <div class="page">
 
   <header class="masthead">
@@ -275,5 +269,3 @@
   if(typeof MutationObserver==='function') new MutationObserver(relabel).observe(root,{attributes:true,attributeFilter:['data-theme']});
 })();
 </script>
-</body>
-</html>
