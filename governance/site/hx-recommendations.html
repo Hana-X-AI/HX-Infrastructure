@@ -139,20 +139,7 @@
         alerting. This is the cheapest risk reduction available and needs no design decision.</p></div>
       </article>
 
-      <article class="rec p1">
-        <div class="rec-head">
-          <span class="rid">R2</span>
-          <h3>Resolve the LiteRAG / LightRAG naming conflict &mdash; resolved</h3>
-          <span class="pill p2">resolved</span><span class="cost">decided 2026-08-13</span>
-        </div>
-        <div class="field"><span class="field-label">Why</span><p>The two documents disagree. The
-        architecture candidate now says <strong>LiteRAG</strong> on your instruction; the
-        validation findings state that <strong>LightRAG</strong> (HKUDS) is the real product and
-        call LiteRAG a misnomer, citing that project's <code>env.example</code>, API-server docs
-        and issue&nbsp;#2233. Configuration keys such as
-        <code>LIGHTRAG_VECTOR_STORAGE</code> follow whichever is actually correct.</p></div>
-        <div class="field sub"><span class="field-label">Outcome</span><p><strong>LightRAG is correct</strong>, decided 2026-08-13. All references corrected in v0.2.</p></div>
-      </article>
+      
 
       <article class="rec p1">
         <div class="rec-head">
@@ -173,14 +160,13 @@
       <article class="rec p1">
         <div class="rec-head">
           <span class="rid">R4</span>
-          <h3>Harden the control-plane laptop before relying on it</h3>
+          <h3>Make the control-plane laptop reliable before relying on it</h3>
           <span class="pill p1">do first</span><span class="cost">config + adapter</span>
         </div>
         <div class="field"><span class="field-label">Why</span><p>Verified on the host:
         <code>hxs-cp</code> has <strong>no Ethernet hardware at all</strong> — Wi-Fi is not a
         fallback, it is the only path — and its lid switch is at systemd defaults, so
-        <strong>closing the lid suspends the machine</strong>. It holds the credential that can
-        reconfigure all fifteen servers.</p></div>
+        <strong>closing the lid suspends the machine</strong>. It is the only access path to the fleet and the machine every deployment runs from.</p></div>
         <div class="field sub"><span class="field-label">Do</span><p>Set
         <code>HandleLidSwitch=ignore</code> in <code>logind.conf</code>, and add wired networking
         through its Thunderbolt&nbsp;4 port. If the laptop ever leaves the building, separate the
@@ -211,24 +197,11 @@
         <div class="field sub"><span class="field-label">Do</span><p>Export
         <code>hxs-1</code>'s unallocated 3.6&nbsp;TB NVMe and 7.3&nbsp;TB HDD over NFS as shared
         fleet storage — model cache, deployment artifacts, and a backup target for the database
-        and workflow hosts. The trade is that <code>hxs-1</code> becomes a dependency for other
-        hosts, which is acceptable at dev/test scale.</p></div>
+        and workflow hosts. Scope it to <strong>model cache, deployment artifacts and backup snapshots only</strong>.</p></div>
+        <div class="field sub"><span class="field-label">Constraints</span><p><strong>Never put live database files on NFS</strong> &mdash; not the Postgres data directory, not Qdrant storage. That is a corruption risk, not a performance one. Three coordination points before acting: v0.3 puts backups on an external observability box, so pick one home for backups rather than splitting them; v0.3 also earmarks <code>hxs-1</code>&apos;s 3.6&nbsp;TB NVMe as the escape hatch if Qdrant vectors outgrow <code>hxs-4</code>, and the same device cannot be committed to both, so decide its primary job first; and <code>hxs-1</code> is the reasoning GPU host, so making it the fleet&apos;s NFS server puts an I/O dependency on the most performance-critical machine. Acceptable at dev/test scale &mdash; eyes open.</p></div>
       </article>
 
-      <article class="rec p2">
-        <div class="rec-head">
-          <span class="rid">R6</span>
-          <h3>Reconcile the architecture documents &mdash; resolved</h3>
-          <span class="pill p2">resolved</span><span class="cost">done 2026-08-13</span>
-        </div>
-        <div class="field"><span class="field-label">Why</span><p>There are now two copies of the
-        same architecture. <code>hx-stack-alignment-v0.1-frozen.html</code> is the frozen v0.1
-        baseline the validation pass was run against;
-        <code>fleet-architecture-candidate-v0.1.html</code> carries your applied decisions and is
-        therefore no longer v0.1. The validation pass then produced seven further changes for a
-        v0.2. Three documents currently describe the same fleet differently.</p></div>
-        <div class="field sub"><span class="field-label">Outcome</span><p><strong>Done.</strong> v0.2 folds in the owner decisions and the five accepted validation changes; the middle copy is retired; the frozen v0.1 is kept as the immutable baseline.</p></div>
-      </article>
+      
 
       <article class="rec p2">
         <div class="rec-head">
@@ -262,9 +235,7 @@
         capable machine in the fleet — 24 cores, 128&nbsp;GB, 32,752&nbsp;MiB of VRAM, the only
         PCIe-4 platform — and its only assignment is a reserved slot for a model that has not
         been released. You have said this is fine for now; noted here so it stays visible.</p></div>
-        <div class="field sub"><span class="field-label">Do</span><p>The validation pass suggests
-        a candidate: it argues the coder model, not the reasoning model, is the one that most
-        wants the PCIe-4 host. Worth weighing when v0.2 is written. R5 would also give
+        <div class="field sub"><span class="field-label">Do</span><p>The coder-versus-reasoning host question is benchmark-gated in Phase 3: v0.3 records <code>hxs-2</code> as the PCIe-3 host, and the swap is only considered if measured decode throughput falls below an acceptable bar. R5 would also give
         <code>hxs-1</code> a useful job in the meantime.</p></div>
       </article>
 
@@ -288,17 +259,55 @@
   </section>
 
   <section>
+    <h2>Resolved</h2>
+    <p class="lede">Settled since this document was written. Kept for the record rather than deleted.</p>
+    <div class="recs">
+
+<article class="rec p1">
+        <div class="rec-head">
+          <span class="rid">R2</span>
+          <h3>Resolve the LiteRAG / LightRAG naming conflict &mdash; resolved</h3>
+          <span class="pill p2">resolved</span><span class="cost">decided 2026-08-13</span>
+        </div>
+        <div class="field"><span class="field-label">Why</span><p>The two documents disagree. The
+        original Hana-X spec used both names interchangeably; the
+        validation findings state that <strong>LightRAG</strong> (HKUDS) is the real product and
+        call LiteRAG a misnomer, citing that project's <code>env.example</code>, API-server docs
+        and issue&nbsp;#2233. Configuration keys such as
+        <code>LIGHTRAG_VECTOR_STORAGE</code> follow whichever is actually correct.</p></div>
+        <div class="field sub"><span class="field-label">Outcome</span><p><strong>LightRAG is correct</strong>, decided 2026-08-13. All references corrected in v0.3.</p></div>
+      </article>
+
+<article class="rec p2">
+        <div class="rec-head">
+          <span class="rid">R6</span>
+          <h3>Reconcile the architecture documents &mdash; resolved</h3>
+          <span class="pill p2">resolved</span><span class="cost">done 2026-08-13</span>
+        </div>
+        <div class="field"><span class="field-label">Why</span><p>There are now two copies of the
+        same architecture. <code>hx-stack-alignment-v0.1-frozen.html</code> is the frozen v0.1
+        baseline the validation pass was run against;
+        <code>fleet-architecture-candidate-v0.1.html</code> carries your applied decisions and is
+        therefore no longer v0.1. The validation pass then produced seven further changes for a
+        v0.2. Three documents currently describe the same fleet differently.</p></div>
+        <div class="field sub"><span class="field-label">Outcome</span><p><strong>Done.</strong> v0.3 is the current architecture, with the owner decisions applied; the intermediate v0.2 is retired; the frozen v0.1 is kept as the immutable baseline.</p></div>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
     <h2>Summary</h2>
     <div class="scroll">
       <table>
         <thead><tr><th scope="col">#</th><th scope="col">Recommendation</th><th scope="col">Priority</th><th scope="col">Cost</th><th scope="col">Related</th></tr></thead>
         <tbody>
           <tr><td><code>R1</code></td><td>SMART monitoring fleet-wide</td><td>Do first</td><td>Package install</td><td>—</td></tr>
-          <tr><td><code>R2</code></td><td>Resolve LiteRAG / LightRAG naming</td><td>Resolved</td><td>Decided — LightRAG</td><td>v0.2</td></tr>
+          <tr><td><code>R2</code></td><td>Resolve LiteRAG / LightRAG naming</td><td>Resolved</td><td>Decided — LightRAG</td><td>v0.3</td></tr>
           <tr><td><code>R3</code></td><td>Off-machine copy of the repository</td><td>Do first</td><td>Destination decision</td><td><code>act-005</code></td></tr>
-          <tr><td><code>R4</code></td><td>Harden the control-plane laptop</td><td>Do first</td><td>Config + adapter</td><td>—</td></tr>
+          <tr><td><code>R4</code></td><td>Make the control-plane laptop reliable</td><td>Do first</td><td>Config + adapter</td><td>—</td></tr>
           <tr><td><code>R5</code></td><td>Shared fleet storage from idle capacity</td><td>Worth doing</td><td>No hardware</td><td>—</td></tr>
-          <tr><td><code>R6</code></td><td>Reconcile the architecture documents</td><td>Resolved</td><td>Done — v0.2 issued</td><td>v0.2</td></tr>
+          <tr><td><code>R6</code></td><td>Reconcile the architecture documents</td><td>Resolved</td><td>Done — v0.3 issued</td><td>v0.3</td></tr>
           <tr><td><code>R7</code></td><td>Decide whether test needs virtualization</td><td>Worth doing</td><td>Firmware change</td><td><code>iss-011</code></td></tr>
           <tr><td><code>R8</code></td><td>Give the largest host something to do</td><td>Consider</td><td>Planning</td><td>—</td></tr>
           <tr><td><code>R9</code></td><td>Close out the quarantined regression suite</td><td>Consider</td><td>One reboot</td><td><code>iss-010</code></td></tr>
