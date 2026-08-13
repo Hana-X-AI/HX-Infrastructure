@@ -123,7 +123,7 @@
     <div class="cell"><dt>Version</dt><dd>v0.3</dd></div>
     <div class="cell"><dt>GPU hosts</dt><dd>4</dd></div>
     <div class="cell"><dt>CPU hosts</dt><dd>11</dd></div>
-    <div class="cell"><dt>Control plane</dt><dd>hxs-cp &middot; empty</dd></div>
+    <div class="cell"><dt>Control plane</dt><dd>hxs-cp &middot; tooling</dd></div>
     <div class="cell"><dt>Total VRAM</dt><dd>122,458 MiB</dd></div>
     <div class="cell"><dt>Model roles</dt><dd>6</dd></div>
   </dl>
@@ -220,9 +220,8 @@
           <tr class="tier-cpu"><td class="host">hxs-11</td><td class="mono">i5-7500 &middot; 32 GB</td><td>Agent runtime</td><td><span class="new">LangGraph and Mem0 in separate virtualenvs.</span> LangGraph checkpoints in Postgres (<code>STRICT_MSGPACK</code> on); Mem0 uses its <span class="new">own Qdrant collection</span> (distinct from RAG) + SQLite history. No Mem0 graph memory.</td></tr>
           <tr class="tier-cpu"><td class="host">hxs-12</td><td class="mono">i5-7500 &middot; 32 GB</td><td>Ingestion &mdash; parsing</td><td>Docling (+ MCP) &mdash; PDF/office layout parsing; 32 GB for large-document headroom.</td></tr>
           <tr class="tier-cpu"><td class="host">hxs-13</td><td class="mono">i5-6500 <span class="mark">Skylake</span> &middot; 32 GB</td><td>Automation</td><td>n8n workflow automation (+ MCP).</td></tr>
-          <tr class="tier-cpu"><td class="host">hxs-14</td><td class="mono">i5-7500 &middot; 32 GB</td><td>Development &mdash; <code>hxs-dev</code></td><td>Prompt engineering, LangGraph graph development, CopilotKit / AG-UI client dev, API integration.</td></tr>
-          <tr class="tier-cpu"><td class="host">hxs-15</td><td class="mono">i5-7500 &middot; 32 GB &middot; <span class="mark">no VT-x</span></td><td>Test &amp; integration &mdash; <code>hxs-test</code></td><td>QA, regression, integration testing, agent-workflow validation, benchmarks.</td></tr>
-          <tr class="tier-cp"><td class="host">hxs-cp</td><td class="mono">laptop &middot; 15.8 GB &middot; Wi-Fi</td><td>Control plane &mdash; designation only<span class="qual">nothing runs here</span></td><td>No services. Operator's terminal for reaching the fleet.</td></tr>
+          <tr class="tier-cpu"><td class="host">hxs-14</td><td class="mono">i5-7500 &middot; 32 GB</td><td>Development<span class="qual">spec label <code>hxs-dev</code> &mdash; a role name, not a hostname</span></td><td>Prompt engineering, LangGraph graph development, CopilotKit / AG-UI client dev, API integration.</td></tr>
+          <tr class="tier-cpu"><td class="host">hxs-15</td><td class="mono">i5-7500 &middot; 32 GB &middot; <span class="mark">no VT-x</span></td><td>Test &amp; integration<span class="qual">spec label <code>hxs-test</code> &mdash; a role name, not a hostname</span></td><td>QA, regression, integration testing, agent-workflow validation, benchmarks.</td></tr>
         </tbody>
       </table>
     </div>
@@ -230,12 +229,35 @@
   </section>
 
   <section>
+    <h2>Control plane &mdash; outside the fleet</h2>
+    <p class="lede">
+      <code>hxs-cp</code> is not one of the fifteen fleet servers and is not a small-form-factor
+      host, so it is listed separately. It operates the fleet rather than serving any part of the
+      platform.
+    </p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Host</th><th>Spec</th><th>Role</th><th>Software</th></tr></thead>
+        <tbody>
+          <tr class="tier-cp">
+            <td class="host">hxs-cp</td>
+            <td class="mono">HP Elite x360 1040 G9<span class="qual">i7-1265U 10c/12t &middot; 15.8 GB soldered &middot; 477 GB &middot; <span class="mark">Wi-Fi only</span></span></td>
+            <td>Control plane<span class="qual">operates the fleet; serves no part of the platform</span></td>
+            <td><span class="mark">No platform services.</span> Keeps its control-plane tooling: repository clones, Claude Code and approved agent tooling, agent workspaces, fleet SSH, deployment scripts and artifacts, deployment and agent logs &mdash; per <code>governance/hx-fleet-control-server.md</code>. Those are operator tools rather than services, and holding them apart from the development host keeps the credential that can reconfigure the whole fleet off the machine where experimental code runs. <span class="qual">Two fixes before it is relied on: lid-suspend is at defaults, so closing the lid suspends the machine; and it has no Ethernet hardware at all, though its Thunderbolt 4 port can carry a wired adapter.</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
     <h2>Crosswalk &mdash; spec's logical names to physical hosts</h2>
+    <p class="lede"><strong>These labels describe roles, not machines.</strong> They are not hostnames and will not be added to <code>hx.local.arpa</code> &mdash; decided 2026-08-13. Every host is reached by its real name, so no machine answers to two names.</p>
     <div class="tablewrap">
       <table>
         <thead><tr><th>Spec label</th><th>Original intent</th><th>Physical host(s)</th></tr></thead>
         <tbody>
-          <tr><td class="mono">hxs-cp</td><td>Control plane (designation only)</td><td class="mono">Nothing runs on it &mdash; services on hxs-5 (ingress) / hxs-8 (gateway) / hxs-9 (state)</td></tr>
+          <tr><td class="mono">hxs-cp</td><td>Control plane (outside the fleet)</td><td class="mono">Control-plane tooling only &mdash; platform services on hxs-5 (ingress) / hxs-8 (gateway) / hxs-9 (state)</td></tr>
           <tr><td class="mono">hxs-dev (Server 1)</td><td>Development workspace</td><td class="mono">hxs-14</td></tr>
           <tr><td class="mono">hxs-test (Server 2)</td><td>Testing, integration, benchmarks</td><td class="mono">hxs-15</td></tr>
           <tr><td class="mono">Servers 3&ndash;5</td><td>Qwen reasoning</td><td class="mono">hxs-1 (consolidated)</td></tr>
