@@ -1,7 +1,14 @@
 # Repository merge recommendation
 
-Written 2026-08-13. A recommendation, not a decision. Nothing here is actioned until it is
-added to `governance/actions-and-issues.md` deliberately.
+Written 2026-08-13. A recommendation, not a decision. Before any remote push or other
+remote write begins, record in `governance/actions-and-issues.md`:
+
+- the accepted correction to `act-005` (wrong-repository identification resolved);
+- an action for the fact-update sweep (Step 5);
+- an action for mining the archive into architecture v0.3 (Step 6).
+
+Keep `act-005` open until final remote verification is complete, then close it in the same
+commit that records the verification result.
 
 ## Situation
 
@@ -68,6 +75,18 @@ Hana-X-AI/HX-Infrastructure (main)
 
 **1. Make the local work safe first.** Nothing is pushed today.
 
+Run the secret scan over the full history, working tree, and any untracked files first:
+
+```bash
+git log --all --full-history --diff-filter=A -- | xargs -I{} git show {} \
+  | grep -iE '(password|token|secret|private_key|api_key)\s*=\s*[^<$({\s]'
+git grep -inE '(password|token|secret|private_key|api_key)\s*=\s*[^<$({\s]'
+git status --short  # review any untracked files manually
+```
+
+If the scan produces any hits, stop and investigate before continuing. Only after the scan
+passes:
+
 ```bash
 git remote add origin https://github.com/Hana-X-AI/HX-Infrastructure.git
 git push origin main:refs/heads/import/local-2026-08-13
@@ -85,7 +104,7 @@ git merge --allow-unrelated-histories main
 ```
 
 **3. Resolve the six collisions.** Local wins on facts and on the single-log rule; the old
-repo wins on process depth.
+repo wins on process depth. After resolving all conflicts:
 
 | Path | Resolution |
 | --- | --- |
@@ -100,23 +119,45 @@ The old `defects.md`, `defect-log.md`, `raidd-log.md`, `backlog.md` and `status-
 conflict with this project's own rule that `governance/actions-and-issues.md` is the only
 routine tracking log. Move them to `archive/` and carry any live item across as rows.
 
+```bash
+git add -A && git status --porcelain  # must be empty before continuing
+git commit -m "Step 3: resolve six-path collisions and merge tracking logs"
+```
+
 **4. Archive what the relocation invalidated.** Move `inventory/` and `network/` to
 `archive/2025-pre-relocation/` without editing them, and write a README stating the old subnet,
 domain and root path, and that `SERVER-REGISTRY.md` supersedes all of it.
+
+```bash
+git add -A && git status --porcelain  # must be empty before continuing
+git commit -m "Step 4: archive pre-relocation inventory and network docs"
+```
 
 **5. Update everything that carries forward.** This is the bulk of the work. Nothing from the
 old repository counts as current until corrected:
 
 ```text
-192.168.10.       ->  192.168.50.      taken from SERVER-REGISTRY.md, never guessed
-hx.dev.local      ->  hx.local.arpa
-/home/agent0/...  ->  repository-relative paths
-agent0            ->  hxsa
-hx-<role>-server  ->  hxs-N, or named as a service rather than a host
+192.168.10.          ->  192.168.50.        taken from SERVER-REGISTRY.md, never guessed
+hx.dev.local         ->  hx.local.arpa
+/home/agent0/...     ->  repository-relative paths
+agent0               ->  hxsa
+hx-litellm-server    ->  hxs-1   (or whichever host carries the LiteLLM workload, per registry)
+hx-postgres-server   ->  hxs-2
+hx-qdrant-server     ->  hxs-3
+hx-literag-server    ->  hxs-4
+hx-n8n-server        ->  hxs-5
+hx-docling-server    ->  hxs-6
+hx-crawl4ai-server   ->  hxs-7
+hx-webui-server      ->  hxs-8
+hx-<other>-server    ->  hxs-N where N is determined by the registry; never guessed
 ```
 
-Affects all of `standards/`, `procedures/`, `templates/`, `.quality-gates/`, `hx-agents/` and
-the `nodes/` document headers. `standards/naming-conventions.md` and
+Scan scope: `standards/`, `procedures/`, `templates/`, `.quality-gates/`, `hx-agents/`, and
+`nodes/` document headers. Explicitly exclude `archive/2025-pre-relocation/` from all
+replacement passes — its contents are frozen source material and must not be edited.
+
+Also scan `hx-agents/` and `nodes/` for residual occurrences of `agent0`, `hx-agents/`,
+`nodes/`, and any `hx-<role>-server` pattern not yet remapped. `standards/naming-conventions.md` and
 `governance/documentation-standards.md` both define naming and must become one document;
 naming-conventions is broader, so fold the local rules into it and leave a pointer.
 
@@ -124,6 +165,11 @@ naming-conventions is broader, so fold the local rules into it and leave a point
 `192.168.50.0/24` is the highest-value single fix in the sweep: it turns a stale file into a
 live guard against exactly the error class this project has already hit, where an address was
 read out of a terminal paste and four of fifteen came out wrong (`ll-031`).
+
+```bash
+git add -A && git status --porcelain  # must be empty before continuing
+git commit -m "Step 5: update carried-forward facts; retarget IP validator to 192.168.50.0/24"
+```
 
 **6. Mine the archive for architecture v0.3.** The 27 old nodes are the service catalogue that
 v0.3 is re-homing onto 15 hosts, and each entry carries responsibilities, data paths and
@@ -135,7 +181,10 @@ knowledge about services that ran, not speculation.
 **7. Land it.**
 
 ```bash
-git checkout main && git merge --no-ff integrate/merge-local
+git status --porcelain  # must be empty — no uncommitted work before this step
+git checkout main
+git status --porcelain  # must still be empty after checkout
+git merge --no-ff integrate/merge-local
 git push -u origin main
 ```
 
@@ -144,25 +193,68 @@ git push -u origin main
 Run before pushing to `main`. Treat any failure as blocking.
 
 ```powershell
+# 1. Regression suite — expected: 153 pass, 0 fail
 powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\remediation-tests-restored.ps1
+# exit code must be 0
 ```
 
 ```bash
+# 2. Governance site rebuild — expected: no errors, output files updated
 node tools/apply-nav.js && node tools/make-standalone.js
 ```
 
-Then confirm each with a command rather than by eye:
+```powershell
+# 3. Discovery counts — expected: registry=15, discovery_complete=15, roles_assigned=0
+powershell -NoProfile -ExecutionPolicy Bypass -Command "
+  & .claude\hooks\hx-session-state.ps1 | ConvertFrom-Json |
+  Select-Object registry, discovery_complete, roles_assigned
+"
+```
 
-- suite reports 153 pass, 0 fail
-- discovery validator accepts all 15 records; `hx-session-state.ps1` still reports
-  `registry: 15, discovery complete: 15, roles assigned: 0`
-- `hx-phase1-guard.ps1` still denies a package-install command against the real registry
-- `.claude/hooks/hx-common.ps1` byte-identical to its packaged copy
-- `.env` absent from the pushed tree, and no key, token or password value in the objects. The
-  repository is private; the scan is still not optional
-- no file under `standards/`, `procedures/`, `templates/` or `.quality-gates/` still contains
-  `192.168.10.`, `hx.dev.local` or `/home/agent0`
-- both histories present in `git log`
+```powershell
+# 4. Phase-guard denial — expected: permissionDecision=deny, exit 0
+$payload = '{"tool_name":"Bash","tool_input":{"command":"apt install nginx"}}'
+$result = $payload | powershell -NoProfile -ExecutionPolicy Bypass \
+  -File .claude\hooks\hx-phase1-guard.ps1
+($result | ConvertFrom-Json).permissionDecision  # must equal 'deny'
+```
+
+```powershell
+# 5. All PowerShell hook pairs byte-identical (active vs packaged)
+$hooks = 'hx-common','hx-notify','hx-phase1-guard','hx-session-state','hx-validate-discovery','hx-validate-subagent'
+foreach ($h in $hooks) {
+  $a = Get-FileHash ".claude\hooks\$h.ps1" -Algorithm SHA256
+  $b = Get-FileHash "claude-hooks\claude-hooks\hooks\$h.ps1" -Algorithm SHA256
+  if ($a.Hash -ne $b.Hash) { Write-Error "MISMATCH: $h"; exit 1 }
+  "OK: $h"
+}
+# Python hooks present (wiring verified on hxs-cp, not Windows)
+Get-Item .claude\hooks\*.py | Select-Object Name
+```
+
+```bash
+# 6. Pushed-tree secret scan — expected: no output (zero hits)
+git log origin/main --all --full-history -p \
+  | grep -iE '(password|token|secret|private_key|api_key)\s*=\s*[^<$({[:space:]]' \
+  || true
+# .env must not appear in the tree
+git ls-tree -r --name-only origin/main | grep -F '.env' && echo FAIL || echo OK
+```
+
+```bash
+# 7. Stale-fact scan — expected: no output under standards/ procedures/ templates/ .quality-gates/
+# archive/2025-pre-relocation/ is intentionally excluded
+git grep -lE '192\.168\.10\.|hx\.dev\.local|/home/agent0' \
+  -- standards/ procedures/ templates/ .quality-gates/ hx-agents/ nodes/ \
+  ':!archive/'
+```
+
+```bash
+# 8. Both histories present — expected: commits from both the local and remote lineages
+git log --oneline --graph | head -40
+# must show at least one commit from the pre-2026 remote history
+git log --oneline --before=2026-01-01 | head -5
+```
 
 ## What this closes, and what it does not
 

@@ -1,0 +1,324 @@
+<title>HX-Infrastructure — Repository Merge Migration Manifest</title>
+<style>
+  :root {
+    --ground:#fbfbf9; --surface:#f2f3f0; --raised:#ffffff; --ink:#1b1f1d;
+    --muted:#6b726e; --faint:#949b96; --line:#dde0db; --line-firm:#c3c8c1;
+    --accent:#0f6e5c; --accent-wash:#e6f0ec; --signal:#b4531a; --signal-wash:#fbeee4;
+    --blue:#2f6d8f; --blue-wash:#e5eff4;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --step-0:0.9375rem; --step--1:0.8125rem; --step--2:0.6875rem;
+    --step-1:1.125rem; --step-2:1.5rem; --step-3:2.125rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ground:#141917; --surface:#1b211e; --raised:#1f2724; --ink:#e8ebe8;
+      --muted:#97a09b; --faint:#6f7873; --line:#2b342f; --line-firm:#3c4740;
+      --accent:#4fbfa3; --accent-wash:#16302a; --signal:#e08a4c; --signal-wash:#33251a;
+      --blue:#7db7ff; --blue-wash:#16283a; }
+  }
+  :root[data-theme="dark"]{ --ground:#141917;--surface:#1b211e;--raised:#1f2724;--ink:#e8ebe8;--muted:#97a09b;--faint:#6f7873;--line:#2b342f;--line-firm:#3c4740;--accent:#4fbfa3;--accent-wash:#16302a;--signal:#e08a4c;--signal-wash:#33251a;--blue:#7db7ff;--blue-wash:#16283a;}
+  :root[data-theme="light"]{ --ground:#fbfbf9;--surface:#f2f3f0;--raised:#ffffff;--ink:#1b1f1d;--muted:#6b726e;--faint:#949b96;--line:#dde0db;--line-firm:#c3c8c1;--accent:#0f6e5c;--accent-wash:#e6f0ec;--signal:#b4531a;--signal-wash:#fbeee4;--blue:#2f6d8f;--blue-wash:#e5eff4;}
+  :root{color-scheme:light;} @media (prefers-color-scheme:dark){:root{color-scheme:dark;}}
+  :root[data-theme="dark"]{color-scheme:dark;} :root[data-theme="light"]{color-scheme:light;}
+
+  body { margin:0; padding:clamp(1.5rem,4vw,3.5rem) clamp(1rem,4vw,2rem) 5rem; background:var(--ground); color:var(--ink); font-family:var(--sans); font-size:var(--step-0); line-height:1.55; -webkit-text-size-adjust:100%; }
+  .page { max-width:1240px; margin:0 auto; display:flex; flex-direction:column; gap:2.25rem; }
+  .eyebrow { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.14em; color:var(--accent); margin:0; }
+  .masthead { display:flex; flex-direction:column; gap:0.75rem; }
+  .masthead-top { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .toggle { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.09em; color:var(--muted); background:var(--surface); border:1px solid var(--line-firm); border-radius:2px; padding:0.4rem 0.75rem; cursor:pointer; }
+  .toggle:hover { color:var(--accent); border-color:var(--accent); }
+  .masthead h1 { font-size:var(--step-3); line-height:1.08; letter-spacing:-0.02em; font-weight:650; margin:0; text-wrap:balance; }
+  .masthead p { margin:0; max-width:82ch; color:var(--muted); }
+
+  .strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:3px; overflow:hidden; }
+  .cell { background:var(--surface); padding:0.8rem 0.95rem; display:flex; flex-direction:column; gap:0.15rem; }
+  .cell dt { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.09em; color:var(--muted); }
+  .cell dd { margin:0; font-size:var(--step-1); font-weight:600; font-variant-numeric:tabular-nums; }
+
+  .standing { border-left:2px solid var(--accent); background:var(--surface); padding:1rem 1.15rem; display:flex; flex-direction:column; gap:0.5rem; font-size:var(--step--1); }
+  .standing p { margin:0; max-width:96ch; color:var(--muted); } .standing strong { color:var(--ink); font-weight:620; }
+
+  .legend { display:flex; flex-wrap:wrap; gap:0.5rem 0.9rem; align-items:center; font-size:var(--step--2); }
+  .legend span { display:inline-flex; align-items:center; gap:0.35rem; color:var(--muted); }
+
+  section { display:flex; flex-direction:column; gap:0.8rem; }
+  h2 { font-size:var(--step-2); letter-spacing:-0.015em; font-weight:620; margin:0; text-wrap:balance; }
+  h2 .n { font-family:var(--mono); font-size:var(--step-0); color:var(--accent); margin-right:0.5rem; }
+  h3.sub { font-size:var(--step-0); margin:0.5rem 0 0; font-weight:640; }
+  .lede { margin:0; color:var(--muted); max-width:94ch; font-size:var(--step--1); }
+
+  .tablewrap { overflow-x:auto; border:1px solid var(--line); border-radius:3px; background:var(--raised); }
+  table { border-collapse:collapse; width:100%; font-size:var(--step--1); }
+  thead th { background:var(--surface); border-bottom:1px solid var(--line-firm); font-family:var(--mono); font-size:var(--step--2); font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); text-align:left; padding:0.55rem 0.7rem; white-space:nowrap; }
+  tbody td { padding:0.5rem 0.7rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:last-child td { border-bottom:none; }
+  td.src { font-family:var(--mono); font-size:0.9em; white-space:nowrap; }
+  td.tgt { font-family:var(--mono); font-size:0.9em; }
+
+  .d { font-family:var(--mono); font-size:var(--step--2); font-weight:700; text-transform:uppercase; letter-spacing:0.04em; padding:0.1em 0.45em; border-radius:2px; white-space:nowrap; display:inline-block; }
+  .d.adopt   { color:var(--ground); background:var(--accent); }
+  .d.adapt   { color:var(--accent); background:var(--accent-wash); border:1px solid var(--accent); }
+  .d.recon   { color:var(--ground); background:var(--blue); }
+  .d.covered { color:var(--muted); background:var(--surface); border:1px solid var(--line-firm); }
+  .d.hist    { color:var(--blue); background:var(--blue-wash); }
+  .d.retire  { color:var(--signal); background:var(--signal-wash); border:1px solid var(--signal); }
+  .d.exclude { color:var(--ground); background:var(--signal); }
+
+  code { font-family:var(--mono); font-size:0.9em; background:var(--surface); padding:0.05em 0.3em; border-radius:2px; }
+  .sec { color:var(--signal); font-weight:700; }
+  ol.steps { margin:0; padding-left:1.25rem; display:flex; flex-direction:column; gap:0.4rem; }
+  ol.steps li { color:var(--muted); font-size:var(--step--1); } ol.steps li b { color:var(--ink); }
+  ul.crit { margin:0; padding-left:1.15rem; display:flex; flex-direction:column; gap:0.3rem; }
+  ul.crit li { color:var(--muted); font-size:var(--step--1); } ul.crit li b{color:var(--ink);}
+  footer { border-top:1px solid var(--line); padding-top:1rem; font-size:var(--step--2); color:var(--faint); }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important;} }
+</style>
+
+<div class="page">
+
+  <header class="masthead">
+    <div class="masthead-top">
+      <p class="eyebrow">HX-Infrastructure &middot; Repository merge &middot; migration manifest</p>
+      <button type="button" class="toggle" id="theme-toggle">Dark mode</button>
+    </div>
+    <h1>File-by-File Migration Manifest</h1>
+    <p>
+      The disposition of every legacy asset class as the 2025 project (<code>Hana-X-AI/HX-Infrastructure</code>,
+      522 files) folds into the current 2026 repo (127 tracked files). Built on the converged
+      three-review plan and the three owner decisions just made: <strong>no Ansible</strong>,
+      <strong>retire the phase gate</strong>, <strong>commit v0.3 roles to the registry</strong>.
+      This is a planning artifact &mdash; it authorizes no change until each row is executed and verified.
+    </p>
+    <div class="legend">
+      <span><span class="d adopt">adopt</span> bring in ~as-is</span>
+      <span><span class="d adapt">adapt</span> transform then bring in</span>
+      <span><span class="d recon">reconstruct</span> rebuild from evidence</span>
+      <span><span class="d covered">covered</span> current already has it</span>
+      <span><span class="d hist">historical</span> provenance only</span>
+      <span><span class="d retire">retire</span> drop</span>
+      <span><span class="d exclude">exclude</span> never migrate &mdash; secrets</span>
+    </div>
+  </header>
+
+  <dl class="strip">
+    <div class="cell"><dt>Legacy files</dt><dd>522</dd></div>
+    <div class="cell"><dt>Current tracked</dt><dd>127</dd></div>
+    <div class="cell"><dt>Owner edits first</dt><dd>3</dd></div>
+    <div class="cell"><dt>Agents (active/total)</dt><dd>13 / ~20</dd></div>
+    <div class="cell"><dt>Secret files excluded</dt><dd>6+</dd></div>
+    <div class="cell"><dt>Credentials to rotate</dt><dd>2</dd></div>
+  </dl>
+
+  <div class="standing">
+    <p><strong>Do these before any migration.</strong> Rotate <code>[REDACTED — rotate]</code> and the LiteLLM API key (§Appendix). Then apply the three owner decisions to the current repo (§0) &mdash; they redefine what "authority" means, so they gate everything after. Migration order then follows the crosswalk: agents first (they do the work), then Docling and lang-server knowledge, then the long tail.</p>
+  </div>
+
+  <section>
+    <h2><span class="n">0</span>Owner decisions — current-repo edits (apply first)</h2>
+    <p class="lede">These are edits to the <em>current</em> repo, not legacy migration. They must land before the merge so migrated material inherits the corrected authority.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Decision</th><th>Files to edit</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Retire the phase gate</td><td class="tgt">CLAUDE.md, AGENTS.md, GOALS-AND-OBJECTIVES.md, README.md, SERVER-REGISTRY.md</td><td>Remove the Phase 1 Gate / Phase 2 sections and "Phase 2 BLOCKED" language. Retire <code>.claude/hooks/hx-phase1-guard.ps1</code> and the <code>phase1-gate</code> skill (or repurpose the registry-completeness check). Keep the discovery&rarr;configuration record model; it is not part of the gate.</td></tr>
+        <tr><td class="k">Commit v0.3 roles</td><td class="tgt">SERVER-REGISTRY.md</td><td>Populate <em>Assigned Role</em> + <em>Workload/Model</em> for hxs-1…15 from v0.3 (reasoning/coder/agent-intel/retrieval/…); drop the now-obsolete Phase 2 status column. Log the commitment as one action; supersede <code>act-012</code>.</td></tr>
+        <tr><td class="k">No Ansible</td><td class="tgt">governance/hx-fleet-control-server.md:185</td><td>Strike "Ansible or another lightweight orchestration layer." Exclude all legacy Ansible artifacts (below). No Ansible SME in the roster. Native fleet scripts remain the automation baseline.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2><span class="n">1</span>Agents — reconstruct from evidence, capability-first</h2>
+    <p class="lede">The legacy <code>x-agents/*.md</code> profiles are <strong>not in the archive</strong> &mdash; only the inventory and orchestration guide describe them. So agents are rebuilt from that evidence plus the node charter-review records, keyed by capability ID with personas as aliases. Retain the catalogue broadly; activate a lean first wave. Source evidence: <code>hx-agents/hx-agent-inventory.md</code>, <code>hx-orchestration-guide.md</code>, <code>procedures/core-project-team.md</code>, and the 12 SME reviews under <code>nodes/hx-lang-server/charter/</code>.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Capability ID (persona)</th><th>Disposition</th><th>Target</th></tr></thead>
+      <tbody>
+        <tr><td class="k">orchestrator (Agent Zero)</td><td><span class="d recon">reconstruct</span> <span class="d adopt">active</span></td><td class="tgt">.claude/agents/orchestrator.md</td></tr>
+        <tr><td class="k">platform-architect (Alex Rivera)</td><td><span class="d recon">reconstruct</span> <span class="d adopt">active</span></td><td class="tgt">.claude/agents/platform-architect.md</td></tr>
+        <tr><td class="k">infrastructure-ops (William Chen)</td><td><span class="d recon">reconstruct</span> <span class="d adopt">active</span></td><td class="tgt">.claude/agents/infrastructure-ops.md</td></tr>
+        <tr><td class="k">testing-qa (Julia Santos)</td><td><span class="d recon">reconstruct</span> <span class="d adopt">active</span></td><td class="tgt">.claude/agents/testing-qa.md</td></tr>
+        <tr><td class="k">model-serving-vllm <span class="sec">(new)</span></td><td><span class="d recon">reconstruct</span> <span class="d adopt">active</span></td><td class="tgt">.claude/agents/model-serving-vllm.md</td></tr>
+        <tr><td class="k">docling / docling-mcp</td><td><span class="d recon">reconstruct</span> <span class="d adopt">active</span></td><td class="tgt">.claude/agents/docling.md, docling-mcp.md</td></tr>
+        <tr><td class="k">langgraph</td><td><span class="d recon">reconstruct</span> <span class="d adopt">active</span></td><td class="tgt">.claude/agents/langgraph.md</td></tr>
+        <tr><td class="k">fastmcp</td><td><span class="d recon">reconstruct</span> <span class="d adopt">active</span></td><td class="tgt">.claude/agents/fastmcp.md</td></tr>
+        <tr><td class="k">litellm</td><td><span class="d recon">reconstruct</span> <span class="d adopt">active</span></td><td class="tgt">.claude/agents/litellm.md</td></tr>
+        <tr><td class="k">postgresql / redis / qdrant</td><td><span class="d recon">reconstruct</span> <span class="d adopt">active</span></td><td class="tgt">.claude/agents/{postgresql,redis,qdrant}.md</td></tr>
+        <tr><td class="k">lightrag</td><td><span class="d recon">reconstruct</span> <span class="d adopt">active</span></td><td class="tgt">.claude/agents/lightrag.md</td></tr>
+        <tr><td class="k">n8n / crawl4ai / open-webui-agui</td><td><span class="d recon">reconstruct</span> <span class="d covered">retain, inactive</span></td><td class="tgt">.claude/agents/ (activate when the service is in scope)</td></tr>
+        <tr><td class="k">dns-cert (Frank Lucas, reframed)</td><td><span class="d adapt">reframe</span> <span class="d covered">retain, inactive</span></td><td class="tgt">DNS/cert only — strip Samba/AD/shared-password assumptions</td></tr>
+        <tr><td class="k">observability</td><td><span class="d recon">reconstruct</span> <span class="d covered">retain</span></td><td class="tgt">.claude/agents/observability.md (external box)</td></tr>
+        <tr><td class="k">model-serving-ollama</td><td><span class="d hist">knowledge</span></td><td class="tgt">retain GGUF expertise as reference; not active (v0.3 = vLLM)</td></tr>
+        <tr><td class="k">ansible, identity-samba/AD, coderabbit, shadcn</td><td><span class="d retire">retire</span></td><td class="tgt">out of scope (Ansible per owner; AD dropped; SaaS add-ons)</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2><span class="n">2</span>Service knowledge — Docling &amp; lang-server (the crown jewels)</h2>
+    <p class="lede">411 files across the two node trees. Do <em>not</em> import the trees; distil each into one lean <code>services/&lt;svc&gt;/build.md</code> plus sanitized <code>knowledge/legacy/</code> lessons. Owning agents drive the extraction. Every source file is fact-transformed (<code>10.&rarr;50.</code>, Ollama&rarr;vLLM) and secret-scanned first.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Legacy source (group)</th><th>Disp.</th><th>Target</th><th>Transform / owner</th></tr></thead>
+      <tbody>
+        <tr><td class="src">docling-mcp/charter, specification/node-spec, planning/adr-001, deployment-architecture</td><td><span class="d adapt">adapt</span></td><td class="tgt">services/docling-mcp/build.md</td><td>architecture + boundaries → build doc · <span class="sec">deployment-architecture has plaintext secrets → sanitize</span> · docling-mcp agent</td></tr>
+        <tr><td class="src">docling-mcp/tasks/ (~90)</td><td><span class="d hist">historical</span></td><td class="tgt">distilled into build.md steps</td><td>do not import 90 files; extract the install/config/integration sequence</td></tr>
+        <tr><td class="src">docling-mcp/defects/ (~28)</td><td><span class="d adapt">adapt</span></td><td class="tgt">knowledge/legacy/docling/defect-lessons.md + governance/lessons-learned.md</td><td>libGL/<code>libgl1</code>, HF-cache perms, LiteLLM auth, hardcoded-IP class · testing-qa</td></tr>
+        <tr><td class="src">docling-mcp/tests/ + test-suite/</td><td><span class="d adapt">adapt</span></td><td class="tgt">knowledge/legacy/docling/test-lessons.md</td><td>test methodology + failure cases · testing-qa</td></tr>
+        <tr><td class="src">docling-mcp/configuration/ (env-vars, network-config, installed-packages)</td><td><span class="d adapt">adapt</span></td><td class="tgt">services/docling-mcp/build.md</td><td>facts 10.→50., FQDN → hx.local.arpa</td></tr>
+        <tr><td class="src">lang-server/charter (12 SME reviews), specification/node-spec, planning/plan</td><td><span class="d adapt">adapt</span></td><td class="tgt">services/lang-server/build.md</td><td>supervisor/worker design, FastAPI surface · langgraph agent</td></tr>
+        <tr><td class="src">lang-server/CRITICAL-POSTGRES-CONFIG.md, db_config_validation.sql</td><td><span class="d adapt">adapt</span></td><td class="tgt">knowledge/legacy/langgraph/persistence-lessons.md</td><td>Postgres checkpoint schema (gold) · postgresql agent</td></tr>
+        <tr><td class="src">lang-server/tasks/071-078 (Ollama)</td><td><span class="d adapt">adapt</span></td><td class="tgt">services/lang-server/build.md</td><td><b>translate Ollama → vLLM via LiteLLM</b>; keep Ollama notes historical</td></tr>
+        <tr><td class="src">lang-server/tasks/ (rest ~85), tests/</td><td><span class="d hist">historical</span></td><td class="tgt">distilled into build.md + langgraph/architecture-lessons.md</td><td>Redis TTL/namespacing, MCP adapters, n8n patterns</td></tr>
+        <tr><td class="src">*/tasks/*ansible-vault* (docling-006, lang-004)</td><td><span class="d exclude">exclude</span></td><td class="tgt">—</td><td><span class="sec">Ansible + plaintext secrets</span></td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2><span class="n">3</span>.claude/commands &amp; hooks &amp; quality-gates</h2>
+    <h3 class="sub">3a — Commands (26)</h3>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Legacy</th><th>Disp.</th><th>Target / note</th></tr></thead>
+      <tbody>
+        <tr><td class="src">agents/cc-agent-zero-synthesis, cc-orchestrate-{alex,frank,julia,william}</td><td><span class="d recon">reconstruct</span></td><td class="tgt">→ .claude/agents/ (orchestration logic), not command wrappers</td></tr>
+        <tr><td class="src">utilities/cc-util-context-prep, cc-util-handoff</td><td><span class="d adapt">adapt</span></td><td class="tgt">→ .claude/skills/{context-prep,handoff}</td></tr>
+        <tr><td class="src">utilities/cc-util-doc-lint</td><td><span class="d adapt">adapt</span></td><td class="tgt">→ skill, aligned with the HTML publishing pipeline</td></tr>
+        <tr><td class="src">utilities/cc-util-quality-gate</td><td><span class="d adapt">adapt</span></td><td class="tgt">→ concept rebuilt as tests (see 3c)</td></tr>
+        <tr><td class="src">utilities/cc-util-raidd, cc-util-status-report, cc-util-artifact-tracker</td><td><span class="d covered">covered</span></td><td class="tgt">single log — governance/actions-and-issues.md</td></tr>
+        <tr><td class="src">phases/cc-phase-knowledge-research, cc-phase-test-suite-generation</td><td><span class="d adapt">adapt</span></td><td class="tgt">→ skills (research, test-gen)</td></tr>
+        <tr><td class="src">phases/cc-phase-charter-questions, cc-phase-defect-mgmt, cc-phase-task-result-doc</td><td><span class="d retire">retire</span></td><td class="tgt">phase/charter machinery — gate retired</td></tr>
+        <tr><td class="src">workflows/cc-{charter,spec,task,task-execution,project-closeout}-workflow</td><td><span class="d retire">retire</span></td><td class="tgt">heavy SDD ceremony; owner wants lean. Salvage closeout checklist only if useful</td></tr>
+      </tbody>
+    </table></div>
+    <h3 class="sub">3b — Hooks (6 Python)</h3>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Legacy hook</th><th>Disp.</th><th>Target / note</th></tr></thead>
+      <tbody>
+        <tr><td class="src">hx-ip-validator-hook.py</td><td><span class="d recon">reconstruct</span></td><td class="tgt">registry-driven validator that parses SERVER-REGISTRY.md — never hardcode the map</td></tr>
+        <tr><td class="src">hx-password-guard-hook.py</td><td><span class="d exclude">exclude</span> <span class="d recon">rebuild</span></td><td class="tgt"><span class="sec">contains secret literals + fails to compile</span>; rebuild as a generic secret scanner</td></tr>
+        <tr><td class="src">hx-file-location-guard-hook.py</td><td><span class="d adapt">harvest</span></td><td class="tgt">keep only still-valid rules; current AGENTS.md path contracts stay primary</td></tr>
+        <tr><td class="src">hx-session-context-hook.py</td><td><span class="d covered">covered</span></td><td class="tgt">current hx-session-state.ps1 + AGENTS.md routing</td></tr>
+        <tr><td class="src">hx-philosophy-guard-hook.py</td><td><span class="d adapt">extract</span></td><td class="tgt">fold Zero-Assumptions into contracts; retire the code</td></tr>
+        <tr><td class="src">hx-charter-path-hook.py</td><td><span class="d retire">retire</span></td><td class="tgt">charter workflow gone</td></tr>
+      </tbody>
+    </table></div>
+    <h3 class="sub">3c — Quality gates (6 shell)</h3>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Legacy gate</th><th>Disp.</th><th>Target / note</th></tr></thead>
+      <tbody>
+        <tr><td class="src">03-file-location-validator.sh, 05-status-report-uniqueness-validator.sh</td><td><span class="d adapt">translate</span></td><td class="tgt">→ current tests (structural/policy assertions)</td></tr>
+        <tr><td class="src">00-master-validator.sh</td><td><span class="d adapt">translate</span></td><td class="tgt">→ a lean test runner if useful; secret-scan check kept</td></tr>
+        <tr><td class="src">01-charter-review-gate.sh, 02-infrastructure-philosophy-gate.sh, 04-charter-reference-validator.sh</td><td><span class="d retire">retire</span></td><td class="tgt">charter/philosophy tied to the retired model</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2><span class="n">4</span>Standards, templates, procedures</h2>
+    <h3 class="sub">4a — Standards (10)</h3>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Legacy</th><th>Disp.</th><th>Target / note</th></tr></thead>
+      <tbody>
+        <tr><td class="src">naming-conventions.md</td><td><span class="d adapt">merge</span></td><td class="tgt">→ governance/documentation-standards.md (one naming doc); leave a pointer</td></tr>
+        <tr><td class="src">testing-requirements.md, document-quality-checklist.md</td><td><span class="d adapt">adapt</span></td><td class="tgt">import concepts current lacks; <span class="sec">testing-requirements references the vault password — sanitize</span></td></tr>
+        <tr><td class="src">architecture-standards, deployment-requirements, documentation-requirements, infrastructure-layers, utility-development-standards</td><td><span class="d covered">covered</span></td><td class="tgt">largely covered by INFRASTRUCTURE-CONTRACT + AGENTS; cherry-pick only gaps</td></tr>
+        <tr><td class="src">credentials-vault-management.md</td><td><span class="d retire">retire</span></td><td class="tgt">Ansible-vault model; owner: no Ansible; replaced by secret-scan policy</td></tr>
+        <tr><td class="src">standards/README.md</td><td><span class="d retire">retire</span></td><td class="tgt">—</td></tr>
+      </tbody>
+    </table></div>
+    <h3 class="sub">4b — Templates (18)</h3>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Legacy</th><th>Disp.</th><th>Target / note</th></tr></thead>
+      <tbody>
+        <tr><td class="src">node-template, node-deployment-plan-template, service-{architecture,plan,spec,tasks}-template</td><td><span class="d adapt">adapt</span></td><td class="tgt">→ one lean servers/_templates/service-build.md (collapse the six)</td></tr>
+        <tr><td class="src">testing/{test-plan,test-case}-template.md</td><td><span class="d adapt">adapt</span></td><td class="tgt">→ tests/ or services/_templates (lean pair)</td></tr>
+        <tr><td class="src">charter-template, charter-questions-template, poc-template, knowledge-vault-research-template, research-findings-template, raidd-log-template, testing/{defect,test-execution,test-suite-index}-template, README</td><td><span class="d retire">retire</span></td><td class="tgt">charter/heavy-SDD/RAIDD — single-log + lean rules</td></tr>
+      </tbody>
+    </table></div>
+    <h3 class="sub">4c — Procedures (17)</h3>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Legacy</th><th>Disp.</th><th>Target / note</th></tr></thead>
+      <tbody>
+        <tr><td class="src">network-health-check.sh</td><td><span class="d adapt">adapt</span></td><td class="tgt">→ procedures/ (retarget 10.→50.)</td></tr>
+        <tr><td class="src">context-loading-process.md, testing-knowledge-research-process.md</td><td><span class="d adapt">adapt</span></td><td class="tgt">→ skills</td></tr>
+        <tr><td class="src">core-project-team.md</td><td><span class="d hist">evidence</span></td><td class="tgt">source for agent reconstruction (§1)</td></tr>
+        <tr><td class="src">{charter,spec,task,task-execution,project-closeout,node-deployment}-workflow.md, examples/*</td><td><span class="d retire">retire</span></td><td class="tgt">heavy SDD ceremony</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2><span class="n">5</span>Root docs, trackers, inventory, network</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Legacy</th><th>Disp.</th><th>Target / note</th></tr></thead>
+      <tbody>
+        <tr><td class="src">CLAUDE.md</td><td><span class="d adapt">adapt</span></td><td class="tgt">fold Zero-Assumptions Policy into current CLAUDE.md; drop Agent Zero framing + /home/agent0; no phase-gate</td></tr>
+        <tr><td class="src">constitution.md</td><td><span class="d adapt">extract</span></td><td class="tgt">principles → current contracts; don't import the file</td></tr>
+        <tr><td class="src">lessons-learned.md (root)</td><td><span class="d adapt">adapt</span></td><td class="tgt">fold still-true entries into governance/lessons-learned.md as ll- rows; then retire</td></tr>
+        <tr><td class="src">backlog.md, defects.md, defect-log.md, raidd-log.md, status-report.md, CONTINUE-DEFECT-RESOLUTION.md, node-spec-audit-2025-11-30.md</td><td><span class="d hist">mine → retire</span></td><td class="tgt">carry live items into actions-and-issues.md; single-log rule</td></tr>
+        <tr><td class="src">README.md, command-quick-reference.md, dir-layout.md</td><td><span class="d retire">retire</span></td><td class="tgt">describe the old repo/commands</td></tr>
+        <tr><td class="src">df1.md (10.9 MB)</td><td><span class="d retire">retire</span></td><td class="tgt">terminal-capture junk</td></tr>
+        <tr><td class="src">.gitignore</td><td><span class="d adapt">union</span></td><td class="tgt">merge ignores into current .gitignore</td></tr>
+        <tr><td class="src">inventory/nodes.md, README, config-placeholders.md</td><td><span class="d hist">historical</span></td><td class="tgt">knowledge/legacy/; 27-node crosswalk already mined into v0.3; keep the anti-hardcoding rule</td></tr>
+        <tr><td class="src">network/network-topology.md, README</td><td><span class="d hist">historical</span></td><td class="tgt">knowledge/legacy/ provenance; never current</td></tr>
+        <tr><td class="src">network/network-troubleshooting.md</td><td><span class="d adapt">adapt</span></td><td class="tgt">→ procedures/ (L1–L7 diagnostics, retarget)</td></tr>
+        <tr><td class="src">hx-agents/hx-knowledge-vault-catalog.md (58 repos)</td><td><span class="d hist">historical</span></td><td class="tgt">knowledge/legacy/ reference index</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2><span class="n">6</span>Secret appendix — never migrate; rotate now</h2>
+    <ul class="crit">
+      <li><b><span class="sec">Rotate:</span></b> <code>[REDACTED — rotate]</code> (reused service-account + Ansible-vault password) and the LiteLLM API key <code>[REDACTED — rotate]</code>. Treat both as burned.</li>
+      <li><b><span class="d exclude">exclude</span></b> <code>nodes/hx-docling-mcp-server/vault/credentials.yml</code>, <code>…/tasks/hx-docling-mcp-task-006-create-ansible-vault-structure.md</code>, <code>lang-server/tasks/…-004-create-ansible-vault-structure.md</code>, <code>.claude/hooks/hx-password-guard-hook.py</code>.</li>
+      <li><b>Sanitize before any extraction:</b> <code>hx-agents/hx-agent-inventory.md</code> (line 252), <code>nodes/hx-docling-mcp-server/planning/deployment-architecture.md</code>, <code>…/tasks/task-execution-tracking.md</code>, <code>standards/testing-requirements.md</code>.</li>
+      <li><b>Every migration commit is secret-scanned.</b> No <code>[REDACTED — rotate]</code>, key, token or password value enters the merged tree — automated, not by eye.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="n">7</span>Execution order &amp; acceptance</h2>
+    <ol class="steps">
+      <li><b>Rotate</b> the two credentials (§6).</li>
+      <li><b>Apply the three owner edits</b> (§0) and re-run the current verification suite — new baseline.</li>
+      <li><b>Authenticate the org remote</b> and push current <code>main</code>; correct <code>act-005</code>; keep a sanitized <code>legacy/2025-sanitized</code> branch.</li>
+      <li><b>Reconstruct the active agents</b> (§1) and the registry-driven IP guard (§3b).</li>
+      <li><b>Migrate Docling then lang-server</b> knowledge (§2), fact-transformed and secret-clean.</li>
+      <li><b>Sweep the long tail</b> (§3–5) by disposition; retire in bulk, adapt selectively.</li>
+      <li><b>Verify &amp; land.</b></li>
+    </ol>
+    <h3 class="sub">Acceptance criteria</h3>
+    <ul class="crit">
+      <li>One active <code>.git</code>; both eras reachable; no secret object in active history.</li>
+      <li>No <code>192.168.10.</code>, <code>hx.dev.local</code>, <code>/home/agent0</code>, <code>[REDACTED — rotate]</code>, or Ansible artifact in the merged tree.</li>
+      <li><code>SERVER-REGISTRY.md</code> authoritative and now carrying committed v0.3 roles; discovery records untouched.</li>
+      <li>Active agents read current contracts and embed no old environment; catalogue retained, activation lean.</li>
+      <li>Docling &amp; lang-server knowledge reachable without traversing hundreds of stale task files.</li>
+      <li>Remediation suite 153/0, governance HTML build succeeds, secret scan clean.</li>
+      <li>A new agent sees one project and one source of truth in a single context pass.</li>
+    </ul>
+  </section>
+
+  <footer>
+    HX-Infrastructure &middot; repository merge migration manifest &middot; claude &middot; 2026-08-13 12:54 CDT &middot;
+    planning artifact; authorizes no repository change. Owner decisions applied: no Ansible, phase gate retired, v0.3 roles committed.
+    Dispositions are proposals to execute row-by-row with secret-scan and verification at each step.
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  var media = window.matchMedia('(prefers-color-scheme: dark)');
+  function stored(v){ try{ if(v===undefined) return localStorage.getItem('hx-theme'); localStorage.setItem('hx-theme', v);}catch(e){} return null; }
+  function active(){ var e=root.getAttribute('data-theme'); if(e==='dark'||e==='light') return e; return media.matches?'dark':'light'; }
+  function relabel(){ var n=active()==='dark'?'light':'dark'; btn.textContent=n==='dark'?'Dark mode':'Light mode'; btn.setAttribute('aria-label','Switch to '+n+' mode'); }
+  var s=stored(); if(s==='dark'||s==='light') root.setAttribute('data-theme', s); relabel();
+  btn.addEventListener('click', function(){ var n=active()==='dark'?'light':'dark'; root.setAttribute('data-theme', n); stored(n); relabel(); });
+  if(typeof media.addEventListener==='function') media.addEventListener('change', relabel);
+  if(typeof MutationObserver==='function') new MutationObserver(relabel).observe(root,{attributes:true,attributeFilter:['data-theme']});
+})();
+</script>

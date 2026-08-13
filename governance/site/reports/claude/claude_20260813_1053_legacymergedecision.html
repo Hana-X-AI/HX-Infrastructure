@@ -119,6 +119,7 @@
   <section>
     <h2><span class="n">01</span>Verdict at a glance</h2>
     <p class="lede">Every legacy asset class: <span class="badge go">goes</span> merge in, <span class="badge adapt">adapt</span> selective/transform-first, <span class="badge stay">stays</span> excluded.</p>
+    <p><strong>Governing authority:</strong> This report is the decision record; <a href="../chatgpt/hx-infrastructure-legacy-to-current-repo-merge-assessment.html">the ChatGPT assessment</a> is advisory input. Where the two conflict, this report governs. Resolved discrepancies: <em>Ollama serving config</em> &mdash; excluded (superseded by vLLM/LiteLLM; specifics do not translate); <em>quality-gate scripts and legacy hooks</em> &mdash; excluded (hardcoded paths and Ansible assumptions; current PowerShell hooks cover this).</p>
     <div class="tablewrap">
       <table>
         <thead><tr><th>Legacy asset</th><th>Decision</th><th>Where it lands / why</th></tr></thead>
@@ -238,7 +239,7 @@
           <tr><td>4</td><td>Add only a missing template to <code>servers/_templates</code> (a lean service-build template).</td><td>No duplicate/competing docs.</td></tr>
           <tr><td>5</td><td>Log the merge as one action in <code>governance/actions-and-issues.md</code>.</td><td>Single project log.</td></tr>
           <tr><td>6</td><td>Leave <code>SERVER-REGISTRY.md</code> and every <code>discovery.md</code> untouched; role commitment stays the owner's call.</td><td>Registry authoritative; discovery immutable.</td></tr>
-          <tr><td>7</td><td>Do not import quality-gates, old hooks, inventory, network docs, identity tier, Ansible, Ollama, <code>df1.md</code>, or the vault.</td><td>The "stays out" list is exhaustive.</td></tr>
+          <tr><td>7</td><td>Do not import quality-gates, old hooks, inventory, network docs, identity tier, Ansible, Ollama, <code>df1.md</code>, or the vault.</td><td>Every asset not named in the &ldquo;goes&rdquo; or &ldquo;adapt&rdquo; rows must be excluded; this list is representative, not exhaustive.</td></tr>
         </tbody>
       </table>
     </div>
