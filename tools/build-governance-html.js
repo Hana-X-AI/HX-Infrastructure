@@ -233,7 +233,7 @@ function navHtml(current) {
     ['lessons', 'Lessons learned'],
     ['standards', 'Standards'],
     ['inventory', 'Fleet inventory'],
-    ['architecture', 'Architecture v0.2'],
+    ['architecture', 'Architecture v0.3'],
     ['frozen', 'v0.1 frozen'],
     ['validation', 'Validation'],
     ['recommendations', 'Recommendations'],

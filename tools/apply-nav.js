@@ -19,7 +19,7 @@ const links = JSON.parse(fs.readFileSync(path.join(__dirname, 'links.json'), 'ut
 const PAGES = {
   index: ['index.html', 'Governance'],
   inventory: ['hx-fleet-inventory.html', 'Fleet inventory'],
-  architecture: ['fleet-architecture-v0.2.html', 'Architecture v0.2'],
+  architecture: ['fleet-architecture-v0.3.html', 'Architecture v0.3'],
   frozen: ['hx-stack-alignment-v0.1-frozen.html', 'v0.1 frozen'],
   validation: ['hx-validation-findings.html', 'Validation'],
   recommendations: ['hx-recommendations.html', 'Recommendations'],

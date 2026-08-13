@@ -34,7 +34,7 @@ const LOCAL = {
   lessons: 'lessons-learned.html',
   standards: 'documentation-standards.html',
   inventory: 'hx-fleet-inventory.html',
-  architecture: 'fleet-architecture-v0.2.html',
+  architecture: 'fleet-architecture-v0.3.html',
   frozen: 'hx-stack-alignment-v0.1-frozen.html',
   validation: 'hx-validation-findings.html',
   recommendations: 'hx-recommendations.html',
