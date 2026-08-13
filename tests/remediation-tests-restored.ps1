@@ -391,10 +391,18 @@ Assert-True "rem-008: Phase 2 Status Values section" ($regText -match 'Phase 2 S
 Assert-True "rem-008: registry authority is explicit" (
     $regText -match 'authoritative for assigned role, approved workload/model, discovery lifecycle status, and Phase 2 lifecycle status'
 )
+# Phase 2 was redefined on 2026-08-13 by owner decision: it now means repository
+# consolidation and alignment, and server implementation became Phase 3. The assertion
+# is rewritten in the same change as the document, rather than left to fail.
 Assert-True "rem-008: Phase 2 transitions are defined" (
-    $regText -match 'BLOCKED.*READY.*only after the fleet-wide Phase 1 gate is complete' -and
-    $regText -match 'IN PROGRESS.*approved role configuration starts' -and
-    $regText -match 'COMPLETE.*configuration\.md.*role validation.*complete'
+    $regText -match 'BLOCKED\s+-\s+Phase 2 has not been opened' -and
+    $regText -match 'READY\s+-\s+Phase 2 is open' -and
+    $regText -match 'IN PROGRESS\s+-\s+consolidation work has started' -and
+    $regText -match 'COMPLETE\s+-\s+consolidation is complete and verified'
+)
+Assert-True "rem-008: the Phase 2 column records its runtime readers" (
+    $regText -match 'hx-common\.ps1.*hx-phase1-guard\.ps1.*hx-session-state\.ps1' -and
+    $regText -match 'must not be removed without removing those readers'
 )
 $configurationTemplate = Get-Content "$root\servers\_templates\configuration.md" -Raw
 Assert-True "rem-008: configuration copies registry decisions" (

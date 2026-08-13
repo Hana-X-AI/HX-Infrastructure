@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HX-Infrastructure — Migration Manifest Deep Review</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#080d13;--panel:#101923;--panel2:#15212c;--ink:#e8eef5;--muted:#9baab8;
+  --line:#293846;--green:#60d4ae;--blue:#79b7ff;--amber:#f1b35e;--red:#ff7d73;
+  --violet:#c7a7ff;--cyan:#6bd7e7;--mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+  --sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif
+}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#07111a,#080d13 34rem);color:var(--ink);font:15px/1.62 var(--sans)}
+main{max-width:1280px;margin:auto;padding:40px 24px 76px}
+header{background:linear-gradient(135deg,#142532,#0d161f);border:1px solid var(--line);border-radius:14px;padding:30px;box-shadow:0 18px 42px rgba(0,0,0,.25)}
+.eyebrow{font:800 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:12px}
+h1{font-size:37px;line-height:1.08;letter-spacing:-.027em;margin:0 0 12px}
+h2{font-size:24px;line-height:1.2;letter-spacing:-.015em;margin:0 0 9px}
+h3{font-size:17px;margin:0 0 7px}.sub,.lede{color:var(--muted);max-width:104ch}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.pill{font:700 11px/1 var(--mono);padding:7px 9px;border:1px solid var(--line);border-radius:999px;background:#0a131c;color:#cad5df}
+section{margin-top:32px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:14px;margin-top:14px}.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}.metric{font-size:24px;font-weight:800;letter-spacing:-.02em}.small{font-size:12.5px;color:var(--muted)}
+.callout{background:var(--panel);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:16px 18px;margin:14px 0}.warn{border-left-color:var(--amber)}.bad{border-left-color:var(--red)}.blue{border-left-color:var(--blue)}.violet{border-left-color:var(--violet)}
+table{width:100%;border-collapse:separate;border-spacing:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:12px}
+th,td{text-align:left;vertical-align:top;padding:11px 12px;border-bottom:1px solid var(--line)}th{font:800 10.5px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#b8c5cf;background:#0e1720}tr:last-child td{border-bottom:0}
+code,pre{font-family:var(--mono)}code{background:#08121a;border:1px solid #22313f;border-radius:4px;padding:.05em .32em;color:#dce8f2}pre{white-space:pre;overflow:auto;background:#070c11;border:1px solid var(--line);border-radius:10px;padding:18px;line-height:1.5;color:#dae5ef}
+ul,ol{margin:7px 0 0;padding-left:22px}li{margin:5px 0}
+.badge{display:inline-block;font:800 9.5px/1 var(--mono);text-transform:uppercase;letter-spacing:.06em;padding:5px 7px;border-radius:999px;white-space:nowrap}
+.pass{color:#c8f7d9;background:rgba(96,212,174,.12);border:1px solid rgba(96,212,174,.35)}
+.fix{color:#ffe0ad;background:rgba(241,179,94,.12);border:1px solid rgba(241,179,94,.35)}
+.block{color:#ffc7c2;background:rgba(255,125,115,.12);border:1px solid rgba(255,125,115,.35)}
+.info{color:#d2e6ff;background:rgba(121,183,255,.12);border:1px solid rgba(121,183,255,.35)}
+.decision{background:linear-gradient(135deg,#10261f,#101a24);border:1px solid #295246;border-radius:12px;padding:20px;margin-top:14px}.decision h3{color:var(--green)}
+.rank{font-weight:800;font-family:var(--mono)}.p0{color:var(--red)}.p1{color:var(--amber)}.p2{color:var(--blue)}
+footer{margin-top:44px;border-top:1px solid var(--line);padding-top:18px;color:#7f8e9b;font-size:12px}
+@media(max-width:760px){main{padding:22px 12px 48px}header{padding:22px 18px}h1{font-size:29px}th,td{padding:9px 8px;font-size:13px}}
+</style>
+</head>
+<body><main>
+<header>
+<div class="eyebrow">HX-Infrastructure · repository consolidation · manifest review</div>
+<h1>Deep Review of the Repository Merge Migration Manifest</h1>
+<p class="sub">Review of Claude’s 2026-08-13 migration manifest against the now-locked owner decisions, the converged three-model merge baseline, and the requirement that the end state be one clean repository that another AI can execute without guessing. The manifest is directionally excellent and materially better than the preceding merge plans. It is not yet literally file-level or safe to execute unchanged.</p>
+<div class="meta">
+<span class="pill">author: gpt-5.6 sol</span>
+<span class="pill">2026-08-13 13:24 -05:00</span>
+<span class="pill">review status: approve with blocking revisions</span>
+<span class="pill">planning only</span>
+<span class="pill">dark-mode HTML</span>
+</div>
+</header>
+
+<section>
+<h2>1. Executive summary</h2>
+<div class="decision">
+<h3>Verdict: strong architecture, one revision away from execution-grade</h3>
+<p>The manifest gets the hard strategic decisions right: current authority wins; the retired gate is removed deliberately; committed v0.3 roles become registry truth; the permanently excluded orchestration framework stays out; agents are reconstructed capability-first; Docling and LangGraph are treated as the high-value legacy knowledge base; old trackers are collapsed into the current governance model; controls are rebuilt against current authority instead of merely having literals edited.</p>
+<p><strong>I would approve this as the migration design. I would not execute it yet.</strong> Five issues are blocking: the manifest itself contains a full compromised credential literal; the document is grouped rather than truly file-by-file; several “10→50” / “Ollama→vLLM” transformations are phrased too mechanically; the remote/main cutover sequence is ambiguous enough to overwrite the legacy default branch accidentally; and the acceptance suite still hardcodes the old <code>153/0</code> baseline even though the gate-removal edits are expected to change that suite.</p>
+</div>
+
+<div class="grid">
+<div class="card"><div class="small">Strategic alignment</div><div class="metric">Excellent</div><div class="small">Matches the locked merge direction and one-repo authority model.</div></div>
+<div class="card"><div class="small">Knowledge preservation</div><div class="metric">Excellent</div><div class="small">Correctly protects the expensive agent/service lessons while discarding stale topology.</div></div>
+<div class="card"><div class="small">Execution determinism</div><div class="metric">Needs v2</div><div class="small">69 grouped decision rows cannot yet account deterministically for 522 source files.</div></div>
+<div class="card"><div class="small">Security hygiene</div><div class="metric">1 blocker</div><div class="small">The manifest repeats a known compromised password literal and must be redacted before it becomes tracked documentation.</div></div>
+<div class="card"><div class="small">Repository safety</div><div class="metric">Needs tighter cutover</div><div class="small">Push to an import branch first; promote current lineage to <code>main</code> only after remote-state verification.</div></div>
+</div>
+</section>
+
+<section>
+<h2>2. What the manifest gets especially right</h2>
+<table>
+<thead><tr><th>Area</th><th>Assessment</th><th>Why it matters</th></tr></thead>
+<tbody>
+<tr><td>Owner decisions are placed first</td><td><span class="badge pass">keep</span></td><td>Correct. Authority must be corrected before legacy material is interpreted. Otherwise migration agents inherit contradictory rules.</td></tr>
+<tr><td>Agents are reconstructed, not “copied”</td><td><span class="badge pass">keep</span></td><td>The source profiles are not present in the archive. Reconstructing from inventory, orchestration evidence and contribution records is the only defensible method.</td></tr>
+<tr><td>Capability-first IDs</td><td><span class="badge pass">keep</span></td><td>This preserves the reason the old SME model worked—narrow ownership—without making persona names the technical routing key.</td></tr>
+<tr><td>Broad retention / lean activation</td><td><span class="badge pass">keep</span></td><td>Excellent compromise. Knowledge is cheap to retain; unnecessary active context is expensive and causes drift.</td></tr>
+<tr><td>Registry-driven IP validator</td><td><span class="badge pass">keep</span></td><td>This is one of the strongest design improvements in the whole exercise. It removes an entire future class of stale hardcoded validators.</td></tr>
+<tr><td>411 service files distilled</td><td><span class="badge pass">keep</span></td><td>Correctly distinguishes engineering knowledge from process exhaust. The current repo does not need two 200-file historical node implementations.</td></tr>
+<tr><td>Single-log governance</td><td><span class="badge pass">keep</span></td><td>Prevents RAIDD, defects, status reports and backlogs from re-emerging as competing project-state stores.</td></tr>
+<tr><td>Discovery → configuration distinction retained</td><td><span class="badge pass">keep</span></td><td>Retiring the phase gate should not destroy the strong separation between immutable as-found evidence and as-built state.</td></tr>
+<tr><td>Historical vs current knowledge distinction</td><td><span class="badge pass">keep</span></td><td>The plan generally avoids “editing history until it looks current,” which is exactly the right provenance posture.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>3. Blocking revisions before execution</h2>
+
+<div class="callout bad">
+<strong><span class="rank p0">P0 — Remove secret literals from the manifest itself.</span></strong><br>
+The manifest states that no compromised credential value may enter the merged tree, but its own header/secret appendix repeats the full historical service-account password. If this HTML is committed, the migration control document itself becomes a fresh credential-bearing artifact. Replace all literal values with stable IDs such as <code>legacy-secret-001</code> and <code>legacy-secret-002</code>. Keep the actual detection patterns only in an ephemeral scanning input or external secret-scanning system, never in tracked planning documentation.
+</div>
+
+<div class="callout bad">
+<strong><span class="rank p0">P0 — Make the manifest truly one-row-per-source-file.</span></strong><br>
+The document is titled “File-by-File Migration Manifest,” but it contains only 69 tabular decision rows across all sections, several of which are current-repo edits rather than legacy files. The 26-command inventory is compressed into eight grouped rows; the 18 templates into three rows; the 17 procedures into four; and 411 Docling/lang-server files into ten source families. Grouping is excellent for the human summary, but it is insufficient as the execution ledger because a file can disappear without ever receiving an explicit disposition.
+</div>
+
+<div class="callout warn">
+<strong><span class="rank p1">P1 — Eliminate mechanical fact translation.</span></strong><br>
+Phrases such as <code>10.→50.</code> and “Ollama → vLLM” read like search/replace instructions. That is unsafe. A legacy address must be resolved through the current registry/service crosswalk; it is not numerically translated. A legacy model-serving task must be decomposed into invariant requirements (endpoint abstraction, timeout behavior, model selection, health, concurrency, failure handling) and then re-designed for the current serving stack. The migration operation should be <strong>extract → reconcile → author</strong>, not <strong>replace → call current</strong>.
+</div>
+
+<div class="callout warn">
+<strong><span class="rank p1">P1 — Tighten the Git remote cutover sequence.</span></strong><br>
+“Authenticate the org remote and push current <code>main</code>” is ambiguous because the org remote reportedly already has a historical <code>main</code>. The safe first push is the current lineage to a uniquely named import branch. Only after fetching and verifying the remote refs, sanitizing the historical lineage, and recording both tips should the current lineage be promoted to the default <code>main</code>. The manifest should make a destructive or force push impossible to infer.
+</div>
+
+<div class="callout warn">
+<strong><span class="rank p1">P1 — Re-baseline verification after gate retirement.</span></strong><br>
+The manifest correctly says to apply the owner edits and then establish a new baseline, but its final acceptance criteria still require exactly <code>153/0</code>. Retiring the phase guard/skill can legitimately change assertion count. Replace the hardcoded count with “all approved current tests pass, with any assertion-count delta reviewed and recorded,” then capture the new expected count after the owner-edit commit.
+</div>
+</section>
+
+<section>
+<h2>4. “File-by-file” gap — how to fix it without creating another 500-page document</h2>
+<p class="lede">Do not abandon the grouped HTML. It is the right human interface. Add a machine-executable ledger underneath it.</p>
+<div class="two">
+<div class="card">
+<h3>Human artifact</h3>
+<p>Keep the current HTML structure as the review/report layer: grouped decisions, rationale, priorities, acceptance criteria and summaries.</p>
+<p><strong>Recommended:</strong> generate this HTML from the ledger so summary counts can never drift from the underlying file list.</p>
+</div>
+<div class="card">
+<h3>Canonical execution ledger</h3>
+<p>Create <code>governance/migrations/legacy-2025/manifest.jsonl</code> with exactly one JSON object for every legacy file.</p>
+<p>JSONL is easy for agents to stream, diff, validate and update one file at a time. HTML remains the human-facing format.</p>
+</div>
+</div>
+
+<h3>Minimum row schema</h3>
+<pre><code>{
+  "id": "legacy-0001",
+  "legacy_path": "...",
+  "legacy_commit": "...",
+  "asset_type": "hook|command|procedure|service|...",
+  "disposition": "adopt|adapt|reconstruct|covered|historical|retire|exclude",
+  "inherits_policy": "optional-group-rule-id",
+  "target_path": "...",
+  "owner_capability": "...",
+  "authority_class": "current-supporting|historical-only|none",
+  "secret_risk": "none|inspect|confirmed",
+  "environment_dependency": "none|host-map|network|runtime-version|credential|...",
+  "transform_method": "extract-reconcile-author|...",
+  "validation": "...",
+  "status": "unreviewed|approved|migrated|validated|rejected"
+}</code></pre>
+
+<p>For 198 Docling and 213 lang-server files, most rows can inherit a group rule. That still leaves every file individually accountable without requiring 411 bespoke paragraphs.</p>
+
+<div class="callout blue">
+<strong>Coverage validation should be automated.</strong> The union of manifest <code>legacy_path</code> entries must equal the full 522-file inventory exactly: no missing paths, no duplicates, no phantom paths. The renderer should refuse to build the “final” HTML if coverage is not 522/522.
+</div>
+</section>
+
+<section>
+<h2>5. Inventory reconciliation issues found in the current manifest</h2>
+<table>
+<thead><tr><th>Issue</th><th>Finding</th><th>Recommendation</th></tr></thead>
+<tbody>
+<tr><td>26 commands</td><td>The visible grouped rows explicitly account for roughly 22 named command files. Four commands are not traceable from the HTML as written.</td><td>Add the complete 26-path appendix/ledger and let every command inherit a disposition rule individually.</td></tr>
+<tr><td>Agent count</td><td>The summary says <code>13 / ~20</code>, but the active rows appear to represent 14 active capability files when the combined Docling pair and Postgres/Redis/Qdrant trio are expanded.</td><td>Remove approximation. Generate exact <code>active_count</code> and <code>catalogue_count</code> from the agent registry.</td></tr>
+<tr><td>Secret-file count</td><td>The strip says <code>6+</code>, which is intentionally approximate.</td><td>An execution manifest should never use “+” for a known inventory. Keep an exact exclusion list and a separate “new findings” counter from scanning.</td></tr>
+<tr><td>Disposition vocabulary</td><td>Badge labels drift beyond the seven legend states: “reframe,” “harvest,” “extract,” “translate,” “merge,” “evidence,” etc.</td><td>Keep the seven canonical dispositions as data. Put “reframe/harvest/translate” in a separate <code>transform_method</code> field.</td></tr>
+<tr><td>Current edits vs legacy migration</td><td>Section 0 mixes governance-state changes with the legacy migration ledger.</td><td>Keep them in the report, but represent them as prerequisite change IDs rather than legacy-file rows.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>6. Review of §0 — owner decisions</h2>
+<p><strong>Direction is correct.</strong> I recommend three refinements.</p>
+<ul>
+<li><strong>Gate retirement:</strong> retire the phase-named guard and skill, but preserve useful integrity logic under neutral names. Registry completeness is useful even when it is not a phase gate. A clean target is a <code>registry-integrity</code> test/check, not a repurposed <code>phase1-gate</code> artifact.</li>
+<li><strong>Registry role commitment:</strong> if the old “Phase 2 status” column contains useful operational state, rename it to a lifecycle-neutral field such as <code>Implementation State</code> or <code>Deployment State</code> rather than deleting status tracking altogether. If equivalent lifecycle state already exists elsewhere, deletion is fine. The manifest should verify before removing the column.</li>
+<li><strong>Permanent orchestration exclusion:</strong> make the native <code>hxs-cp</code> Bash/SSH fan-out pattern the explicit current baseline in the authoritative control-plane document. Do not merely delete an old candidate line; replace ambiguity with the proven operating model.</li>
+</ul>
+</section>
+
+<section>
+<h2>7. Review of §1 — specialist agents</h2>
+<p>The capability-first reconstruction is one of the best parts of the manifest. It needs an <strong>agent contract</strong> so reconstructed specialists remain narrow instead of becoming generic assistants over time.</p>
+
+<h3>Required fields for every reconstructed agent</h3>
+<ul>
+<li><code>capability_id</code> — stable routing identity.</li>
+<li><code>historical_aliases</code> — persona names only for provenance.</li>
+<li><code>scope</code> and explicit <code>out_of_scope</code>.</li>
+<li><code>authoritative_inputs</code> — current contracts/registry/service docs the agent must read.</li>
+<li><code>historical_sources</code> — legacy evidence it may mine, marked non-authoritative.</li>
+<li><code>allowed_outputs</code> — recommendations, service changes, tests, etc.</li>
+<li><code>validation_partner</code> — usually QA or another SME; specialists do not self-certify.</li>
+<li><code>activation</code> — active / retained-inactive.</li>
+</ul>
+
+<div class="callout">
+<strong>Keep Ollama/GGUF knowledge clearly separate from current serving authority.</strong> “Historical only” may be too weak if GGUF/local-serving evaluation remains technically useful. I would classify it as <code>retained-inactive</code> capability knowledge rather than merely a historical document. It cannot prescribe current deployment, but it can be invoked for alternate-serving or quantization research.
+</div>
+</section>
+
+<section>
+<h2>8. Review of §2 — Docling and LangGraph service knowledge</h2>
+<p>The distillation strategy is exactly right; the transformation semantics need tightening.</p>
+
+<table>
+<thead><tr><th>Current manifest wording</th><th>Risk</th><th>Recommended wording</th></tr></thead>
+<tbody>
+<tr><td><code>10.→50.</code></td><td>Implies address arithmetic/search-replace.</td><td>Resolve each endpoint through <code>SERVER-REGISTRY.md</code> + current service placement; do not infer an address from the legacy octet.</td></tr>
+<tr><td>Ollama → vLLM</td><td>Implies implementation substitution even though APIs, runtime controls and model formats differ.</td><td>Extract invariant model-serving requirements from the old task; redesign current integration through the current gateway/serving architecture; retain old implementation as provenance only.</td></tr>
+<tr><td>“installed packages” → current build doc</td><td>2025 package versions may be obsolete.</td><td>Carry package purpose and compatibility constraints; mark versions/CLI flags for current verification before implementation.</td></tr>
+<tr><td>“configuration” → current build doc</td><td>Can accidentally treat historical deployment state as design.</td><td>Separate invariant configuration requirements from old environment values. Author fresh current configuration guidance.</td></tr>
+</tbody>
+</table>
+
+<h3>Prefer <code>service.md</code> over <code>build.md</code></h3>
+<p>I recommend one durable <code>services/&lt;service&gt;/service.md</code> rather than a file named only <code>build.md</code>. “Build” is a lifecycle moment; the document should remain useful after installation. It can contain:</p>
+<ul>
+<li>status and target host(s);</li>
+<li>owning SME;</li>
+<li>purpose and architecture;</li>
+<li>dependencies/interfaces;</li>
+<li>installation/configuration sequence;</li>
+<li>validation and rollback;</li>
+<li>known gotchas;</li>
+<li>legacy provenance;</li>
+<li>current-version verification notes.</li>
+</ul>
+<p>The actual host-specific resulting state still belongs in <code>servers/&lt;host&gt;/configuration.md</code>. That keeps service knowledge from becoming a second inventory.</p>
+</section>
+
+<section>
+<h2>9. Review of §3–§5 — commands, hooks, gates, standards, procedures</h2>
+
+<h3>Commands: do not retire spec/task discipline just because the legacy workflow was heavy</h3>
+<p>The blanket row retiring <code>cc-{charter,spec,task,task-execution,project-closeout}-workflow</code> is too coarse. The <em>charter/phase machinery</em> can go, but specification, task decomposition, execution evidence and closeout checks are valuable AI-development controls when implemented lightly.</p>
+<table>
+<thead><tr><th>Legacy concept</th><th>Recommended disposition</th></tr></thead>
+<tbody>
+<tr><td>Charter workflow</td><td><span class="badge block">retire</span> — tied to retired ceremony.</td></tr>
+<tr><td>Spec workflow</td><td><span class="badge fix">adapt</span> — lightweight “define intent/constraints/acceptance before change” skill.</td></tr>
+<tr><td>Task workflow</td><td><span class="badge fix">adapt</span> — decompose implementation into verifiable units when needed; no mandatory task tree.</td></tr>
+<tr><td>Task execution</td><td><span class="badge fix">adapt</span> — evidence/verification discipline, not a separate bureaucracy.</td></tr>
+<tr><td>Project closeout</td><td><span class="badge fix">adapt checklist</span> — valuable definition-of-done checks without a new tracker.</td></tr>
+</tbody>
+</table>
+
+<h3>Status-report utility is not the same thing as a status database</h3>
+<p><code>governance/actions-and-issues.md</code> should remain the only routine tracking store, but a read-only status-report skill that synthesizes registry, actions/issues, service status and test results could still be useful. Consider <code>reconstruct-readonly</code> instead of simply <code>covered</code>.</p>
+
+<h3>Network health check should be registry-driven too</h3>
+<p>The same rule that improves the IP validator applies to <code>network-health-check.sh</code>: do not “retarget” a fixed host list to the new subnet. Generate/parse the fleet from current authoritative data so adding/reassigning a host does not require editing the diagnostic script.</p>
+</section>
+
+<section>
+<h2>10. Secret-handling redesign</h2>
+<p>The manifest’s intent is correct; its representation should be changed.</p>
+<pre><code># Tracked manifest:
+"secret_id": "legacy-secret-001",
+"secret_type": "service-account-password",
+"status": "rotate-required",
+"source_paths": ["..."],
+"literal_in_repo": false
+
+# Scanner configuration:
+# actual value/pattern supplied ephemerally through secure runtime input,
+# not copied into manifest.jsonl, HTML, Markdown, tests, examples, or commits.</code></pre>
+<ul>
+<li>Do not reproduce full historical values in reports, agent prompts, migration logs or test fixtures.</li>
+<li>Record rotation/revocation completion by secret ID.</li>
+<li>Record the set of source commits/paths in which each secret appeared.</li>
+<li>Final sanitized-history validation must search every final reachable ref, not just active <code>main</code>.</li>
+<li>If a historical source must be retained in quarantined evidence, keep it outside normal clone/agent context and never treat it as part of the canonical working tree.</li>
+</ul>
+</section>
+
+<section>
+<h2>11. Safer Git execution sequence</h2>
+<ol>
+<li><strong>Capture both tips.</strong> Record current local HEAD and all org-remote branches/tags before changing anything.</li>
+<li><strong>Fetch first.</strong> Verify the remote identity, visibility and existing default branch. Do not assume the remote <code>main</code> is empty.</li>
+<li><strong>Push current lineage to an import branch:</strong> e.g. <code>import/current-2026-08-13</code>. This protects current work off-machine without replacing the historical mainline.</li>
+<li><strong>Quarantine and sanitize the historical lineage.</strong> Produce <code>legacy/2025-sanitized</code>; verify no known sensitive value is reachable from that ref.</li>
+<li><strong>Promote current lineage to future <code>main</code></strong> through an explicit branch/default-branch transition after both histories are safely represented.</li>
+<li><strong>Create the sanitized legacy tag</strong> on the sanitized historical tip.</li>
+<li><strong>Create <code>integrate/legacy-knowledge</code></strong> from current <code>main</code> and perform all curated migration there.</li>
+<li><strong>Merge only the curated integration commits into current <code>main</code>.</strong> Never merge the sanitized legacy branch into main solely to join ancestry.</li>
+<li><strong>Delete temporary import/integration refs after validation.</strong></li>
+</ol>
+</section>
+
+<section>
+<h2>12. Revised execution order</h2>
+<table>
+<thead><tr><th>Batch</th><th>Action</th><th>Exit condition</th></tr></thead>
+<tbody>
+<tr><td><span class="rank p0">0</span></td><td>Redact the manifest itself; rotate/revoke known historical secrets.</td><td>No tracked planning artifact contains a secret literal; rotation recorded by secret ID.</td></tr>
+<tr><td>1</td><td>Apply locked current-governance edits: retire gate language/controls, commit registry roles, remove stale orchestration references and affirm native fleet control.</td><td>Current contracts agree with owner decisions; tests re-baselined.</td></tr>
+<tr><td>2</td><td>Build <code>manifest.jsonl</code> for all 522 legacy files and regenerate the HTML from it.</td><td>Coverage validator reports exactly 522/522, zero duplicates, zero unmapped files.</td></tr>
+<tr><td>3</td><td>Secure canonical remote and establish safe current/legacy refs.</td><td>Current lineage protected; sanitized historical lineage preserved; no raw secret-bearing final ref.</td></tr>
+<tr><td>4</td><td>Reconstruct agent catalogue and activate first-wave SMEs.</td><td>Exact agent roster; every profile has scope, authority inputs and validation partner.</td></tr>
+<tr><td>5</td><td>Rebuild controls from current authority.</td><td>Registry-driven fleet/IP/network checks and generic secret guard pass.</td></tr>
+<tr><td>6</td><td>Mine Docling/Docling-MCP, then LangGraph/persistence knowledge.</td><td>Current service docs usable without consulting hundreds of stale task files.</td></tr>
+<tr><td>7</td><td>Process commands/hooks/gates/standards/templates/procedures file-by-file.</td><td>Every ledger row reaches validated/rejected; no “unreviewed” assets remain.</td></tr>
+<tr><td>8</td><td>Final authority, secret and regression validation.</td><td>Definition of done below is fully met.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>13. Revised definition of done</h2>
+<ul>
+<li>One canonical repository and one active current <code>main</code>.</li>
+<li>Current 2026 lineage remains the active ancestry; historical lineage is preserved separately in sanitized form.</li>
+<li>No known secret literal is reachable from any final branch/tag/ref intentionally retained in the canonical repository.</li>
+<li>The migration ledger covers exactly 522/522 legacy files with no duplicate or missing path.</li>
+<li>Every legacy file has a canonical disposition and final status.</li>
+<li>There are no approximate execution counts such as <code>~20</code> or <code>6+</code> in the final manifest.</li>
+<li>Current registry, contracts and server records are the only operational authorities.</li>
+<li>Discovery records are unchanged.</li>
+<li>Host-specific as-built state is separated from service-level technology knowledge.</li>
+<li>The reconstructed agent catalogue has exact capability IDs; retained breadth and active set are explicit.</li>
+<li>No active agent embeds historical hostnames, IPs, paths, credentials or retired process authority.</li>
+<li>Fleet/network validators derive their targets from current authoritative data rather than hardcoded host maps.</li>
+<li>Current service docs contain no mechanically translated addresses or software versions presented as verified current facts.</li>
+<li>Docling and LangGraph legacy knowledge is distilled, provenance-tagged and usable from the current tree.</li>
+<li>No retired parallel tracker/governance system becomes active again.</li>
+<li>All approved current tests pass against the post-owner-edit baseline; any count change is documented.</li>
+<li>Governance HTML generation succeeds and its summaries are generated from the canonical ledger where applicable.</li>
+<li>A new AI can determine authority, current topology, specialist ownership and migration provenance in one context pass.</li>
+</ul>
+</section>
+
+<section>
+<h2>14. Recommended manifest v2 changes — concise change request</h2>
+<table>
+<thead><tr><th>Priority</th><th>Change</th></tr></thead>
+<tbody>
+<tr><td><span class="rank p0">P0</span></td><td>Redact all known secret literals from the HTML and any tracked migration artifact.</td></tr>
+<tr><td><span class="rank p0">P0</span></td><td>Create one-row-per-file <code>manifest.jsonl</code> and generate the HTML from it; assert 522/522 path coverage.</td></tr>
+<tr><td><span class="rank p1">P1</span></td><td>Replace <code>10→50</code> and implementation substitution language with <strong>extract → reconcile against current authority → author fresh current artifact</strong>.</td></tr>
+<tr><td><span class="rank p1">P1</span></td><td>Change first Git push from “push current main” to “push current lineage to import branch”; promote later.</td></tr>
+<tr><td><span class="rank p1">P1</span></td><td>Replace <code>153/0</code> with the reviewed post-gate-retirement baseline.</td></tr>
+<tr><td><span class="rank p1">P1</span></td><td>Make agent and secret counts exact; remove <code>~</code> and <code>+</code>.</td></tr>
+<tr><td><span class="rank p1">P1</span></td><td>Separate canonical disposition from transform method in manifest data.</td></tr>
+<tr><td><span class="rank p2">P2</span></td><td>Use durable <code>services/&lt;service&gt;/service.md</code> documents rather than build-only naming.</td></tr>
+<tr><td><span class="rank p2">P2</span></td><td>Re-evaluate spec/task/closeout workflows individually; preserve lightweight discipline while retiring ceremony.</td></tr>
+<tr><td><span class="rank p2">P2</span></td><td>Make network-health tooling registry-driven just like the IP validator.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>15. Final recommendation</h2>
+<div class="decision">
+<h3>Accept the manifest as the baseline design; request a v2 before execution.</h3>
+<p>This is the first merge artifact I would call <strong>architecturally converged</strong>. Claude correctly converted the debate into dispositions and an execution order. The remaining problems are not disagreements about direction; they are execution-integrity problems.</p>
+<p>The highest-value next move is therefore <strong>not another merge-plan essay</strong>. Ask Claude to revise this manifest into a dual-layer artifact: a complete 522-row canonical ledger plus a regenerated dark-mode HTML review. Once coverage is exact, secret literals are removed, transformation semantics are authority-driven, the Git cutover is non-destructive, and the test baseline is refreshed, the migration can begin row by row with very little room for drift.</p>
+</div>
+</section>
+
+<section>
+<h2>16. Source reviewed</h2>
+<p><code>claude_20260813_1254_repomergemigrationmanifest.html</code> — Claude repository merge migration manifest, 2026-08-13 12:54 CDT. This review is based on that artifact and the previously converged HX-Infrastructure merge decisions. No repository change was performed.</p>
+</section>
+
+<footer>
+HX-Infrastructure · migration manifest deep review · gpt-5.6 sol · 2026-08-13 13:24 -05:00 · planning/review only. Recommended status: approve design, revise manifest before execution.
+</footer>
+</main></body></html>

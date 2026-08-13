@@ -176,7 +176,7 @@
   </header>
 
   <dl class="strip">
-    <div class="cell"><dt>Lessons</dt><dd>32</dd></div>
+    <div class="cell"><dt>Lessons</dt><dd>33</dd></div>
     <div class="cell"><dt>First</dt><dd>2026-08-11</dd></div>
     <div class="cell"><dt>Latest</dt><dd>2026-08-13</dd></div>
   </dl>
@@ -185,6 +185,15 @@
     <h2>Log</h2>
     <p class="lede">Most recent first.</p>
     <div class="entries">
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-033</span>
+          <span class="chip">2026-08-13</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>A document that warns about a secret will happily print it. Review artifacts need the same secret discipline as the code they describe.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>Three review documents produced during the merge assessment named an exposed password and API key in cleartext. One of them was the migration manifest, whose own §6 mandates secret-scanning every migration commit. All three were bound for a governance directory and a published web artifact. Separately, the legacy <code>hx-password-guard-hook.py</code> — written to block credentials — hard-codes the very password it guards against.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Scan every document before commit, not only code and configuration. A finding can be stated as "the vault password is reused as the service-account password" without reproducing it; naming the location is what makes it actionable, and naming the value is what makes it dangerous.</p></div>
+      </article>
       <article class="entry">
         <div class="entry-head">
           <span class="eid">ll-032</span>

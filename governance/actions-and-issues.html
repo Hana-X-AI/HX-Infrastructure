@@ -176,10 +176,10 @@
   </header>
 
   <dl class="strip">
-    <div class="cell"><dt>Entries</dt><dd>24</dd></div>
+    <div class="cell"><dt>Entries</dt><dd>25</dd></div>
     <div class="cell"><dt>Actions</dt><dd>13</dd></div>
-    <div class="cell"><dt>Issues</dt><dd>11</dd></div>
-    <div class="cell"><dt>Open</dt><dd>3</dd></div>
+    <div class="cell"><dt>Issues</dt><dd>12</dd></div>
+    <div class="cell"><dt>Open</dt><dd>4</dd></div>
     <div class="cell"><dt>Backlog</dt><dd>2</dd></div>
     <div class="cell"><dt>Closed</dt><dd>19</dd></div>
   </dl>
@@ -189,6 +189,17 @@
     <p class="lede">Open items first, then deferred, then closed. Within each group the most
     recent entry leads.</p>
     <div class="entries">
+      <article class="entry is-open">
+        <div class="entry-head">
+          <span class="eid">iss-012</span>
+          <span class="chip">issue</span>
+          <span class="pill is-open">open</span>
+          
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p><strong>Exposed credentials in legacy and review documentation.</strong> A service-account password reused as the Ansible vault password, and a LiteLLM API key, appear in cleartext across legacy documentation and three review documents produced during the merge assessment. Values are not recorded here, per the standing rule. Confirmed in the legacy <code>standards/credentials-vault-management.md</code>, in <code>.claude/hooks/hx-password-guard-hook.py</code> — a guard that hard-codes the credential it defends against — and in two review documents under <code>governance/reports/claude/</code>. Discovered 2026-08-13.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>Both credentials must be treated as burned. The password was reused across a service account and the vault, so compromise of one is compromise of both.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p>Working tree redacted on 2026-08-13: nine occurrences across three documents. Git history rewritten the same day, replacing the two commits that carried the value, so no reachable commit on <code>main</code> contains it. <strong>Redaction and history rewriting do not close this.</strong> Rotation of both credentials is the only action that does, and it is outstanding. Neither affected document had been published as an artifact, so the exposure did not leave the workstation.</p></div>
+      </article>
       <article class="entry is-open">
         <div class="entry-head">
           <span class="eid">iss-011</span>

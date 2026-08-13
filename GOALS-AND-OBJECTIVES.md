@@ -39,7 +39,14 @@ Agents may report and compare factual capabilities, but may not:
 
 Examples include manually deciding which server will run a Hugging Face/vLLM workload such as an Alibaba Qwen model.
 
-## Phase 1 Gate
+## Phase 1 Gate — historical
+
+Retired as a control on 2026-08-13, kept as a record. All seven conditions were met:
+fifteen servers discovered, documented, reviewed, and each assigned a role recorded in
+`SERVER-REGISTRY.md`. Phase 1 closed COMPLETE. The gate is no longer evaluated; it stands as
+evidence that discovery finished properly before any configuration began.
+
+### Conditions as met
 
 ```text
 [ ] Every expected server is present in the registry
@@ -53,7 +60,22 @@ Examples include manually deciding which server will run a Hugging Face/vLLM wor
 
 Phase 2 is blocked until every item is complete.
 
-## Phase 2 — Role Configuration
+## Phase 2 — Repository Consolidation & Alignment
+
+### Goal
+
+Consolidate the 2025 pre-relocation project and the current repository into one repository,
+one authority and one operating model. Redefined 2026-08-13; Phase 2 previously meant role
+configuration, which is now Phase 3.
+
+### Rules
+
+- `SERVER-REGISTRY.md` stays authoritative; `discovery.md` records stay immutable.
+- Legacy material is migrated selectively, fact-transformed, and secret-scanned.
+- No credential value enters the repository.
+- Ansible is excluded.
+
+## Phase 3 — Server Implementation
 
 ### Goal
 

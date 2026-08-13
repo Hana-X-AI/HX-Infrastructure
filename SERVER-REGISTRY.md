@@ -10,7 +10,7 @@ Fleet-level source of truth for discovery status, manual role assignment, and Ph
 - Roles and workloads/models are entered only after manual review and approval.
 - `configuration.md` copies approved role and workload/model values from this registry; it does not assign them.
 - Agents must not assign roles automatically.
-- Phase 2 remains blocked until the full fleet passes the Phase 1 gate.
+- Phase 2 means repository consolidation and alignment. Server implementation is Phase 3.
 
 ## Discovery Status Values
 
@@ -23,13 +23,13 @@ BLOCKED     - discovery cannot complete until a recorded blocker is resolved
 ## Phase 2 Status Values
 
 ```text
-BLOCKED     - the fleet-wide Phase 1 gate is incomplete
-READY       - the fleet-wide Phase 1 gate is complete
-IN PROGRESS - approved role configuration has started
-COMPLETE    - configuration.md is complete and the assigned role is validated
+BLOCKED     - Phase 2 has not been opened
+READY       - Phase 2 is open; consolidation may proceed
+IN PROGRESS - consolidation work has started
+COMPLETE    - consolidation is complete and verified
 ```
 
-Phase 2 transitions from `BLOCKED` to `READY` only after the fleet-wide Phase 1 gate is complete, to `IN PROGRESS` when approved role configuration starts, and to `COMPLETE` after `configuration.md` and role validation are complete.
+Phase 2 opened on 2026-08-13 once the Phase 1 gate was satisfied. The column is retained and read at runtime by `hx-common.ps1`, `hx-phase1-guard.ps1` and `hx-session-state.ps1`; it must not be removed without removing those readers in the same change.
 
 ## Registry
 
@@ -51,7 +51,7 @@ Phase 2 transitions from `BLOCKED` to `READY` only after the fleet-wide Phase 1 
 | hxs-14 | hxs-14.hx.local.arpa | 192.168.50.213 | Intel Core i5-7500, 4c/4t | 32 GB DDR4 non-ECC | none, Intel HD 630 integrated only | 238.5 GB NVMe root, sole device, aftermarket | COMPLETE | Development | Prompt engineering; LangGraph and client development | READY |
 | hxs-15 | hxs-15.hx.local.arpa | 192.168.50.214 | Intel Core i5-7500, 4c/4t, no VT-x | 32 GB DDR4 non-ECC | none, Intel HD 630 integrated only | 238.5 GB NVMe root, sole device, aftermarket | COMPLETE | Test & integration | QA, regression, integration testing, benchmarks | READY |
 
-## Phase 1 Gate
+## Phase 1 Gate — historical
 
 ```text
 [x] Every expected server is present in the registry
@@ -83,7 +83,7 @@ output rather than by re-contacting the hosts.
 make it. `hxs-cp` is the control plane, deliberately outside the fifteen-server fleet, and
 holds no row here.
 
-All seven conditions are complete and `act-012` is closed. **Phase 2 is open.** The Phase 1
+**Retired as a control on 2026-08-13, kept as a record.** All seven conditions are complete and `act-012` is closed. **Phase 2 is open** — Phase 2 now means repository consolidation and alignment; server implementation is Phase 3. The Phase 1
 command guard is released as a direct consequence: package installation, service management,
 network, storage and driver commands are no longer denied fleet-wide. Phase 2 work is bounded
 by the approved role for each server rather than by the guard, and `configuration.md` copies
