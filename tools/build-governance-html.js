@@ -234,6 +234,9 @@ function navHtml(current) {
     ['standards', 'Standards'],
     ['inventory', 'Fleet inventory'],
     ['architecture', 'Architecture'],
+    ['frozen', 'v0.1 frozen'],
+    ['validation', 'Validation'],
+    ['recommendations', 'Recommendations'],
   ];
   return items
     .map(([k, label]) => {
@@ -395,6 +398,9 @@ const indexBody = fs
   .replace(/__LINK_LESSONS__/g, LINKS.lessons || '#')
   .replace(/__LINK_STANDARDS__/g, LINKS.standards || '#')
   .replace(/__LINK_ARCHITECTURE__/g, LINKS.architecture || '#')
+  .replace(/__LINK_FROZEN__/g, LINKS.frozen || '#')
+  .replace(/__LINK_VALIDATION__/g, LINKS.validation || '#')
+  .replace(/__LINK_RECOMMENDATIONS__/g, LINKS.recommendations || '#')
   .replace(/__COUNT_ACTIONS__/g, String(A.length))
   .replace(/__COUNT_OPEN__/g, String(aCount((r) => statusClass(r[5]) === 'is-open')))
   .replace(/__COUNT_LESSONS__/g, String(L.length));

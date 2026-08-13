@@ -1,8 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>HX Fleet — Tech-Stack Alignment</title>
 <style>
   :root {
@@ -81,16 +76,11 @@
   }
 
   .masthead { display: flex; flex-direction: column; gap: 0.75rem; }
+  .nav { display:flex; gap:1.1rem; flex-wrap:wrap; align-items:center; font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.1em; }
+  .nav a { color:var(--muted); text-decoration:none; border-bottom:1px solid transparent; padding-bottom:2px; }
+  .nav a:hover { color:var(--accent); border-bottom-color:var(--accent); }
+  .nav a[aria-current="page"] { color:var(--accent); border-bottom-color:var(--accent); }
   .masthead-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-
-  .nav {
-    display: flex; gap: 1.1rem; flex-wrap: wrap; align-items: center;
-    font-family: var(--mono); font-size: var(--step--2);
-    text-transform: uppercase; letter-spacing: 0.1em;
-  }
-  .nav a { color: var(--muted); text-decoration: none; border-bottom: 1px solid transparent; padding-bottom: 2px; }
-  .nav a:hover { color: var(--accent); border-bottom-color: var(--accent); }
-  .nav a[aria-current="page"] { color: var(--accent); border-bottom-color: var(--accent); }
   .toggle {
     font-family: var(--mono); font-size: var(--step--2); text-transform: uppercase;
     letter-spacing: 0.09em; color: var(--muted); background: var(--surface);
@@ -168,26 +158,24 @@
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
-</head>
-<body>
 <div class="page">
 
   <header class="masthead">
     <div class="masthead-top">
       <nav class="nav">
-        <a href="index.html">Governance</a>
-        <a href="hx-fleet-inventory.html">Fleet inventory</a>
-        <a href="fleet-architecture-candidate-v0.1.html" aria-current="page">Architecture</a>
-        <a href="hx-stack-alignment-v0.1-frozen.html">v0.1 frozen</a>
-        <a href="hx-validation-findings.html">Validation</a>
-        <a href="hx-recommendations.html">Recommendations</a>
-        <a href="actions-and-issues.html">Actions &amp; issues</a>
-        <a href="lessons-learned.html">Lessons learned</a>
-        <a href="documentation-standards.html">Standards</a>
+        <a href="https://claude.ai/code/artifact/09f4465a-1924-40c5-b352-cbe19926100d">Governance</a>
+        <a href="https://claude.ai/code/artifact/130cf301-c270-4851-a1e5-eb9ed8586074">Fleet inventory</a>
+        <a href="https://claude.ai/code/artifact/f9081a11-6359-4499-abe1-b04e0471ca7f">Architecture</a>
+        <a href="https://claude.ai/code/artifact/01a9f2ed-02d1-4491-9cab-07934be22dd1" aria-current="page">v0.1 frozen</a>
+        <a href="https://claude.ai/code/artifact/c16b4563-b9d4-4c17-9961-46329fe4faac">Validation</a>
+        <a href="https://claude.ai/code/artifact/1af2b128-6708-4e55-949d-d38cc293f67a">Recommendations</a>
+        <a href="https://claude.ai/code/artifact/4062f99f-e8d4-44ba-aae2-74472bde91f5">Actions &amp; issues</a>
+        <a href="https://claude.ai/code/artifact/9325f481-90f0-4439-9fa0-e8f48d629ff4">Lessons learned</a>
+        <a href="https://claude.ai/code/artifact/ac6d1ab7-8dae-436d-94f1-80bfbb99d467">Standards</a>
       </nav>
+      <p class="eyebrow">HX-Alignment &middot; Architecture Candidate v0.1 &middot; frozen 2026-08-13</p>
       <button type="button" class="toggle" id="theme-toggle">Dark mode</button>
     </div>
-    <p class="eyebrow">HX-Alignment &middot; Candidate v0.1 &middot; Fleet role mapping</p>
     <h1>Tech-Stack Alignment &mdash; Hana-X on the Real Fleet</h1>
     <p>
       The Hana-X Solutions Architecture, mapped onto the fifteen physical hosts the fleet
@@ -196,8 +184,10 @@
       control-plane laptop's limits. This is a <strong>development and test environment</strong>
       &mdash; single-tenant, low concurrency, no production user base hammering it &mdash; so single
       instances without failover are appropriate by design. The software stack is unchanged from the
-      spec; what changes is where each piece runs and how it is isolated.
-      <code>SERVER-REGISTRY.md</code> remains authoritative on hardware.
+      spec; what changes is where each piece runs and how it is isolated. This mapping is frozen as
+      <strong>Architecture Candidate v0.1</strong> &mdash; a baseline for a focused
+      research/validation pass, not a final design. <code>SERVER-REGISTRY.md</code> remains
+      authoritative on hardware.
     </p>
   </header>
 
@@ -205,7 +195,7 @@
     <div class="cell"><dt>Environment</dt><dd>Dev / Test</dd></div>
     <div class="cell"><dt>GPU hosts</dt><dd>4</dd></div>
     <div class="cell"><dt>CPU hosts</dt><dd>11</dd></div>
-    <div class="cell"><dt>Control plane</dt><dd>hxs-cp &middot; tooling</dd></div>
+    <div class="cell"><dt>Control plane</dt><dd>hxs-cp &middot; empty</dd></div>
     <div class="cell"><dt>Total VRAM</dt><dd>122,458 MiB</dd></div>
     <div class="cell"><dt>Model roles</dt><dd>6</dd></div>
   </dl>
@@ -221,23 +211,19 @@
     <p>
       <strong>The GPU hosts each hold a distinct AI function.</strong> <code>hxs-1</code> is the
       reasoning flagship, <code>hxs-2</code> is coding, <code>hxs-3</code> is the
-      <em>agent-intelligence node</em> &mdash; agent execution plus the LiteRAG graph and
+      <em>agent-intelligence node</em> &mdash; agent execution plus the LightRAG graph and
       experimentation headroom &mdash; and <code>hxs-4</code> is the <em>retrieval &amp; utility
-      node</em>, co-locating Qdrant with the embedding and rerank models. Qdrant and LiteRAG used
+      node</em>, co-locating Qdrant with the embedding and rerank models. Qdrant and LightRAG used
       to sit on CPU hosts; moving them beside the GPUs that feed them freed <code>hxs-10</code>,
       which now serves the web frontends.
     </p>
     <p>
-      <strong>The control plane runs no platform services.</strong> <code>hxs-cp</code> is a
-      Wi-Fi-only laptop with 15.8&nbsp;GB of soldered RAM, and its lid switch is at defaults, so
-      closing it suspends the machine. Nothing user-facing should depend on it. The platform
+      <strong>The control plane runs nothing.</strong> <code>hxs-cp</code> is a Wi-Fi-only laptop
+      with 15.8&nbsp;GB of soldered RAM &mdash; the fleet's most fragile node. It keeps the
+      control-plane <em>designation</em> only; <strong>no services run on it.</strong> Its spec
       services move onto reliable wired fleet hosts (NGINX ingress on <code>hxs-5</code>, the
-      LiteLLM gateway on <code>hxs-8</code>, platform state on <code>hxs-9</code>).
-      <strong>It does keep its control-plane tooling</strong> &mdash; repository clones, Claude
-      Code and approved agent tooling, agent workspaces, fleet SSH, deployment scripts and logs,
-      per <code>governance/hx-fleet-control-server.md</code>. Those are operator tools, not
-      services, and holding them apart from the development host keeps the credential that can
-      reconfigure the whole fleet off the machine where experimental code runs.
+      LiteLLM gateway on <code>hxs-8</code>, platform state on <code>hxs-9</code>). The laptop is
+      just the operator's terminal for reaching the fleet.
     </p>
     <p>
       <strong>Isolation is per-service virtual environments.</strong> Per the no-Docker mandate,
@@ -262,7 +248,7 @@
       matched pair the same way (TP=2, decided).
       <code>hxs-4</code>'s pair is mismatched (16&nbsp;GB + 8&nbsp;GB), so it never pools &mdash;
       its cards are independent slots. Note that <code>hxs-3</code> and <code>hxs-4</code> also host
-      data services (LiteRAG and Qdrant respectively) on their CPU/RAM/NVMe, beside the models
+      data services (LightRAG and Qdrant respectively) on their CPU/RAM/NVMe, beside the models
       that feed them.
     </p>
 
@@ -299,7 +285,7 @@
             <td class="host">hxs-3</td>
             <td class="vram">32,622 MiB<span class="qual">2 &times; RTX 5060 Ti 16 GB, matched</span></td>
             <td>i7-5960X, 66 GB<span class="qual">3.6 TB NVMe root; <span class="mark">1.8 TB SATA SSD unallocated</span></span></td>
-            <td>Agent intelligence node<span class="qual">Agent execution + graph retrieval + experimentation. gpt-oss-20b (agent/tool exec); LiteRAG graph &amp; retrieval processing and working memory on the 66 GB CPU/RAM; 1.8 TB SSD is the candidate device for graph data, working datasets, caches &amp; intermediate processing</span></td>
+            <td>Agent intelligence node<span class="qual">Agent execution + graph retrieval + experimentation. gpt-oss-20b (agent/tool exec); LightRAG / LiteRAG graph &amp; retrieval processing and working memory on the 66 GB CPU/RAM; 1.8 TB SSD is the candidate device for graph data, working datasets, caches &amp; intermediate processing</span></td>
             <td class="mono">TP&nbsp;=&nbsp;2<span class="qual">gpt-oss pooled across both cards for maximum context (decided)</span></td>
             <td><span class="ok">fits</span></td>
           </tr>
@@ -322,7 +308,7 @@
       Six model roles cover the pipeline in the spec's Flows A and B. Every large model is 4-bit
       quantized; a 32B model at half-byte-per-weight is ~16&nbsp;GB of weights, which exceeds a
       single 16&nbsp;GB card and forces tensor-parallelism across a host's two GPUs. (Qdrant and
-      LiteRAG are data services, not models &mdash; see the tier tables.)
+      LightRAG are data services, not models &mdash; see the tier tables.)
     </p>
 
     <div class="tablewrap">
@@ -441,7 +427,7 @@
             <td class="host">hxs-10</td>
             <td class="mono">i5-7500 &middot; 32 GB</td>
             <td>Web application</td>
-            <td>Open WebUI &mdash; primary chat interface &mdash; plus deployed CopilotKit / AG-UI frontends. <span class="qual">Host freed when Qdrant &amp; LiteRAG moved to the GPU tier.</span></td>
+            <td>Open WebUI &mdash; primary chat interface &mdash; plus deployed CopilotKit / AG-UI frontends. <span class="qual">Host freed when Qdrant &amp; LightRAG moved to the GPU tier.</span></td>
           </tr>
           <tr class="tier-cpu">
             <td class="host">hxs-11</td>
@@ -464,43 +450,20 @@
           <tr class="tier-cpu">
             <td class="host">hxs-14</td>
             <td class="mono">i5-7500 &middot; 32 GB</td>
-            <td>Development<span class="qual">spec label <code>hxs-dev</code> &mdash; a role name, not a hostname</span></td>
+            <td>Development &mdash; <code>hxs-dev</code></td>
             <td>Prompt engineering, LangGraph graph development, CopilotKit / AG-UI client dev, API integration &mdash; consumes remote model &amp; MCP services</td>
           </tr>
           <tr class="tier-cpu">
             <td class="host">hxs-15</td>
             <td class="mono">i5-7500 &middot; 32 GB &middot; <span class="mark">no VT-x</span></td>
-            <td>Test &amp; integration<span class="qual">spec label <code>hxs-test</code> &mdash; a role name, not a hostname</span></td>
+            <td>Test &amp; integration &mdash; <code>hxs-test</code></td>
             <td>QA, regression, integration testing, agent-workflow validation, automated benchmarks</td>
           </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <section>
-    <h2>Control plane &mdash; outside the fleet</h2>
-    <p class="lede">
-      <code>hxs-cp</code> is not one of the fifteen fleet servers and is not a small-form-factor
-      host, so it is listed separately. It operates the fleet rather than serving any part of the
-      platform.
-    </p>
-    <div class="tablewrap">
-      <table>
-        <thead>
-          <tr>
-            <th scope="col">Host</th>
-            <th scope="col">Spec</th>
-            <th scope="col">Role</th>
-            <th scope="col">Software</th>
-          </tr>
-        </thead>
-        <tbody>
           <tr class="tier-cp">
             <td class="host">hxs-cp</td>
-            <td class="mono">HP Elite x360 1040 G9<span class="qual">i7-1265U 10c/12t &middot; 15.8 GB soldered &middot; 477 GB &middot; <span class="mark">Wi-Fi only</span></span></td>
-            <td>Control plane<span class="qual">operates the fleet; serves no part of the platform</span></td>
-            <td>Repository clones, Claude Code and approved agent tooling, agent workspaces, fleet SSH, deployment scripts and artifacts, deployment and agent logs. <span class="qual"><span class="mark">No platform services.</span> Two fixes required before it is relied on: disable lid-suspend, and add wired networking over its Thunderbolt&nbsp;4 port.</span></td>
+            <td class="mono">laptop &middot; 15.8 GB &middot; Wi-Fi</td>
+            <td>Control plane &mdash; designation only<span class="qual">not a fleet member, nothing runs here</span></td>
+            <td>No services. Operator's terminal for reaching the fleet.</td>
           </tr>
         </tbody>
       </table>
@@ -512,10 +475,6 @@
     <p class="lede">
       The original spec used logical labels (<code>hxs-dev</code>, <code>hxs-test</code>,
       &ldquo;Servers 3&ndash;15&rdquo;). This is how those map to the real inventory hosts.
-      <strong>These labels describe roles, not machines.</strong> They are not hostnames and
-      will not be added to <code>hx.local.arpa</code> &mdash; decided 2026-08-13. Every host is
-      reached by its real name, <code>hxs-14.hx.local.arpa</code> and
-      <code>hxs-15.hx.local.arpa</code>, so a single machine never answers to two names.
     </p>
     <div class="tablewrap">
       <table>
@@ -523,14 +482,14 @@
           <tr><th scope="col">Spec label</th><th scope="col">Original intent</th><th scope="col">Physical host(s)</th></tr>
         </thead>
         <tbody>
-          <tr><td class="mono">hxs-cp</td><td>Control plane (outside the fleet)</td><td class="mono">Control-plane tooling only &mdash; platform services on hxs-5 (ingress) / hxs-8 (gateway) / hxs-9 (state)</td></tr>
+          <tr><td class="mono">hxs-cp</td><td>Control plane (designation only)</td><td class="mono">Nothing runs on it &mdash; spec services on hxs-5 (ingress) / hxs-8 (gateway) / hxs-9 (state)</td></tr>
           <tr><td class="mono">hxs-dev (Server 1)</td><td>Development workspace</td><td class="mono">hxs-14</td></tr>
           <tr><td class="mono">hxs-test (Server 2)</td><td>Testing, integration, benchmarks</td><td class="mono">hxs-15</td></tr>
           <tr><td class="mono">Servers 3&ndash;5</td><td>Qwen reasoning (3 GPU nodes)</td><td class="mono">hxs-1 (consolidated to 1 host)</td></tr>
-          <tr><td class="mono">Servers 6&ndash;7</td><td>GPT-OSS agent exec (2 GPU nodes)</td><td class="mono">hxs-3 (agent-intelligence node, TP=2)</td></tr>
+          <tr><td class="mono">Servers 6&ndash;7</td><td>GPT-OSS agent exec (2 GPU nodes)</td><td class="mono">hxs-3 (agent-intelligence node; GPU topology TBD)</td></tr>
           <tr><td class="mono">Server 8</td><td>Coding &amp; chat models</td><td class="mono">hxs-2 (coder) + hxs-4 16 GB card (utility/chat)</td></tr>
           <tr><td class="mono">Server 9</td><td>Embeddings &amp; reranker</td><td class="mono">hxs-4 &middot; 8 GB card</td></tr>
-          <tr><td class="mono">LiteRAG</td><td>Graph retrieval engine</td><td class="mono">hxs-3 (co-located with agent execution)</td></tr>
+          <tr><td class="mono">LiteRAG / LightRAG</td><td>Graph retrieval engine</td><td class="mono">hxs-3 (co-located with agent execution)</td></tr>
           <tr><td class="mono">Qdrant + Web-UI</td><td>Vector DB &amp; dashboard</td><td class="mono">hxs-4 (dedicated 476.9 GB NVMe)</td></tr>
           <tr><td class="mono">LiteLLM (+ SQLite)</td><td>Unified model API gateway</td><td class="mono">hxs-8</td></tr>
           <tr><td class="mono">Open WebUI / frontends</td><td>Human-facing web apps</td><td class="mono">hxs-10</td></tr>
@@ -549,27 +508,6 @@
         <p>Decided: gpt-oss-20b uses <strong>both cards at TP=2</strong> for maximum tool-calling context. The single-card alternative (leaving one GPU free for experimental inference) is set aside.</p>
       </div>
       <div class="finding flagged">
-        <h3>Storage is inverted &mdash; open</h3>
-        <p>The data-bearing services sit on the smallest disks. Postgres and Redis
-        (<code>hxs-9</code>), Docling (<code>hxs-12</code>), n8n (<code>hxs-13</code>), Open WebUI
-        (<code>hxs-10</code>) and Crawl4AI (<code>hxs-6</code>) each write to a
-        <strong>238.5&nbsp;GB boot device with about 210&nbsp;GB free, no second drive and no free
-        bay</strong>. On a single-device host a full disk stops the host, not just the service.
-        Meanwhile <code>hxs-1</code> holds <strong>~11&nbsp;TB unallocated</strong> &mdash; the
-        fleet's only real storage pool &mdash; on a machine with no workload until Qwen&nbsp;3.8
-        ships, and <code>hxs-2</code> has a further ~1.2&nbsp;TB idle.</p>
-        <p><strong>Recommendation:</strong> export <code>hxs-1</code>'s unallocated 3.6&nbsp;TB
-        NVMe and 7.3&nbsp;TB HDD over NFS as shared fleet storage &mdash; model cache, deployment
-        artifacts and a backup target for the database and workflow hosts. It costs no hardware,
-        uses capacity that is otherwise idle, and gives the single-disk hosts somewhere to put
-        anything that grows. The trade is that <code>hxs-1</code> becomes a dependency for other
-        hosts, which is acceptable at dev/test scale.</p>
-        <p><strong>Also worth doing:</strong> no host in the fleet has SMART monitoring installed,
-        and three run aftermarket drives of unknown provenance (<code>hxs-11</code>,
-        <code>hxs-14</code>, <code>hxs-15</code>). Installing <code>smartmontools</code> fleet-wide
-        is cheap insurance against a silent failure on a host with no redundancy.</p>
-      </div>
-      <div class="finding flagged">
         <h3>Qwen 3.8 27B is unreleased</h3>
         <p>Its slot on <code>hxs-1</code> is sized for a 27B dense model at 4-bit (~14 GB weights, fits 32 GB with room for context). If it ships as MoE, larger, or needs a specific quant, re-confirm the fit on launch day before committing the host.</p>
       </div>
@@ -579,11 +517,11 @@
       </div>
       <div class="finding settled">
         <h3>Retrieval co-located with its models</h3>
-        <p>Qdrant now sits on <code>hxs-4</code> beside the embedding and rerank models it serves, on a dedicated 476.9 GB NVMe &mdash; embed &rarr; store &rarr; rerank on one host. LiteRAG sits on <code>hxs-3</code> beside agent execution, with the 1.8 TB SSD as its graph-data device. Both GPU hosts have ample RAM (32 / 66 GB) for these services.</p>
+        <p>Qdrant now sits on <code>hxs-4</code> beside the embedding and rerank models it serves, on a dedicated 476.9 GB NVMe &mdash; embed &rarr; store &rarr; rerank on one host. LightRAG sits on <code>hxs-3</code> beside agent execution, with the 1.8 TB SSD as its graph-data device. Both GPU hosts have ample RAM (32 / 66 GB) for these services.</p>
       </div>
       <div class="finding settled">
-        <h3>Control plane runs no platform services</h3>
-        <p>Per direction, <code>hxs-cp</code> carries no platform services: ingress on <code>hxs-5</code>, gateway on <code>hxs-8</code>, state on <code>hxs-9</code>. It keeps its control-plane tooling &mdash; Claude Code, repositories, workspaces, fleet SSH and deployment scripts &mdash; which are operator tools rather than services. That removes the fleet's biggest single point of failure while keeping the deployment credential off the development host.</p>
+        <h3>Control plane runs nothing</h3>
+        <p>Per direction, <code>hxs-cp</code> holds the control-plane designation but runs no services: ingress on <code>hxs-5</code>, gateway on <code>hxs-8</code>, state on <code>hxs-9</code>. The laptop is the operator's terminal &mdash; removing the fleet's biggest single point of failure.</p>
       </div>
       <div class="finding settled">
         <h3>Isolation via per-service virtualenvs</h3>
@@ -606,7 +544,7 @@
   </section>
 
   <footer>
-    HX-Alignment &middot; candidate v0.1 &middot; dev / test environment &middot; compiled 2026-08-13 &middot;
+    HX-Alignment &middot; Architecture Candidate v0.1 (frozen baseline) &middot; dev / test &middot; compiled 2026-08-13 &middot;
     hardware per <code>SERVER-REGISTRY.md</code>.
   </footer>
 
@@ -650,5 +588,3 @@
   }
 })();
 </script>
-</body>
-</html>

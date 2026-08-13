@@ -1,0 +1,330 @@
+<title>Recommendations — HX Governance</title>
+<style>
+  :root {
+    --ground:#fbfbf9; --surface:#f2f3f0; --raised:#ffffff; --ink:#1b1f1d;
+    --muted:#6b726e; --faint:#949b96; --line:#dde0db; --line-firm:#c3c8c1;
+    --accent:#0f6e5c; --accent-wash:#e6f0ec; --signal:#b4531a; --signal-wash:#fbeee4;
+    --ok:#2f6d4f; --ok-wash:#e4efe8;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --step-0:0.9375rem; --step--1:0.8125rem; --step--2:0.6875rem;
+    --step-1:1.125rem; --step-2:1.5rem; --step-3:2.125rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ground:#141917; --surface:#1b211e; --raised:#1f2724; --ink:#e8ebe8;
+      --muted:#97a09b; --faint:#6f7873; --line:#2b342f; --line-firm:#3c4740;
+      --accent:#4fbfa3; --accent-wash:#16302a; --signal:#e08a4c; --signal-wash:#33251a;
+      --ok:#6cc09a; --ok-wash:#162c22; }
+  }
+  :root[data-theme="dark"]{ --ground:#141917;--surface:#1b211e;--raised:#1f2724;--ink:#e8ebe8;--muted:#97a09b;--faint:#6f7873;--line:#2b342f;--line-firm:#3c4740;--accent:#4fbfa3;--accent-wash:#16302a;--signal:#e08a4c;--signal-wash:#33251a;--ok:#6cc09a;--ok-wash:#162c22;}
+  :root[data-theme="light"]{ --ground:#fbfbf9;--surface:#f2f3f0;--raised:#ffffff;--ink:#1b1f1d;--muted:#6b726e;--faint:#949b96;--line:#dde0db;--line-firm:#c3c8c1;--accent:#0f6e5c;--accent-wash:#e6f0ec;--signal:#b4531a;--signal-wash:#fbeee4;--ok:#2f6d4f;--ok-wash:#e4efe8;}
+  :root{color-scheme:light;} @media (prefers-color-scheme:dark){:root{color-scheme:dark;}}
+  :root[data-theme="dark"]{color-scheme:dark;} :root[data-theme="light"]{color-scheme:light;}
+
+  body { margin:0; padding:clamp(1.5rem,4vw,3.5rem) clamp(1rem,4vw,2rem) 5rem; background:var(--ground); color:var(--ink); font-family:var(--sans); font-size:var(--step-0); line-height:1.55; -webkit-text-size-adjust:100%; }
+  .page { max-width:1100px; margin:0 auto; display:flex; flex-direction:column; gap:2.25rem; }
+  .masthead { display:flex; flex-direction:column; gap:0.7rem; }
+  .masthead-top { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .nav { display:flex; gap:1.1rem; flex-wrap:wrap; align-items:center; font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.1em; }
+  .nav a { color:var(--muted); text-decoration:none; border-bottom:1px solid transparent; padding-bottom:2px; }
+  .nav a:hover { color:var(--accent); border-bottom-color:var(--accent); }
+  .nav a[aria-current="page"] { color:var(--accent); border-bottom-color:var(--accent); }
+  .toggle { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.09em; color:var(--muted); background:var(--surface); border:1px solid var(--line-firm); border-radius:2px; padding:0.4rem 0.75rem; cursor:pointer; transition:color 120ms ease,border-color 120ms ease; }
+  .toggle:hover { color:var(--accent); border-color:var(--accent); }
+  .eyebrow { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.14em; color:var(--accent); margin:0; }
+  h1 { font-size:var(--step-3); line-height:1.08; letter-spacing:-0.02em; font-weight:650; margin:0; text-wrap:balance; }
+  .masthead p { margin:0; max-width:68ch; color:var(--muted); }
+
+  .strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:3px; overflow:hidden; }
+  .cell { background:var(--surface); padding:0.85rem 1rem; display:flex; flex-direction:column; gap:0.15rem; }
+  .cell dt { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); }
+  .cell dd { margin:0; font-size:var(--step-1); font-weight:600; font-variant-numeric:tabular-nums; }
+
+  section { display:flex; flex-direction:column; gap:0.85rem; }
+  h2 { font-size:var(--step-2); letter-spacing:-0.015em; font-weight:620; margin:0; text-wrap:balance; }
+  .lede { margin:0; color:var(--muted); max-width:78ch; font-size:var(--step--1); }
+
+  .recs { display:flex; flex-direction:column; gap:0.85rem; }
+  .rec { border:1px solid var(--line); border-radius:3px; background:var(--raised); padding:1.05rem 1.2rem; display:flex; flex-direction:column; gap:0.55rem; border-left:3px solid var(--line-firm); }
+  .rec.p1 { border-left-color:var(--signal); }
+  .rec.p2 { border-left-color:var(--accent); }
+  .rec.p3 { border-left-color:var(--faint); }
+  .rec-head { display:flex; align-items:baseline; gap:0.6rem; flex-wrap:wrap; }
+  .rid { font-family:var(--mono); font-weight:650; }
+  .rec h3 { margin:0; font-size:var(--step-1); font-weight:620; letter-spacing:-0.01em; flex:1 1 18rem; }
+  .pill { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.08em; padding:0.15rem 0.5rem; border-radius:10px; font-weight:600; white-space:nowrap; }
+  .pill.p1 { background:var(--signal-wash); color:var(--signal); }
+  .pill.p2 { background:var(--accent-wash); color:var(--accent); }
+  .pill.p3 { background:var(--surface); color:var(--muted); }
+  .cost { font-family:var(--mono); font-size:var(--step--2); color:var(--faint); text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap; }
+  .field { display:flex; flex-direction:column; gap:0.2rem; }
+  .field-label { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.09em; color:var(--faint); }
+  .field p { margin:0; max-width:80ch; }
+  .field.sub p { color:var(--muted); font-size:var(--step--1); }
+
+  .scroll { overflow-x:auto; border:1px solid var(--line); border-radius:3px; background:var(--raised); }
+  table { border-collapse:collapse; width:100%; font-size:var(--step--1); }
+  thead th { background:var(--surface); border-bottom:1px solid var(--line-firm); font-family:var(--mono); font-size:var(--step--2); font-weight:600; text-transform:uppercase; letter-spacing:0.09em; color:var(--muted); text-align:left; padding:0.65rem 0.85rem; white-space:nowrap; }
+  tbody td { padding:0.6rem 0.85rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:last-child td { border-bottom:none; }
+
+  code { font-family:var(--mono); font-size:0.92em; background:var(--surface); padding:0.05em 0.32em; border-radius:2px; }
+  footer { border-top:1px solid var(--line); padding-top:1rem; font-size:var(--step--2); color:var(--faint); }
+  a { color:var(--accent); }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important;} }
+</style>
+
+<div class="page">
+
+  <header class="masthead">
+    <div class="masthead-top">
+      <nav class="nav">
+        <a href="https://claude.ai/code/artifact/09f4465a-1924-40c5-b352-cbe19926100d">Governance</a>
+        <a href="https://claude.ai/code/artifact/130cf301-c270-4851-a1e5-eb9ed8586074">Fleet inventory</a>
+        <a href="https://claude.ai/code/artifact/f9081a11-6359-4499-abe1-b04e0471ca7f">Architecture</a>
+        <a href="https://claude.ai/code/artifact/01a9f2ed-02d1-4491-9cab-07934be22dd1">v0.1 frozen</a>
+        <a href="https://claude.ai/code/artifact/c16b4563-b9d4-4c17-9961-46329fe4faac">Validation</a>
+        <a href="https://claude.ai/code/artifact/1af2b128-6708-4e55-949d-d38cc293f67a" aria-current="page">Recommendations</a>
+        <a href="https://claude.ai/code/artifact/4062f99f-e8d4-44ba-aae2-74472bde91f5">Actions &amp; issues</a>
+        <a href="https://claude.ai/code/artifact/9325f481-90f0-4439-9fa0-e8f48d629ff4">Lessons learned</a>
+        <a href="https://claude.ai/code/artifact/ac6d1ab7-8dae-436d-94f1-80bfbb99d467">Standards</a>
+      </nav>
+      <button type="button" class="toggle" id="theme-toggle">Dark mode</button>
+    </div>
+    <p class="eyebrow">HX-Infrastructure &middot; Recommendations</p>
+    <h1>Recommendations</h1>
+    <p>
+      Things worth doing, drawn from Phase 1 discovery and from reviewing the architecture
+      candidate and the validation findings. Each is a proposal with its reasoning and its cost,
+      not a decision. Nothing here has been actioned; these are intended for the to-do list.
+    </p>
+  </header>
+
+  <dl class="strip">
+    <div class="cell"><dt>Recommendations</dt><dd>9</dd></div>
+    <div class="cell"><dt>Do first</dt><dd>4</dd></div>
+    <div class="cell"><dt>Worth doing</dt><dd>3</dd></div>
+    <div class="cell"><dt>Consider</dt><dd>2</dd></div>
+    <div class="cell"><dt>Cost hardware</dt><dd>1</dd></div>
+  </dl>
+
+  <section>
+    <h2>Do first</h2>
+    <p class="lede">Each of these protects something that currently has no protection, or resolves
+    a contradiction that will cause work to be done twice.</p>
+    <div class="recs">
+
+      <article class="rec p1">
+        <div class="rec-head">
+          <span class="rid">R1</span>
+          <h3>Install SMART monitoring across the fleet</h3>
+          <span class="pill p1">do first</span><span class="cost">package install</span>
+        </div>
+        <div class="field"><span class="field-label">Why</span><p><strong>Not one drive in the
+        fleet has SMART monitoring.</strong> <code>smartmontools</code> is absent on all sixteen
+        machines, so no drive can report a pending failure. Eleven hosts run a single device with
+        no redundancy, where a drive failure is a total host loss, and three of those
+        (<code>hxs-11</code>, <code>hxs-14</code>, <code>hxs-15</code>) run aftermarket iDsonix
+        units whose endurance and firmware history are not known from vendor records.</p></div>
+        <div class="field sub"><span class="field-label">Do</span><p>Install
+        <code>smartmontools</code> fleet-wide and enable <code>smartd</code> with email or log
+        alerting. This is the cheapest risk reduction available and needs no design decision.</p></div>
+      </article>
+
+      <article class="rec p1">
+        <div class="rec-head">
+          <span class="rid">R2</span>
+          <h3>Resolve the LiteRAG / LightRAG naming conflict before anything is built</h3>
+          <span class="pill p1">do first</span><span class="cost">one decision</span>
+        </div>
+        <div class="field"><span class="field-label">Why</span><p>The two documents disagree. The
+        architecture candidate now says <strong>LiteRAG</strong> on your instruction; the
+        validation findings state that <strong>LightRAG</strong> (HKUDS) is the real product and
+        call LiteRAG a misnomer, citing that project's <code>env.example</code>, API-server docs
+        and issue&nbsp;#2233. Configuration keys such as
+        <code>LIGHTRAG_VECTOR_STORAGE</code> follow whichever is actually correct.</p></div>
+        <div class="field sub"><span class="field-label">Do</span><p>Settle which product is
+        intended, then make every document agree. If they are two different projects, say so
+        explicitly, because the names are one character apart and will be confused again.</p></div>
+      </article>
+
+      <article class="rec p1">
+        <div class="rec-head">
+          <span class="rid">R3</span>
+          <h3>Establish an off-machine copy of the repository</h3>
+          <span class="pill p1">do first</span><span class="cost">one destination decision</span>
+        </div>
+        <div class="field"><span class="field-label">Why</span><p><code>act-005</code>, open since
+        2026-08-11. The complete discovery record for sixteen machines, the registry, the
+        governance history, the hooks and the risk register exist on <strong>one
+        workstation</strong>. Local commits are history, not a backup. The blocker was that
+        <code>hanax-ai/HX-Infrastructure</code> on GitHub is taken by an unrelated project.</p></div>
+        <div class="field sub"><span class="field-label">Do</span><p>Pick any destination — a
+        differently-named GitHub repository, a private remote, or an external drive. The
+        destination matters far less than having one.</p></div>
+      </article>
+
+      <article class="rec p1">
+        <div class="rec-head">
+          <span class="rid">R4</span>
+          <h3>Harden the control-plane laptop before relying on it</h3>
+          <span class="pill p1">do first</span><span class="cost">config + adapter</span>
+        </div>
+        <div class="field"><span class="field-label">Why</span><p>Verified on the host:
+        <code>hxs-cp</code> has <strong>no Ethernet hardware at all</strong> — Wi-Fi is not a
+        fallback, it is the only path — and its lid switch is at systemd defaults, so
+        <strong>closing the lid suspends the machine</strong>. It holds the credential that can
+        reconfigure all fifteen servers.</p></div>
+        <div class="field sub"><span class="field-label">Do</span><p>Set
+        <code>HandleLidSwitch=ignore</code> in <code>logind.conf</code>, and add wired networking
+        through its Thunderbolt&nbsp;4 port. If the laptop ever leaves the building, separate the
+        control-plane deployment key from the human workstation key first — the control-server
+        document already calls for this.</p></div>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Worth doing</h2>
+    <div class="recs">
+
+      <article class="rec p2">
+        <div class="rec-head">
+          <span class="rid">R5</span>
+          <h3>Put the idle storage to work as shared fleet storage</h3>
+          <span class="pill p2">worth doing</span><span class="cost">no hardware</span>
+        </div>
+        <div class="field"><span class="field-label">Why</span><p><strong>Storage is
+        inverted.</strong> Every data-bearing service sits on the smallest disk in the fleet:
+        Postgres and Redis, Docling, n8n, Open WebUI and Crawl4AI each write to a 238.5&nbsp;GB
+        boot device with about 210&nbsp;GB free, no second drive and no free bay. On a
+        single-device host a full disk stops the host, not just the service. Meanwhile
+        <code>hxs-1</code> holds roughly <strong>11&nbsp;TB unallocated</strong> and
+        <code>hxs-2</code> a further 1.2&nbsp;TB.</p></div>
+        <div class="field sub"><span class="field-label">Do</span><p>Export
+        <code>hxs-1</code>'s unallocated 3.6&nbsp;TB NVMe and 7.3&nbsp;TB HDD over NFS as shared
+        fleet storage — model cache, deployment artifacts, and a backup target for the database
+        and workflow hosts. The trade is that <code>hxs-1</code> becomes a dependency for other
+        hosts, which is acceptable at dev/test scale.</p></div>
+      </article>
+
+      <article class="rec p2">
+        <div class="rec-head">
+          <span class="rid">R6</span>
+          <h3>Reconcile the architecture documents before building from them</h3>
+          <span class="pill p2">worth doing</span><span class="cost">document pass</span>
+        </div>
+        <div class="field"><span class="field-label">Why</span><p>There are now two copies of the
+        same architecture. <code>hx-stack-alignment-v0.1-frozen.html</code> is the frozen v0.1
+        baseline the validation pass was run against;
+        <code>fleet-architecture-candidate-v0.1.html</code> carries your applied decisions and is
+        therefore no longer v0.1. The validation pass then produced seven further changes for a
+        v0.2. Three documents currently describe the same fleet differently.</p></div>
+        <div class="field sub"><span class="field-label">Do</span><p>Keep the frozen v0.1 as the
+        immutable baseline, fold both your decisions and the seven validation changes into a
+        single <code>v0.2</code>, and retire the middle copy. One current document, one frozen
+        baseline.</p></div>
+      </article>
+
+      <article class="rec p2">
+        <div class="rec-head">
+          <span class="rid">R7</span>
+          <h3>Decide whether the test host needs virtualization</h3>
+          <span class="pill p2">worth doing</span><span class="cost">firmware change</span>
+        </div>
+        <div class="field"><span class="field-label">Why</span><p><code>hxs-15</code> is assigned
+        QA, regression, integration testing and agent-workflow validation, and it is the
+        <strong>only host in the fleet that does not expose VT-x</strong> (<code>iss-011</code>).
+        Container work is unaffected; anything hypervisor-backed cannot run there.</p></div>
+        <div class="field sub"><span class="field-label">Do</span><p>If testing needs VMs, enable
+        Intel VT-x in the HP P21 firmware and re-run the collector to confirm. If it does not,
+        record that so the constraint stops being re-raised.</p></div>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Consider</h2>
+    <div class="recs">
+
+      <article class="rec p3">
+        <div class="rec-head">
+          <span class="rid">R8</span>
+          <h3>Give the largest host something to do</h3>
+          <span class="pill p3">consider</span><span class="cost">planning</span>
+        </div>
+        <div class="field"><span class="field-label">Why</span><p><code>hxs-1</code> is the most
+        capable machine in the fleet — 24 cores, 128&nbsp;GB, 32,752&nbsp;MiB of VRAM, the only
+        PCIe-4 platform — and its only assignment is a reserved slot for a model that has not
+        been released. You have said this is fine for now; noted here so it stays visible.</p></div>
+        <div class="field sub"><span class="field-label">Do</span><p>The validation pass suggests
+        a candidate: it argues the coder model, not the reasoning model, is the one that most
+        wants the PCIe-4 host. Worth weighing when v0.2 is written. R5 would also give
+        <code>hxs-1</code> a useful job in the meantime.</p></div>
+      </article>
+
+      <article class="rec p3">
+        <div class="rec-head">
+          <span class="rid">R9</span>
+          <h3>Close out the quarantined regression suite</h3>
+          <span class="pill p3">consider</span><span class="cost">one reboot</span>
+        </div>
+        <div class="field"><span class="field-label">Why</span><p><code>iss-010</code>. Norton
+        quarantined the suite; the trigger surface has been removed and it passes 153 of 153, but
+        it still runs under a temporary filename because the canonical path is held by a
+        delete-pending lock. <code>.claude/AGENTS.md</code> names the canonical path in its
+        verification list.</p></div>
+        <div class="field sub"><span class="field-label">Do</span><p>Reboot the workstation, then
+        rename the file back. If the path is still denied afterwards, the block is a Norton rule
+        rather than a stale handle and needs clearing in its Security History.</p></div>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Summary</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th scope="col">#</th><th scope="col">Recommendation</th><th scope="col">Priority</th><th scope="col">Cost</th><th scope="col">Related</th></tr></thead>
+        <tbody>
+          <tr><td><code>R1</code></td><td>SMART monitoring fleet-wide</td><td>Do first</td><td>Package install</td><td>—</td></tr>
+          <tr><td><code>R2</code></td><td>Resolve LiteRAG / LightRAG naming</td><td>Do first</td><td>One decision</td><td>—</td></tr>
+          <tr><td><code>R3</code></td><td>Off-machine copy of the repository</td><td>Do first</td><td>Destination decision</td><td><code>act-005</code></td></tr>
+          <tr><td><code>R4</code></td><td>Harden the control-plane laptop</td><td>Do first</td><td>Config + adapter</td><td>—</td></tr>
+          <tr><td><code>R5</code></td><td>Shared fleet storage from idle capacity</td><td>Worth doing</td><td>No hardware</td><td>—</td></tr>
+          <tr><td><code>R6</code></td><td>Reconcile the architecture documents</td><td>Worth doing</td><td>Document pass</td><td>—</td></tr>
+          <tr><td><code>R7</code></td><td>Decide whether test needs virtualization</td><td>Worth doing</td><td>Firmware change</td><td><code>iss-011</code></td></tr>
+          <tr><td><code>R8</code></td><td>Give the largest host something to do</td><td>Consider</td><td>Planning</td><td>—</td></tr>
+          <tr><td><code>R9</code></td><td>Close out the quarantined regression suite</td><td>Consider</td><td>One reboot</td><td><code>iss-010</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lede">None of these are recorded in <code>governance/actions-and-issues.md</code>.
+    They become tracked work only when added to it deliberately.</p>
+  </section>
+
+  <footer>
+    HX-Infrastructure &middot; recommendations &middot; compiled 2026-08-13 &middot;
+    proposals only; <code>SERVER-REGISTRY.md</code> remains authoritative on hardware and roles.
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById('theme-toggle');
+  if (!btn) { return; }
+  var media = window.matchMedia('(prefers-color-scheme: dark)');
+  function stored(v){ try{ if(v===undefined){ return localStorage.getItem('hx-theme'); } localStorage.setItem('hx-theme', v); }catch(e){} return null; }
+  function active(){ var e=root.getAttribute('data-theme'); return (e==='dark'||e==='light')?e:(media.matches?'dark':'light'); }
+  function relabel(){ var n=active()==='dark'?'light':'dark'; btn.textContent=n==='dark'?'Dark mode':'Light mode'; btn.setAttribute('aria-label','Switch to '+n+' mode'); }
+  var s=stored(); if(s==='dark'||s==='light'){ root.setAttribute('data-theme', s); } relabel();
+  btn.addEventListener('click', function(){ var n=active()==='dark'?'light':'dark'; root.setAttribute('data-theme', n); stored(n); relabel(); });
+  if(typeof media.addEventListener==='function'){ media.addEventListener('change', relabel); }
+  if(typeof MutationObserver==='function'){ new MutationObserver(relabel).observe(root,{attributes:true,attributeFilter:['data-theme']}); }
+})();
+</script>

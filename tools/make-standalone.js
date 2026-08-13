@@ -35,6 +35,9 @@ const LOCAL = {
   standards: 'documentation-standards.html',
   inventory: 'hx-fleet-inventory.html',
   architecture: 'fleet-architecture-candidate-v0.1.html',
+  frozen: 'hx-stack-alignment-v0.1-frozen.html',
+  validation: 'hx-validation-findings.html',
+  recommendations: 'hx-recommendations.html',
 };
 
 const PAGES = Object.values(LOCAL);
