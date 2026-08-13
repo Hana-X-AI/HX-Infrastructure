@@ -1,0 +1,241 @@
+<title>Manifest v2 Validation — HX Governance</title>
+<style>
+  :root {
+    --ground:#fbfbf9; --surface:#f2f3f0; --raised:#ffffff; --ink:#1b1f1d;
+    --muted:#6b726e; --faint:#949b96; --line:#dde0db; --line-firm:#c3c8c1;
+    --accent:#0f6e5c; --accent-wash:#e6f0ec; --signal:#b4531a; --signal-wash:#fbeee4;
+    --ok:#2f6d4f; --ok-wash:#e4efe8;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --step-0:0.9375rem; --step--1:0.8125rem; --step--2:0.6875rem;
+    --step-1:1.125rem; --step-2:1.5rem; --step-3:2.125rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ground:#141917; --surface:#1b211e; --raised:#1f2724; --ink:#e8ebe8;
+      --muted:#97a09b; --faint:#6f7873; --line:#2b342f; --line-firm:#3c4740;
+      --accent:#4fbfa3; --accent-wash:#16302a; --signal:#e08a4c; --signal-wash:#33251a;
+      --ok:#6cc09a; --ok-wash:#162c22; }
+  }
+  :root[data-theme="dark"]{ --ground:#141917;--surface:#1b211e;--raised:#1f2724;--ink:#e8ebe8;--muted:#97a09b;--faint:#6f7873;--line:#2b342f;--line-firm:#3c4740;--accent:#4fbfa3;--accent-wash:#16302a;--signal:#e08a4c;--signal-wash:#33251a;--ok:#6cc09a;--ok-wash:#162c22;}
+  :root[data-theme="light"]{ --ground:#fbfbf9;--surface:#f2f3f0;--raised:#ffffff;--ink:#1b1f1d;--muted:#6b726e;--faint:#949b96;--line:#dde0db;--line-firm:#c3c8c1;--accent:#0f6e5c;--accent-wash:#e6f0ec;--signal:#b4531a;--signal-wash:#fbeee4;--ok:#2f6d4f;--ok-wash:#e4efe8;}
+  :root{color-scheme:light;} @media (prefers-color-scheme:dark){:root{color-scheme:dark;}}
+  :root[data-theme="dark"]{color-scheme:dark;} :root[data-theme="light"]{color-scheme:light;}
+
+  body { margin:0; padding:clamp(1.5rem,4vw,3.5rem) clamp(1rem,4vw,2rem) 5rem; background:var(--ground); color:var(--ink); font-family:var(--sans); font-size:var(--step-0); line-height:1.55; -webkit-text-size-adjust:100%; }
+  .page { max-width:1140px; margin:0 auto; display:flex; flex-direction:column; gap:2.25rem; }
+  .masthead { display:flex; flex-direction:column; gap:0.7rem; }
+  .masthead-top { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .nav { display:flex; gap:1.1rem; flex-wrap:wrap; align-items:center; font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.1em; }
+  .nav a { color:var(--muted); text-decoration:none; border-bottom:1px solid transparent; padding-bottom:2px; }
+  .nav a:hover { color:var(--accent); border-bottom-color:var(--accent); }
+  .toggle { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.09em; color:var(--muted); background:var(--surface); border:1px solid var(--line-firm); border-radius:2px; padding:0.4rem 0.75rem; cursor:pointer; transition:color 120ms ease,border-color 120ms ease; }
+  .toggle:hover { color:var(--accent); border-color:var(--accent); }
+  .eyebrow { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.14em; color:var(--accent); margin:0; }
+  h1 { font-size:var(--step-3); line-height:1.08; letter-spacing:-0.02em; font-weight:650; margin:0; text-wrap:balance; }
+  .masthead p { margin:0; max-width:74ch; color:var(--muted); }
+
+  .strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:3px; overflow:hidden; }
+  .cell { background:var(--surface); padding:0.85rem 1rem; display:flex; flex-direction:column; gap:0.15rem; }
+  .cell dt { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); }
+  .cell dd { margin:0; font-size:var(--step-1); font-weight:600; font-variant-numeric:tabular-nums; }
+
+  section { display:flex; flex-direction:column; gap:0.85rem; }
+  h2 { font-size:var(--step-2); letter-spacing:-0.015em; font-weight:620; margin:0; text-wrap:balance; }
+  .lede { margin:0; color:var(--muted); max-width:84ch; font-size:var(--step--1); }
+
+  .items { display:flex; flex-direction:column; gap:0.85rem; }
+  .item { border:1px solid var(--line); border-radius:3px; background:var(--raised); padding:1rem 1.2rem; display:flex; flex-direction:column; gap:0.5rem; border-left:3px solid var(--line-firm); }
+  .item.warn { border-left-color:var(--signal); }
+  .item.good { border-left-color:var(--ok); }
+  .item-head { display:flex; align-items:baseline; gap:0.6rem; flex-wrap:wrap; }
+  .fid { font-family:var(--mono); font-weight:650; }
+  .item h3 { flex:1 1 22rem; margin:0; font-size:var(--step-1); font-weight:620; letter-spacing:-0.01em; }
+  .badge { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.08em; padding:0.15rem 0.5rem; border-radius:10px; font-weight:600; white-space:nowrap; }
+  .badge.warn { background:var(--signal-wash); color:var(--signal); }
+  .badge.good { background:var(--ok-wash); color:var(--ok); }
+  .item p { margin:0; max-width:86ch; color:var(--muted); font-size:var(--step--1); }
+  .item p.body { color:var(--ink); font-size:var(--step-0); }
+
+  .scroll { overflow-x:auto; border:1px solid var(--line); border-radius:3px; background:var(--raised); }
+  table { border-collapse:collapse; width:100%; font-size:var(--step--1); }
+  thead th { background:var(--surface); border-bottom:1px solid var(--line-firm); font-family:var(--mono); font-size:var(--step--2); font-weight:600; text-transform:uppercase; letter-spacing:0.09em; color:var(--muted); text-align:left; padding:0.65rem 0.85rem; white-space:nowrap; }
+  tbody td { padding:0.6rem 0.85rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:last-child td { border-bottom:none; }
+  td.n { font-family:var(--mono); text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  td.res { font-family:var(--mono); white-space:nowrap; }
+  .pass { color:var(--ok); font-weight:600; }
+  .fail { color:var(--signal); font-weight:600; }
+
+  ul.notes { padding-left:1.15rem; margin:0; font-size:var(--step--1); color:var(--muted); display:flex; flex-direction:column; gap:0.4rem; }
+  ul.notes b, ul.notes code { color:var(--ink); }
+  code { font-family:var(--mono); font-size:0.92em; background:var(--surface); padding:0.05em 0.32em; border-radius:2px; }
+  pre { margin:0; overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:3px; padding:0.85rem 1rem; }
+  pre code { background:none; padding:0; font-size:var(--step--1); }
+  footer { border-top:1px solid var(--line); padding-top:1rem; font-size:var(--step--2); color:var(--faint); }
+  a { color:var(--accent); }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important;} }
+</style>
+
+<div class="page">
+
+  <header class="masthead">
+    <div class="masthead-top">
+      <nav class="nav"><a href="https://claude.ai/code/artifact/09f4465a-1924-40c5-b352-cbe19926100d">&larr; Governance</a></nav>
+      <button type="button" class="toggle" id="theme-toggle">Dark mode</button>
+    </div>
+    <p class="eyebrow">HX-Infrastructure &middot; validation of manifest v2 &middot; 2026-08-13</p>
+    <h1>Manifest v2 Validation</h1>
+    <p>
+      The dual-layer manifest is the first artifact in this exchange that could be checked by
+      machine rather than read, and <strong>it passes the check that matters</strong>: every one
+      of its 522 records corresponds to a real file in the live repository, with nothing missing
+      and nothing invented. Two findings follow, one structural and one worth deciding
+      deliberately. Neither undermines the ledger.
+    </p>
+  </header>
+
+  <dl class="strip">
+    <div class="cell"><dt>Records</dt><dd>522</dd></div>
+    <div class="cell"><dt>Parse errors</dt><dd>0</dd></div>
+    <div class="cell"><dt>Path mismatches</dt><dd>0</dd></div>
+    <div class="cell"><dt>Secret literals</dt><dd>0</dd></div>
+    <div class="cell"><dt>Findings</dt><dd>2</dd></div>
+    <div class="cell"><dt>Verdict</dt><dd>Sound</dd></div>
+  </dl>
+
+  <section>
+    <h2>What was verified</h2>
+    <p class="lede">Checks run against the ledger and, for the path check, against a fresh
+    <code>git/trees</code> query of <code>Hana-X-AI/HX-Infrastructure</code> — not against the
+    archive, and not against the manifest's own claims.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th scope="col">Check</th><th scope="col">Result</th><th scope="col">Detail</th></tr></thead>
+        <tbody>
+          <tr><td>JSONL parses</td><td class="res pass">522 / 522</td><td>Zero parse errors; 16 fields per record</td></tr>
+          <tr><td>Unique paths</td><td class="res pass">522</td><td>No duplicates, no grouping-away</td></tr>
+          <tr><td>Ledger &rarr; live repository</td><td class="res pass">0 extra</td><td>No record refers to a file that does not exist</td></tr>
+          <tr><td>Live repository &rarr; ledger</td><td class="res pass">0 missing</td><td>Every file in the repo has a record. <strong>Exact coverage.</strong></td></tr>
+          <tr><td>Disposition rollup</td><td class="res pass">sums to 522</td><td>430 historical + 76 adapt + 12 reconstruct + 3 retire + 1 exclude</td></tr>
+          <tr><td>Secret literal in ledger</td><td class="res pass">absent</td><td>Neither the password nor the API key appears</td></tr>
+          <tr><td>Secret literal in HTML</td><td class="res pass">absent</td><td>The v1 defect is fixed</td></tr>
+          <tr><td>Secret rows carry a gate</td><td class="res pass">30 / 30</td><td>All 30 carry <code>validation: rotate+scan-clean</code></td></tr>
+          <tr><td>HTML figures vs ledger</td><td class="res pass">agree</td><td>522, 430, 76, 12 all present and consistent</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lede">The exact-coverage result is the one worth dwelling on. Every previous
+    artifact in this exchange asserted counts that turned out to be drifted, miscounted or drawn
+    from the wrong source. This one was generated from the tree and agrees with the tree.</p>
+  </section>
+
+  <section>
+    <h2>Findings</h2>
+    <div class="items">
+
+      <article class="item warn">
+        <div class="item-head"><span class="fid">V1</span><h3><code>distill</code> and a 1:1 <code>target_path</code> contradict each other</h3><span class="badge warn">structural</span></div>
+        <p class="body">All <strong>417</strong> rows with <code>transform_method: distill</code>
+        also carry a one-to-one <code>target_path</code> — 417 distinct destinations, one per
+        source file, each preserving the original filename under
+        <code>governance/migrations/legacy-2025/&hellip;</code>.</p>
+        <p>Those two fields assert opposite things. <em>Distil</em> means the file is read and its
+        substance folded into something else, leaving no per-file output — which is the whole
+        argument for not importing the 90-file task trees. A 1:1 target path is a copy. A row
+        cannot be both, and an executor following the ledger literally would copy all 417 files
+        into the tree, reproducing the structure the manifest set out to avoid.</p>
+        <p><strong>Suggested fix:</strong> separate archival from distillation. Archived-for-provenance
+        rows keep their 1:1 path with <code>transform: archive</code>. Rows genuinely distilled
+        point at the <em>consolidated</em> destination they feed — the service build document —
+        and repeat it across the group. The field then answers "where does this end up" truthfully
+        in both cases.</p>
+      </article>
+
+      <article class="item warn">
+        <div class="item-head"><span class="fid">V2</span><h3>29 of 30 known secret-bearing files still land in the tree</h3><span class="badge warn">decide</span></div>
+        <p class="body">Exactly one file is excluded: the live
+        <code>vault/credentials.yml</code>. The other 29 confirmed-secret files all carry a
+        <code>target_path</code> — 22 archived under
+        <code>governance/migrations/legacy-2025/</code>, 2 adapted, 2 reconstructed, 3 retired but
+        still pathed. Only one row uses <code>transform: scrub-secret</code>; 22 use
+        <code>distill</code>.</p>
+        <p>This is <em>defensible</em> — every one of the 30 carries
+        <code>validation: rotate+scan-clean</code>, so the gate exists and the intent is that
+        rotation happens first, after which the literal is inert. But it should be a conscious
+        choice rather than a side effect, because the earlier stated goal was that the compromised
+        token reaches no go-forward history at all, and the ledger's own data says 29 files
+        containing it are scheduled to be written.</p>
+        <p><strong>Decide:</strong> either scrub on the way in — change those 22 from
+        <code>distill</code> to <code>scrub-secret</code>, so the archive is clean regardless of
+        rotation timing — or accept dead credentials in the archive and say so explicitly, so
+        nobody later reads a scan hit as a live exposure. The first is safer and costs one field
+        change per row.</p>
+      </article>
+
+      <article class="item good">
+        <div class="item-head"><span class="fid">V3</span><h3>The v1 credential defect is fixed</h3><span class="badge good">confirmed</span></div>
+        <p class="body">Neither the password nor the API key appears anywhere in the ledger or
+        the generated HTML. The 30 affected files are referenced only by the opaque handle
+        <code>legacy-secret-001</code>, which is the right pattern: it names the location and the
+        blast radius without reproducing the value.</p>
+        <p>Worth recording as the general rule, since this project hit it three times in one day:
+        state <em>where</em> a secret is and <em>what it opens</em>; never restate the value. That
+        is what makes a finding actionable rather than an exposure (<code>ll-033</code>).</p>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>What the dual-layer design gets right</h2>
+    <ul class="notes">
+      <li><b>Generated, not asserted.</b> The HTML is rendered from the ledger, so the page cannot
+      drift from the data. Every prior artifact here carried hand-written counts, and every one of
+      them drifted.</li>
+      <li><b>Disposition separated from transform.</b> "What happens to this file" and "how" are
+      genuinely different axes, and collapsing them is what made the v1 rows ambiguous.</li>
+      <li><b>Grouping demoted to a tag.</b> <code>inherits_policy</code> keeps the policy
+      rationale visible without letting a group swallow its members — which is how coverage stays
+      provably 522.</li>
+      <li><b>Import-branch-first execution.</b> <code>import/legacy-2025</code> &rarr; quarantine
+      and rotate &rarr; archive &rarr; reconcile and promote. Nothing force-merged, and the
+      quarantine step sits before anything reaches a working branch.</li>
+      <li><b>Broad retention, lean activation.</b> 430 archived read-only against 88 actively
+      worked. That is the shape the owner asked for, and here it falls out of the data rather than
+      being asserted.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Recommendation</h2>
+    <p class="lede">Proceed on this ledger. Fix V1 before execution, since an executor following
+    it literally would produce the wrong tree; V2 is a decision rather than a defect. Neither is a
+    reason to rebuild — the coverage guarantee is the hard part and it already holds.</p>
+    <p class="lede">Unchanged and still outstanding: <strong>rotate both credentials</strong>
+    (<code>iss-012</code>), and finish the history purge on this repository — the rewritten
+    history is clean, but the old commits remain reachable until the backup tag and
+    <code>refs/original</code> are dropped and the reflog expired.</p>
+  </section>
+
+  <footer>
+    HX-Infrastructure &middot; manifest v2 validation &middot; Claude Code &middot; 2026-08-13 &middot;
+    checks run against the ledger and a live query of the org repository; authorizes no change.
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById('theme-toggle');
+  if (!btn) { return; }
+  var media = window.matchMedia('(prefers-color-scheme: dark)');
+  function stored(v){ try{ if(v===undefined){ return localStorage.getItem('hx-theme'); } localStorage.setItem('hx-theme', v); }catch(e){} return null; }
+  function active(){ var e=root.getAttribute('data-theme'); return (e==='dark'||e==='light')?e:(media.matches?'dark':'light'); }
+  function relabel(){ var n=active()==='dark'?'light':'dark'; btn.textContent=n==='dark'?'Dark mode':'Light mode'; btn.setAttribute('aria-label','Switch to '+n+' mode'); }
+  var s=stored(); if(s==='dark'||s==='light'){ root.setAttribute('data-theme', s); } relabel();
+  btn.addEventListener('click', function(){ var n=active()==='dark'?'light':'dark'; root.setAttribute('data-theme', n); stored(n); relabel(); });
+  if(typeof media.addEventListener==='function'){ media.addEventListener('change', relabel); }
+  if(typeof MutationObserver==='function'){ new MutationObserver(relabel).observe(root,{attributes:true,attributeFilter:['data-theme']}); }
+})();
+</script>
