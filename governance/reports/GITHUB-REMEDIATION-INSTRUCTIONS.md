@@ -381,7 +381,7 @@ These items are lower priority but should be resolved in the same remediation pa
 Update:
 
 ```text
-governance/actions-and-issues.md
+governance/logs/actions-and-issues.md
 ```
 
 Reword the router action so it does not imply that the router owns server static-IP configuration.
@@ -619,7 +619,7 @@ Do not reopen accepted risks solely because this remediation is being performed.
 Follow:
 
 ```text
-governance/risk-acceptances.md
+governance/policy/risk-acceptances.md
 ```
 
 Only re-report an accepted risk if:

@@ -71,7 +71,7 @@ enumerates two. The declared and observed counts agree.
 
 The sections above record the as-found state under `nouveau`. The project owner subsequently
 installed the NVIDIA driver on this host as well, extending
-`governance/nvidia-driver-install-directive.md` beyond its stated scope of hxs-2 and hxs-3.
+`governance/policy/nvidia-driver-install-directive.md` beyond its stated scope of hxs-2 and hxs-3.
 That is an approved Phase 1 exception and an HX-introduced change, recorded separately here so
 the as-found record remains intact.
 

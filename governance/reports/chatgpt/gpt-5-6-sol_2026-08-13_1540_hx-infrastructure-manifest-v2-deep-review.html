@@ -363,7 +363,7 @@ adopt          0</code></pre>
 knowledge/legacy/2025/service-lessons.md
 knowledge/legacy/2025/defect-patterns.md
 knowledge/legacy/2025/naming-crosswalk.md
-governance/lessons-learned.md
+governance/logs/lessons-learned.md
 .claude/agents/&lt;capability&gt;.md
 tests/
 tools/</code></pre>
@@ -375,8 +375,8 @@ tools/</code></pre>
 <li><strong>Lock current authority first.</strong> Confirm all three owner decisions are recorded and committed in the current repository, and establish the new test baseline before proceeding. The three decisions are:
     <ol>
       <li><strong>V1 fix decision</strong> (separate <code>archive</code> from <code>distill</code> in the 417 affected rows): required repository state: <code>governance/migrations/legacy-2025/manifest-v2.jsonl</code> updated; evidence: manifest row audit confirms no row has both <code>transform: distill</code> and a 1:1 <code>target_path</code>; gate complete when owner approves the revised manifest and the check passes.</li>
-      <li><strong>V2 scrub-or-accept decision</strong> (change 22 <code>distill</code> rows to <code>scrub-secret</code>, or explicitly accept dead credentials in the archive): required state: decision recorded in <code>governance/actions-and-issues.md</code> and reflected in the manifest; evidence: secret scan of every <code>target_path</code> returns clean, or owner acceptance note is present; gate complete when credential-validation gate status changes from BLOCKED to CLEARED.</li>
-      <li><strong>Execution-sequence approval</strong> (owner confirms Steps 2–12 may proceed): required state: Steps 1 gate checks above both pass, test baseline recorded (suite result stored with commit SHA); evidence: <code>governance/actions-and-issues.md</code> entry with approved-by and timestamp; gate complete when all three sub-gates above are satisfied.</li>
+      <li><strong>V2 scrub-or-accept decision</strong> (change 22 <code>distill</code> rows to <code>scrub-secret</code>, or explicitly accept dead credentials in the archive): required state: decision recorded in <code>governance/logs/actions-and-issues.md</code> and reflected in the manifest; evidence: secret scan of every <code>target_path</code> returns clean, or owner acceptance note is present; gate complete when credential-validation gate status changes from BLOCKED to CLEARED.</li>
+      <li><strong>Execution-sequence approval</strong> (owner confirms Steps 2–12 may proceed): required state: Steps 1 gate checks above both pass, test baseline recorded (suite result stored with commit SHA); evidence: <code>governance/logs/actions-and-issues.md</code> entry with approved-by and timestamp; gate complete when all three sub-gates above are satisfied.</li>
     </ol>
     All three decisions and the test baseline must be recorded and validated before any step beyond Step 1 begins.</li>
 <li><strong>Quarantine raw legacy material outside the canonical repo.</strong></li>

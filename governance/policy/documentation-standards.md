@@ -122,7 +122,7 @@ These look inconsistent and are intentional. Do not "fix" them.
 
 | Before | After |
 | --- | --- |
-| `governance/Tooling First Rule.md` | `governance/tooling-first-rule.md` |
+| `governance/Tooling First Rule.md` | `governance/policy/tooling-first-rule.md` |
 | `governance/reports/Claude Prompt — Discover GPU VRAM Without NVIDIA Drivers.md` | `governance/reports/owner_2026-08-11_gpu-vram-discovery-prompt.md` |
 | `governance/reports/response to claude — gpu capability report.md` | `governance/reports/owner_2026-08-11_gpu-capability-report-response.md` |
 | 15 `pre-work-results.md` in three different shapes, every IP field blank | one shape, IP and FQDN populated from the registry, evidence preserved |

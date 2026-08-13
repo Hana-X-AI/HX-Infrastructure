@@ -28,4 +28,4 @@ are present only where they apply.
 - Take a server's IP address from `SERVER-REGISTRY.md`, not from a terminal paste.
 
 Naming and layout rules for the whole repository are in
-`governance/documentation-standards.md`.
+`governance/policy/documentation-standards.md`.

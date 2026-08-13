@@ -13,7 +13,7 @@ Before doing any work:
 4. Read GOALS-AND-OBJECTIVES.md.
 5. Read INFRASTRUCTURE-CONTRACT.md.
 6. Read SERVER-REGISTRY.md.
-7. Read governance/risk-acceptances.md.
+7. Read governance/policy/risk-acceptances.md.
 8. Read the current discovery template under servers/_templates/.
 9. Follow the existing discover-server, audit-discovery, and sync-registry skills.
 
@@ -88,7 +88,7 @@ Important addressing check:
 
 192.168.50.200 may fall outside the currently documented normal server-address range. Do not change the server's address during Phase 1.
 
-If the current project contract or registry confirms that .200 conflicts with the approved addressing policy, record that discrepancy as an issue in governance/actions-and-issues.md and continue discovery by the supplied IP address.
+If the current project contract or registry confirms that .200 conflicts with the approved addressing policy, record that discrepancy as an issue in governance/logs/actions-and-issues.md and continue discovery by the supplied IP address.
 
 Do not treat the addressing discrepancy as a reason to mutate the server during discovery.
 

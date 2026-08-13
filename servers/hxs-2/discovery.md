@@ -61,7 +61,7 @@ of privilege.
 
 The sections above record the as-found state, in which no driver was bound. The project
 owner subsequently authorized an NVIDIA driver install through
-`governance/nvidia-driver-install-directive.md`. That is an approved Phase 1 exception and an
+`governance/policy/nvidia-driver-install-directive.md`. That is an approved Phase 1 exception and an
 HX-introduced change, recorded separately here so the as-found record remains intact.
 
 - Driver installed: `nvidia-driver-580-server-open`, module version 580.173.02, licence Dual MIT/GPL

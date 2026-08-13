@@ -5,7 +5,7 @@ Read first:
 1. `GOALS-AND-OBJECTIVES.md`
 2. `INFRASTRUCTURE-CONTRACT.md`
 3. `SERVER-REGISTRY.md`
-4. `governance/risk-acceptances.md`
+4. `governance/policy/risk-acceptances.md`
 
 ## Phase 1
 
@@ -85,7 +85,7 @@ Do not assume any MCP server other than those explicitly configured for this pro
 
 ## Action and Issue Tracking
 
-Use only `governance/actions-and-issues.md` for routine project actions and issues.
+Use only `governance/logs/actions-and-issues.md` for routine project actions and issues.
 
 - Set `Type` to `action` for work that must be completed.
 - Set `Type` to `issue` for known problems or unresolved technical behavior.
@@ -95,7 +95,7 @@ Use only `governance/actions-and-issues.md` for routine project actions and issu
 
 ## Risk Acceptance
 
-Read `governance/risk-acceptances.md` before reporting security or governance risks.
+Read `governance/policy/risk-acceptances.md` before reporting security or governance risks.
 
 Do not re-report an active accepted risk unless:
 

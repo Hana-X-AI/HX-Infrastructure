@@ -99,7 +99,7 @@ Addressing:     static
 192.168.50.255     broadcast
 ```
 
-Amended 2026-08-11 on the authority of the project owner. Servers and infrastructure previously occupied `192.168.50.140-199`; that block is now free for reassignment and the server range is `192.168.50.200-254`. See `iss-006` in `governance/actions-and-issues.md`.
+Amended 2026-08-11 on the authority of the project owner. Servers and infrastructure previously occupied `192.168.50.140-199`; that block is now free for reassignment and the server range is `192.168.50.200-254`. See `iss-006` in `governance/logs/actions-and-issues.md`.
 
 ### Server naming
 

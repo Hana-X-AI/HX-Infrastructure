@@ -11,7 +11,7 @@
 
 `GOALS-AND-OBJECTIVES.md` permits agents to report and compare factual capabilities, and prohibits assigning roles, selecting workloads, or selecting models. This report stays on the permitted side of that line: it states what the hardware is, what the software stack requires, what the gaps are, and what has to be decided. The decisions themselves are yours.
 
-`governance/tooling-first-rule.md` permits vendor specification and external documentation to **interpret** discovered hardware, provided they never replace direct server evidence in the as-found record. This report uses that permission. Every figure below is labelled either **discovered** or **vendor specification**. Nothing marked vendor specification will be written into `servers/hxs-1/discovery.md`.
+`governance/policy/tooling-first-rule.md` permits vendor specification and external documentation to **interpret** discovered hardware, provided they never replace direct server evidence in the as-found record. This report uses that permission. Every figure below is labelled either **discovered** or **vendor specification**. Nothing marked vendor specification will be written into `servers/hxs-1/discovery.md`.
 
 ---
 
@@ -40,7 +40,7 @@ This matters more than the VRAM question, because it is upstream of it:
 
 The moment the proprietary driver is installed, `nvidia-smi --query-gpu=memory.total` reports VRAM authoritatively, and the capability question answers itself.
 
-**That install is a Phase 2 activity or an explicit Phase 1 exception.** `governance/tooling-first-rule.md` is unambiguous: *"During Phase 1, installing a missing diagnostic utility or vendor driver requires an explicit project decision and must not be done automatically."* I have not done it and will not without your instruction.
+**That install is a Phase 2 activity or an explicit Phase 1 exception.** `governance/policy/tooling-first-rule.md` is unambiguous: *"During Phase 1, installing a missing diagnostic utility or vendor driver requires an explicit project decision and must not be done automatically."* I have not done it and will not without your instruction.
 
 ---
 

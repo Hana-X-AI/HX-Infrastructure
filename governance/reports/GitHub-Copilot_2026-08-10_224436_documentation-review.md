@@ -120,7 +120,7 @@ A configuration record completed exactly from the template can therefore be comp
 - Active and distributable hook files are hash-identical; active settings and the packaged settings fragment are structurally identical.
 - `.mcp.json`, both hook settings files, and `.vscode/settings.json` parse as JSON. The Context7 project entry uses hosted HTTP transport and contains no embedded header or key.
 - `.env` is ignored and `.env.example` is not ignored. No credential value is reproduced in this report.
-- Routine action and issue tracking consistently points to `governance/actions-and-issues.md`; the obsolete `OPEN-ACTIONS.md` reference from the prior report has been removed.
+- Routine action and issue tracking consistently points to `governance/logs/actions-and-issues.md`; the obsolete `OPEN-ACTIONS.md` reference from the prior report has been removed.
 
 ## Accepted-Risk Treatment
 
@@ -133,7 +133,7 @@ The review covered all 40 files outside `.git`:
 - Root and editor configuration (11): `.env`, `.env.example`, `.gitignore`, `.mcp.json`, `.vscode/settings.json`, `CLAUDE.md`, `GOALS-AND-OBJECTIVES.md`, `INFRASTRUCTURE-CONTRACT.md`, `INSTALL.md`, `README.md`, and `SERVER-REGISTRY.md`.
 - Active Claude assets (13): `.claude/settings.json`, `.claude/agents/server-discovery.md`, six hook scripts, four skill files, and `collect-server-facts.sh`.
 - Distributable hook package (9): `claude-hooks/README.md`, `apply-hooks.ps1`, `settings.fragment.json`, and six packaged hook scripts.
-- Governance and continuity (4): `conversations/SYNC-POLICY.md`, `governance/actions-and-issues.md`, `governance/risk-acceptances.md`, and this report's prior version.
+- Governance and continuity (4): `conversations/SYNC-POLICY.md`, `governance/logs/actions-and-issues.md`, `governance/policy/risk-acceptances.md`, and this report's prior version.
 - Server documentation (3): `servers/README.md` and both files in `servers/_templates`.
 
 ## Review Limits

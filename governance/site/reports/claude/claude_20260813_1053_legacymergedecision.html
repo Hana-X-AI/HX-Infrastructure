@@ -127,7 +127,7 @@
           <tr><td class="asset">SME agent roster (5 core + 27 tech)</td><td><span class="badge go">goes</span></td><td><code>.claude/agents/</code> &mdash; adopt the 5 Core SMEs + a curated handful of tech SMEs, adapted to this repo. This is the time-saver you asked to keep.</td></tr>
           <tr><td class="asset">Docling MCP node blueprint</td><td><span class="badge go">goes</span></td><td><code>services/docling-mcp/build.md</code> &mdash; one lean build doc, re-pointed to the fleet, aligned to the v0.3 proposal (Docling host).</td></tr>
           <tr><td class="asset">LangGraph "lang-server" blueprint</td><td><span class="badge go">goes</span></td><td><code>services/lang-server/build.md</code> &mdash; Postgres checkpoint schema, Redis, MCP adapters, FastAPI; Ollama swapped for vLLM/LiteLLM.</td></tr>
-          <tr><td class="asset">Docling defect log (~60 items)</td><td><span class="badge go">goes</span></td><td>Distilled into each service's "gotchas" section + <code>governance/lessons-learned.md</code> (libGL, HF cache perms, LiteLLM auth, hardcoded-IP class).</td></tr>
+          <tr><td class="asset">Docling defect log (~60 items)</td><td><span class="badge go">goes</span></td><td>Distilled into each service's "gotchas" section + <code>governance/logs/lessons-learned.md</code> (libGL, HF cache perms, LiteLLM auth, hardcoded-IP class).</td></tr>
           <tr><td class="asset">Standards &amp; templates (10 docs)</td><td><span class="badge adapt">adapt</span></td><td>Import only a genuinely missing template (e.g. a lean node/service build template) into <code>servers/_templates</code>. Current already has documentation-standards.</td></tr>
           <tr><td class="asset">Config-placeholder / no-hardcoding pattern</td><td><span class="badge adapt">adapt</span></td><td>Keep as a rule (already implied by the infrastructure contract); reinforce, don't re-import the doc.</td></tr>
           <tr><td class="asset">Constitution / spec-driven philosophy</td><td><span class="badge adapt">adapt</span></td><td>Already embodied in <code>GOALS-AND-OBJECTIVES</code> + <code>AGENTS.md</code>. Borrow only the test-driven wording if it adds value.</td></tr>
@@ -173,7 +173,7 @@
         <h3>Defect lessons</h3>
         <ul>
           <li><b>What:</b> ~60 real defects, distilled to the handful that recur.</li>
-          <li><b>Lands:</b> a "gotchas" block in each service <code>build.md</code> + entries in <code>governance/lessons-learned.md</code>, citing legacy defect IDs.</li>
+          <li><b>Lands:</b> a "gotchas" block in each service <code>build.md</code> + entries in <code>governance/logs/lessons-learned.md</code>, citing legacy defect IDs.</li>
         </ul>
       </div>
     </div>
@@ -237,7 +237,7 @@
           <tr><td>2</td><td>Create <code>services/</code> with one <code>build.md</code> per service, starting with <code>docling-mcp</code> and <code>lang-server</code>.</td><td>One lean doc each; fleet IPs; vLLM not Ollama; no Ansible.</td></tr>
           <tr><td>3</td><td>Distil the defect log into each build doc's gotchas + <code>lessons-learned.md</code>.</td><td>Facts only; cite legacy defect IDs.</td></tr>
           <tr><td>4</td><td>Add only a missing template to <code>servers/_templates</code> (a lean service-build template).</td><td>No duplicate/competing docs.</td></tr>
-          <tr><td>5</td><td>Log the merge as one action in <code>governance/actions-and-issues.md</code>.</td><td>Single project log.</td></tr>
+          <tr><td>5</td><td>Log the merge as one action in <code>governance/logs/actions-and-issues.md</code>.</td><td>Single project log.</td></tr>
           <tr><td>6</td><td>Leave <code>SERVER-REGISTRY.md</code> and every <code>discovery.md</code> untouched; role commitment stays the owner's call.</td><td>Registry authoritative; discovery immutable.</td></tr>
           <tr><td>7</td><td>Do not import quality-gates, old hooks, inventory, network docs, identity tier, Ansible, Ollama, <code>df1.md</code>, or the vault.</td><td>Every asset not named in the &ldquo;goes&rdquo; or &ldquo;adapt&rdquo; rows must be excluded; this list is representative, not exhaustive.</td></tr>
         </tbody>

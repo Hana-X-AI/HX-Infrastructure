@@ -1,7 +1,7 @@
 # Repository merge recommendation
 
 Written 2026-08-13. A recommendation, not a decision. Before any remote push or other
-remote write begins, record in `governance/actions-and-issues.md`:
+remote write begins, record in `governance/logs/actions-and-issues.md`:
 
 - the accepted correction to `act-005` (wrong-repository identification resolved);
 - an action for the fact-update sweep (Step 5);
@@ -111,12 +111,12 @@ repo wins on process depth. After resolving all conflicts:
 | `CLAUDE.md` | Rewrite as one file. Keep the local Phase 1/2 gates, Context7 ordering, single-log rule and credential prohibition. Adopt the old repo's Zero Assumptions Policy, which is stronger than anything local and matches how this project already works. Drop the Agent Zero framing and `/home/agent0` paths |
 | `.claude/hooks/` | Both. The six PowerShell hooks are unchanged. The Python hooks are kept but not wired on Windows |
 | `.claude/commands/` | Selective. Take the document-lint, status-report and handoff utilities and the spec/task workflow pair. Leave the phase machinery and 32-agent orchestration out of `main` |
-| `lessons-learned.md` | `governance/lessons-learned.md` (31 entries) survives. Fold anything still true from the old root file in as new `ll-` rows, then delete it |
+| `lessons-learned.md` | `governance/logs/lessons-learned.md` (31 entries) survives. Fold anything still true from the old root file in as new `ll-` rows, then delete it |
 | `README.md` | Rewrite. The old one describes 58 repositories and 32 agents and no longer describes this repository |
 | `.gitignore` / `.gitattributes` | Union the ignores. Keep the local `.gitattributes` verbatim — `* -text` plus `*.sh text eol=lf` is what resolved `iss-005` and keeps the collector free of CR bytes |
 
 The old `defects.md`, `defect-log.md`, `raidd-log.md`, `backlog.md` and `status-report.md`
-conflict with this project's own rule that `governance/actions-and-issues.md` is the only
+conflict with this project's own rule that `governance/logs/actions-and-issues.md` is the only
 routine tracking log. Move them to `archive/` and carry any live item across as rows.
 
 ```bash
@@ -158,7 +158,7 @@ replacement passes — its contents are frozen source material and must not be e
 
 Also scan `hx-agents/` and `nodes/` for residual occurrences of `agent0`, `hx-agents/`,
 `nodes/`, and any `hx-<role>-server` pattern not yet remapped. `standards/naming-conventions.md` and
-`governance/documentation-standards.md` both define naming and must become one document;
+`governance/policy/documentation-standards.md` both define naming and must become one document;
 naming-conventions is broader, so fold the local rules into it and leave a pointer.
 
 `.claude/hooks/hx-ip-validator-hook.py` hard-codes the old subnet. Re-targeting it at

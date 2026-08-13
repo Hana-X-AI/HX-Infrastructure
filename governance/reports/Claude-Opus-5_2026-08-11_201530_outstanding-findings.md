@@ -204,7 +204,7 @@ Roles assigned:       0
 
 The `servers/` directory contains only the templates and a README.
 
-Two related tracked items remain open in `governance/actions-and-issues.md`:
+Two related tracked items remain open in `governance/logs/actions-and-issues.md`:
 
 - **act-001** — establish persistent router-side `hx.local.arpa` DNS records for approved, server-managed static addresses.
 - **iss-001** — stock ASUSWRT regenerates `/etc/dnsmasq.conf` and `/etc/hosts`, so direct edits cannot currently be relied on to survive a reboot or configuration apply.
@@ -229,7 +229,7 @@ The outstanding items above affect confidence in the automation and the quality 
 
 ## Accepted risks
 
-`risk-001` and `risk-002` in `governance/risk-acceptances.md` remain active, scoped to initial setup, and time-bounded. Their review trigger is the Phase 1 gate review, or before Phase 2 begins, whichever comes first. Neither has been reached, because Phase 1 is still in progress.
+`risk-001` and `risk-002` in `governance/policy/risk-acceptances.md` remain active, scoped to initial setup, and time-bounded. Their review trigger is the Phase 1 gate review, or before Phase 2 begins, whichever comes first. Neither has been reached, because Phase 1 is still in progress.
 
 In line with the risk register and `CLAUDE.md`, this report does not re-report them. No credential value appears anywhere in this document.
 

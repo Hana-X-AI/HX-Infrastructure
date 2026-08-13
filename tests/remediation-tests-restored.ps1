@@ -375,7 +375,7 @@ Assert-True "rem-005: invalid discovery status is blocked" (
 
 # ---------- rem-007: Router and server address ownership ----------
 
-$actionLog = Get-Content "$root\governance\actions-and-issues.md" -Raw
+$actionLog = Get-Content "$root\governance\logs\actions-and-issues.md" -Raw
 Assert-True "rem-007: router action has required ownership model" (
     $actionLog -match 'approved address.*SERVER-REGISTRY\.md' -and
     $actionLog -match 'static addressing on the Ubuntu server' -and

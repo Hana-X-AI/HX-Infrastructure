@@ -163,7 +163,7 @@ Four files were reviewed in full: `AGENTS.md`, `.claude/AGENTS.md`, `governance/
 | `GOALS-AND-OBJECTIVES.md` | No conflict. The Phase 1 gate still has exactly seven conditions. No `AGENTS.md` adds an eighth. |
 | `INFRASTRUCTURE-CONTRACT.md` | No conflict, and no restatement of its technical rules. It is referenced, not duplicated. |
 | `SERVER-REGISTRY.md` | No conflict. `.claude/AGENTS.md` defers Phase 2 release vocabulary to the registry, which matches the corrected lifecycle values. |
-| `governance/risk-acceptances.md` | No conflict. The re-report conditions match the register's own Reporting Rule. |
+| `governance/policy/risk-acceptances.md` | No conflict. The re-report conditions match the register's own Reporting Rule. |
 
 ### Specific verifications
 
@@ -227,7 +227,7 @@ The hierarchy is valid, consistent with authoritative project policy, and introd
 | `.claude/skills/audit-discovery/SKILL.md` | Audit versus hook strictness documented. |
 | `governance/reports/GITHUB-REMEDIATION-INSTRUCTIONS.md` | Four stale packaged-hook paths corrected. |
 | `.gitattributes` | New. Disables end-of-line conversion so commits are possible. |
-| `governance/actions-and-issues.md` | `act-004`, `act-005`, `act-006` and `iss-005` recorded. |
+| `governance/logs/actions-and-issues.md` | `act-004`, `act-005`, `act-006` and `iss-005` recorded. |
 | `tests/remediation-tests.ps1` | Seven assertions added. |
 
 ---

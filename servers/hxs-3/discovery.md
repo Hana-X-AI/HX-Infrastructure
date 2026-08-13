@@ -59,7 +59,7 @@ of privilege.
 ### Post-directive driver validation, 2026-08-12
 
 The sections above record the as-found state under `nouveau`. The project owner subsequently
-authorized an NVIDIA driver install through `governance/nvidia-driver-install-directive.md`.
+authorized an NVIDIA driver install through `governance/policy/nvidia-driver-install-directive.md`.
 That is an approved Phase 1 exception and an HX-introduced change, recorded separately here so
 the as-found record remains intact.
 

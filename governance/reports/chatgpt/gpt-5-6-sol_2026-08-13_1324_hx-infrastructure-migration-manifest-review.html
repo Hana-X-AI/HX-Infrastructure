@@ -249,7 +249,7 @@ The manifest correctly says to apply the owner edits and then establish a new ba
 </table>
 
 <h3>Status-report utility is not the same thing as a status database</h3>
-<p><code>governance/actions-and-issues.md</code> should remain the only routine tracking store, but a read-only status-report skill that synthesizes registry, actions/issues, service status and test results could still be useful. Consider <code>reconstruct-readonly</code> instead of simply <code>covered</code>.</p>
+<p><code>governance/logs/actions-and-issues.md</code> should remain the only routine tracking store, but a read-only status-report skill that synthesizes registry, actions/issues, service status and test results could still be useful. Consider <code>reconstruct-readonly</code> instead of simply <code>covered</code>.</p>
 
 <h3>Network health check should be registry-driven too</h3>
 <p>The same rule that improves the IP validator applies to <code>network-health-check.sh</code>: do not “retarget” a fixed host list to the new subnet. Generate/parse the fleet from current authoritative data so adding/reassigning a host does not require editing the diagnostic script.</p>

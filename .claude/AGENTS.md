@@ -26,7 +26,7 @@ Before changing Claude automation, also read:
 - `../GOALS-AND-OBJECTIVES.md`
 - `../INFRASTRUCTURE-CONTRACT.md`
 - `../SERVER-REGISTRY.md`
-- `../governance/risk-acceptances.md`
+- `../governance/policy/risk-acceptances.md`
 
 Automation must preserve these boundaries:
 

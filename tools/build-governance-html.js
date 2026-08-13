@@ -275,7 +275,7 @@ ${body}
 
 /* --------------------------------------------------------------- actions and issues */
 
-const A = readRows('actions-and-issues.md', /^\| (act|iss)-/);
+const A = readRows('logs/actions-and-issues.md', /^\| (act|iss)-/);
 
 function statusClass(s) {
   const v = s.toLowerCase();
@@ -337,7 +337,7 @@ ${[...A]
 
 /* ------------------------------------------------------------------ lessons learned */
 
-const L = readRows('lessons-learned.md', /^\| ll-/);
+const L = readRows('logs/lessons-learned.md', /^\| ll-/);
 
 const lessonsBody = `
   <header class="masthead">

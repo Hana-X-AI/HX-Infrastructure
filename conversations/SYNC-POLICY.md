@@ -9,13 +9,13 @@ This policy governs workspace-level governance decisions recorded from reviewed 
 Ratified risk-acceptance decisions may be recorded only in:
 
 ```text
-governance/risk-acceptances.md
+governance/policy/risk-acceptances.md
 ```
 
 Routine actions and unresolved issues remain in:
 
 ```text
-governance/actions-and-issues.md
+governance/logs/actions-and-issues.md
 ```
 
 ## Recording Rules

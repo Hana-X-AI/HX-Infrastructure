@@ -40,7 +40,7 @@ Each file below was changed in both its active copy under `.claude/hooks/` and i
 | --- | --- |
 | `claude-hooks/README.md` | Phase Gate section describes the correct registry values (from the earlier F1 fix). |
 | `.claude/skills/phase1-gate/SKILL.md` | Gate report vocabulary aligned with the registry (from the earlier F1 fix). |
-| `governance/actions-and-issues.md` | `iss-002` and `iss-003` closed with resolutions. `act-002` marked done. `iss-004` and `act-003` added and closed. |
+| `governance/logs/actions-and-issues.md` | `iss-002` and `iss-003` closed with resolutions. `act-002` marked done. `iss-004` and `act-003` added and closed. |
 
 ### Tests
 

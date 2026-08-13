@@ -123,7 +123,7 @@
       <tbody>
         <tr><td class="k">Retire the phase gate</td><td class="tgt">CLAUDE.md, AGENTS.md, GOALS-AND-OBJECTIVES.md, README.md, SERVER-REGISTRY.md</td><td>Remove the Phase 1 Gate / Phase 2 sections and "Phase 2 BLOCKED" language. Retire <code>.claude/hooks/hx-phase1-guard.ps1</code> and the <code>phase1-gate</code> skill (or repurpose the registry-completeness check). Keep the discovery&rarr;configuration record model; it is not part of the gate.</td></tr>
         <tr><td class="k">Commit v0.3 roles</td><td class="tgt">SERVER-REGISTRY.md</td><td>Populate <em>Assigned Role</em> + <em>Workload/Model</em> for hxs-1…15 from v0.3 (reasoning/coder/agent-intel/retrieval/…); <strong>Do not drop the Phase 2 status column</strong> — it is read at runtime by hx-common.ps1, hx-phase1-guard.ps1 and hx-session-state.ps1. Phase 2 is retained and redefined as repository consolidation and alignment; server implementation becomes Phase 3. Log the commitment as one action; supersede <code>act-012</code>.</td></tr>
-        <tr><td class="k">No Ansible</td><td class="tgt">governance/hx-fleet-control-server.md:185</td><td>Strike "Ansible or another lightweight orchestration layer." Exclude all legacy Ansible artifacts (below). No Ansible SME in the roster. Native fleet scripts remain the automation baseline.</td></tr>
+        <tr><td class="k">No Ansible</td><td class="tgt">governance/design/hx-fleet-control-server.md:185</td><td>Strike "Ansible or another lightweight orchestration layer." Exclude all legacy Ansible artifacts (below). No Ansible SME in the roster. Native fleet scripts remain the automation baseline.</td></tr>
       </tbody>
     </table></div>
   </section>
@@ -162,7 +162,7 @@
       <tbody>
         <tr><td class="src">docling-mcp/charter, specification/node-spec, planning/adr-001, deployment-architecture</td><td><span class="d adapt">adapt</span></td><td class="tgt">services/docling-mcp/build.md</td><td>architecture + boundaries → build doc · <span class="sec">deployment-architecture has plaintext secrets → sanitize</span> · docling-mcp agent</td></tr>
         <tr><td class="src">docling-mcp/tasks/ (~90)</td><td><span class="d hist">historical</span></td><td class="tgt">distilled into build.md steps</td><td>do not import 90 files; extract the install/config/integration sequence</td></tr>
-        <tr><td class="src">docling-mcp/defects/ (~28)</td><td><span class="d adapt">adapt</span></td><td class="tgt">knowledge/legacy/docling/defect-lessons.md + governance/lessons-learned.md</td><td>libGL/<code>libgl1</code>, HF-cache perms, LiteLLM auth, hardcoded-IP class · testing-qa</td></tr>
+        <tr><td class="src">docling-mcp/defects/ (~28)</td><td><span class="d adapt">adapt</span></td><td class="tgt">knowledge/legacy/docling/defect-lessons.md + governance/logs/lessons-learned.md</td><td>libGL/<code>libgl1</code>, HF-cache perms, LiteLLM auth, hardcoded-IP class · testing-qa</td></tr>
         <tr><td class="src">docling-mcp/tests/ + test-suite/</td><td><span class="d adapt">adapt</span></td><td class="tgt">knowledge/legacy/docling/test-lessons.md</td><td>test methodology + failure cases · testing-qa</td></tr>
         <tr><td class="src">docling-mcp/configuration/ (env-vars, network-config, installed-packages)</td><td><span class="d adapt">adapt</span></td><td class="tgt">services/docling-mcp/build.md</td><td>facts 10.→50., FQDN → hx.local.arpa</td></tr>
         <tr><td class="src">lang-server/charter (12 SME reviews), specification/node-spec, planning/plan</td><td><span class="d adapt">adapt</span></td><td class="tgt">services/lang-server/build.md</td><td>supervisor/worker design, FastAPI surface · langgraph agent</td></tr>
@@ -184,7 +184,7 @@
         <tr><td class="src">utilities/cc-util-context-prep, cc-util-handoff</td><td><span class="d adapt">adapt</span></td><td class="tgt">→ .claude/skills/{context-prep,handoff}</td></tr>
         <tr><td class="src">utilities/cc-util-doc-lint</td><td><span class="d adapt">adapt</span></td><td class="tgt">→ skill, aligned with the HTML publishing pipeline</td></tr>
         <tr><td class="src">utilities/cc-util-quality-gate</td><td><span class="d adapt">adapt</span></td><td class="tgt">→ concept rebuilt as tests (see 3c)</td></tr>
-        <tr><td class="src">utilities/cc-util-raidd, cc-util-status-report, cc-util-artifact-tracker</td><td><span class="d covered">covered</span></td><td class="tgt">single log — governance/actions-and-issues.md</td></tr>
+        <tr><td class="src">utilities/cc-util-raidd, cc-util-status-report, cc-util-artifact-tracker</td><td><span class="d covered">covered</span></td><td class="tgt">single log — governance/logs/actions-and-issues.md</td></tr>
         <tr><td class="src">phases/cc-phase-knowledge-research, cc-phase-test-suite-generation</td><td><span class="d adapt">adapt</span></td><td class="tgt">→ skills (research, test-gen)</td></tr>
         <tr><td class="src">phases/cc-phase-charter-questions, cc-phase-defect-mgmt, cc-phase-task-result-doc</td><td><span class="d retire">retire</span></td><td class="tgt">phase/charter machinery — gate retired</td></tr>
         <tr><td class="src">workflows/cc-{charter,spec,task,task-execution,project-closeout}-workflow</td><td><span class="d retire">retire</span></td><td class="tgt">heavy SDD ceremony; owner wants lean. Salvage closeout checklist only if useful</td></tr>
@@ -219,7 +219,7 @@
     <div class="tablewrap"><table>
       <thead><tr><th>Legacy</th><th>Disp.</th><th>Target / note</th></tr></thead>
       <tbody>
-        <tr><td class="src">naming-conventions.md</td><td><span class="d adapt">merge</span></td><td class="tgt">→ governance/documentation-standards.md (one naming doc); leave a pointer</td></tr>
+        <tr><td class="src">naming-conventions.md</td><td><span class="d adapt">merge</span></td><td class="tgt">→ governance/policy/documentation-standards.md (one naming doc); leave a pointer</td></tr>
         <tr><td class="src">testing-requirements.md, document-quality-checklist.md</td><td><span class="d adapt">adapt</span></td><td class="tgt">import concepts current lacks; <span class="sec">testing-requirements references the vault password — sanitize</span></td></tr>
         <tr><td class="src">architecture-standards, deployment-requirements, documentation-requirements, infrastructure-layers, utility-development-standards</td><td><span class="d covered">covered</span></td><td class="tgt">largely covered by INFRASTRUCTURE-CONTRACT + AGENTS; cherry-pick only gaps</td></tr>
         <tr><td class="src">credentials-vault-management.md</td><td><span class="d retire">retire</span></td><td class="tgt">Ansible-vault model; owner: no Ansible; replaced by secret-scan policy</td></tr>
@@ -254,7 +254,7 @@
       <tbody>
         <tr><td class="src">CLAUDE.md</td><td><span class="d adapt">adapt</span></td><td class="tgt">fold Zero-Assumptions Policy into current CLAUDE.md; drop Agent Zero framing + /home/agent0; no phase-gate</td></tr>
         <tr><td class="src">constitution.md</td><td><span class="d adapt">extract</span></td><td class="tgt">principles → current contracts; don't import the file</td></tr>
-        <tr><td class="src">lessons-learned.md (root)</td><td><span class="d adapt">adapt</span></td><td class="tgt">fold still-true entries into governance/lessons-learned.md as ll- rows; then retire</td></tr>
+        <tr><td class="src">lessons-learned.md (root)</td><td><span class="d adapt">adapt</span></td><td class="tgt">fold still-true entries into governance/logs/lessons-learned.md as ll- rows; then retire</td></tr>
         <tr><td class="src">backlog.md, defects.md, defect-log.md, raidd-log.md, status-report.md, CONTINUE-DEFECT-RESOLUTION.md, node-spec-audit-2025-11-30.md</td><td><span class="d hist">mine → retire</span></td><td class="tgt">carry live items into actions-and-issues.md; single-log rule</td></tr>
         <tr><td class="src">README.md, command-quick-reference.md, dir-layout.md</td><td><span class="d retire">retire</span></td><td class="tgt">describe the old repo/commands</td></tr>
         <tr><td class="src">df1.md (10.9 MB)</td><td><span class="d retire">retire</span></td><td class="tgt">terminal-capture junk</td></tr>

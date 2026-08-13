@@ -20,7 +20,7 @@ Authoritative project rules remain in:
 - `GOALS-AND-OBJECTIVES.md`
 - `INFRASTRUCTURE-CONTRACT.md`
 - `SERVER-REGISTRY.md`
-- `governance/risk-acceptances.md`
+- `governance/policy/risk-acceptances.md`
 
 Do not restate those documents here when a reference is sufficient.
 
@@ -40,8 +40,8 @@ Repository-wide rules:
 - Server role, workload, and model assignment are manual decisions.
 - Phase 2 must not begin while the fleet-wide Phase 1 gate is blocked.
 - `discovery.md` records as-found state and must not be rewritten as configured state.
-- routine actions and issues belong in `governance/actions-and-issues.md`.
-- accepted risks are handled according to `governance/risk-acceptances.md`.
+- routine actions and issues belong in `governance/logs/actions-and-issues.md`.
+- accepted risks are handled according to `governance/policy/risk-acceptances.md`.
 - never copy credentials or private keys into tracked documentation.
 
 ## work guidance

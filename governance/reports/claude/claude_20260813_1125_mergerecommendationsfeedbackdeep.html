@@ -181,7 +181,7 @@
           <tr><td class="k"><code>CLAUDE.md</code>, <code>README.md</code>, <code>.gitignore</code>, <code>.vscode/settings.json</code></td><td><span class="badge crit">real</span> — the only four same-path files in both trees. Manual copy-in decisions.</td></tr>
           <tr><td class="k"><code>.claude/commands/</code></td><td>Not a collision — the current repo has no <code>commands/</code> directory at all.</td></tr>
           <tr><td class="k"><code>.claude/hooks/</code></td><td>Not a file collision — legacy is Python, current is PowerShell; different filenames coexist.</td></tr>
-          <tr><td class="k"><code>lessons-learned.md</code></td><td>Different paths — legacy root vs current <code>governance/lessons-learned.md</code>. A fold, not a conflict.</td></tr>
+          <tr><td class="k"><code>lessons-learned.md</code></td><td>Different paths — legacy root vs current <code>governance/logs/lessons-learned.md</code>. A fold, not a conflict.</td></tr>
           <tr><td class="k"><code>.gitattributes</code></td><td>No conflict — only the current repo has one, and it must be kept verbatim (it resolved <code>iss-005</code>).</td></tr>
         </tbody>
       </table>
@@ -246,7 +246,7 @@
       <li><b>Push the current repo to the private org repo</b> <code>Hana-X-AI/HX-Infrastructure</code> — a real, owned home. Closes the actual risk in <code>act-005</code>; correct that action's wrong-repo note in the same commit.</li>
       <li><b>Set the lineage:</b> org repo is home, current <code>main</code> is the mainline, org's 2025 history → <code>legacy/2025</code> branch. No unrelated-history merge.</li>
       <li><b>Adopt the agent roster (the time-saver):</b> first wave — Agent Zero, platform-architect, infra-ops, QA, plus Docling / LangGraph / FastMCP / PostgreSQL / Redis / <b>vLLM (new)</b> / LiteLLM / Qdrant / LightRAG / n8n SMEs. Capability-based, env stripped, pointed at current contracts.</li>
-      <li><b>Mine service knowledge in §02 order</b> — start with Docling and lang-server. Sanitized design/integration/tests/defects into <code>services/&lt;svc&gt;/build.md</code> + <code>governance/lessons-learned.md</code>, every item provenance-tagged, <b>never a secret-bearing file</b>.</li>
+      <li><b>Mine service knowledge in §02 order</b> — start with Docling and lang-server. Sanitized design/integration/tests/defects into <code>services/&lt;svc&gt;/build.md</code> + <code>governance/logs/lessons-learned.md</code>, every item provenance-tagged, <b>never a secret-bearing file</b>.</li>
       <li><b>Fact-sweep everything adapted</b> (<code>10.→50.</code>, <code>hx.dev.local→hx.local.arpa</code>, <code>/home/agent0→</code> relative, <code>agent0→hxsa</code>, role-name→service/<code>hxs-N</code>). Highest-value single fix: re-target the IP validator to <code>192.168.50.0/24</code>.</li>
       <li><b>Stay lean:</b> one log (<code>actions-and-issues.md</code>), no gate rebuild, no <code>.specify</code>, keep <code>.gitattributes</code> verbatim, adopt the Zero-Assumptions framing.</li>
       <li><b>Verify before landing:</b> remediation suite 153/0, discovery validator 15/15, phase-1 guard denies, hook byte-parity, secret scan clean, and zero <code>192.168.10.</code> / <code>hx.dev.local</code> / <code>/home/agent0</code> in any migrated file.</li>
