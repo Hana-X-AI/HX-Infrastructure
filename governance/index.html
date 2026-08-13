@@ -1,0 +1,300 @@
+<title>Governance — HX-Infrastructure</title>
+<style>
+  :root {
+    --ground:#fbfbf9; --surface:#f2f3f0; --raised:#ffffff;
+    --ink:#1b1f1d; --muted:#6b726e; --faint:#949b96;
+    --line:#dde0db; --line-firm:#c3c8c1;
+    --accent:#0f6e5c; --accent-wash:#e6f0ec;
+    --signal:#b4531a; --signal-wash:#fbeee4;
+    --ok:#2f6d4f; --ok-wash:#e4efe8;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --step--2:0.6875rem; --step--1:0.8125rem; --step-0:0.9375rem;
+    --step-1:1.125rem; --step-2:1.5rem; --step-3:2.125rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground:#141917; --surface:#1b211e; --raised:#1f2724;
+      --ink:#e8ebe8; --muted:#97a09b; --faint:#6f7873;
+      --line:#2b342f; --line-firm:#3c4740;
+      --accent:#4fbfa3; --accent-wash:#16302a;
+      --signal:#e08a4c; --signal-wash:#33251a;
+      --ok:#6cc09a; --ok-wash:#162c22;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#141917; --surface:#1b211e; --raised:#1f2724;
+    --ink:#e8ebe8; --muted:#97a09b; --faint:#6f7873;
+    --line:#2b342f; --line-firm:#3c4740;
+    --accent:#4fbfa3; --accent-wash:#16302a;
+    --signal:#e08a4c; --signal-wash:#33251a;
+    --ok:#6cc09a; --ok-wash:#162c22;
+  }
+  :root[data-theme="light"] {
+    --ground:#fbfbf9; --surface:#f2f3f0; --raised:#ffffff;
+    --ink:#1b1f1d; --muted:#6b726e; --faint:#949b96;
+    --line:#dde0db; --line-firm:#c3c8c1;
+    --accent:#0f6e5c; --accent-wash:#e6f0ec;
+    --signal:#b4531a; --signal-wash:#fbeee4;
+    --ok:#2f6d4f; --ok-wash:#e4efe8;
+  }
+
+  :root { color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root { color-scheme: dark; } }
+  :root[data-theme="dark"] { color-scheme: dark; }
+  :root[data-theme="light"] { color-scheme: light; }
+
+  body {
+    margin:0; padding:clamp(1.5rem,4vw,3.5rem) clamp(1rem,4vw,2rem) 5rem;
+    background:var(--ground); color:var(--ink);
+    font-family:var(--sans); font-size:var(--step-0); line-height:1.55;
+    -webkit-text-size-adjust:100%;
+  }
+  .page { max-width:1100px; margin:0 auto; display:flex; flex-direction:column; gap:2.25rem; }
+
+  .bar { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .nav { display:flex; gap:1.1rem; flex-wrap:wrap; align-items:center;
+         font-family:var(--mono); font-size:var(--step--2);
+         text-transform:uppercase; letter-spacing:0.1em; }
+  .nav a { color:var(--muted); text-decoration:none; border-bottom:1px solid transparent; padding-bottom:2px; }
+  .nav a:hover { color:var(--accent); border-bottom-color:var(--accent); }
+  .nav a[aria-current="page"] { color:var(--accent); border-bottom-color:var(--accent); }
+
+  .toggle {
+    font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+    letter-spacing:0.09em; color:var(--muted); background:var(--surface);
+    border:1px solid var(--line-firm); border-radius:2px; padding:0.4rem 0.75rem; cursor:pointer;
+    transition:color 120ms ease, border-color 120ms ease;
+  }
+  .toggle:hover { color:var(--accent); border-color:var(--accent); }
+
+  .masthead { display:flex; flex-direction:column; gap:0.7rem; }
+  .eyebrow { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+             letter-spacing:0.14em; color:var(--accent); margin:0; }
+  h1 { font-size:var(--step-3); line-height:1.08; letter-spacing:-0.02em; font-weight:650;
+       margin:0; text-wrap:balance; }
+  .masthead p { margin:0; max-width:65ch; color:var(--muted); }
+
+  .strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:1px;
+           background:var(--line); border:1px solid var(--line); border-radius:3px; overflow:hidden; }
+  .cell { background:var(--surface); padding:0.8rem 1rem; display:flex; flex-direction:column; gap:0.1rem; }
+  .cell dt { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+             letter-spacing:0.1em; color:var(--muted); }
+  .cell dd { margin:0; font-size:var(--step-1); font-weight:600; font-variant-numeric:tabular-nums; }
+
+  h2 { font-size:var(--step-2); letter-spacing:-0.015em; font-weight:620; margin:0; text-wrap:balance; }
+  section { display:flex; flex-direction:column; gap:0.85rem; }
+  .lede { margin:0; color:var(--muted); max-width:70ch; font-size:var(--step--1); }
+
+  .entries { display:flex; flex-direction:column; gap:0.75rem; }
+  .entry { border:1px solid var(--line); border-radius:3px; background:var(--raised);
+           padding:1rem 1.15rem; display:flex; flex-direction:column; gap:0.6rem;
+           border-left:3px solid var(--line-firm); }
+  .entry.is-open { border-left-color:var(--signal); }
+  .entry.is-done { border-left-color:var(--ok); }
+  .entry.is-hold { border-left-color:var(--faint); }
+
+  .entry-head { display:flex; align-items:center; gap:0.55rem; flex-wrap:wrap; }
+  .eid { font-family:var(--mono); font-weight:650; font-size:var(--step-0); }
+  .chip { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+          letter-spacing:0.08em; padding:0.15rem 0.45rem; border-radius:2px;
+          border:1px solid var(--line-firm); color:var(--muted); }
+  .pill { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+          letter-spacing:0.08em; padding:0.15rem 0.5rem; border-radius:10px; font-weight:600; }
+  .pill.is-open { background:var(--signal-wash); color:var(--signal); }
+  .pill.is-done { background:var(--ok-wash); color:var(--ok); }
+  .pill.is-hold { background:var(--surface); color:var(--muted); }
+  .rel { margin-left:auto; font-family:var(--mono); font-size:var(--step--2); color:var(--faint); }
+
+  .field { display:flex; flex-direction:column; gap:0.2rem; }
+  .field-label { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+                 letter-spacing:0.09em; color:var(--faint); }
+  .field p { margin:0; max-width:78ch; }
+  .field.body p { color:var(--ink); }
+  .field.sub p { color:var(--muted); font-size:var(--step--1); }
+
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1rem; }
+  .card { border:1px solid var(--line); border-radius:3px; background:var(--raised);
+          padding:1.15rem 1.25rem; display:flex; flex-direction:column; gap:0.5rem;
+          text-decoration:none; color:inherit;
+          transition:border-color 120ms ease, transform 120ms ease; }
+  .card:hover { border-color:var(--accent); transform:translateY(-2px); }
+  .card h3 { margin:0; font-size:var(--step-1); font-weight:620; letter-spacing:-0.01em; }
+  .card p { margin:0; font-size:var(--step--1); color:var(--muted); }
+  .card .meta { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+                letter-spacing:0.09em; color:var(--accent); margin-top:auto; padding-top:0.3rem; }
+
+  .scroll { overflow-x:auto; border:1px solid var(--line); border-radius:3px; background:var(--raised); }
+  table { border-collapse:collapse; width:100%; font-size:var(--step--1); }
+  thead th { background:var(--surface); border-bottom:1px solid var(--line-firm);
+             font-family:var(--mono); font-size:var(--step--2); font-weight:600;
+             text-transform:uppercase; letter-spacing:0.09em; color:var(--muted);
+             text-align:left; padding:0.65rem 0.85rem; white-space:nowrap; }
+  tbody td { padding:0.6rem 0.85rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:last-child td { border-bottom:none; }
+
+  ul.notes { padding-left:1.15rem; margin:0; font-size:var(--step--1); color:var(--muted);
+             display:flex; flex-direction:column; gap:0.4rem; }
+  ul.notes b, ul.notes code { color:var(--ink); }
+
+  code { font-family:var(--mono); font-size:0.92em; background:var(--surface);
+         padding:0.05em 0.32em; border-radius:2px; }
+  pre { margin:0; overflow-x:auto; background:var(--surface); border:1px solid var(--line);
+        border-radius:3px; padding:0.85rem 1rem; }
+  pre code { background:none; padding:0; font-size:var(--step--1); }
+
+  footer { border-top:1px solid var(--line); padding-top:1rem; font-size:var(--step--2); color:var(--faint); }
+  a { color:var(--accent); }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
+</style>
+
+<div class="page">
+
+  <div class="bar">
+    <nav class="nav">
+        <a href="https://claude.ai/code/artifact/09f4465a-1924-40c5-b352-cbe19926100d" aria-current="page">Governance</a>
+        <a href="https://claude.ai/code/artifact/4062f99f-e8d4-44ba-aae2-74472bde91f5">Actions &amp; issues</a>
+        <a href="https://claude.ai/code/artifact/9325f481-90f0-4439-9fa0-e8f48d629ff4">Lessons learned</a>
+        <a href="https://claude.ai/code/artifact/ac6d1ab7-8dae-436d-94f1-80bfbb99d467">Standards</a>
+        <a href="https://claude.ai/code/artifact/130cf301-c270-4851-a1e5-eb9ed8586074">Fleet inventory</a>
+    </nav>
+    <button type="button" class="toggle" id="theme-toggle">Dark mode</button>
+  </div>
+
+  <header class="masthead">
+    <p class="eyebrow">HX-Infrastructure</p>
+    <h1>Governance</h1>
+    <p>The record of how this fleet was built: what was found on each machine, what is
+    tracked, what was learned, and the rules the documents themselves follow. Every page here
+    is generated from or mirrors a Markdown file in <code>governance/</code>, which stays the
+    source of truth.</p>
+  </header>
+
+  <dl class="strip">
+    <div class="cell"><dt>Fleet servers</dt><dd>15</dd></div>
+    <div class="cell"><dt>Control plane</dt><dd>1</dd></div>
+    <div class="cell"><dt>Discovery</dt><dd>15 / 15</dd></div>
+    <div class="cell"><dt>Roles assigned</dt><dd>0</dd></div>
+    <div class="cell"><dt>Phase 1</dt><dd>In progress</dd></div>
+    <div class="cell"><dt>Phase 2</dt><dd>Blocked</dd></div>
+  </dl>
+
+  <section>
+    <h2>Documents</h2>
+    <p class="lede">Four views onto the project. The fleet inventory answers what the hardware
+    is; the other three answer how the project is run.</p>
+    <div class="cards">
+
+      <a class="card" href="https://claude.ai/code/artifact/130cf301-c270-4851-a1e5-eb9ed8586074">
+        <h3>Fleet Server Inventory</h3>
+        <p>Hardware manifest for all fifteen servers and the control-plane host — hostname,
+        address, FQDN, storage, CPU, GPU, VRAM and memory, every value measured on the
+        machine itself.</p>
+        <span class="meta">16 machines</span>
+      </a>
+
+      <a class="card" href="https://claude.ai/code/artifact/4062f99f-e8d4-44ba-aae2-74472bde91f5">
+        <h3>Actions &amp; Issues</h3>
+        <p>The single project log. Work that must be done and problems that are known, each
+        entry carrying its own resolution so the outcome stays with the item.</p>
+        <span class="meta">24 entries · 4 open</span>
+      </a>
+
+      <a class="card" href="https://claude.ai/code/artifact/9325f481-90f0-4439-9fa0-e8f48d629ff4">
+        <h3>Lessons Learned</h3>
+        <p>What this project learned the hard way, with the evidence that produced each
+        lesson and the change made in response.</p>
+        <span class="meta">31 lessons</span>
+      </a>
+
+      <a class="card" href="https://claude.ai/code/artifact/ac6d1ab7-8dae-436d-94f1-80bfbb99d467">
+        <h3>Documentation Standards</h3>
+        <p>How files are named and where they belong, including the deliberate exceptions
+        that look like drift and must not be "fixed".</p>
+        <span class="meta">Written 2026-08-13</span>
+      </a>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Where authority sits</h2>
+    <ul class="notes">
+      <li><b><code>SERVER-REGISTRY.md</code></b> is authoritative for assigned role, approved
+      workload, discovery status and Phase 2 status. Where any page here disagrees with it,
+      the registry wins.</li>
+      <li><b><code>servers/&lt;host&gt;/discovery.md</code></b> records each server as found.
+      It is never rewritten to reflect later configuration.</li>
+      <li><b><code>governance/actions-and-issues.md</code></b> is the only routine tracking
+      log. No separate action-item or issue documents are created.</li>
+      <li><b>Roles are assigned manually.</b> Agents may compare capabilities and report
+      constraints, but may not assign a role, select a workload, or choose a model.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Where the project stands</h2>
+    <p class="lede">Phase 1 is discovery and documentation only. It ends at a seven-condition
+    gate, four of which are met.</p>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr><th scope="col">Phase 1 gate condition</th><th scope="col">State</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Every expected server is present in the registry</td><td>15 of 15 — met</td></tr>
+          <tr><td>Every server has a complete <code>discovery.md</code></td><td>15 of 15 — met</td></tr>
+          <tr><td>Fleet hardware capabilities are documented and comparable</td><td>met 2026-08-13</td></tr>
+          <tr><td>Fleet capabilities have been manually reviewed</td><td>outstanding — human decision</td></tr>
+          <tr><td>Every server has a manually assigned role</td><td>0 of 15 — outstanding</td></tr>
+          <tr><td>Every assigned role is recorded in the registry</td><td>outstanding</td></tr>
+          <tr><td>No role-specific configuration has begun</td><td>0 <code>configuration.md</code> files — met</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lede">The three outstanding conditions are all human decisions, tracked as
+    <code>act-012</code>. Phase 2 stays blocked until every condition is complete.</p>
+  </section>
+
+
+  <footer>
+    HX-Infrastructure governance &middot; generated from the Markdown sources in <code>governance/</code> on 2026-08-13.
+    The Markdown files remain the source of truth.
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById('theme-toggle');
+  if (!btn) { return; }
+  var media = window.matchMedia('(prefers-color-scheme: dark)');
+  function stored(v) {
+    try { if (v === undefined) { return localStorage.getItem('hx-theme'); } localStorage.setItem('hx-theme', v); }
+    catch (e) { /* sandboxed: the toggle still works for this view */ }
+    return null;
+  }
+  function active() {
+    var e = root.getAttribute('data-theme');
+    return (e === 'dark' || e === 'light') ? e : (media.matches ? 'dark' : 'light');
+  }
+  function relabel() {
+    var next = active() === 'dark' ? 'light' : 'dark';
+    btn.textContent = next === 'dark' ? 'Dark mode' : 'Light mode';
+    btn.setAttribute('aria-label', 'Switch to ' + next + ' mode');
+  }
+  var saved = stored();
+  if (saved === 'dark' || saved === 'light') { root.setAttribute('data-theme', saved); }
+  relabel();
+  btn.addEventListener('click', function () {
+    var next = active() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next); stored(next); relabel();
+  });
+  if (typeof media.addEventListener === 'function') { media.addEventListener('change', relabel); }
+  if (typeof MutationObserver === 'function') {
+    new MutationObserver(relabel).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  }
+})();
+</script>

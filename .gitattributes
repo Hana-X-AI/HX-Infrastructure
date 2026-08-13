@@ -10,3 +10,8 @@
 # without rewriting the existing history.
 
 * -text
+
+# Shell scripts are executed on Ubuntu hosts. A CR byte makes bash fail with
+# "$'\r': command not found", so these are normalised to LF in the object store
+# and checked out as LF regardless of the platform that wrote them.
+*.sh text eol=lf

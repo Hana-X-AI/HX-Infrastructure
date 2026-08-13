@@ -11,6 +11,7 @@ This contract owns:
 ```text
 governance/
 ├── actions-and-issues.md
+├── lessons-learned.md
 ├── risk-acceptances.md
 └── reports/
 ```
@@ -39,6 +40,15 @@ Do not re-report an active accepted risk unless:
 - new evidence materially changes likelihood or impact.
 
 Risk acceptance does not mean the risk is resolved.
+
+### lessons learned
+
+`lessons-learned.md` records the generalisable takeaway from a defect or surprise, not the defect itself.
+
+- the defect belongs in `actions-and-issues.md`; the lesson links back to it;
+- add a row only when the lesson changes how future work should be done;
+- do not restate project policy, and do not record credential values;
+- keep existing rows stable; supersede rather than rewrite history.
 
 ### reports
 

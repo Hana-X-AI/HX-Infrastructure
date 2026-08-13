@@ -44,6 +44,25 @@ If a fact cannot be collected with existing tools or current privileges, record 
 
 When the project `server-discovery` subagent is available, delegate noisy SSH inventory collection to it and use its normalized result to populate the discovery record.
 
+0. **Read `servers/<server-name>/pre-work-results.md` before contacting the target in any way.** Not in the same batch as other calls. Not concurrently. Read it, then act on what it says.
+
+   **The pre-work record is the source for the target address, the account, and the authentication state.** It normally contains all three:
+
+   ```text
+   IPv4 address for eno1: 192.168.50.204     <- the address
+   ssh hxsa@192.168.50.204                    <- the account
+   SUDO_NOPASSWD=yes                          <- privilege state
+   ```
+
+   Do not probe the network to discover facts the file already states. Do not infer an address from a numbering pattern. If the file does not give an address, ask for it rather than scanning candidates.
+
+   It records what the human observed during preparation and is an independent second source.
+
+   - Treat it as evidence, not as the record. The collector output remains authoritative for `discovery.md`.
+   - **Cross-check it against the collected facts, especially device counts.** Agreement is corroboration. Disagreement is a finding, and it is usually hardware, not a collection error.
+   - If it is truncated, ends at a shell continuation prompt, or is missing sections, say so before collecting. An incomplete pre-work run is itself a signal about the host.
+   - If the human states a hardware fact that the operating system does not report, record both: what the OS enumerates, and what is reported installed. Never silently prefer one.
+
 1. Confirm the target by hostname, current IP, OS, and architecture before trusting collected data.
 2. Run the bundled read-only collector where practical:
 

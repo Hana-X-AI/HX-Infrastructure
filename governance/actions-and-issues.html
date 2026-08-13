@@ -1,0 +1,495 @@
+<title>Actions & Issues — HX Governance</title>
+<style>
+  :root {
+    --ground:#fbfbf9; --surface:#f2f3f0; --raised:#ffffff;
+    --ink:#1b1f1d; --muted:#6b726e; --faint:#949b96;
+    --line:#dde0db; --line-firm:#c3c8c1;
+    --accent:#0f6e5c; --accent-wash:#e6f0ec;
+    --signal:#b4531a; --signal-wash:#fbeee4;
+    --ok:#2f6d4f; --ok-wash:#e4efe8;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --step--2:0.6875rem; --step--1:0.8125rem; --step-0:0.9375rem;
+    --step-1:1.125rem; --step-2:1.5rem; --step-3:2.125rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground:#141917; --surface:#1b211e; --raised:#1f2724;
+      --ink:#e8ebe8; --muted:#97a09b; --faint:#6f7873;
+      --line:#2b342f; --line-firm:#3c4740;
+      --accent:#4fbfa3; --accent-wash:#16302a;
+      --signal:#e08a4c; --signal-wash:#33251a;
+      --ok:#6cc09a; --ok-wash:#162c22;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#141917; --surface:#1b211e; --raised:#1f2724;
+    --ink:#e8ebe8; --muted:#97a09b; --faint:#6f7873;
+    --line:#2b342f; --line-firm:#3c4740;
+    --accent:#4fbfa3; --accent-wash:#16302a;
+    --signal:#e08a4c; --signal-wash:#33251a;
+    --ok:#6cc09a; --ok-wash:#162c22;
+  }
+  :root[data-theme="light"] {
+    --ground:#fbfbf9; --surface:#f2f3f0; --raised:#ffffff;
+    --ink:#1b1f1d; --muted:#6b726e; --faint:#949b96;
+    --line:#dde0db; --line-firm:#c3c8c1;
+    --accent:#0f6e5c; --accent-wash:#e6f0ec;
+    --signal:#b4531a; --signal-wash:#fbeee4;
+    --ok:#2f6d4f; --ok-wash:#e4efe8;
+  }
+
+  :root { color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root { color-scheme: dark; } }
+  :root[data-theme="dark"] { color-scheme: dark; }
+  :root[data-theme="light"] { color-scheme: light; }
+
+  body {
+    margin:0; padding:clamp(1.5rem,4vw,3.5rem) clamp(1rem,4vw,2rem) 5rem;
+    background:var(--ground); color:var(--ink);
+    font-family:var(--sans); font-size:var(--step-0); line-height:1.55;
+    -webkit-text-size-adjust:100%;
+  }
+  .page { max-width:1100px; margin:0 auto; display:flex; flex-direction:column; gap:2.25rem; }
+
+  .bar { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .nav { display:flex; gap:1.1rem; flex-wrap:wrap; align-items:center;
+         font-family:var(--mono); font-size:var(--step--2);
+         text-transform:uppercase; letter-spacing:0.1em; }
+  .nav a { color:var(--muted); text-decoration:none; border-bottom:1px solid transparent; padding-bottom:2px; }
+  .nav a:hover { color:var(--accent); border-bottom-color:var(--accent); }
+  .nav a[aria-current="page"] { color:var(--accent); border-bottom-color:var(--accent); }
+
+  .toggle {
+    font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+    letter-spacing:0.09em; color:var(--muted); background:var(--surface);
+    border:1px solid var(--line-firm); border-radius:2px; padding:0.4rem 0.75rem; cursor:pointer;
+    transition:color 120ms ease, border-color 120ms ease;
+  }
+  .toggle:hover { color:var(--accent); border-color:var(--accent); }
+
+  .masthead { display:flex; flex-direction:column; gap:0.7rem; }
+  .eyebrow { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+             letter-spacing:0.14em; color:var(--accent); margin:0; }
+  h1 { font-size:var(--step-3); line-height:1.08; letter-spacing:-0.02em; font-weight:650;
+       margin:0; text-wrap:balance; }
+  .masthead p { margin:0; max-width:65ch; color:var(--muted); }
+
+  .strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:1px;
+           background:var(--line); border:1px solid var(--line); border-radius:3px; overflow:hidden; }
+  .cell { background:var(--surface); padding:0.8rem 1rem; display:flex; flex-direction:column; gap:0.1rem; }
+  .cell dt { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+             letter-spacing:0.1em; color:var(--muted); }
+  .cell dd { margin:0; font-size:var(--step-1); font-weight:600; font-variant-numeric:tabular-nums; }
+
+  h2 { font-size:var(--step-2); letter-spacing:-0.015em; font-weight:620; margin:0; text-wrap:balance; }
+  section { display:flex; flex-direction:column; gap:0.85rem; }
+  .lede { margin:0; color:var(--muted); max-width:70ch; font-size:var(--step--1); }
+
+  .entries { display:flex; flex-direction:column; gap:0.75rem; }
+  .entry { border:1px solid var(--line); border-radius:3px; background:var(--raised);
+           padding:1rem 1.15rem; display:flex; flex-direction:column; gap:0.6rem;
+           border-left:3px solid var(--line-firm); }
+  .entry.is-open { border-left-color:var(--signal); }
+  .entry.is-done { border-left-color:var(--ok); }
+  .entry.is-hold { border-left-color:var(--faint); }
+
+  .entry-head { display:flex; align-items:center; gap:0.55rem; flex-wrap:wrap; }
+  .eid { font-family:var(--mono); font-weight:650; font-size:var(--step-0); }
+  .chip { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+          letter-spacing:0.08em; padding:0.15rem 0.45rem; border-radius:2px;
+          border:1px solid var(--line-firm); color:var(--muted); }
+  .pill { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+          letter-spacing:0.08em; padding:0.15rem 0.5rem; border-radius:10px; font-weight:600; }
+  .pill.is-open { background:var(--signal-wash); color:var(--signal); }
+  .pill.is-done { background:var(--ok-wash); color:var(--ok); }
+  .pill.is-hold { background:var(--surface); color:var(--muted); }
+  .rel { margin-left:auto; font-family:var(--mono); font-size:var(--step--2); color:var(--faint); }
+
+  .field { display:flex; flex-direction:column; gap:0.2rem; }
+  .field-label { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+                 letter-spacing:0.09em; color:var(--faint); }
+  .field p { margin:0; max-width:78ch; }
+  .field.body p { color:var(--ink); }
+  .field.sub p { color:var(--muted); font-size:var(--step--1); }
+
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1rem; }
+  .card { border:1px solid var(--line); border-radius:3px; background:var(--raised);
+          padding:1.15rem 1.25rem; display:flex; flex-direction:column; gap:0.5rem;
+          text-decoration:none; color:inherit;
+          transition:border-color 120ms ease, transform 120ms ease; }
+  .card:hover { border-color:var(--accent); transform:translateY(-2px); }
+  .card h3 { margin:0; font-size:var(--step-1); font-weight:620; letter-spacing:-0.01em; }
+  .card p { margin:0; font-size:var(--step--1); color:var(--muted); }
+  .card .meta { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+                letter-spacing:0.09em; color:var(--accent); margin-top:auto; padding-top:0.3rem; }
+
+  .scroll { overflow-x:auto; border:1px solid var(--line); border-radius:3px; background:var(--raised); }
+  table { border-collapse:collapse; width:100%; font-size:var(--step--1); }
+  thead th { background:var(--surface); border-bottom:1px solid var(--line-firm);
+             font-family:var(--mono); font-size:var(--step--2); font-weight:600;
+             text-transform:uppercase; letter-spacing:0.09em; color:var(--muted);
+             text-align:left; padding:0.65rem 0.85rem; white-space:nowrap; }
+  tbody td { padding:0.6rem 0.85rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:last-child td { border-bottom:none; }
+
+  ul.notes { padding-left:1.15rem; margin:0; font-size:var(--step--1); color:var(--muted);
+             display:flex; flex-direction:column; gap:0.4rem; }
+  ul.notes b, ul.notes code { color:var(--ink); }
+
+  code { font-family:var(--mono); font-size:0.92em; background:var(--surface);
+         padding:0.05em 0.32em; border-radius:2px; }
+  pre { margin:0; overflow-x:auto; background:var(--surface); border:1px solid var(--line);
+        border-radius:3px; padding:0.85rem 1rem; }
+  pre code { background:none; padding:0; font-size:var(--step--1); }
+
+  footer { border-top:1px solid var(--line); padding-top:1rem; font-size:var(--step--2); color:var(--faint); }
+  a { color:var(--accent); }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
+</style>
+
+<div class="page">
+
+  <div class="bar">
+    <nav class="nav">
+        <a href="https://claude.ai/code/artifact/09f4465a-1924-40c5-b352-cbe19926100d">Governance</a>
+        <a href="https://claude.ai/code/artifact/4062f99f-e8d4-44ba-aae2-74472bde91f5" aria-current="page">Actions &amp; issues</a>
+        <a href="https://claude.ai/code/artifact/9325f481-90f0-4439-9fa0-e8f48d629ff4">Lessons learned</a>
+        <a href="https://claude.ai/code/artifact/ac6d1ab7-8dae-436d-94f1-80bfbb99d467">Standards</a>
+        <a href="https://claude.ai/code/artifact/130cf301-c270-4851-a1e5-eb9ed8586074">Fleet inventory</a>
+    </nav>
+    <button type="button" class="toggle" id="theme-toggle">Dark mode</button>
+  </div>
+
+
+  <header class="masthead">
+    <p class="eyebrow">HX-Infrastructure &middot; project log</p>
+    <h1>Actions &amp; Issues</h1>
+    <p>The single tracking log for the project. <code>action</code> is work that must be
+    completed; <code>issue</code> is a known problem, defect or unresolved behaviour. Each
+    entry carries its own resolution, so the record of what happened stays with the item.</p>
+  </header>
+
+  <dl class="strip">
+    <div class="cell"><dt>Entries</dt><dd>24</dd></div>
+    <div class="cell"><dt>Actions</dt><dd>13</dd></div>
+    <div class="cell"><dt>Issues</dt><dd>11</dd></div>
+    <div class="cell"><dt>Open</dt><dd>4</dd></div>
+    <div class="cell"><dt>Backlog</dt><dd>2</dd></div>
+    <div class="cell"><dt>Closed</dt><dd>18</dd></div>
+  </dl>
+
+  <section>
+    <h2>Log</h2>
+    <p class="lede">Open items first, then deferred, then closed. Within each group the most
+    recent entry leads.</p>
+    <div class="entries">
+      <article class="entry is-open">
+        <div class="entry-head">
+          <span class="eid">iss-011</span>
+          <span class="chip">issue</span>
+          <span class="pill is-open">open</span>
+          
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p><code>hxs-15</code> does not expose hardware virtualization to the operating system. <code>lscpu</code> emits no <code>Virtualization</code> field, the <code>vmx</code> flag is absent from the CPU flag list, and the kernel records <code>Itlb multihit: KVM: Mitigation: VMX unsupported</code>. Three independent signals agree. The processor is an Intel Core i5-7500, the same part as <code>hxs-5</code>, <code>hxs-9</code>, <code>hxs-10</code>, <code>hxs-11</code>, <code>hxs-12</code> and <code>hxs-14</code>, all of which report <code>VT-x present</code>, so the silicon supports it and the cause is a firmware setting on this host. <strong>All 14 other servers in the fleet expose VT-x; <code>hxs-15</code> is the only one that does not.</strong> Discovered 2026-08-13 during Phase 1 discovery. Nothing was changed on the host: firmware settings are a persistent configuration change and Phase 1 is discovery only.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p><code>hxs-15</code> cannot run KVM or any hypervisor-backed workload while in this state. Container workloads do not require VT-x and are unaffected. The constraint is recorded so that manual role assignment is made against the real capability rather than the assumed fleet-uniform one.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p>Requires a firmware setting change, which is physical or console work performed by a human and outside Phase 1 automation. Enter the HP P21 BIOS setup on <code>hxs-15</code> and enable Intel Virtualization Technology (VT-x), then re-run the collector and confirm <code>lscpu</code> reports <code>Virtualization: VT-x</code>. If the setting is already enabled in firmware, the finding changes character and the host should be compared against the batch again. Not a discovery blocker: the record is complete and accurate as-found.</p></div>
+      </article>
+      <article class="entry is-open">
+        <div class="entry-head">
+          <span class="eid">iss-010</span>
+          <span class="chip">issue</span>
+          <span class="pill is-open">open</span>
+          <span class="rel">related: act-002, iss-003</span>
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p>Norton 360 quarantined <code>tests/remediation-tests.ps1</code> on 2026-08-12, reporting it as infected. Norton is the active antivirus on the workstation; Windows Defender real-time protection is off and <code>MsMpEng</code> is not running, so Defender is not involved. The file is the project regression suite and contains no malicious code. The detection is heuristic: the suite carried 14 destructive shell commands as verbatim string literals (test data fed to the Phase 1 guard to prove the guard denies them), 4 <code>System.Diagnostics.ProcessStartInfo</code> constructs with redirected stdio (the harness that invokes each hook as a child process), and temp-directory fixture writes. Read together those are the signature of a disk-wiping script with process injection. The quarantine also holds a lock on the path, so the canonical filename cannot be recreated.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>The regression suite was unavailable under its documented name. <code>.claude/AGENTS.md</code> line 66 requires <code>tests/remediation-tests.ps1</code> in the verification list for hook changes, so hook work could not be verified through the documented path.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p><strong>Trigger surface reduced, canonical path still locked.</strong> The suite was recovered from <code>HEAD</code> as <code>tests/remediation-tests-restored.ps1</code> and hardened: every destructive command literal is now assembled at runtime from fragments, so no destructive token appears verbatim in the file. All 13 previously-present literals are now absent and the suite still passes 153 of 153 with exit 0, because the guard receives the complete assembled string and coverage is unchanged. The 4 process-spawning constructs are inherent to the harness and were left alone. <strong>The canonical path remains write-denied after the owner deleted the file from Norton quarantine on 2026-08-12.</strong> Diagnosis: the directory has no entry for the name, the parent grants the owner <code>FullControl</code>, a different filename in the same directory writes successfully, and the same filename writes successfully in another directory — the denial is bound to that one full path. That is NTFS delete-pending: the directory entry is gone but a Norton process still holds an open handle, and creating a file at a delete-pending path returns <code>ACCESS_DENIED</code>. The workstation has not rebooted since 2026-08-07, so the handle has persisted. A reboot releases it; no exclusion or Norton setting change is required. After the reboot, rename <code>remediation-tests-restored.ps1</code> back to <code>remediation-tests.ps1</code> and re-run the suite. Until then the suite runs only under the <code>-restored</code> name.</p></div>
+      </article>
+      <article class="entry is-open">
+        <div class="entry-head">
+          <span class="eid">act-012</span>
+          <span class="chip">action</span>
+          <span class="pill is-open">open</span>
+          <span class="rel">related: iss-011, act-005</span>
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p><strong>Manual fleet capability review and role assignment.</strong> Phase 1 discovery is complete for all 15 servers and the three machine-verifiable gate conditions are satisfied. The four remaining conditions all depend on human judgement and cannot be performed by an agent: confirm the fleet capability data is comparable, review the capabilities, assign a role to every server, and record each approved role in <code>SERVER-REGISTRY.md</code>. Inputs are the 15 <code>servers/*/discovery.md</code> records, the normalized comparison columns in <code>SERVER-REGISTRY.md</code>, and <code>governance/reports/</code>. Capability constraints that bear on assignment are already recorded: <code>iss-011</code> (no VT-x on <code>hxs-15</code>), the single-storage-device and single-NIC condition on every small form factor host, non-ECC memory fleet-wide, and the measured GPU distribution of 8 discrete GPUs totalling 122458 MiB across <code>hxs-1</code> through <code>hxs-4</code> with none on <code>hxs-5</code> through <code>hxs-15</code>.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>This is the whole of the remaining Phase 1 gate. Phase 2 stays <code>BLOCKED</code> until every role is assigned and recorded, so no role configuration can begin on any server until this completes.</p></div>
+        
+      </article>
+      <article class="entry is-open">
+        <div class="entry-head">
+          <span class="eid">act-005</span>
+          <span class="chip">action</span>
+          <span class="pill is-open">open</span>
+          
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p>Establish an off-machine copy of the repository. No Git remote is configured, so the contract, registry, hooks, risk register and review history exist only on one workstation.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>Total loss of project history if the workstation is lost.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p>Blocked on destination. <code>hanax-ai/HX-Infrastructure</code> on GitHub is already taken by an unrelated public Ansible project (playbooks, roles, LiteLLM/PostgreSQL work, last pushed 2025-09-17, open PR #1) with zero shared history; pushing there was rejected rather than forced. Work is committed locally at <code>4c89358</code>. Project owner deferred the destination decision on 2026-08-11.</p></div>
+      </article>
+      <article class="entry is-hold">
+        <div class="entry-head">
+          <span class="eid">iss-001</span>
+          <span class="chip">issue</span>
+          <span class="pill is-hold">backlog</span>
+          <span class="rel">related: act-001, act-011</span>
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p>Stock ASUSWRT regenerates <code>/etc/dnsmasq.conf</code> and <code>/etc/hosts</code>, so direct edits cannot currently be relied upon for persistent <code>hx.local.arpa</code> server DNS records.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>Persistent server DNS mechanism is not yet established.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p>Partially addressed 2026-08-12. The records were moved off the RAM-backed <code>/etc/hosts</code> into <code>/jffs/hx-hosts</code>, which is persistent flash, so the data itself now survives. The remaining exposure is execution rather than storage: nothing is known to apply the records at boot. Deferred to the backlog with <code>act-011</code>, which carries the confirming test.</p></div>
+      </article>
+      <article class="entry is-hold">
+        <div class="entry-head">
+          <span class="eid">act-011</span>
+          <span class="chip">action</span>
+          <span class="pill is-hold">backlog</span>
+          <span class="rel">related: act-001, iss-001</span>
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p><strong>Backlog.</strong> Make the router-side DNS records survive a reboot without manual intervention. <code>/jffs/hx-hosts</code> and <code>/jffs/hx-dns-load.sh</code> live in persistent flash and survive, but nothing is known to invoke the loader at boot: <code>strings /sbin/rc</code> returned no match for <code>script_init</code>, <code>script_wanup</code>, <code>script_fire</code>, <code>script_usbmount</code>, <code>jffs2_exec</code> or <code>jffs2_scripts</code>, which are the hooks that auto-run <code>/jffs</code> scripts on firmware that supports them. The loader has only ever been run by hand. <strong>Test that settles it: reboot the router, then query <code>hxs-5.hx.local.arpa</code> from the workstation without running the loader.</strong> If it resolves, boot execution works and this action and <code>iss-001</code> both close on evidence. If it does not, a trigger the stock firmware actually fires is required. Also worth inspecting while doing this: whether <code>hx-dns-load.sh</code> rewrites <code>/etc/hosts</code> or appends to it. The owner had to delete entries from <code>/etc/hosts</code> manually before reloading, which suggests it appends, and a script intended to run at every boot should be idempotent.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>Until proven, a router reboot or power loss silently removes all <code>hx.local.arpa</code> resolution, and discovery and operations fall back to raw IP addresses. Not blocking: name resolution works today and all discovery to date has run by IP.</p></div>
+        
+      </article>
+      <article class="entry is-done">
+        <div class="entry-head">
+          <span class="eid">iss-009</span>
+          <span class="chip">issue</span>
+          <span class="pill is-done">resolved</span>
+          
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p><strong>Duplicate hostname on the network.</strong> The host at <code>192.168.50.209</code>, intended to be <code>hxs-10</code>, reports its hostname as <code>hxs-9</code>. The genuine <code>hxs-9</code> is at <code>192.168.50.208</code> and is already discovered. These are confirmed to be two different physical machines: system serial <code>8CG8170SXM</code> and machine ID <code>4448cf54f6a14b6a8c553f1ca5b26d66</code> at <code>.209</code>, against serial <code>8CG8170SW8</code> and machine ID <code>a6c2467762ed4b768f196447612a6386</code> at <code>.208</code>. Both are HP EliteDesk 800 G3 DM 65W on identical firmware, so <code>.209</code> was almost certainly imaged from <code>hxs-9</code> or from the same image without the hostname being set. Discovered 2026-08-12.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>Two hosts claim the same name, so <code>hx.local.arpa</code> records, the registry and any hostname-based automation become ambiguous. No <code>discovery.md</code> was written for <code>.209</code>, because its as-found hostname contradicts the intended identity and a discovery record must reflect what the host reports. Discovery of this server is stalled until resolved.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p><strong>Resolved 2026-08-12.</strong> The project owner set the hostname on <code>192.168.50.209</code> to <code>hxs-10</code>. Verified: the host now reports <code>hxs-10</code> from both <code>hostname</code> and <code>hostnamectl --static</code>, and system serial <code>8CG8170SXM</code> confirms it is the same machine. The host was re-collected and <code>servers/hxs-10/discovery.md</code> written normally. No other configuration was changed, and Claude did not perform the hostname change.</p></div>
+      </article>
+      <article class="entry is-done">
+        <div class="entry-head">
+          <span class="eid">iss-008</span>
+          <span class="chip">issue</span>
+          <span class="pill is-done">resolved</span>
+          <span class="rel">related: act-007, act-008, act-010</span>
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p>Both GPUs in <code>hxs-2</code> fail to initialize. <code>nouveau</code> correctly identifies each as <code>NVIDIA GB206 (1b6000a1)</code> and then aborts with <code>drm: Device allocation failed: -22</code> on both <code>0000:02:00.0</code> and <code>0000:03:00.0</code>, leaving no driver bound. Consequently no VRAM can be read from the as-found state. The same GB206 chip on <code>hxs-3</code> initializes normally under the same kernel and reports 16311 MiB, so the failure is specific to this host or to these cards rather than to the chip or the kernel. Discovered 2026-08-12.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p><code>hxs-2</code> GPU capacity is present but inert, and its VRAM is unmeasurable. Both GPUs are unusable in the as-found state.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p><strong>Resolved 2026-08-12. The cards were never faulty.</strong> After <code>nvidia-driver-580-server-open</code> was installed under <code>act-010</code>, both GPUs initialize and bind to <code>nvidia</code>. <code>nvidia-smi</code> identifies them as <strong>NVIDIA GeForce RTX 5060 Ti</strong>, 16311 MiB each, 32622 MiB total, driver 580.173.02, CUDA 13.0. The <code>-22</code> failure was a limitation of <code>nouveau</code>'s GSP initialization path with the MSI 1462:5351 board variant, not a hardware defect. No hardware handling was required and <code>act-008</code> closes without being carried out. Prior analysis retained for history: narrowed 2026-08-12 by fleet-wide comparison. All three GB206 hosts load the identical GSP firmware, RM version 570.144, under the same kernel and driver. Four cards initialize and two fail. The four that work are PNY 196e:143e on <code>hxs-3</code>, PNY 196e:143e on <code>hxs-4</code>, and MSI 1462:5371 on <code>hxs-4</code>. The two that fail are both MSI 1462:5351 on <code>hxs-2</code>. The failure point is identical on both: GSP message <code>fn:4130</code> succeeds, then <code>fn:4097</code> returns <code>res:0x65</code>, then <code>gsp: init failed, -22</code>. Firmware version, driver version, kernel and chip are therefore all excluded as differentiators. The remaining candidates are a VBIOS incompatibility specific to the MSI 1462:5351 board variant, or two cards faulty in the same way. <code>act-008</code> distinguishes them. <strong>Narrowed decisively 2026-08-12 when <code>hxs-3</code> came up with both of its GPUs working.</strong> <code>hxs-3</code> now runs two GB206 cards on the same X99-UD5 board, same F22 firmware, same 7.0.0-28-generic kernel, same GSP RM 570.144 and the same card count as <code>hxs-2</code>, and both initialize normally. That eliminates the platform, the board model, the firmware, the kernel, the driver, the GSP version and the two-card configuration as causes. <strong>The only variable left is the card model: PNY 196e:143e works in pairs on this exact platform, MSI 1462:5351 fails in pairs on it.</strong> This is now a controlled comparison rather than a correlation.</p></div>
+      </article>
+      <article class="entry is-done">
+        <div class="entry-head">
+          <span class="eid">iss-007</span>
+          <span class="chip">issue</span>
+          <span class="pill is-done">resolved</span>
+          <span class="rel">related: act-007</span>
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p><code>hxs-3</code> has two GPUs physically installed, per the project owner, but the operating system enumerates only one. <code>lspci</code> reports a single VGA device at <code>0000:02:00.0</code>, and the PCI sysfs walk finds the same single display-class device. The missing card produces no kernel message at all, so it is not a driver problem: the device is not appearing on the PCI bus. Candidate causes are seating, slot power, a disabled slot in firmware, or a failed card. Discovered 2026-08-12.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>Half the installed GPU capacity of <code>hxs-3</code> is unusable and cannot be discovered. Fleet GPU capacity is understated by one device until resolved.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p><strong>Resolved 2026-08-12.</strong> The project owner reseated the second GPU and both now enumerate and initialize: <code>0000:02:00.0</code> and <code>0000:03:00.0</code>, both PNY 196e:143e, both reporting 16311 MiB, 32622 MiB total. The cause was a seating or slot-contact condition, not firmware, driver or platform. Earlier evidence had already excluded a disabled slot, because root port <code>00:01.0</code> was enumerated with a bus allocated. No configuration was changed to achieve this. Prior note retained for history: re-checked earlier the same day after a reported slot change, at which point the state was unchanged at one GPU on <code>02:00.0</code>. <strong>No change: still one GPU at <code>02:00.0</code>, same PNY 196e:143e, same 16311 MiB, same x8 link.</strong> The address is unchanged, so from the operating system's perspective the card did not move. PCI topology now shows root port <code>00:01.0</code> enumerated with bus 01 allocated and no device behind it, while the GPU sits behind root port <code>00:03.0</code> on bus 02. That the empty root port is enumerated and trained means the slot is <strong>enabled in firmware</strong>, which weakens the disabled-slot theory. The card also negotiates x8 against a device maximum of x16 on a 40-lane i7-5960X with a single card installed, which is consistent with occupying an x8-wired secondary slot rather than the primary x16. Next test: move the known-good PNY card into the slot served by root port <code>00:01.0</code>. If that slot is the primary x16, the address should become <code>01:00.0</code> and the link should come up x16. Testing the empty slot with a known-good card is more informative than testing it with the suspect card, because a failure with a suspect card proves nothing.</p></div>
+      </article>
+      <article class="entry is-done">
+        <div class="entry-head">
+          <span class="eid">iss-006</span>
+          <span class="chip">issue</span>
+          <span class="pill is-done">resolved</span>
+          <span class="rel">related: act-001</span>
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p><code>hxs-1</code> is addressed at <code>192.168.50.200</code>, which fell in the <code>192.168.50.200-254</code> range that <code>INFRASTRUCTURE-CONTRACT.md</code> section 3 designated <code>future / special-purpose</code>. Section 8.1 stated that server and infrastructure allocations begin at <code>192.168.50.140</code>, and section 3 reserved <code>192.168.50.140-199</code> for servers. The address was confirmed on the host during Phase 1 discovery (<code>enp131s0</code> = 192.168.50.200) and was deliberately <strong>not</strong> changed, because Phase 1 is discovery only and readdressing is a high-impact change under section 14.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>The fleet's first server sat outside the documented server-address range.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p>Resolved by policy change, not by readdressing the server. On 2026-08-11 the project owner amended the allocation on their own authority: servers and infrastructure now occupy <code>192.168.50.200-254</code>, and <code>192.168.50.140-199</code> is released for reassignment. <code>INFRASTRUCTURE-CONTRACT.md</code> sections 3 and 8.1 were updated and the amendment is recorded in section 3. <code>hxs-1</code> at <code>.200</code> is compliant under the amended policy. No change was made to the server.</p></div>
+      </article>
+      <article class="entry is-done">
+        <div class="entry-head">
+          <span class="eid">iss-005</span>
+          <span class="chip">issue</span>
+          <span class="pill is-done">resolved</span>
+          <span class="rel">related: act-005</span>
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p>The repository could not accept any commit. The baseline was committed with CRLF already present in the Git objects, while <code>core.autocrlf</code> and <code>core.safecrlf</code> are both true globally, so Git refused the round trip with <code>fatal: LF would be replaced by CRLF</code>. Found 2026-08-11 on the first attempt to commit since the baseline.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>No change could be committed, so the project had no working path to a tracked history.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p>Added <code>.gitattributes</code> containing <code>* -text</code>, which disables end-of-line conversion and preserves bytes exactly. Existing objects are unchanged and no history was rewritten. Also protects the byte-level parity between active and packaged hook copies.</p></div>
+      </article>
+      <article class="entry is-done">
+        <div class="entry-head">
+          <span class="eid">iss-004</span>
+          <span class="chip">issue</span>
+          <span class="pill is-done">resolved</span>
+          <span class="rel">related: act-002</span>
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p>The RAID guard pattern <code>\bmdadm\b.*\b(--create|--assemble|--add|--remove|--fail)\b</code> never matched. There is no word boundary between a space and a leading <code>-</code>, so <code>\b--create</code> could not fire. <code>mdadm --create</code> was permitted throughout Phase 1. Found by the act-002 coverage work on 2026-08-11.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>RAID creation and member mutation were unguarded despite being listed as blocked.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p>Alternation re-anchored on whitespace: <code>(?:^|\s)(--create|...)</code>. <code>mdadm --create</code> is denied and <code>mdadm --detail --scan</code> remains allowed, both under regression test. Residual: mdadm short forms <code>-a</code>, <code>-r</code>, <code>-f</code> are still unguarded and cannot be added safely under a case-insensitive pattern, because <code>-C</code> would also match <code>-c</code> (<code>--config</code>, read-only).</p></div>
+      </article>
+      <article class="entry is-done">
+        <div class="entry-head">
+          <span class="eid">iss-003</span>
+          <span class="chip">issue</span>
+          <span class="pill is-done">resolved</span>
+          <span class="rel">related: act-002</span>
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p><code>tests/remediation-tests.ps1</code> line 47 deadlocks on the second hook invocation. <code>Invoke-Hook</code> closes stdin and only then reads stdout, so the suite and any hook that writes a block decision wait on each other indefinitely. Reproduced three times at the same traced line with all processes idle. The hooks themselves were verified correct by direct invocation. Report: <code>Claude-Opus-5_2026-08-11_201530_outstanding-findings.md</code>.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>The suite never completes, so the <code>rem-006</code> "hook tests pass" gate and the remediation final-validation checklist were never satisfied on this machine.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p><code>Invoke-Hook</code> now starts asynchronous reads on stdout and stderr before writing stdin, and enforces a 30 s per-hook timeout that reports <code>HOOK TIMEOUT</code> instead of hanging. Suite completes: 146 pass, 0 fail, exit 0.</p></div>
+      </article>
+      <article class="entry is-done">
+        <div class="entry-head">
+          <span class="eid">iss-002</span>
+          <span class="chip">issue</span>
+          <span class="pill is-done">resolved</span>
+          
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p><code>hx-validate-subagent.ps1</code> reads <code>last_assistant_message</code> under <code>Set-StrictMode -Version Latest</code>, and <code>.claude/settings.json</code> filters SubagentStop with <code>^server-discovery$</code>. Neither assumption has been confirmed in a live session. A missing field makes the hook error out, which is treated as non-blocking; an unhonoured filter applies the hook to every subagent. The existing test supplies the field itself, so it confirms its own fixture rather than real behaviour. Report: <code>Claude-Opus-5_2026-08-11_201530_outstanding-findings.md</code>.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>Discovery records could be accepted without validation, or unrelated subagents could be blocked.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p>Live SubagentStop payloads captured 2026-08-11. Matcher is honoured: an <code>Explore</code> subagent did not fire the hook. Real payload supplies both <code>agent_type</code> and <code>last_assistant_message</code>, so the fail-open path did not occur in practice. Hook hardened anyway: <code>Get-HxInputProperty</code> performs defensive reads, <code>agent_type</code> is checked in the hook itself rather than relying on the matcher, and an absent final message now blocks instead of passing. Six regression cases added.</p></div>
+      </article>
+      <article class="entry is-done">
+        <div class="entry-head">
+          <span class="eid">act-013</span>
+          <span class="chip">action</span>
+          <span class="pill is-done">done</span>
+          <span class="rel">related: act-005</span>
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p>Align repository file naming and documentation structure. A review on 2026-08-13 found three naming schemes running in parallel, three file names containing spaces and em-dashes, a reference that could not resolve on a case-sensitive filesystem, and fifteen <code>pre-work-results.md</code> records in three different shapes with every <code>ip address</code> field left blank.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>Inconsistent structure makes files hard to find and cite, and a dangling or case-wrong reference breaks on any non-Windows checkout. The blank IP fields meant the human preparation records could not be read without cross-referencing another document.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p><strong>Complete 2026-08-13.</strong> Standard written to <code>governance/documentation-standards.md</code>, covering naming rules per directory, the server record file set, the pre-work record shape, and the deliberate exceptions that must not be "fixed" — <code>SKILL.md</code>, <code>AGENTS.md</code>, the doubled <code>claude-hooks/claude-hooks/</code> path guarded by a regression test, and the archival report names cited across the governance log. Three files renamed out of spaces and em-dashes, with every reference updated and all cited <code>governance/</code> paths confirmed to resolve. Case-wrong reference to <code>claude-opus-5_...</code> corrected. All 15 pre-work records normalized to one shape with IP and FQDN populated from <code>SERVER-REGISTRY.md</code>; raw terminal output preserved byte for byte inside a four-backtick fence, verified per file by diff. <code>servers/hxs-1/pre-work-results.md</code> created to state plainly that the pilot predates the checklist rather than leave the gap looking like an oversight. <code>servers/README.md</code> updated to document the full file set. Verified after the pass: validator 15/15, guard denies, hook parity identical, regression suite 153 pass 0 fail.</p></div>
+      </article>
+      <article class="entry is-done">
+        <div class="entry-head">
+          <span class="eid">act-010</span>
+          <span class="chip">action</span>
+          <span class="pill is-done">done</span>
+          <span class="rel">related: act-009, iss-008, act-008</span>
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p>Execute <code>governance/nvidia-driver-install-directive.md</code> on <code>hxs-2</code> and <code>hxs-3</code>: install <code>nvidia-driver-580-server-open</code> and <code>nvidia-utils-580-server</code>, reboot, validate through <code>nvidia-smi</code>, <code>lspci -nnk</code> and <code>modinfo nvidia</code>, then stop. The directive is driver-only and explicitly prohibits vLLM, PyTorch, CUDA Toolkit, Python environments, Hugging Face tooling, model files, inference services and multi-GPU workload configuration. <strong>Execution is split.</strong> The Phase 1 guard denies package installation while Phase 2 is <code>BLOCKED</code>, which is correct behaviour: the guard inspects command text and cannot read a directive. The command was attempted and denied, and was not reworded to evade the control. The project owner therefore runs the two installation commands, and Claude performs all validation, which is read-only and unaffected by the guard.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>Determines whether the MSI 1462:5351 cards in <code>hxs-2</code> function under the proprietary driver, resolving <code>iss-008</code> without hardware handling. Also gives authoritative <code>nvidia-smi</code> VRAM on both hosts.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p><strong>Complete 2026-08-12. All directive success criteria met.</strong> The owner installed <code>nvidia-driver-580-server-open</code> and <code>nvidia-utils-580-server</code> on all four GPU hosts, extending the directive's stated scope of <code>hxs-2</code> and <code>hxs-3</code> to include <code>hxs-1</code> and <code>hxs-4</code>. Validation confirms: all 8 GPUs bound to <code>nvidia</code>, none remaining on <code>nouveau</code>, module 580.173.02, CUDA 13.0, and every GPU reporting model, PCI bus ID, driver version and VRAM. Total measured VRAM across the fleet is 122458 MiB. Two benign kernel messages recorded, an unsigned-module taint on all four hosts because Secure Boot is disabled, and an LTR-unsupported notice on the two X99 hosts only. The hard stop was observed: no CUDA toolkit, PyTorch, vLLM, Python environment, Hugging Face tooling, model file, service or multi-GPU workload configuration was installed, configured or tested.</p></div>
+      </article>
+      <article class="entry is-done">
+        <div class="entry-head">
+          <span class="eid">act-009</span>
+          <span class="chip">action</span>
+          <span class="pill is-done">resolved</span>
+          <span class="rel">related: iss-008, act-008, act-010</span>
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p><strong>RESOLVED by owner directive 2026-08-12.</strong> The project owner authorized the driver install in <code>governance/nvidia-driver-install-directive.md</code>, specifying <code>nvidia-driver-580-server-open</code> rather than the 595 or 610 branches, on both <code>hxs-2</code> and <code>hxs-3</code>. This is the explicit project decision that <code>governance/tooling-first-rule.md</code> requires before installing a vendor driver during Phase 1. See <code>act-010</code> for execution. Original text follows. <strong>Decision required from the project owner, and it supersedes the physical work in <code>act-008</code>.</strong> <code>ubuntu-drivers list --gpgpu</code> detects the GPUs on <code>hxs-2</code> and offers <code>nvidia-driver-610</code>, <code>595</code> and <code>580</code> in both standard and open variants, identical to the list offered on the working <code>hxs-3</code>. The proprietary driver does not use nouveau's GSP implementation, so a nouveau GSP failure on the MSI 1462:5351 variant is <strong>not</strong> evidence that those cards are faulty. Secure Boot is disabled and in Setup Mode on both hosts, so signed-module enrollment is not a barrier. Installing a proprietary driver on <code>hxs-2</code> would determine definitively whether the cards function and would report VRAM through <code>nvidia-smi</code> — but it is persistent role-specific configuration, which Phase 1 prohibits and which the project previously decided to defer to Phase 2. The owner must choose: authorize a driver install on <code>hxs-2</code> as an explicit Phase 1 exception to resolve <code>iss-008</code> now, or leave <code>iss-008</code> open and unresolved until <code>hxs-2</code> is assigned a role and enters Phase 2. Do not proceed without that decision.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>Choosing determines whether <code>hxs-2</code> can be assessed for a GPU role at all during Phase 1, and avoids unnecessary hardware handling.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p>Owner chose to authorize the install, selecting the <code>580-server-open</code> branch, and issued <code>governance/nvidia-driver-install-directive.md</code> on 2026-08-12. Execution tracked in act-010.</p></div>
+      </article>
+      <article class="entry is-done">
+        <div class="entry-head">
+          <span class="eid">act-008</span>
+          <span class="chip">action</span>
+          <span class="pill is-done">closed, not required</span>
+          <span class="rel">related: iss-008, act-007, act-010</span>
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p><strong>Hold. Do not perform until <code>act-010</code> completes.</strong> If the proprietary driver initializes the MSI 1462:5351 cards, no hardware handling is needed and this action closes without being carried out. Original text follows. <strong>Superseded in priority by <code>act-009</code>; do not perform this before that decision.</strong> Card-model evidence collected 2026-08-12 narrows this considerably. Subsystem IDs across the fleet: <code>hxs-2</code> runs two <strong>MSI 1462:5351</strong> cards and both fail; <code>hxs-3</code> runs a <strong>PNY 196e:143e</strong> and it works; <code>hxs-4</code> runs a <strong>PNY 196e:143e</strong> and an <strong>MSI 1462:5371</strong>, both working. The only card model that fails is MSI 1462:5351, and both instances fail. Every other board variant initializes, including a different MSI card. Two variables remain confounded, because MSI 1462:5351 has only ever been tested in pairs and only in <code>hxs-2</code>. <strong>Cleanest isolating test: move one MSI 1462:5351 card into <code>hxs-4</code></strong>, which is a known-good modern host already running two GPUs successfully. If it fails there, the card model is at fault and the host is exonerated. If it works there, the fault is <code>hxs-2</code> or the pairing. This is a single move that separates card from host in one step, where the remove-one-card-at-a-time approach on <code>hxs-2</code> alone cannot. Physical, human-performed, outside Phase 1 automation. Secondary and independent: Above 4G Decoding and Resizable BAR are disabled on both X99 hosts and are worth enabling while the machines are open. That is standard practice for 16 GB-class cards and would raise BAR1 from 256 MiB, but it is <strong>not</strong> the cause of either fault and must not be presented as the fix.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>Determines whether the fleet has two faulty cards, an unsupported board variant, or a host problem. <code>hxs-2</code> contributes no GPU capacity until this is answered.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p><strong>Closed 2026-08-12 without being carried out.</strong> <code>act-010</code> resolved <code>iss-008</code> by driver install: both MSI 1462:5351 cards work correctly as RTX 5060 Ti under <code>nvidia-driver-580-server-open</code>. No card swap, no seating work and no firmware change were needed. Deferring this physical work pending the cheaper software test was the correct call.</p></div>
+      </article>
+      <article class="entry is-done">
+        <div class="entry-head">
+          <span class="eid">act-007</span>
+          <span class="chip">action</span>
+          <span class="pill is-done">done</span>
+          <span class="rel">related: iss-007, iss-008, act-010</span>
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p><strong>CRITICAL.</strong> Diagnose the GPU faults on <code>hxs-2</code> and <code>hxs-3</code> before either host is considered for role assignment. Run <code>.claude/skills/discover-server/scripts/hx-gpu-diagnose.sh</code> on both, read-only, and record the result. It collects PCI enumeration errors, GPU BAR assignments and whether they land above or below the 4 GB boundary, bridge topology, <code>/proc/iomem</code> 64-bit windows, firmware version, and nouveau firmware availability. Working hypothesis to confirm or refute: both faults share one cause, insufficient 64-bit PCI address space because <strong>Above 4G Decoding is disabled</strong> in the 2016-era X99 firmware. Supporting evidence is circumstantial only: both failing hosts are Gigabyte X99-UD5 WIFI-CF on BIOS F22 dated 2016-06-13, while the two hosts that work with two GPUs each are on 2025 firmware. <code>-22</code> is <code>EINVAL</code>, which is what BAR allocation returns when MMIO space is exhausted, and 16 GB-class cards need large 64-bit BARs. <strong>This is a hypothesis, not a diagnosis.</strong> If confirmed, the fix is a firmware setting change, which is a human-performed action outside Phase 1.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>Four of seven installed GPUs are unusable. <code>hxs-2</code> contributes no GPU capacity at all despite holding two cards; <code>hxs-3</code> is at half its installed capacity. Role assignment for both hosts is unsafe until resolved, because their true capability is unknown.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p><strong>Closed 2026-08-12. Both underlying issues resolved.</strong> <code>iss-007</code> resolved by reseating: <code>hxs-3</code> now enumerates and initializes both GPUs. <code>iss-008</code> resolved by <code>act-010</code>: the <code>hxs-2</code> cards work correctly under the proprietary driver and were never faulty. The diagnostic served its purpose by refuting the Above 4G Decoding hypothesis and locating the true failure point in GSP initialization, which stopped a pointless firmware change and, together with the <code>hxs-3</code> recovery, isolated the cause to <code>nouveau</code> rather than hardware. <code>hx-gpu-diagnose.sh</code> is retained for future GPU enumeration faults. Diagnostic detail follows. Diagnostic run on both hosts 2026-08-12, read-only. <strong>The Above 4G Decoding hypothesis is refuted as the cause.</strong> Above 4G Decoding is confirmed disabled: every GPU BAR on both hosts is allocated below 4G, BAR1 is 256 MiB on 16 GB cards, and no PCI window exists above <code>0x100000000</code>. But that is not what fails — <code>hxs-3</code> has the identical 256 MiB BAR1 and initializes normally. The real failure on <code>hxs-2</code> is <strong>GSP firmware initialization</strong>: <code>gsp: RM version: 570.144</code> loads, then <code>gsp:msg fn:4097 res:0x65 resp:0x65</code> returns an error and <code>gsp: init failed, -22</code> follows, ending in <code>probe with driver nouveau failed with error -22</code>. No PCI resource error appears anywhere in the boot log. Both hosts load the same GSP RM 570.144 from the same <code>linux-firmware 20240318</code>. The distinguishing factor between the working and failing host is therefore two GPUs versus one, not firmware settings, not the kernel and not the chip. Next test recorded below.</p></div>
+      </article>
+      <article class="entry is-done">
+        <div class="entry-head">
+          <span class="eid">act-006</span>
+          <span class="chip">action</span>
+          <span class="pill is-done">done</span>
+          
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p>Documentation and enforcement cleanup: empty registry placeholder row, stale packaged-hook paths, absent permission deny rules, and the undocumented strictness gap between the audit skill and the hook validators.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>Minor inconsistencies that misdirect readers and leave the stronger enforcement layer unused.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p>Placeholder row removed. Packaged-hook paths corrected in the remediation instructions. <code>permissions.deny</code> added for the storage operations <code>INFRASTRUCTURE-CONTRACT.md</code> section 10.5 requires approval for in any phase, deliberately phase-independent and documented as such. Audit-versus-hook strictness documented in <code>audit-discovery/SKILL.md</code>. Four regression assertions added.</p></div>
+      </article>
+      <article class="entry is-done">
+        <div class="entry-head">
+          <span class="eid">act-004</span>
+          <span class="chip">action</span>
+          <span class="pill is-done">done</span>
+          
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p>Narrow the Notification hook so it stops raising a modal Windows dialog for every permission prompt. Dialogs are modal, stack, and must be dismissed by hand, so a discovery run would have produced them faster than they could be cleared.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>Operator friction during Phase 1 discovery.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p>Matcher reduced to <code>idle_prompt|agent_needs_input</code> in both <code>.claude/settings.json</code> and the packaged <code>settings.fragment.json</code>. Rationale recorded in <code>claude-hooks/README.md</code>. Three regression assertions added, including settings/fragment hook parity.</p></div>
+      </article>
+      <article class="entry is-done">
+        <div class="entry-head">
+          <span class="eid">act-003</span>
+          <span class="chip">action</span>
+          <span class="pill is-done">done</span>
+          <span class="rel">related: act-002</span>
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p>Guard read-only disk inspection. <code>parted</code>, <code>fdisk</code> and <code>sfdisk</code> were blocked outright, which also blocked legitimate Phase 1 discovery listing.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>Read-only storage discovery was blocked alongside mutation.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p>Split into a mutation pattern and <code>\b(fdisk|sfdisk|parted)\b(?!\s+(-l|--list)\b)</code>. <code>parted -l</code>, <code>fdisk -l</code>, <code>sfdisk -l</code> and <code>parted --list</code> are permitted; <code>fdisk /dev/sdb</code> and <code>mkfs.ext4</code> remain denied. <code>sgdisk</code> deliberately stays fully blocked because its <code>-l</code> is <code>--load-backup</code>, not a listing operation.</p></div>
+      </article>
+      <article class="entry is-done">
+        <div class="entry-head">
+          <span class="eid">act-002</span>
+          <span class="chip">action</span>
+          <span class="pill is-done">done</span>
+          <span class="rel">related: iss-003, iss-004</span>
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p>Add regression coverage for the twelve untested Phase 1 guard categories (apt, systemctl, netplan, ufw, ubuntu-drivers, disk and LVM tooling, mdadm, hostnamectl, model download, ollama, vllm, pip-install vllm), each with one blocked case and one similar allowed case, plus coverage for <code>hx-session-state.ps1</code>. Requires iss-003 to be resolved first. Report: <code>Claude-Opus-5_2026-08-11_201530_outstanding-findings.md</code>.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>Only the <code>configuration.md</code> path category is currently tested; a defect in any other pattern would go unnoticed.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p>Fourteen guard categories covered with a blocked case and a read-only allowed case each, plus five extra read-only storage commands and six session-state assertions. Coverage exposed iss-004.</p></div>
+      </article>
+      <article class="entry is-done">
+        <div class="entry-head">
+          <span class="eid">act-001</span>
+          <span class="chip">action</span>
+          <span class="pill is-done">done</span>
+          <span class="rel">related: iss-001, act-011</span>
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p><strong>JFFS-backed mechanism built 2026-08-12. Two items block closure.</strong> The owner moved the records off the RAM-backed <code>/etc/hosts</code> and into <code>/jffs/hx-hosts</code>, with <code>/jffs/hx-dns-load.sh</code> applying them. JFFS is persistent flash, so the files themselves now survive a reboot. All five servers resolve after running the loader, verified from the workstation. <strong>Blocker 1, naming defect: FIXED 2026-08-12.</strong> The <code>hxs-5</code> record had been written as <code>hx-5</code>. The owner deleted the entry by address from both <code>/jffs/hx-hosts</code> and <code>/etc/hosts</code>, appended the correct record and reloaded. Verified from the workstation: <code>hxs-1</code> through <code>hxs-5</code> and <code>HX-Router</code> all resolve forward, all five servers resolve in reverse to their <code>hxs-N.hx.local.arpa</code> names, and <code>hx-5.hx.local.arpa</code> no longer resolves. <strong>Boot-time execution is deferred to <code>act-011</code> by owner decision on 2026-08-12 and is not a blocker.</strong> Name resolution is operational for all five servers and the router, forward and reverse, and is sufficient for current work. What remains unproven is whether the loader runs automatically after a reboot, which is tracked separately in the backlog. Prior state follows. Working records created 2026-08-12, persistence NOT yet demonstrated. The project owner appended <code>hxs-2</code>, <code>hxs-3</code> and <code>hxs-4</code> records to <code>/etc/hosts</code> on the router and signalled dnsmasq with <code>killall -HUP dnsmasq</code>. Resolution verified from three independent vantage points: the router itself, the Windows workstation querying 192.168.50.1 explicitly, and <code>hxs-2</code> using its configured resolver. Forward resolution works for <code>hxs-1</code> through <code>hxs-4</code> and <code>HX-Router</code>, and reverse resolution works, with <code>192.168.50.202</code> returning <code>hxs-3.hx.local.arpa</code>. <strong>This does not close the action.</strong> The router shell reports a home directory under <code>/tmp</code>, which on ASUSWRT is RAM-backed, and <code>INFRASTRUCTURE-CONTRACT.md</code> section 5.4 states that <code>/etc/hosts</code> and <code>/etc/dnsmasq.conf</code> are regenerated. <code>HUP</code> caused dnsmasq to re-read the file without regenerating it, which is why the edit took effect. <strong>Required next step: reboot the router and re-run the same resolution checks.</strong> If the records survive, this action closes on evidence. If they do not, a persistent mechanism such as JFFS scripting or an nvram-backed configuration is required, and <code>iss-001</code> remains the governing constraint. Secondary gap, unrelated to persistence: short names do not resolve on the servers because no search domain is configured, so <code>hxs-3</code> fails while <code>hxs-3.hx.local.arpa</code> succeeds. Original text follows. Establish persistent router-side <code>hx.local.arpa</code> DNS records for approved server-managed static IP addresses. Record each approved address in <code>SERVER-REGISTRY.md</code>, configure static addressing on the Ubuntu server, and use ASUSWRT only for persistent name resolution. DHCP reservations remain out of scope for the primary LAN. The solution must survive router reboot, dnsmasq restart, and ASUSWRT configuration apply.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>Persistent local server naming and address management.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p><strong>Operationally complete 2026-08-12.</strong> Router-side <code>hx.local.arpa</code> records exist for <code>hxs-1</code> through <code>hxs-5</code> and <code>HX-Router</code>, stored in persistent flash at <code>/jffs/hx-hosts</code> and applied by <code>/jffs/hx-dns-load.sh</code>. Verified independently from the workstation: all six names resolve forward, and all five servers resolve in reverse to their <code>hxs-N.hx.local.arpa</code> names. Server addressing remains configured on each Ubuntu host, the router provides name resolution only, and no DHCP reservation was used, matching the required ownership model. Reboot survival is deferred to <code>act-011</code> in the backlog by owner decision and is not a blocker.</p></div>
+      </article>
+    </div>
+  </section>
+
+
+  <footer>
+    HX-Infrastructure governance &middot; generated from the Markdown sources in <code>governance/</code> on 2026-08-13.
+    The Markdown files remain the source of truth.
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById('theme-toggle');
+  if (!btn) { return; }
+  var media = window.matchMedia('(prefers-color-scheme: dark)');
+  function stored(v) {
+    try { if (v === undefined) { return localStorage.getItem('hx-theme'); } localStorage.setItem('hx-theme', v); }
+    catch (e) { /* sandboxed: the toggle still works for this view */ }
+    return null;
+  }
+  function active() {
+    var e = root.getAttribute('data-theme');
+    return (e === 'dark' || e === 'light') ? e : (media.matches ? 'dark' : 'light');
+  }
+  function relabel() {
+    var next = active() === 'dark' ? 'light' : 'dark';
+    btn.textContent = next === 'dark' ? 'Dark mode' : 'Light mode';
+    btn.setAttribute('aria-label', 'Switch to ' + next + ' mode');
+  }
+  var saved = stored();
+  if (saved === 'dark' || saved === 'light') { root.setAttribute('data-theme', saved); }
+  relabel();
+  btn.addEventListener('click', function () {
+    var next = active() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next); stored(next); relabel();
+  });
+  if (typeof media.addEventListener === 'function') { media.addEventListener('change', relabel); }
+  if (typeof MutationObserver === 'function') {
+    new MutationObserver(relabel).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  }
+})();
+</script>

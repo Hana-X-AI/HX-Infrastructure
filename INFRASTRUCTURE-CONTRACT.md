@@ -94,10 +94,12 @@ Addressing:     static
 ```text
 192.168.50.1       ASUS router / gateway / DNS
 192.168.50.2-139   available static assignments
-192.168.50.140-199 servers / infrastructure
-192.168.50.200-254 future / special-purpose
+192.168.50.140-199 available / reassigned
+192.168.50.200-254 servers / infrastructure
 192.168.50.255     broadcast
 ```
+
+Amended 2026-08-11 on the authority of the project owner. Servers and infrastructure previously occupied `192.168.50.140-199`; that block is now free for reassignment and the server range is `192.168.50.200-254`. See `iss-006` in `governance/actions-and-issues.md`.
 
 ### Server naming
 
@@ -412,7 +414,7 @@ Domain:  hx.local.arpa
 Server/infrastructure allocations begin at:
 
 ```text
-192.168.50.140
+192.168.50.200
 ```
 
 ### 8.2 Netplan

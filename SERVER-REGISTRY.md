@@ -35,18 +35,52 @@ Phase 2 transitions from `BLOCKED` to `READY` only after the fleet-wide Phase 1 
 
 | Server | FQDN | IP  | CPU | RAM | GPU / VRAM | Primary Storage | Discovery | Assigned Role | Workload / Model | Phase 2 |
 | ------ | ---- | --- | --- | --- | ---------- | --------------- | --------- | ------------- | ---------------- | ------- |
+| hxs-1 | not configured | 192.168.50.200 | Intel Core Ultra 9 285K, 24c/24t | 128 GB DDR5 non-ECC | 2x RTX 4070 Ti SUPER, 16376 MiB each, 32752 MiB total | 3.6 TB NVMe root; 3.6 TB NVMe + 7.3 TB SATA unallocated | COMPLETE | | | BLOCKED |
+| hxs-2 | not configured | 192.168.50.201 | Intel Core i7-5960X, 8c/16t | 66 GB non-ECC | 2x RTX 5060 Ti, 16311 MiB each, 32622 MiB total | 3.6 TB NVMe root; 2x 596.2 GB SATA HDD unallocated | COMPLETE | | | BLOCKED |
+| hxs-3 | not configured | 192.168.50.202 | Intel Core i7-5960X, 8c/16t | 66 GB non-ECC | 2x RTX 5060 Ti, 16311 MiB each, 32622 MiB total | 3.6 TB NVMe root; 1.8 TB SATA SSD unallocated | COMPLETE | | | BLOCKED |
+| hxs-4 | not configured | 192.168.50.203 | Intel Core i7-14700F, 20c/28t | 32 GB DDR5 non-ECC | 1x RTX 5060 Ti 16311 MiB + 1x RTX 5060 8151 MiB, 24462 MiB total | 931.5 GB NVMe root; 476.9 GB NVMe unallocated | COMPLETE | | | BLOCKED |
+| hxs-5 | not configured | 192.168.50.204 | Intel Core i5-7500, 4c/4t | 32 GB DDR4 non-ECC | none, Intel HD 630 integrated only | 238.5 GB NVMe root, sole device | COMPLETE | | | BLOCKED |
+| hxs-6 | not configured | 192.168.50.205 | Intel Core i5-8500T, 6c/6t | 15.9 GB DDR4 non-ECC | none, Intel UHD 630 integrated only | 238.5 GB NVMe root, sole device | COMPLETE | | | BLOCKED |
+| hxs-7 | not configured | 192.168.50.206 | Intel Core i5-8500T, 6c/6t | 15.9 GB DDR4 non-ECC, single channel | none, Intel UHD 630 integrated only | 238.5 GB NVMe root, sole device | COMPLETE | | | BLOCKED |
+| hxs-8 | not configured | 192.168.50.207 | Intel Core i5-9400T, 6c/6t | 16 GB DDR4 non-ECC, single channel | none, Intel UHD 630 integrated only | 476.9 GB NVMe root, sole device | COMPLETE | | | BLOCKED |
+| hxs-9 | not configured | 192.168.50.208 | Intel Core i5-7500, 4c/4t | 32 GB DDR4 non-ECC | none, Intel HD 630 integrated only | 238.5 GB NVMe root, sole device | COMPLETE | | | BLOCKED |
+| hxs-10 | not configured | 192.168.50.209 | Intel Core i5-7500, 4c/4t | 32 GB DDR4 non-ECC | none, Intel HD 630 integrated only | 238.5 GB NVMe root, sole device | COMPLETE | | | BLOCKED |
+| hxs-11 | not configured | 192.168.50.210 | Intel Core i5-7500, 4c/4t | 32 GB DDR4 non-ECC | none, Intel HD 630 integrated only | 238.5 GB NVMe root, sole device, aftermarket | COMPLETE | | | BLOCKED |
+| hxs-12 | not configured | 192.168.50.211 | Intel Core i5-7500, 4c/4t | 32 GB DDR4 non-ECC | none, Intel HD 630 integrated only | 238.5 GB NVMe root, sole device | COMPLETE | | | BLOCKED |
+| hxs-13 | not configured | 192.168.50.212 | Intel Core i5-6500, 4c/4t | 32 GB DDR4 non-ECC, 2133 MT/s | none, Intel HD 530 integrated only | 238.5 GB SATA SSD root, sole device | COMPLETE | | | BLOCKED |
+| hxs-14 | not configured | 192.168.50.213 | Intel Core i5-7500, 4c/4t | 32 GB DDR4 non-ECC | none, Intel HD 630 integrated only | 238.5 GB NVMe root, sole device, aftermarket | COMPLETE | | | BLOCKED |
+| hxs-15 | not configured | 192.168.50.214 | Intel Core i5-7500, 4c/4t, no VT-x | 32 GB DDR4 non-ECC | none, Intel HD 630 integrated only | 238.5 GB NVMe root, sole device, aftermarket | COMPLETE | | | BLOCKED |
 
 ## Phase 1 Gate
 
 ```text
-[ ] Every expected server is present in the registry
-[ ] Every server has a complete discovery.md
-[ ] Fleet hardware capabilities are documented and comparable
+[x] Every expected server is present in the registry
+[x] Every server has a complete discovery.md
+[x] Fleet hardware capabilities are documented and comparable
 [ ] Fleet capabilities have been manually reviewed
 [ ] Every server has a manually assigned role
 [ ] Every assigned role is recorded in SERVER-REGISTRY.md
-[ ] No role-specific configuration has begun
+[x] No role-specific configuration has begun
 ```
+
+Verified 2026-08-13: expected fleet 15, registry rows 15, `discovery.md` records with
+`Discovery Status: COMPLETE` 15, assigned roles 0, `configuration.md` files 0.
+
+Comparability was completed on 2026-08-13 and verified as follows: all 15 records carry the
+same 10 template sections; no record contains an unresolved template placeholder; every
+factual registry column is populated for all 15 rows; and all 15 records pass the
+`hx-validate-discovery` hook. Cross-host claims written while the fleet was only partly
+discovered were found to be stale or wrong once all 15 records existed; 27 corrections
+across 13 records were applied — firmware-recency and smallest-memory superlatives, Secure
+Boot and serial-number uniqueness claims, batch-membership counts that predated later
+members, and the "no NVIDIA packages installed" statement on the four GPU hosts, which the
+approved driver install had since made false. Two records were also missing the root
+filesystem usage figure the other nine carried; both were recovered from retained collector
+output rather than by re-contacting the hosts.
+
+The four ticked conditions are machine-verified. The remaining three require the manual
+fleet capability review and role assignment, tracked as `act-012`. Phase 2 stays `BLOCKED`
+until all seven are complete.
 
 **Phase 1 Status:** IN PROGRESS
 **Phase 2 Status:** BLOCKED

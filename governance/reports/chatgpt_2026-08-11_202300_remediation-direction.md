@@ -2,7 +2,7 @@
 
 **reviewer:** chatgpt  
 **reported at:** 2026-08-11 20:23 -05:00  
-**source reviewed:** `claude-opus-5_2026-08-11_201530_outstanding-findings.md`  
+**source reviewed:** `Claude-Opus-5_2026-08-11_201530_outstanding-findings.md`  
 **purpose:** direct the next remediation pass and clarify the router-dns sequencing decision
 
 ---
