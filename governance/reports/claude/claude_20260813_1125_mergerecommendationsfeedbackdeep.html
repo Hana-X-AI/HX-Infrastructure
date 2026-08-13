@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HX-Infrastructure — Merge Feedback (deep review)</title>
+<style>
+  :root {
+    --ground:#fbfbf9; --surface:#f2f3f0; --raised:#ffffff; --ink:#1b1f1d;
+    --muted:#6b726e; --faint:#949b96; --line:#dde0db; --line-firm:#c3c8c1;
+    --accent:#0f6e5c; --accent-wash:#e6f0ec; --signal:#b4531a; --signal-wash:#fbeee4;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --step-0:0.9375rem; --step--1:0.8125rem; --step--2:0.6875rem;
+    --step-1:1.125rem; --step-2:1.5rem; --step-3:2.125rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ground:#141917; --surface:#1b211e; --raised:#1f2724; --ink:#e8ebe8;
+      --muted:#97a09b; --faint:#6f7873; --line:#2b342f; --line-firm:#3c4740;
+      --accent:#4fbfa3; --accent-wash:#16302a; --signal:#e08a4c; --signal-wash:#33251a; }
+  }
+  :root[data-theme="dark"]{ --ground:#141917;--surface:#1b211e;--raised:#1f2724;--ink:#e8ebe8;--muted:#97a09b;--faint:#6f7873;--line:#2b342f;--line-firm:#3c4740;--accent:#4fbfa3;--accent-wash:#16302a;--signal:#e08a4c;--signal-wash:#33251a;}
+  :root[data-theme="light"]{ --ground:#fbfbf9;--surface:#f2f3f0;--raised:#ffffff;--ink:#1b1f1d;--muted:#6b726e;--faint:#949b96;--line:#dde0db;--line-firm:#c3c8c1;--accent:#0f6e5c;--accent-wash:#e6f0ec;--signal:#b4531a;--signal-wash:#fbeee4;}
+  :root{color-scheme:light;} @media (prefers-color-scheme:dark){:root{color-scheme:dark;}}
+  :root[data-theme="dark"]{color-scheme:dark;} :root[data-theme="light"]{color-scheme:light;}
+
+  body { margin:0; padding:clamp(1.5rem,4vw,3.5rem) clamp(1rem,4vw,2rem) 5rem; background:var(--ground); color:var(--ink); font-family:var(--sans); font-size:var(--step-0); line-height:1.55; -webkit-text-size-adjust:100%; }
+  .page { max-width:1180px; margin:0 auto; display:flex; flex-direction:column; gap:2.25rem; }
+  .eyebrow { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.14em; color:var(--accent); margin:0; }
+  .masthead { display:flex; flex-direction:column; gap:0.75rem; }
+  .masthead-top { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .toggle { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.09em; color:var(--muted); background:var(--surface); border:1px solid var(--line-firm); border-radius:2px; padding:0.4rem 0.75rem; cursor:pointer; }
+  .toggle:hover { color:var(--accent); border-color:var(--accent); }
+  .masthead h1 { font-size:var(--step-3); line-height:1.08; letter-spacing:-0.02em; font-weight:650; margin:0; text-wrap:balance; }
+  .masthead p { margin:0; max-width:78ch; color:var(--muted); }
+
+  .strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:3px; overflow:hidden; }
+  .cell { background:var(--surface); padding:0.85rem 1rem; display:flex; flex-direction:column; gap:0.15rem; }
+  .cell dt { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); }
+  .cell dd { margin:0; font-size:var(--step-1); font-weight:600; font-variant-numeric:tabular-nums; }
+  .cell.alert dd { color:var(--signal); }
+
+  .standing { border-left:2px solid var(--signal); background:var(--signal-wash); padding:1rem 1.15rem; display:flex; flex-direction:column; gap:0.6rem; font-size:var(--step--1); }
+  .standing.calm { border-left-color:var(--accent); background:var(--surface); }
+  .standing p { margin:0; max-width:92ch; color:var(--muted); } .standing strong { color:var(--ink); font-weight:620; }
+
+  section { display:flex; flex-direction:column; gap:0.85rem; }
+  h2 { font-size:var(--step-2); letter-spacing:-0.015em; font-weight:620; margin:0; text-wrap:balance; }
+  h2 .n { font-family:var(--mono); font-size:var(--step-0); color:var(--accent); margin-right:0.5rem; }
+  .lede { margin:0; color:var(--muted); max-width:86ch; font-size:var(--step--1); }
+
+  .tablewrap { overflow-x:auto; border:1px solid var(--line); border-radius:3px; background:var(--raised); }
+  table { border-collapse:collapse; width:100%; font-size:var(--step--1); }
+  thead th { background:var(--surface); border-bottom:1px solid var(--line-firm); font-family:var(--mono); font-size:var(--step--2); font-weight:600; text-transform:uppercase; letter-spacing:0.09em; color:var(--muted); text-align:left; padding:0.6rem 0.8rem; white-space:nowrap; }
+  tbody td { padding:0.55rem 0.8rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:last-child td { border-bottom:none; }
+  td.k { font-weight:600; }
+  td.me { background:var(--accent-wash); }
+
+  .badge { font-family:var(--mono); font-size:var(--step--2); font-weight:700; text-transform:uppercase; letter-spacing:0.05em; padding:0.12em 0.5em; border-radius:2px; white-space:nowrap; display:inline-block; }
+  .badge.ok { color:var(--ground); background:var(--accent); }
+  .badge.crit { color:var(--ground); background:var(--signal); }
+  .badge.warn { color:var(--signal); background:var(--signal-wash); }
+  .badge.map { color:var(--ground); background:var(--accent); }
+  .badge.drop { color:var(--ground); background:var(--signal); }
+  .badge.chg { color:var(--signal); background:var(--signal-wash); }
+
+  .cols { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:3px; overflow:hidden; }
+  .col { background:var(--raised); padding:1rem 1.15rem; display:flex; flex-direction:column; gap:0.5rem; }
+  .col h3 { margin:0; font-size:var(--step-0); font-weight:640; }
+  .col ul { margin:0; padding-left:1.15rem; display:flex; flex-direction:column; gap:0.3rem; }
+  .col li { font-size:var(--step--1); color:var(--muted); } .col li b { color:var(--ink); }
+
+  ol.steps { margin:0; padding-left:1.3rem; display:flex; flex-direction:column; gap:0.5rem; counter-reset:none; }
+  ol.steps li { color:var(--muted); font-size:var(--step--1); max-width:94ch; } ol.steps li b { color:var(--ink); }
+
+  code { font-family:var(--mono); font-size:0.92em; background:var(--surface); padding:0.05em 0.32em; border-radius:2px; }
+  footer { border-top:1px solid var(--line); padding-top:1rem; font-size:var(--step--2); color:var(--faint); }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important;} }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <div class="masthead-top">
+      <p class="eyebrow">HX-Infrastructure &middot; Merge feedback &middot; deep review (supersedes 11:21)</p>
+      <button type="button" class="toggle" id="theme-toggle">Dark mode</button>
+    </div>
+    <h1>Deep Review of the Two Merge Plans</h1>
+    <p>
+      A closer pass on the Claude Code and GPT-5.6 merge recommendations, with every material claim
+      checked against the actual files. The headline changed under scrutiny: the decisive issue is
+      not the merge shape &mdash; it is a <strong>live credential exposure</strong> in the legacy
+      repo that reorders the whole plan. This review also crosswalks the 27 legacy service nodes onto
+      v0.3, sizes the true merge surface, and settles which plan is right where they disagree.
+    </p>
+  </header>
+
+  <dl class="strip">
+    <div class="cell alert"><dt>Top finding</dt><dd>Secrets</dd></div>
+    <div class="cell"><dt>Legacy service nodes</dt><dd>27</dd></div>
+    <div class="cell"><dt>Map cleanly to v0.3</dt><dd>~14</dd></div>
+    <div class="cell"><dt>True path collisions</dt><dd>4</dd></div>
+    <div class="cell"><dt>Claims checked</dt><dd>7</dd></div>
+    <div class="cell"><dt>Authorizes changes</dt><dd>No</dd></div>
+  </dl>
+
+  <div class="standing">
+    <p><strong>Read this first — the legacy repo carries live credentials in plaintext.</strong> The reused standard service-account password (<code>[REDACTED — rotate]</code>) appears in the clear dozens of times, and it is also the Ansible-Vault password — written next to the vault it "protects," so the AES256 encryption is worthless. A real LiteLLM API key (<code>[REDACTED — rotate]</code>) sits in plaintext too. These are compromised and must be <strong>rotated now</strong>, independently of any merge decision. GPT-5.6 flagged this (§7.1) and was right; Claude Code's "the vault is encrypted, lower risk" understates it materially. Nothing else in the merge matters until this is handled.</p>
+  </div>
+
+  <section>
+    <h2><span class="n">01</span>Security — the decisive finding</h2>
+    <p class="lede">Both plans mention secret hygiene; only one grasped the severity. Evidence, pulled from the archive:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Exposure</th><th>Where</th><th>Why it matters</th></tr></thead>
+        <tbody>
+          <tr><td class="k"><code>[REDACTED — rotate]</code> — the "standard service account password"</td><td>Plaintext in <code>hx-agents/hx-agent-inventory.md</code>, <code>task-006</code> (×many), <code>task-execution-tracking.md</code></td><td>One reused password across service accounts <em>and</em> the vault. Reused + committed = every account that uses it is compromised.</td></tr>
+          <tr><td class="k">The "AES256" Ansible vault</td><td><code>vault/credentials.yml</code> (encrypted) + its password committed beside it</td><td>Encryption is nullified when the vault password lives in the same repo in plaintext. Effectively a cleartext secret store.</td></tr>
+          <tr><td class="k">LiteLLM API key <code>[REDACTED — rotate]</code></td><td>Plaintext in <code>task-006-create-ansible-vault-structure.md</code></td><td>A real 64-hex API key in the clear. Rotate the key; assume it is burned.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cols">
+      <div class="col"><h3>Required actions</h3><ul>
+        <li><b>Rotate now:</b> <code>[REDACTED — rotate]</code> everywhere it is used as a service-account password, and the LiteLLM API key. This is independent of the merge and shouldn't wait for it.</li>
+        <li><b>Never migrate a secret-bearing file.</b> No <code>task-006</code>, no vault, no credential examples enter the working tree. Migrate lessons, not values.</li>
+        <li><b>Secret-scan every migration commit</b> — both plans agree; it is now clearly mandatory, not belt-and-suspenders.</li>
+      </ul></div>
+      <div class="col"><h3>History caveat</h3><ul>
+        <li>The private org repo's 2025 history already contains these values, so a preserved <code>legacy/2025</code> branch carries them. Rotation makes that harmless (the exposed values become dead).</li>
+        <li>Optional, heavier: scrub history with <code>git filter-repo</code>/BFG. For a private repo with rotated secrets it's not required &mdash; <b>rotation is</b>.</li>
+        <li>The current repo is clean: no <code>[REDACTED — rotate]</code>, no plaintext secrets. Keep it that way.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>The archive's real payload — 27 nodes crosswalked onto v0.3</h2>
+    <p class="lede">Both plans say "mine the old nodes for v0.3." Here is that mine, made concrete. Nearly every service v0.3 places <em>actually ran</em> in 2025 &mdash; strong corroboration that v0.3 is grounded, not speculative. This table is also the migration priority list.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Legacy node (192.168.10.x)</th><th>Status</th><th>v0.3 home</th><th></th></tr></thead>
+        <tbody>
+          <tr><td class="k">hx-litellm-server .212</td><td>Operational</td><td>hxs-8 — LiteLLM gateway</td><td><span class="badge map">maps</span></td></tr>
+          <tr><td class="k">hx-postgres-server .209</td><td>Operational</td><td>hxs-9 — PostgreSQL</td><td><span class="badge map">maps</span></td></tr>
+          <tr><td class="k">hx-redis-server .210</td><td>Operational</td><td>hxs-9 — Redis</td><td><span class="badge map">maps</span></td></tr>
+          <tr><td class="k">hx-qdrant-server .207 + hx-qdrant-ui .208</td><td>Operational</td><td>hxs-4 — Qdrant + Web-UI</td><td><span class="badge map">maps</span></td></tr>
+          <tr><td class="k">hx-fastmcp-server .213</td><td>Operational</td><td>hxs-7 — FastMCP</td><td><span class="badge map">maps</span></td></tr>
+          <tr><td class="k">hx-n8n-server .215 + hx-n8n-mcp .214</td><td>Operational</td><td>hxs-13 — n8n (+MCP)</td><td><span class="badge map">maps</span></td></tr>
+          <tr><td class="k">hx-docling-server .216 + hx-docling-mcp .217</td><td>Op / Planned</td><td>hxs-12 — Docling (+MCP)</td><td><span class="badge map">maps</span></td></tr>
+          <tr><td class="k">hx-crawl4ai-server .219 + hx-crawl4ai-mcp .218</td><td>Operational</td><td>hxs-6 — Crawl4AI (+MCP)</td><td><span class="badge map">maps</span></td></tr>
+          <tr><td class="k">hx-literag-server .220</td><td>Operational</td><td>hxs-3 — LightRAG</td><td><span class="badge map">maps</span></td></tr>
+          <tr><td class="k">hx-webui-server .227</td><td>Operational</td><td>hxs-10 — Open WebUI</td><td><span class="badge map">maps</span></td></tr>
+          <tr><td class="k">hx-agui-server .221</td><td>Planned</td><td>hxs-10 — AG-UI frontends</td><td><span class="badge map">maps</span></td></tr>
+          <tr><td class="k">hx-lang-server .226</td><td>Planned</td><td>hxs-11 — LangGraph</td><td><span class="badge map">maps</span></td></tr>
+          <tr><td class="k">hx-dev-server .222</td><td>Planned</td><td>hxs-14 — Development</td><td><span class="badge map">maps</span></td></tr>
+          <tr><td class="k">hx-demo-server .223</td><td>In progress</td><td>hxs-15 — Test / demo</td><td><span class="badge map">maps</span></td></tr>
+          <tr><td class="k">Ollama (ollama1 / ollama2)</td><td>Operational</td><td>hxs-1–4 — <b>vLLM</b></td><td><span class="badge chg">changed</span></td></tr>
+          <tr><td class="k">hx-metric-server .225</td><td>Planned</td><td>external observability box</td><td><span class="badge chg">moved</span></td></tr>
+          <tr><td class="k">hx-qmcp-server .211 (Qdrant-MCP?)</td><td>Operational</td><td>evaluate — not explicit in v0.3</td><td><span class="badge chg">decide</span></td></tr>
+          <tr><td class="k">hx-cc-server .224</td><td>Operational</td><td>evaluate — maps to hxs-cp tooling?</td><td><span class="badge chg">decide</span></td></tr>
+          <tr><td class="k">hx-dc / hx-ca / hx-ssl .200–.202</td><td>Operational</td><td>none — AD / CA / SSO tier</td><td><span class="badge drop">dropped</span></td></tr>
+          <tr><td class="k">hx-coderabbit .228, hx-shadcn .229</td><td>Reserved / planned</td><td>none — out of current scope</td><td><span class="badge drop">dropped</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lede">Takeaway: ~14 services carry straight across, one is <em>changed</em> (Ollama&rarr;vLLM — hence a vLLM SME is genuinely net-new, not a rename), the identity tier and two SaaS add-ons drop, and two need an owner call. The deepest engineering history sits under the two nodes v0.3 most needs next &mdash; Docling and lang-server &mdash; which is where migration should start.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>Sizing the merge — smaller than "merge two histories" implies</h2>
+    <p class="lede">Claude Code frames the overlap as "six collisions" and proposes <code>git merge --allow-unrelated-histories</code>. Checked directly, the true exact-path collision set is <strong>four files</strong>, and there is no history to auto-merge at all.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>CC's "collision"</th><th>Reality</th></tr></thead>
+        <tbody>
+          <tr><td class="k"><code>CLAUDE.md</code>, <code>README.md</code>, <code>.gitignore</code>, <code>.vscode/settings.json</code></td><td><span class="badge crit">real</span> — the only four same-path files in both trees. Manual copy-in decisions.</td></tr>
+          <tr><td class="k"><code>.claude/commands/</code></td><td>Not a collision — the current repo has no <code>commands/</code> directory at all.</td></tr>
+          <tr><td class="k"><code>.claude/hooks/</code></td><td>Not a file collision — legacy is Python, current is PowerShell; different filenames coexist.</td></tr>
+          <tr><td class="k"><code>lessons-learned.md</code></td><td>Different paths — legacy root vs current <code>governance/lessons-learned.md</code>. A fold, not a conflict.</td></tr>
+          <tr><td class="k"><code>.gitattributes</code></td><td>No conflict — only the current repo has one, and it must be kept verbatim (it resolved <code>iss-005</code>).</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lede">And because the legacy archive has <strong>no <code>.git</code></strong>, there is no second history to interleave — every import is a deliberate, reviewed copy-in, not a three-way merge. That makes the whole operation lower-risk and more surgical than "merge unrelated histories" suggests, and it removes the main reason to run that command.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span>The two disagreements — settled</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Dimension</th><th>Claude Code</th><th>GPT-5.6</th><th>Settled</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="k">Git lineage</td>
+            <td>Merge both histories into org <code>main</code> (<code>--allow-unrelated-histories</code>).</td>
+            <td>Current <code>.git</code> is the sole lineage; the zip has none.</td>
+            <td class="me">Org repo is the home; current <code>main</code> is the mainline; org's 2025 history becomes a <code>legacy/2025</code> branch, not merged into <code>main</code>. §03 shows there's nothing to auto-merge anyway.</td>
+          </tr>
+          <tr>
+            <td class="k">Frozen legacy tree in-repo</td>
+            <td>Keep <code>archive/2025-pre-relocation/</code>.</td>
+            <td>No nested legacy tree; sanitized <code>knowledge/</code> only.</td>
+            <td class="me">GPT — and now doubly so: a frozen tree would drag the <b>plaintext secrets</b> (§01) into the working tree. Extract sanitized, provenance-tagged knowledge; the raw tree stays in the <code>legacy/2025</code> branch.</td>
+          </tr>
+          <tr>
+            <td class="k">Process weight</td>
+            <td>Light.</td>
+            <td>Heavier (gate rebuilds, contracts, 14-folder knowledge tree, <code>.specify</code>).</td>
+            <td class="me">Light, per owner. GPT's <em>principles</em> yes; its <em>scaffolding</em> no.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span>Cautions on each plan</h2>
+    <div class="cols">
+      <div class="col"><h3>Claude Code</h3><ul>
+        <li><b>Understated the secret exposure</b> (§01) — the single most important correction to its plan.</li>
+        <li><b>Overstated the merge surface</b> — four true collisions, not six; no history to merge (§03). Drop the <code>--allow-unrelated-histories</code> step.</li>
+        <li>Everything else is grounded and correct: the two factual fixes (<code>act-005</code> wrong repo, LiteRAG real), the fact-sweep, re-targeting the IP validator to <code>192.168.50.0/24</code>, preserving <code>.gitattributes</code>.</li>
+      </ul></div>
+      <div class="col"><h3>GPT-5.6</h3><ul>
+        <li><b>Assumes an <code>sdd-core</code> / <code>.specify/</code> backbone that does not exist</b> in the repo (verified). Don't adopt that scaffolding; it also cuts against "lean."</li>
+        <li>Strongest on the security posture, the capability-based agent model, provenance tags, and acceptance criteria. Adopt those.</li>
+        <li>Trim the empty 14-folder <code>knowledge/technologies/</code> to what you actually build.</li>
+      </ul></div>
+      <div class="col"><h3>Both / continuity</h3><ul>
+        <li><b>Adopt the legacy "Zero Assumptions Policy" framing</b> (verify every command/service, never assume). Note the current repo already <em>enforces</em> it via hooks — the legacy lesson was that a policy without enforcement fails.</li>
+        <li><b>Registry vs v0.3 roles</b> is an owner decision (commit v0.3 into the registry, or keep it empty-authoritative). No legacy assignment fills it automatically.</li>
+        <li>Both correctly end at the same next artifact: a <b>file-by-file migration manifest</b>.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">06</span>The path — security-first, lean</h2>
+    <ol class="steps">
+      <li><b>Rotate the exposed credentials now.</b> <code>[REDACTED — rotate]</code> on every service account, and the LiteLLM API key. This is independent of the merge and is the true "do it today."</li>
+      <li><b>Push the current repo to the private org repo</b> <code>Hana-X-AI/HX-Infrastructure</code> — a real, owned home. Closes the actual risk in <code>act-005</code>; correct that action's wrong-repo note in the same commit.</li>
+      <li><b>Set the lineage:</b> org repo is home, current <code>main</code> is the mainline, org's 2025 history → <code>legacy/2025</code> branch. No unrelated-history merge.</li>
+      <li><b>Adopt the agent roster (the time-saver):</b> first wave — Agent Zero, platform-architect, infra-ops, QA, plus Docling / LangGraph / FastMCP / PostgreSQL / Redis / <b>vLLM (new)</b> / LiteLLM / Qdrant / LightRAG / n8n SMEs. Capability-based, env stripped, pointed at current contracts.</li>
+      <li><b>Mine service knowledge in §02 order</b> — start with Docling and lang-server. Sanitized design/integration/tests/defects into <code>services/&lt;svc&gt;/build.md</code> + <code>governance/lessons-learned.md</code>, every item provenance-tagged, <b>never a secret-bearing file</b>.</li>
+      <li><b>Fact-sweep everything adapted</b> (<code>10.→50.</code>, <code>hx.dev.local→hx.local.arpa</code>, <code>/home/agent0→</code> relative, <code>agent0→hxsa</code>, role-name→service/<code>hxs-N</code>). Highest-value single fix: re-target the IP validator to <code>192.168.50.0/24</code>.</li>
+      <li><b>Stay lean:</b> one log (<code>actions-and-issues.md</code>), no gate rebuild, no <code>.specify</code>, keep <code>.gitattributes</code> verbatim, adopt the Zero-Assumptions framing.</li>
+      <li><b>Verify before landing:</b> remediation suite 153/0, discovery validator 15/15, phase-1 guard denies, hook byte-parity, secret scan clean, and zero <code>192.168.10.</code> / <code>hx.dev.local</code> / <code>/home/agent0</code> in any migrated file.</li>
+      <li><b>Next artifact:</b> the file-by-file migration manifest — legacy source → target → transform → secret/provenance → disposition. I can produce it on request.</li>
+    </ol>
+  </section>
+
+  <footer>
+    HX-Infrastructure &middot; deep feedback on the merge recommendations &middot; claude &middot; 2026-08-13 11:25 CDT &middot;
+    review and reconciliation only; authorizes no repository change. Every claim checked against the archive and the current backup. <code>SERVER-REGISTRY.md</code> stays authoritative; <code>act-012</code> is unaffected.
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  var media = window.matchMedia('(prefers-color-scheme: dark)');
+  function stored(v){ try{ if(v===undefined) return localStorage.getItem('hx-theme'); localStorage.setItem('hx-theme', v);}catch(e){} return null; }
+  function active(){ var e=root.getAttribute('data-theme'); if(e==='dark'||e==='light') return e; return media.matches?'dark':'light'; }
+  function relabel(){ var n=active()==='dark'?'light':'dark'; btn.textContent=n==='dark'?'Dark mode':'Light mode'; btn.setAttribute('aria-label','Switch to '+n+' mode'); }
+  var s=stored(); if(s==='dark'||s==='light') root.setAttribute('data-theme', s); relabel();
+  btn.addEventListener('click', function(){ var n=active()==='dark'?'light':'dark'; root.setAttribute('data-theme', n); stored(n); relabel(); });
+  if(typeof media.addEventListener==='function') media.addEventListener('change', relabel);
+  if(typeof MutationObserver==='function') new MutationObserver(relabel).observe(root,{attributes:true,attributeFilter:['data-theme']});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HX-Infrastructure — Legacy → Current Merge Decision (rev 2)</title>
+<style>
+  :root {
+    --ground:#fbfbf9; --surface:#f2f3f0; --raised:#ffffff; --ink:#1b1f1d;
+    --muted:#6b726e; --faint:#949b96; --line:#dde0db; --line-firm:#c3c8c1;
+    --accent:#0f6e5c; --accent-wash:#e6f0ec; --signal:#b4531a; --signal-wash:#fbeee4;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --step-0:0.9375rem; --step--1:0.8125rem; --step--2:0.6875rem;
+    --step-1:1.125rem; --step-2:1.5rem; --step-3:2.125rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ground:#141917; --surface:#1b211e; --raised:#1f2724; --ink:#e8ebe8;
+      --muted:#97a09b; --faint:#6f7873; --line:#2b342f; --line-firm:#3c4740;
+      --accent:#4fbfa3; --accent-wash:#16302a; --signal:#e08a4c; --signal-wash:#33251a; }
+  }
+  :root[data-theme="dark"]{ --ground:#141917;--surface:#1b211e;--raised:#1f2724;--ink:#e8ebe8;--muted:#97a09b;--faint:#6f7873;--line:#2b342f;--line-firm:#3c4740;--accent:#4fbfa3;--accent-wash:#16302a;--signal:#e08a4c;--signal-wash:#33251a;}
+  :root[data-theme="light"]{ --ground:#fbfbf9;--surface:#f2f3f0;--raised:#ffffff;--ink:#1b1f1d;--muted:#6b726e;--faint:#949b96;--line:#dde0db;--line-firm:#c3c8c1;--accent:#0f6e5c;--accent-wash:#e6f0ec;--signal:#b4531a;--signal-wash:#fbeee4;}
+  :root{color-scheme:light;} @media (prefers-color-scheme:dark){:root{color-scheme:dark;}}
+  :root[data-theme="dark"]{color-scheme:dark;} :root[data-theme="light"]{color-scheme:light;}
+
+  body { margin:0; padding:clamp(1.5rem,4vw,3.5rem) clamp(1rem,4vw,2rem) 5rem; background:var(--ground); color:var(--ink); font-family:var(--sans); font-size:var(--step-0); line-height:1.55; -webkit-text-size-adjust:100%; }
+  .page { max-width:1150px; margin:0 auto; display:flex; flex-direction:column; gap:2.25rem; }
+  .eyebrow { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.14em; color:var(--accent); margin:0; }
+  .masthead { display:flex; flex-direction:column; gap:0.75rem; }
+  .masthead-top { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .toggle { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.09em; color:var(--muted); background:var(--surface); border:1px solid var(--line-firm); border-radius:2px; padding:0.4rem 0.75rem; cursor:pointer; }
+  .toggle:hover { color:var(--accent); border-color:var(--accent); }
+  .masthead h1 { font-size:var(--step-3); line-height:1.08; letter-spacing:-0.02em; font-weight:650; margin:0; text-wrap:balance; }
+  .masthead p { margin:0; max-width:74ch; color:var(--muted); }
+
+  .strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:3px; overflow:hidden; }
+  .cell { background:var(--surface); padding:0.85rem 1rem; display:flex; flex-direction:column; gap:0.15rem; }
+  .cell dt { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); }
+  .cell dd { margin:0; font-size:var(--step-1); font-weight:600; font-variant-numeric:tabular-nums; }
+
+  .standing { background:var(--surface); border-left:2px solid var(--accent); padding:1rem 1.15rem; display:flex; flex-direction:column; gap:0.6rem; font-size:var(--step--1); }
+  .standing p { margin:0; max-width:88ch; color:var(--muted); }
+  .standing strong { color:var(--ink); font-weight:620; }
+  .standing ol { margin:0.2rem 0 0; padding-left:1.3rem; display:flex; flex-direction:column; gap:0.4rem; max-width:88ch; }
+  .standing li { color:var(--muted); } .standing li strong { color:var(--ink); }
+
+  section { display:flex; flex-direction:column; gap:0.85rem; }
+  h2 { font-size:var(--step-2); letter-spacing:-0.015em; font-weight:620; margin:0; text-wrap:balance; }
+  h2 .n { font-family:var(--mono); font-size:var(--step-0); color:var(--accent); margin-right:0.5rem; }
+  .lede { margin:0; color:var(--muted); max-width:82ch; font-size:var(--step--1); }
+
+  .tablewrap { overflow-x:auto; border:1px solid var(--line); border-radius:3px; background:var(--raised); }
+  table { border-collapse:collapse; width:100%; font-size:var(--step--1); }
+  thead th { position:sticky; top:0; z-index:2; background:var(--surface); border-bottom:1px solid var(--line-firm); font-family:var(--mono); font-size:var(--step--2); font-weight:600; text-transform:uppercase; letter-spacing:0.09em; color:var(--muted); text-align:left; padding:0.65rem 0.85rem; white-space:nowrap; }
+  tbody td { padding:0.6rem 0.85rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:last-child td { border-bottom:none; }
+  td.asset { font-weight:600; min-width:12rem; }
+
+  .badge { font-family:var(--mono); font-size:var(--step--2); font-weight:700; text-transform:uppercase; letter-spacing:0.05em; padding:0.12em 0.5em; border-radius:2px; white-space:nowrap; display:inline-block; }
+  .badge.go { color:var(--ground); background:var(--accent); }
+  .badge.stay { color:var(--ground); background:var(--signal); }
+  .badge.adapt { color:var(--signal); background:var(--signal-wash); }
+
+  .cols { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:3px; overflow:hidden; }
+  .col { background:var(--raised); padding:1rem 1.15rem; display:flex; flex-direction:column; gap:0.5rem; }
+  .col h3 { margin:0; font-size:var(--step-0); font-weight:640; }
+  .col ul { margin:0; padding-left:1.15rem; display:flex; flex-direction:column; gap:0.3rem; }
+  .col li { font-size:var(--step--1); color:var(--muted); } .col li b { color:var(--ink); }
+
+  pre { margin:0; overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:3px; padding:1rem 1.1rem; }
+  pre code { background:none; padding:0; font-size:var(--step--1); line-height:1.5; color:var(--ink); }
+  .tag { font-family:var(--mono); color:var(--accent); }
+
+  code { font-family:var(--mono); font-size:0.92em; background:var(--surface); padding:0.05em 0.32em; border-radius:2px; }
+  footer { border-top:1px solid var(--line); padding-top:1rem; font-size:var(--step--2); color:var(--faint); }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important;} }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <div class="masthead-top">
+      <p class="eyebrow">HX-Infrastructure &middot; Legacy &rarr; Current merge decision &middot; rev 2</p>
+      <button type="button" class="toggle" id="theme-toggle">Dark mode</button>
+    </div>
+    <h1>What Goes, What Stays</h1>
+    <p>
+      A merge plan for folding the reusable parts of the <strong>legacy</strong> Hana-X repo (v2.0,
+      <code>192.168.10.x</code>) into the <strong>current</strong> HX-Infrastructure repo
+      (<code>192.168.50.x</code>). This revision drops the Phase-1/Phase-2 gate framing (pivoted
+      away), keeps the process <strong>lean</strong>, <strong>leans on the legacy agent roster</strong>
+      to do the work, and adds a recommended file structure for the combined repo.
+    </p>
+  </header>
+
+  <dl class="strip">
+    <div class="cell"><dt>Legacy files</dt><dd>522</dd></div>
+    <div class="cell"><dt>Current files</dt><dd>759</dd></div>
+    <div class="cell"><dt>Goes</dt><dd>4 sets</dd></div>
+    <div class="cell"><dt>Stays out</dt><dd>7 classes</dd></div>
+    <div class="cell"><dt>Core agents</dt><dd>5 + curated</dd></div>
+    <div class="cell"><dt>Env facts kept</dt><dd>0%</dd></div>
+  </dl>
+
+  <div class="standing">
+    <p><strong>The lean principles this merge follows</strong> (post-pivot &mdash; no phase gate):</p>
+    <ol>
+      <li><strong>Registry stays the source of truth.</strong> <code>SERVER-REGISTRY.md</code> owns hosts, hardware and committed roles; the v0.3 architecture is the proposal the owner draws from. Merged build material aligns to that proposal but does not overwrite the registry.</li>
+      <li><strong>Discovery is immutable.</strong> <code>servers/&lt;host&gt;/discovery.md</code> is as-found and never rewritten; build/config state lives separately.</li>
+      <li><strong>Lean, not heavy.</strong> Adopt the legacy <em>ideas and assets</em>, not its ceremony. No competing process docs; prefer existing files; one lean doc per service, not a 90-file task tree.</li>
+      <li><strong>Lean on the agents.</strong> Bring the SME agent roster across and let it do the build work &mdash; that is the biggest time-saver in the legacy repo.</li>
+      <li><strong>No secrets, ever.</strong> The Ansible vault never enters tracked docs.</li>
+    </ol>
+  </div>
+
+  <section>
+    <h2><span class="n">01</span>Verdict at a glance</h2>
+    <p class="lede">Every legacy asset class: <span class="badge go">goes</span> merge in, <span class="badge adapt">adapt</span> selective/transform-first, <span class="badge stay">stays</span> excluded.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Legacy asset</th><th>Decision</th><th>Where it lands / why</th></tr></thead>
+        <tbody>
+          <tr><td class="asset">SME agent roster (5 core + 27 tech)</td><td><span class="badge go">goes</span></td><td><code>.claude/agents/</code> &mdash; adopt the 5 Core SMEs + a curated handful of tech SMEs, adapted to this repo. This is the time-saver you asked to keep.</td></tr>
+          <tr><td class="asset">Docling MCP node blueprint</td><td><span class="badge go">goes</span></td><td><code>services/docling-mcp/build.md</code> &mdash; one lean build doc, re-pointed to the fleet, aligned to the v0.3 proposal (Docling host).</td></tr>
+          <tr><td class="asset">LangGraph "lang-server" blueprint</td><td><span class="badge go">goes</span></td><td><code>services/lang-server/build.md</code> &mdash; Postgres checkpoint schema, Redis, MCP adapters, FastAPI; Ollama swapped for vLLM/LiteLLM.</td></tr>
+          <tr><td class="asset">Docling defect log (~60 items)</td><td><span class="badge go">goes</span></td><td>Distilled into each service's "gotchas" section + <code>governance/lessons-learned.md</code> (libGL, HF cache perms, LiteLLM auth, hardcoded-IP class).</td></tr>
+          <tr><td class="asset">Standards &amp; templates (10 docs)</td><td><span class="badge adapt">adapt</span></td><td>Import only a genuinely missing template (e.g. a lean node/service build template) into <code>servers/_templates</code>. Current already has documentation-standards.</td></tr>
+          <tr><td class="asset">Config-placeholder / no-hardcoding pattern</td><td><span class="badge adapt">adapt</span></td><td>Keep as a rule (already implied by the infrastructure contract); reinforce, don't re-import the doc.</td></tr>
+          <tr><td class="asset">Constitution / spec-driven philosophy</td><td><span class="badge adapt">adapt</span></td><td>Already embodied in <code>GOALS-AND-OBJECTIVES</code> + <code>AGENTS.md</code>. Borrow only the test-driven wording if it adds value.</td></tr>
+          <tr><td class="asset">Quality-gate scripts + old hooks</td><td><span class="badge stay">stays</span></td><td>Hardcode <code>192.168.10.x</code> / <code>/home/agent0</code>, assume Ansible, written in bash/Python. Current PowerShell hooks + skills already cover this.</td></tr>
+          <tr><td class="asset">Network / inventory (30 nodes)</td><td><span class="badge stay">stays</span></td><td>Historical. <code>SERVER-REGISTRY.md</code> is authoritative; importing creates a second source of truth.</td></tr>
+          <tr><td class="asset">Identity tier (AD / CA / SSO)</td><td><span class="badge stay">stays</span></td><td>Out of scope. (The DNS/cert slice survives only through the adapted <em>Frank Lucas</em> agent, not the AD/SSO stack.)</td></tr>
+          <tr><td class="asset">Ansible + <code>vault/credentials.yml</code></td><td><span class="badge stay">stays</span></td><td>Ansible ruled out; the encrypted vault is a secret and never enters the repo.</td></tr>
+          <tr><td class="asset">Ollama serving config</td><td><span class="badge stay">stays</span></td><td>Superseded by vLLM behind LiteLLM. Endpoints translate; specifics do not.</td></tr>
+          <tr><td class="asset"><code>df1.md</code> (10.9 MB) + legacy README/CLAUDE</td><td><span class="badge stay">stays</span></td><td>Junk / already have leaner equivalents.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>What goes &mdash; and how it lands</h2>
+    <div class="cols">
+      <div class="col">
+        <h3>The agent roster</h3>
+        <ul>
+          <li><b>Adopt the 5 Core SMEs:</b> <b>Agent Zero</b> (orchestration &mdash; already your identity), <b>Alex Rivera</b> (platform architect), <b>Julia Santos</b> (testing/QA), <b>William Chen</b> (infra/ops), <b>Frank Lucas</b> (DNS/cert only &mdash; drop AD/SSO).</li>
+          <li><b>Plus a curated few tech SMEs</b> matching the stack (LangGraph/agent, n8n, Docling/RAG) &mdash; not all 27.</li>
+          <li><b>Transform:</b> convert to Claude Code <code>.claude/agents/*.md</code>, strip <code>/home/agent0</code> paths, <code>hx.dev.local</code>, the knowledge-vault repo list, and CAIO/credentials refs; point them at current <code>CLAUDE.md</code> / <code>AGENTS.md</code>.</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h3>Docling MCP build doc</h3>
+        <ul>
+          <li><b>What:</b> FastMCP node, 19 tools, deps (<code>docling~=2.25</code>, <code>mcp[cli]</code>, <code>pydantic~=2.10</code>), LiteLLM + Qdrant + Redis + LightRAG, systemd.</li>
+          <li><b>Transform:</b> fleet IPs; our endpoints; drop Ansible; keep venv + systemd.</li>
+          <li><b>Gotchas baked in:</b> <code>libgl1</code>, HF cache ownership, LiteLLM auth.</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h3>lang-server build doc</h3>
+        <ul>
+          <li><b>What:</b> supervisor + workers, FastAPI, Postgres checkpoint schema, Redis, langchain-mcp-adapters, phased n8n.</li>
+          <li><b>Transform:</b> <b>Ollama &rarr; vLLM via LiteLLM</b>; IPs/paths re-pointed; Ansible removed.</li>
+          <li><b>Owner:</b> the LangGraph SME agent drives it.</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h3>Defect lessons</h3>
+        <ul>
+          <li><b>What:</b> ~60 real defects, distilled to the handful that recur.</li>
+          <li><b>Lands:</b> a "gotchas" block in each service <code>build.md</code> + entries in <code>governance/lessons-learned.md</code>, citing legacy defect IDs.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>Recommended file structure for the combined repo</h2>
+    <p class="lede">Keeps everything authoritative that the current repo already owns, adds one lean <code>services/</code> tree for build reference, and brings the agents into <code>.claude/agents/</code>. New additions are <span class="tag">marked</span>.</p>
+    <pre><code>HX-Infrastructure/
+├─ README.md  CLAUDE.md  AGENTS.md                 # authoritative — unchanged
+├─ GOALS-AND-OBJECTIVES.md  INFRASTRUCTURE-CONTRACT.md
+├─ SERVER-REGISTRY.md                              # source of truth (hosts, hardware, roles)
+├─ INSTALL.md
+│
+├─ .claude/
+│  ├─ agents/
+│  │   ├─ server-discovery.md                      # existing
+│  │   ├─ <span class="tag">agent-zero.md  alex-rivera.md  julia-santos.md</span>     # adopted core SMEs
+│  │   ├─ <span class="tag">william-chen.md  frank-lucas.md</span>                    # (Frank = DNS/cert only)
+│  │   └─ <span class="tag">tech/  langgraph-sme.md  n8n-sme.md  docling-sme.md</span> # curated tech SMEs
+│  ├─ hooks/        # existing PowerShell hooks — keep
+│  ├─ skills/       # existing skills — keep; add build skills as needed
+│  └─ settings.json
+│
+├─ governance/
+│  ├─ actions-and-issues.md   risk-acceptances.md
+│  ├─ lessons-learned.md                           # + folded legacy defect lessons
+│  ├─ reports/          site/                       # + architecture v0.3 / validation HTML
+│  └─ <span class="tag">agent-roster.md</span>                               # index of adopted agents + when to use each
+│
+├─ servers/
+│  ├─ _templates/   (discovery.md, configuration.md, <span class="tag">service-build.md</span>)
+│  └─ hxs-1 … hxs-15, hxs-cp/
+│         ├─ discovery.md          # immutable, as-found
+│         └─ configuration.md      # as-built (created when the host is configured)
+│
+├─ <span class="tag">services/</span>                                        # NEW — lean build reference, one folder per service
+│  ├─ <span class="tag">docling-mcp/build.md</span>       (→ aligns to the v0.3 Docling host)
+│  ├─ <span class="tag">lang-server/build.md</span>       (→ aligns to the v0.3 agent-runtime host)
+│  ├─ <span class="tag">litellm-gateway/build.md   qdrant/build.md   lightrag/build.md</span>
+│  └─ <span class="tag">…one build.md per platform service…</span>
+│
+├─ tests/
+└─ tools/           # governance HTML build pipeline — keep</code></pre>
+    <p class="lede">
+      Rationale: <code>services/&lt;name&gt;/build.md</code> is the whole footprint of the legacy
+      <code>nodes/&lt;node&gt;/</code> tree collapsed into one lean doc &mdash; install, config,
+      integration, validation, and gotchas &mdash; because the agents supply the discipline the
+      90-file task trees used to encode. Each service doc names its owning agent and the host it maps
+      to under the v0.3 proposal, so build work is traceable without a heavyweight process.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span>Merge mechanics</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>#</th><th>Step</th><th>Guardrail</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Add the adopted agent files under <code>.claude/agents/</code> and an <code>agent-roster.md</code> index in <code>governance/</code>.</td><td>Transformed to this repo; no old paths/env; no secrets.</td></tr>
+          <tr><td>2</td><td>Create <code>services/</code> with one <code>build.md</code> per service, starting with <code>docling-mcp</code> and <code>lang-server</code>.</td><td>One lean doc each; fleet IPs; vLLM not Ollama; no Ansible.</td></tr>
+          <tr><td>3</td><td>Distil the defect log into each build doc's gotchas + <code>lessons-learned.md</code>.</td><td>Facts only; cite legacy defect IDs.</td></tr>
+          <tr><td>4</td><td>Add only a missing template to <code>servers/_templates</code> (a lean service-build template).</td><td>No duplicate/competing docs.</td></tr>
+          <tr><td>5</td><td>Log the merge as one action in <code>governance/actions-and-issues.md</code>.</td><td>Single project log.</td></tr>
+          <tr><td>6</td><td>Leave <code>SERVER-REGISTRY.md</code> and every <code>discovery.md</code> untouched; role commitment stays the owner's call.</td><td>Registry authoritative; discovery immutable.</td></tr>
+          <tr><td>7</td><td>Do not import quality-gates, old hooks, inventory, network docs, identity tier, Ansible, Ollama, <code>df1.md</code>, or the vault.</td><td>The "stays out" list is exhaustive.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span>Confirmed direction</h2>
+    <div class="cols">
+      <div class="col"><h3>Process</h3><ul><li>Lean, per your call &mdash; blueprints + defect lessons + agents, no legacy ceremony.</li></ul></div>
+      <div class="col"><h3>Automation</h3><ul><li>Keep the current PowerShell hooks/skills; do not port the legacy gates.</li></ul></div>
+      <div class="col"><h3>Agents</h3><ul><li>Adopt the roster and lean on it. Curate to the 5 core + a few stack-relevant tech SMEs.</li></ul></div>
+      <div class="col"><h3>Open</h3><ul><li>Only naming: confirm <code>services/</code> (vs reusing legacy <code>nodes/</code>) and whether to seed all service folders now or just the two blueprints.</li></ul></div>
+    </div>
+  </section>
+
+  <footer>
+    HX-Infrastructure &middot; legacy&rarr;current merge decision, rev 2 &middot; claude &middot; 2026-08-13 10:53 CDT &middot;
+    lean merge + agent adoption + combined-repo structure; assigns no roles and edits neither the registry nor discovery records.
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  var media = window.matchMedia('(prefers-color-scheme: dark)');
+  function stored(v){ try{ if(v===undefined) return localStorage.getItem('hx-theme'); localStorage.setItem('hx-theme', v);}catch(e){} return null; }
+  function active(){ var e=root.getAttribute('data-theme'); if(e==='dark'||e==='light') return e; return media.matches?'dark':'light'; }
+  function relabel(){ var n=active()==='dark'?'light':'dark'; btn.textContent=n==='dark'?'Dark mode':'Light mode'; btn.setAttribute('aria-label','Switch to '+n+' mode'); }
+  var s=stored(); if(s==='dark'||s==='light') root.setAttribute('data-theme', s); relabel();
+  btn.addEventListener('click', function(){ var n=active()==='dark'?'light':'dark'; root.setAttribute('data-theme', n); stored(n); relabel(); });
+  if(typeof media.addEventListener==='function') media.addEventListener('change', relabel);
+  if(typeof MutationObserver==='function') new MutationObserver(relabel).observe(root,{attributes:true,attributeFilter:['data-theme']});
+})();
+</script>
+</body>
+</html>
