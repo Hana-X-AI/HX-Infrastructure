@@ -131,6 +131,7 @@ config, no deployment, no registry role changes.
 - Nine published HTML pages remain flat in `governance/` by design. Moving them means editing
   `tools/links.json`, `apply-nav.js` and `make-standalone.js` together; deferred until after
   the merge.
+- Report documents under `governance/reports/` were reorganised into per-author subdirectories outside this session; one suite reference to `GITHUB-REMEDIATION-INSTRUCTIONS.md` broke and was repointed to `reports/GitHub-Copilot/`. If more reports move, re-run the suite - it is the fastest detector of a broken governance path.
 - `tests/remediation-tests-restored.ps1` still carries a temporary filename. The canonical
   `remediation-tests.ps1` path was locked by a Norton quarantine (`iss-010`); a workstation
   reboot should free it.

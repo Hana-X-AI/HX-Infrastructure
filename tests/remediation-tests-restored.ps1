@@ -844,7 +844,7 @@ Assert-True "item 7: audit/hook strictness difference is documented" (
     $auditSkillText -match 'stricter than the `PostToolUse` and `SubagentStop` hook validators'
 )
 
-$remediationDoc = Get-Content "$root\governance\reports\GITHUB-REMEDIATION-INSTRUCTIONS.md" -Raw
+$remediationDoc = Get-Content "$root\governance\reports\GitHub-Copilot\GITHUB-REMEDIATION-INSTRUCTIONS.md" -Raw
 Assert-True "item 7: packaged hook paths are correct" (
     $remediationDoc -notmatch '(?<!claude-hooks/)claude-hooks/hooks/'
 )
