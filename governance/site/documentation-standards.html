@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Documentation Standards — HX Governance</title>
 <style>
   :root {
@@ -148,16 +153,17 @@
   :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
 </style>
-
+</head>
+<body>
 <div class="page">
 
   <div class="bar">
     <nav class="nav">
-        <a href="https://claude.ai/code/artifact/09f4465a-1924-40c5-b352-cbe19926100d">Governance</a>
-        <a href="https://claude.ai/code/artifact/4062f99f-e8d4-44ba-aae2-74472bde91f5">Actions &amp; issues</a>
-        <a href="https://claude.ai/code/artifact/9325f481-90f0-4439-9fa0-e8f48d629ff4">Lessons learned</a>
-        <a href="https://claude.ai/code/artifact/ac6d1ab7-8dae-436d-94f1-80bfbb99d467" aria-current="page">Standards</a>
-        <a href="https://claude.ai/code/artifact/130cf301-c270-4851-a1e5-eb9ed8586074">Fleet inventory</a>
+        <a href="index.html">Governance</a>
+        <a href="actions-and-issues.html">Actions &amp; issues</a>
+        <a href="lessons-learned.html">Lessons learned</a>
+        <a href="documentation-standards.html" aria-current="page">Standards</a>
+        <a href="hx-fleet-inventory.html">Fleet inventory</a>
     </nav>
     <button type="button" class="toggle" id="theme-toggle">Dark mode</button>
   </div>
@@ -331,3 +337,5 @@ node tools/make-standalone.js         # derive governance/site/*.html from those
   }
 })();
 </script>
+</body>
+</html>

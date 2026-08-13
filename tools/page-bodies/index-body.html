@@ -1,0 +1,94 @@
+  <header class="masthead">
+    <p class="eyebrow">HX-Infrastructure</p>
+    <h1>Governance</h1>
+    <p>The record of how this fleet was built: what was found on each machine, what is
+    tracked, what was learned, and the rules the documents themselves follow. Every page here
+    is generated from or mirrors a Markdown file in <code>governance/</code>, which stays the
+    source of truth.</p>
+  </header>
+
+  <dl class="strip">
+    <div class="cell"><dt>Fleet servers</dt><dd>15</dd></div>
+    <div class="cell"><dt>Control plane</dt><dd>1</dd></div>
+    <div class="cell"><dt>Discovery</dt><dd>15 / 15</dd></div>
+    <div class="cell"><dt>Roles assigned</dt><dd>0</dd></div>
+    <div class="cell"><dt>Phase 1</dt><dd>In progress</dd></div>
+    <div class="cell"><dt>Phase 2</dt><dd>Blocked</dd></div>
+  </dl>
+
+  <section>
+    <h2>Documents</h2>
+    <p class="lede">Four views onto the project. The fleet inventory answers what the hardware
+    is; the other three answer how the project is run.</p>
+    <div class="cards">
+
+      <a class="card" href="__LINK_INVENTORY__">
+        <h3>Fleet Server Inventory</h3>
+        <p>Hardware manifest for all fifteen servers and the control-plane host — hostname,
+        address, FQDN, storage, CPU, GPU, VRAM and memory, every value measured on the
+        machine itself.</p>
+        <span class="meta">16 machines</span>
+      </a>
+
+      <a class="card" href="__LINK_ACTIONS__">
+        <h3>Actions &amp; Issues</h3>
+        <p>The single project log. Work that must be done and problems that are known, each
+        entry carrying its own resolution so the outcome stays with the item.</p>
+        <span class="meta">__COUNT_ACTIONS__ entries · __COUNT_OPEN__ open</span>
+      </a>
+
+      <a class="card" href="__LINK_LESSONS__">
+        <h3>Lessons Learned</h3>
+        <p>What this project learned the hard way, with the evidence that produced each
+        lesson and the change made in response.</p>
+        <span class="meta">__COUNT_LESSONS__ lessons</span>
+      </a>
+
+      <a class="card" href="__LINK_STANDARDS__">
+        <h3>Documentation Standards</h3>
+        <p>How files are named and where they belong, including the deliberate exceptions
+        that look like drift and must not be "fixed".</p>
+        <span class="meta">Written 2026-08-13</span>
+      </a>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Where authority sits</h2>
+    <ul class="notes">
+      <li><b><code>SERVER-REGISTRY.md</code></b> is authoritative for assigned role, approved
+      workload, discovery status and Phase 2 status. Where any page here disagrees with it,
+      the registry wins.</li>
+      <li><b><code>servers/&lt;host&gt;/discovery.md</code></b> records each server as found.
+      It is never rewritten to reflect later configuration.</li>
+      <li><b><code>governance/actions-and-issues.md</code></b> is the only routine tracking
+      log. No separate action-item or issue documents are created.</li>
+      <li><b>Roles are assigned manually.</b> Agents may compare capabilities and report
+      constraints, but may not assign a role, select a workload, or choose a model.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Where the project stands</h2>
+    <p class="lede">Phase 1 is discovery and documentation only. It ends at a seven-condition
+    gate, four of which are met.</p>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr><th scope="col">Phase 1 gate condition</th><th scope="col">State</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Every expected server is present in the registry</td><td>15 of 15 — met</td></tr>
+          <tr><td>Every server has a complete <code>discovery.md</code></td><td>15 of 15 — met</td></tr>
+          <tr><td>Fleet hardware capabilities are documented and comparable</td><td>met 2026-08-13</td></tr>
+          <tr><td>Fleet capabilities have been manually reviewed</td><td>outstanding — human decision</td></tr>
+          <tr><td>Every server has a manually assigned role</td><td>0 of 15 — outstanding</td></tr>
+          <tr><td>Every assigned role is recorded in the registry</td><td>outstanding</td></tr>
+          <tr><td>No role-specific configuration has begun</td><td>0 <code>configuration.md</code> files — met</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lede">The three outstanding conditions are all human decisions, tracked as
+    <code>act-012</code>. Phase 2 stays blocked until every condition is complete.</p>
+  </section>

@@ -70,6 +70,41 @@ Two rules matter more than the layout:
 
 A four-backtick fence is used because at least one paste contains a three-backtick sequence.
 
+## HTML pages: two outputs, one source
+
+The governance pages exist in two forms, and the difference is deliberate.
+
+| Location | Shape | Links | Use |
+| --- | --- | --- | --- |
+| `governance/*.html` | No `<!DOCTYPE>`, `<html>`, `<head>` or `<body>` | Absolute `claude.ai` artifact URLs | Published as Claude artifacts |
+| `governance/site/*.html` | Fully-formed documents | Relative filenames | Opening from disk, a file server, or an exported bundle |
+
+**The artifact form must not carry the HTML boilerplate.** The publisher wraps the source
+file in its own `<!doctype html><head></head><body>` skeleton at publish time and requires
+the source not to include those tags; adding them nests a second document inside the first.
+
+**The standalone form must carry it**, plus two things the artifact form cannot supply:
+
+- `<html lang="en">` and `<meta charset="utf-8">`, which assistive technology depends on.
+- `<meta name="viewport" content="width=device-width, initial-scale=1">`. Without it a phone
+  lays the page out at desktop width and scales the result down, so the `clamp()` sizing
+  never engages and the responsive design is inert.
+
+Build both from `tools/`:
+
+```sh
+node tools/build-governance-html.js   # regenerate governance/*.html from the Markdown
+node tools/make-standalone.js         # derive governance/site/*.html from those
+```
+
+`tools/links.json` holds the artifact URL for each page. `make-standalone.js` fails rather
+than emits if any artifact URL survives into the standalone build or if any page stops
+linking to its siblings.
+
+The two log pages are generated from `actions-and-issues.md` and `lessons-learned.md`, which
+remain the source of truth. Their cells contain escaped pipes, so the parser splits only on
+unescaped ones; a naive split corrupts rows.
+
 ## Deliberate exceptions
 
 These look inconsistent and are intentional. Do not "fix" them.

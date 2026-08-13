@@ -1,4 +1,9 @@
-<title>Documentation Standards — HX Governance</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Governance — HX-Infrastructure</title>
 <style>
   :root {
     --ground:#fbfbf9; --surface:#f2f3f0; --raised:#ffffff;
@@ -148,146 +153,114 @@
   :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
   @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
 </style>
-
+</head>
+<body>
 <div class="page">
 
   <div class="bar">
     <nav class="nav">
-        <a href="https://claude.ai/code/artifact/09f4465a-1924-40c5-b352-cbe19926100d">Governance</a>
-        <a href="https://claude.ai/code/artifact/4062f99f-e8d4-44ba-aae2-74472bde91f5">Actions &amp; issues</a>
-        <a href="https://claude.ai/code/artifact/9325f481-90f0-4439-9fa0-e8f48d629ff4">Lessons learned</a>
-        <a href="https://claude.ai/code/artifact/ac6d1ab7-8dae-436d-94f1-80bfbb99d467" aria-current="page">Standards</a>
-        <a href="https://claude.ai/code/artifact/130cf301-c270-4851-a1e5-eb9ed8586074">Fleet inventory</a>
+        <a href="index.html" aria-current="page">Governance</a>
+        <a href="actions-and-issues.html">Actions &amp; issues</a>
+        <a href="lessons-learned.html">Lessons learned</a>
+        <a href="documentation-standards.html">Standards</a>
+        <a href="hx-fleet-inventory.html">Fleet inventory</a>
     </nav>
     <button type="button" class="toggle" id="theme-toggle">Dark mode</button>
   </div>
 
   <header class="masthead">
-    <p class="eyebrow">HX-Infrastructure &middot; governance</p>
-    <h1>Documentation Standards</h1>
-    <p>How files in this repository are named and where they belong. Written 2026-08-13,
-    after a structure review found three naming schemes running in parallel and fifteen
-    server records in three different shapes.</p>
+    <p class="eyebrow">HX-Infrastructure</p>
+    <h1>Governance</h1>
+    <p>The record of how this fleet was built: what was found on each machine, what is
+    tracked, what was learned, and the rules the documents themselves follow. Every page here
+    is generated from or mirrors a Markdown file in <code>governance/</code>, which stays the
+    source of truth.</p>
   </header>
 
+  <dl class="strip">
+    <div class="cell"><dt>Fleet servers</dt><dd>15</dd></div>
+    <div class="cell"><dt>Control plane</dt><dd>1</dd></div>
+    <div class="cell"><dt>Discovery</dt><dd>15 / 15</dd></div>
+    <div class="cell"><dt>Roles assigned</dt><dd>0</dd></div>
+    <div class="cell"><dt>Phase 1</dt><dd>In progress</dd></div>
+    <div class="cell"><dt>Phase 2</dt><dd>Blocked</dd></div>
+  </dl>
+
   <section>
-    <h2>Naming rules</h2>
-    <p class="lede">Existing files that predate this document were aligned to it where the
-    change was safe. The deliberate exceptions are listed further down; they are exceptions,
-    not drift.</p>
+    <h2>Documents</h2>
+    <p class="lede">Four views onto the project. The fleet inventory answers what the hardware
+    is; the other three answer how the project is run.</p>
+    <div class="cards">
+
+      <a class="card" href="hx-fleet-inventory.html">
+        <h3>Fleet Server Inventory</h3>
+        <p>Hardware manifest for all fifteen servers and the control-plane host — hostname,
+        address, FQDN, storage, CPU, GPU, VRAM and memory, every value measured on the
+        machine itself.</p>
+        <span class="meta">16 machines</span>
+      </a>
+
+      <a class="card" href="actions-and-issues.html">
+        <h3>Actions &amp; Issues</h3>
+        <p>The single project log. Work that must be done and problems that are known, each
+        entry carrying its own resolution so the outcome stays with the item.</p>
+        <span class="meta">24 entries · 4 open</span>
+      </a>
+
+      <a class="card" href="lessons-learned.html">
+        <h3>Lessons Learned</h3>
+        <p>What this project learned the hard way, with the evidence that produced each
+        lesson and the change made in response.</p>
+        <span class="meta">31 lessons</span>
+      </a>
+
+      <a class="card" href="documentation-standards.html">
+        <h3>Documentation Standards</h3>
+        <p>How files are named and where they belong, including the deliberate exceptions
+        that look like drift and must not be "fixed".</p>
+        <span class="meta">Written 2026-08-13</span>
+      </a>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Where authority sits</h2>
+    <ul class="notes">
+      <li><b><code>SERVER-REGISTRY.md</code></b> is authoritative for assigned role, approved
+      workload, discovery status and Phase 2 status. Where any page here disagrees with it,
+      the registry wins.</li>
+      <li><b><code>servers/&lt;host&gt;/discovery.md</code></b> records each server as found.
+      It is never rewritten to reflect later configuration.</li>
+      <li><b><code>governance/actions-and-issues.md</code></b> is the only routine tracking
+      log. No separate action-item or issue documents are created.</li>
+      <li><b>Roles are assigned manually.</b> Agents may compare capabilities and report
+      constraints, but may not assign a role, select a workload, or choose a model.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Where the project stands</h2>
+    <p class="lede">Phase 1 is discovery and documentation only. It ends at a seven-condition
+    gate, four of which are met.</p>
     <div class="scroll">
       <table>
         <thead>
-          <tr><th scope="col">Location</th><th scope="col">Rule</th><th scope="col">Example</th></tr>
+          <tr><th scope="col">Phase 1 gate condition</th><th scope="col">State</th></tr>
         </thead>
         <tbody>
-          <tr><td>Repository root</td><td><code>SCREAMING-KEBAB-CASE.md</code>, reserved for canonical project documents</td><td><code>SERVER-REGISTRY.md</code></td></tr>
-          <tr><td><code>governance/</code></td><td><code>lower-kebab-case.md</code></td><td><code>risk-acceptances.md</code></td></tr>
-          <tr><td><code>governance/reports/</code></td><td><code>&lt;author&gt;_&lt;YYYY-MM-DD&gt;[_&lt;HHMMSS&gt;]_&lt;lower-kebab-slug&gt;.md</code></td><td><code>Claude-Opus-5_2026-08-13_hxs-5-to-15-discovery-report.md</code></td></tr>
-          <tr><td><code>servers/&lt;host&gt;/</code></td><td>fixed file names, see below</td><td><code>discovery.md</code></td></tr>
-          <tr><td><code>.claude/hooks/</code></td><td><code>hx-&lt;function&gt;.ps1</code></td><td><code>hx-phase1-guard.ps1</code></td></tr>
-          <tr><td>Scripts</td><td><code>lower-kebab-case</code> with the extension of the language</td><td><code>collect-server-facts.sh</code></td></tr>
+          <tr><td>Every expected server is present in the registry</td><td>15 of 15 — met</td></tr>
+          <tr><td>Every server has a complete <code>discovery.md</code></td><td>15 of 15 — met</td></tr>
+          <tr><td>Fleet hardware capabilities are documented and comparable</td><td>met 2026-08-13</td></tr>
+          <tr><td>Fleet capabilities have been manually reviewed</td><td>outstanding — human decision</td></tr>
+          <tr><td>Every server has a manually assigned role</td><td>0 of 15 — outstanding</td></tr>
+          <tr><td>Every assigned role is recorded in the registry</td><td>outstanding</td></tr>
+          <tr><td>No role-specific configuration has begun</td><td>0 <code>configuration.md</code> files — met</td></tr>
         </tbody>
       </table>
     </div>
-    <ul class="notes">
-      <li><b>No spaces in file names.</b> They break shell quoting, URLs and cross-platform tooling.</li>
-      <li><b>No em-dashes or other non-ASCII characters in file names.</b> They survive badly through copy-paste, terminals and Git on Windows.</li>
-      <li>Use a hyphen as the word separator. The underscore is reserved for the field separator in report names.</li>
-      <li>The time component of a report name is optional, used only to disambiguate two reports by the same author on the same date.</li>
-      <li><code>&lt;author&gt;</code> identifies who produced the document: <code>Claude-Opus-5</code>, <code>GitHub-Copilot</code>, <code>chatgpt</code>, or <code>owner</code> for material written by the project owner.</li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>Server record file set</h2>
-    <p class="lede">One directory per host, named for the hostname the host reports.</p>
-    <pre><code>servers/&lt;hostname&gt;/
-├── pre-work-results.md    human preparation record, written before discovery
-├── discovery.md           the server as found, Phase 1
-├── driver-results.md      only where an approved driver directive was executed
-└── configuration.md       the configured state, Phase 2 only</code></pre>
-    <p class="lede"><code>discovery.md</code> is never rewritten to reflect later
-    configuration. Where an approved change is made after discovery, it is recorded in a
-    clearly separated section of the same file, as on <code>hxs-1</code> through
-    <code>hxs-4</code>, or in <code>driver-results.md</code>.</p>
-  </section>
-
-  <section>
-    <h2>Pre-work record shape</h2>
-    <pre><code># &lt;hostname&gt; — pre-work results
-
-**Server:** / **IP address:** / **FQDN:** / **Admin account:**
-
-## Declared hardware        counts from building the machine, not from a command
-## Preparation outcome      derived from the evidence below
-## Raw terminal output      verbatim, fenced, never edited</code></pre>
-    <ul class="notes">
-      <li><b>The raw terminal output is evidence.</b> It is preserved byte for byte. Structure is added above it, never applied to it.</li>
-      <li><b>The IP address is taken from <code>SERVER-REGISTRY.md</code></b>, not read out of the paste. Pastes contain subnet addresses, gateway addresses and unrelated hosts, and reading an address out of one produced wrong values on four records before this rule existed.</li>
-      <li>A four-backtick fence is used because at least one paste contains a three-backtick sequence.</li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>HTML pages: two outputs, one source</h2>
-    <p class="lede">The governance pages exist in two forms, and the difference is deliberate.</p>
-    <div class="scroll">
-      <table>
-        <thead><tr><th scope="col">Location</th><th scope="col">Shape</th><th scope="col">Links</th><th scope="col">Use</th></tr></thead>
-        <tbody>
-          <tr><td><code>governance/*.html</code></td><td>No <code>&lt;!DOCTYPE&gt;</code>, <code>&lt;html&gt;</code>, <code>&lt;head&gt;</code> or <code>&lt;body&gt;</code></td><td>Absolute <code>claude.ai</code> artifact URLs</td><td>Published as Claude artifacts</td></tr>
-          <tr><td><code>governance/site/*.html</code></td><td>Fully-formed documents</td><td>Relative filenames</td><td>Opening from disk, a file server, or an exported bundle</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <ul class="notes">
-      <li><b>The artifact form must not carry the HTML boilerplate.</b> The publisher wraps the source file in its own <code>&lt;!doctype html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;</code> skeleton at publish time and requires the source not to include those tags; adding them nests a second document inside the first.</li>
-      <li><b>The standalone form must carry it</b>, plus <code>&lt;html lang="en"&gt;</code> and <code>&lt;meta charset="utf-8"&gt;</code>, which assistive technology depends on.</li>
-      <li><b>And a viewport tag.</b> Without <code>&lt;meta name="viewport"&gt;</code> a phone lays the page out at desktop width and scales the result down, so the <code>clamp()</code> sizing never engages and the responsive design is inert.</li>
-    </ul>
-    <pre><code>node tools/build-governance-html.js   # regenerate governance/*.html from the Markdown
-node tools/make-standalone.js         # derive governance/site/*.html from those</code></pre>
-    <p class="lede"><code>make-standalone.js</code> fails rather than emits if any artifact URL
-    survives into the standalone build, or if any page stops linking to its siblings. The two
-    log pages are generated from their Markdown sources, which remain the source of truth;
-    their cells contain escaped pipes, so the parser splits only on unescaped ones.</p>
-  </section>
-
-  <section>
-    <h2>Deliberate exceptions</h2>
-    <p class="lede">These look inconsistent and are intentional. Do not "fix" them.</p>
-    <div class="scroll">
-      <table>
-        <thead><tr><th scope="col">Path</th><th scope="col">Why</th></tr></thead>
-        <tbody>
-          <tr><td><code>.claude/skills/*/SKILL.md</code></td><td>Claude Code requires this exact filename</td></tr>
-          <tr><td><code>.claude/AGENTS.md</code>, <code>governance/AGENTS.md</code>, <code>servers/AGENTS.md</code></td><td>Fixed name, resolved by directory</td></tr>
-          <tr><td><code>claude-hooks/claude-hooks/hooks/</code></td><td>The doubled directory is the real packaged layout. A regression test guards against the single-nested form reappearing, because that stale path was a real defect once</td></tr>
-          <tr><td><code>conversations/SYNC-POLICY.md</code></td><td>Predates this standard and is referenced in historical reports</td></tr>
-          <tr><td><code>governance/reports/GITHUB-REMEDIATION-INSTRUCTIONS.md</code></td><td>Referenced by the regression suite</td></tr>
-          <tr><td>Existing report file names</td><td>Archival. They are cited across the governance log; renaming them rewrites the provenance trail for no operational gain</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <section>
-    <h2>What was changed on 2026-08-13</h2>
-    <div class="scroll">
-      <table>
-        <thead><tr><th scope="col">Before</th><th scope="col">After</th></tr></thead>
-        <tbody>
-          <tr><td><code>governance/Tooling First Rule.md</code></td><td><code>governance/tooling-first-rule.md</code></td></tr>
-          <tr><td><code>governance/reports/Claude Prompt — Discover GPU VRAM Without NVIDIA Drivers.md</code></td><td><code>governance/reports/owner_2026-08-11_gpu-vram-discovery-prompt.md</code></td></tr>
-          <tr><td><code>governance/reports/response to claude — gpu capability report.md</code></td><td><code>governance/reports/owner_2026-08-11_gpu-capability-report-response.md</code></td></tr>
-          <tr><td>15 <code>pre-work-results.md</code> in three different shapes, every IP field blank</td><td>one shape, IP and FQDN populated from the registry, evidence preserved</td></tr>
-          <tr><td>A reference to <code>claude-opus-5_...</code> that did not resolve on a case-sensitive filesystem</td><td>corrected to <code>Claude-Opus-5_...</code></td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="lede">Every reference to a renamed file was updated in the same pass, and all
-    <code>governance/</code> paths cited anywhere in the repository were confirmed to resolve.</p>
+    <p class="lede">The three outstanding conditions are all human decisions, tracked as
+    <code>act-012</code>. Phase 2 stays blocked until every condition is complete.</p>
   </section>
 
 
@@ -331,3 +304,5 @@ node tools/make-standalone.js         # derive governance/site/*.html from those
   }
 })();
 </script>
+</body>
+</html>
