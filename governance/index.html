@@ -179,9 +179,9 @@
     <div class="cell"><dt>Fleet servers</dt><dd>15</dd></div>
     <div class="cell"><dt>Control plane</dt><dd>1</dd></div>
     <div class="cell"><dt>Discovery</dt><dd>15 / 15</dd></div>
-    <div class="cell"><dt>Roles assigned</dt><dd>0</dd></div>
-    <div class="cell"><dt>Phase 1</dt><dd>In progress</dd></div>
-    <div class="cell"><dt>Phase 2</dt><dd>Blocked</dd></div>
+    <div class="cell"><dt>Roles assigned</dt><dd>15 / 15</dd></div>
+    <div class="cell"><dt>Phase 1</dt><dd>Complete</dd></div>
+    <div class="cell"><dt>Phase 2</dt><dd>Ready</dd></div>
   </dl>
 
   <section>
@@ -228,14 +228,14 @@
         <h3>Actions &amp; Issues</h3>
         <p>The single project log. Work that must be done and problems that are known, each
         entry carrying its own resolution so the outcome stays with the item.</p>
-        <span class="meta">24 entries · 4 open</span>
+        <span class="meta">24 entries · 3 open</span>
       </a>
 
       <a class="card" href="https://claude.ai/code/artifact/9325f481-90f0-4439-9fa0-e8f48d629ff4">
         <h3>Lessons Learned</h3>
         <p>What this project learned the hard way, with the evidence that produced each
         lesson and the change made in response.</p>
-        <span class="meta">31 lessons</span>
+        <span class="meta">32 lessons</span>
       </a>
 
       <a class="card" href="https://claude.ai/code/artifact/ac6d1ab7-8dae-436d-94f1-80bfbb99d467">
@@ -265,8 +265,7 @@
 
   <section>
     <h2>Where the project stands</h2>
-    <p class="lede">Phase 1 is discovery and documentation only. It ends at a seven-condition
-    gate, four of which are met.</p>
+    <p class="lede">Phase 1 was discovery and documentation only. It ended at a seven-condition gate, and all seven are now met.</p>
     <div class="scroll">
       <table>
         <thead>
@@ -276,15 +275,14 @@
           <tr><td>Every expected server is present in the registry</td><td>15 of 15 — met</td></tr>
           <tr><td>Every server has a complete <code>discovery.md</code></td><td>15 of 15 — met</td></tr>
           <tr><td>Fleet hardware capabilities are documented and comparable</td><td>met 2026-08-13</td></tr>
-          <tr><td>Fleet capabilities have been manually reviewed</td><td>outstanding — human decision</td></tr>
-          <tr><td>Every server has a manually assigned role</td><td>0 of 15 — outstanding</td></tr>
-          <tr><td>Every assigned role is recorded in the registry</td><td>outstanding</td></tr>
+          <tr><td>Fleet capabilities have been manually reviewed</td><td>met 2026-08-13 — owner</td></tr>
+          <tr><td>Every server has a manually assigned role</td><td>15 of 15 — met</td></tr>
+          <tr><td>Every assigned role is recorded in the registry</td><td>met — registry updated</td></tr>
           <tr><td>No role-specific configuration has begun</td><td>0 <code>configuration.md</code> files — met</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="lede">The three outstanding conditions are all human decisions, tracked as
-    <code>act-012</code>. Phase 2 stays blocked until every condition is complete.</p>
+    <p class="lede"><strong>Phase 1 is complete and Phase 2 is open.</strong> The project owner ratified the role mapping in architecture v0.3 on 2026-08-13 and <code>act-012</code> is closed. The Phase 1 command guard is released as a direct consequence &mdash; package installation, service management, network, storage and driver commands are no longer denied fleet-wide.</p>
   </section>
 
 
