@@ -233,6 +233,7 @@ function navHtml(current) {
     ['lessons', 'Lessons learned'],
     ['standards', 'Standards'],
     ['inventory', 'Fleet inventory'],
+    ['architecture', 'Architecture'],
   ];
   return items
     .map(([k, label]) => {
@@ -393,6 +394,7 @@ const indexBody = fs
   .replace(/__LINK_ACTIONS__/g, LINKS.actions || '#')
   .replace(/__LINK_LESSONS__/g, LINKS.lessons || '#')
   .replace(/__LINK_STANDARDS__/g, LINKS.standards || '#')
+  .replace(/__LINK_ARCHITECTURE__/g, LINKS.architecture || '#')
   .replace(/__COUNT_ACTIONS__/g, String(A.length))
   .replace(/__COUNT_OPEN__/g, String(aCount((r) => statusClass(r[5]) === 'is-open')))
   .replace(/__COUNT_LESSONS__/g, String(L.length));

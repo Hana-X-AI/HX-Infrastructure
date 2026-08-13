@@ -34,6 +34,7 @@ const LOCAL = {
   lessons: 'lessons-learned.html',
   standards: 'documentation-standards.html',
   inventory: 'hx-fleet-inventory.html',
+  architecture: 'fleet-architecture-candidate-v0.1.html',
 };
 
 const PAGES = Object.values(LOCAL);
