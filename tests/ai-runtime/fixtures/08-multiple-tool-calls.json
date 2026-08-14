@@ -1,0 +1,44 @@
+{
+  "id": "F08",
+  "capability": "RT-15",
+  "evidence_class": "A",
+  "api_style": "openai-chat",
+  "description": "Two tool calls in one turn keep distinct ids and ordering.",
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "message": {
+          "role": "assistant",
+          "content": null,
+          "tool_calls": [
+            {
+              "id": "call_hx_001",
+              "type": "function",
+              "function": {
+                "name": "hx_read_registry",
+                "arguments": "{\"host\":\"hxs-3\"}"
+              }
+            },
+            {
+              "id": "call_hx_002",
+              "type": "function",
+              "function": {
+                "name": "hx_read_discovery",
+                "arguments": "{\"host\":\"hxs-3\"}"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "expect": {
+    "call_count": 2,
+    "unique_ids": true,
+    "ordered_ids": [
+      "call_hx_001",
+      "call_hx_002"
+    ]
+  }
+}

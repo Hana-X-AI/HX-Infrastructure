@@ -1,0 +1,16 @@
+{
+  "id": "F11",
+  "capability": "RT-12",
+  "evidence_class": "A",
+  "api_style": "openai-chat",
+  "description": "Delayed or cancelled stream cleans up without leaking state.",
+  "sse": [
+    "data: {\"choices\":[{\"delta\":{\"content\":\"par\"}}]}"
+  ],
+  "cancelled_after_events": 1,
+  "expect": {
+    "partial_content": "par",
+    "terminal_event_absent": true,
+    "cleanup": true
+  }
+}

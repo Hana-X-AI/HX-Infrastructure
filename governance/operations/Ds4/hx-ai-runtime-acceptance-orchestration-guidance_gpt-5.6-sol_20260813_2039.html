@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HX AI Runtime Acceptance — Orchestration Guidance</title>
+<style>
+:root{
+  --bg:#071019;--panel:#0d1823;--panel2:#11202d;--text:#e8f0f7;--muted:#9fb1c2;
+  --line:#263a4b;--cyan:#67d9ff;--green:#9bea77;--amber:#ffd166;--red:#ff7f8f;
+  --violet:#c7a7ff;--code:#06131d;--shadow:0 16px 42px rgba(0,0,0,.28)
+}
+*{box-sizing:border-box}
+body{margin:0;background:
+radial-gradient(circle at 8% -5%,rgba(103,217,255,.11),transparent 28%),
+radial-gradient(circle at 92% 1%,rgba(199,167,255,.07),transparent 24%),
+var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.56}
+main{width:min(1180px,calc(100% - 36px));margin:auto;padding:34px 0 72px}
+.hero{background:linear-gradient(145deg,rgba(17,32,45,.97),rgba(8,20,30,.97));border:1px solid var(--line);border-radius:18px;padding:34px 36px;box-shadow:var(--shadow)}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-weight:800;font-size:12px;color:var(--cyan)}
+h1{font-size:clamp(34px,5vw,56px);line-height:1.03;letter-spacing:-.035em;margin:8px 0 12px}
+h2{font-size:27px;letter-spacing:-.015em;margin:40px 0 14px}
+h3{font-size:19px;margin:20px 0 8px}
+p{margin:8px 0 14px}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.pill{border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:999px;padding:7px 11px;color:var(--muted);font-size:12px}
+.good{color:var(--green)}.warn{color:var(--amber)}.bad{color:var(--red)}.violet{color:var(--violet)}
+.callout{margin:18px 0;padding:18px 20px;border:1px solid rgba(103,217,255,.25);border-left:4px solid var(--cyan);border-radius:11px;background:rgba(103,217,255,.055)}
+.callout.warn{border-color:rgba(255,209,102,.25);border-left-color:var(--amber);background:rgba(255,209,102,.045)}
+.callout.bad{border-color:rgba(255,127,143,.26);border-left-color:var(--red);background:rgba(255,127,143,.045)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.card{grid-column:span 6;background:linear-gradient(180deg,rgba(17,32,45,.93),rgba(13,24,35,.93));border:1px solid var(--line);border-radius:14px;padding:20px}
+.card.full{grid-column:1/-1}
+table{width:100%;border-collapse:collapse;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:rgba(13,24,35,.92)}
+th,td{padding:12px 13px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#cfe6f5;background:rgba(255,255,255,.03)}
+td{font-size:14px}tr:last-child td{border-bottom:0}
+code,pre{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+code{background:var(--code);border:1px solid rgba(255,255,255,.06);padding:2px 5px;border-radius:5px;color:#d2ecf8}
+pre{white-space:pre-wrap;background:var(--code);border:1px solid var(--line);border-radius:12px;padding:18px;overflow:auto;color:#dceaf3}
+ul,ol{padding-left:22px}li{margin:5px 0}
+.checks{list-style:none;padding-left:0}.checks li::before{content:"□";color:var(--green);font-weight:800;display:inline-block;width:1.3em}
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+@media(max-width:820px){main{width:min(100% - 22px,1180px);padding-top:18px}.hero{padding:24px 20px}.card{grid-column:1/-1}table{display:block;overflow-x:auto}}
+</style>
+</head>
+<body><main>
+<section class="hero">
+  <div class="eyebrow">HX-Infrastructure · AI Runtime Workstream</div>
+  <h1>Runtime Acceptance + hxs-3 Placement Orchestration Guidance</h1>
+  <p>Final execution guidance for combining the DS4 Runtime Acceptance pair with the newer hxs-3 placement pair as one isolated, two-pass workstream without contaminating Docling/LangGraph work or redefining hxs-3’s durable server role.</p>
+  <div class="meta">
+    <span class="pill good">Approved orchestration</span>
+    <span class="pill">Two-pass implementation</span>
+    <span class="pill warn">Separate branch/worktree</span>
+    <span class="pill violet">hxs-3 role remains registry-owned</span>
+    <span class="pill">Prepared by GPT-5.6 Sol</span>
+    <span class="pill">2026-08-13 20:39 America/Panama</span>
+  </div>
+</section>
+
+<div class="callout">
+<strong>Core conclusion.</strong> The four documents are complementary, not replacements. Read all four before making changes. Implement the engine-neutral runtime-acceptance machinery first, then apply the newer hxs-3 placement semantics as a scoped workload-placement overlay.
+</div>
+
+<h2>1. Document relationship and precedence</h2>
+<table>
+<tr><th>Pair</th><th>Purpose</th><th>Authority scope</th></tr>
+<tr><td><strong>DS4 Integration & Runtime Acceptance Plan</strong><br>+<br><strong>Implement the HX AI Runtime Acceptance Layer</strong></td><td>Builds the runtime-validation machinery: contract, offline fixture harness, runtime profiles, evidence model, and future live tests.</td><td>Authoritative for runtime-validation architecture and testing semantics.</td></tr>
+<tr><td><strong>hxs-3 Model Runtime Placement Plan</strong><br>+<br><strong>Place DS4 on hxs-3 Without Assigning the Host to DS4</strong></td><td>Defines where DS4 may run and how hxs-3 remains reusable for Qwen Coder or another development workload.</td><td>Newer scoped authority for host/workload placement semantics only.</td></tr>
+</table>
+
+<p>The placement pair supersedes only conflicting statements such as:</p>
+<pre>hxs-3 = DS4 server
+hxs-3 = permanent experimental AI runtime node
+DS4 permanently owns hxs-3</pre>
+
+<p>It does <strong>not</strong> supersede the HX AI Runtime Acceptance Contract, offline test architecture, profile model, evidence model, or future live-runtime testing framework.</p>
+
+<h2>2. Branch/worktree isolation — mandatory</h2>
+<div class="callout bad">
+<strong>Do not create <code>feature/ai-runtime-acceptance</code> from <code>migration/docling-pilot</code>.</strong> A new branch name does not provide isolation if it inherits Docling commits.
+</div>
+
+<p>The desired Git graph is:</p>
+<pre>canonical-mainline
+   |   |    |  feature/ai-runtime-acceptance
+   |
+   +-- migration/docling-pilot</pre>
+
+<p>Not:</p>
+<pre>canonical-mainline
+   |
+migration/docling-pilot
+   |
+feature/ai-runtime-acceptance</pre>
+
+<p>Preferred execution model: create a separate Git worktree from the exact canonical mainline commit and do the AI-runtime work there. If approved operations documents exist only on another branch, bring over only those required artifacts rather than inheriting unrelated implementation commits.</p>
+
+<h2>3. hxs-3 authority semantics</h2>
+<p>The most important placement rule is:</p>
+<pre>SERVER-REGISTRY.md owns durable host identity and role.
+The DS4 workstream defines workload eligibility only.</pre>
+
+<p>Do not replace an existing authoritative durable role—such as <code>agent-intelligence</code>—with “flexible development-model compute” or “experimental AI runtime.” Instead keep these concepts distinct:</p>
+
+<table>
+<tr><th>Concept</th><th>Example</th></tr>
+<tr><td>Host identity</td><td><code>hxs-3</code></td></tr>
+<tr><td>Durable role</td><td>Whatever <code>SERVER-REGISTRY.md</code> currently authoritatively defines</td></tr>
+<tr><td>Hardware capability</td><td>GPU compute / RAM / storage / interconnect</td></tr>
+<tr><td>Eligible workload</td><td>DS4/DeepSeek, Qwen Coder, another approved model/runtime</td></tr>
+<tr><td>Active workload</td><td>Whichever profile is currently selected</td></tr>
+<tr><td>Runtime</td><td>DS4, vLLM, another approved runtime</td></tr>
+<tr><td>Model</td><td>DeepSeek V4 Flash, Qwen Coder, another approved model</td></tr>
+</table>
+
+<div class="callout warn">
+<strong>Expected registry result.</strong> If <code>SERVER-REGISTRY.md</code> is already clean and does not permanently assign DS4 to hxs-3, the expected outcome is <strong>no registry change</strong>. DS4 eligibility belongs in workload/profile/service documentation unless the current schema explicitly supports that distinction.
+</div>
+
+<h2>4. Two-pass implementation model</h2>
+
+<div class="grid">
+<div class="card">
+<h3>Pass 1 — Runtime Acceptance Machinery</h3>
+<ul>
+<li>Define the engine-neutral HX AI Runtime Acceptance Contract.</li>
+<li>Implement OFFLINE / NO MODEL fixture/protocol tests.</li>
+<li>Create/extend profiles: <code>offline-fixture</code>, <code>vllm-qwen</code> PRIMARY, <code>ds4-deepseek</code> EXPERIMENTAL.</li>
+<li>Define machine-readable evidence.</li>
+<li>Define live-only model behavior/performance tests as SKIP until configured.</li>
+<li>Do not bind DS4 permanently to hxs-3.</li>
+</ul>
+</div>
+<div class="card">
+<h3>Pass 2 — hxs-3 Placement Overlay</h3>
+<ul>
+<li>Make hxs-3 an eligible DS4 placement when explicitly selected.</li>
+<li>Preserve durable role from the registry.</li>
+<li>Keep Qwen Coder/another model possible without server-role redesign.</li>
+<li>Require a workload capacity gate before download/activation.</li>
+<li>Keep runtime/model configuration isolated.</li>
+<li>Do not assume simultaneous heavy-model residency.</li>
+</ul>
+</div>
+</div>
+
+<p>Pass 2 is an overlay, not a repair pass. Because all four documents are read first, Pass 1 should already avoid host-role mistakes.</p>
+
+<h2>5. Commit strategy</h2>
+<p>Prefer one coherent commit per pass:</p>
+<pre>Commit A
+  HX AI Runtime Acceptance Contract
+  offline harness
+  runtime profiles
+  evidence model
+
+Commit B
+  hxs-3 workload-placement semantics
+  capacity gate
+  placement/profile reconciliation
+
+Optional Commit C
+  final completion report / validation evidence
+  if repository convention warrants a separate report commit</pre>
+
+<p>This preserves rollback boundaries. The runtime acceptance framework can survive even if placement decisions change later.</p>
+
+<h2>6. Capacity-gate interpretation</h2>
+<p>Do not interpret “hxs-3 has enough GPU capacity” as permission to assume all workloads can coexist. The gate must evaluate the <strong>selected workload</strong> against current authoritative evidence.</p>
+
+<p>At minimum evaluate:</p>
+<ul>
+<li>GPU model/count/VRAM;</li>
+<li>system RAM;</li>
+<li>storage;</li>
+<li>exact model and quantization;</li>
+<li>context target;</li>
+<li>KV/cache allowance;</li>
+<li>runtime overhead;</li>
+<li>concurrency;</li>
+<li>coexistence only if simultaneous residency is explicitly intended.</li>
+</ul>
+
+<p>Without current authoritative evidence, the valid result is:</p>
+<pre>BLOCKED — INSUFFICIENT CURRENT HARDWARE EVIDENCE</pre>
+
+<p>No SSH or infrastructure mutation is required for this workstream.</p>
+
+<h2>7. Evidence-class separation</h2>
+<p>The offline suite must never overclaim. Results should distinguish at least:</p>
+<pre>protocol
+model-behavior
+performance</pre>
+
+<p>Offline fixture tests can prove protocol/client behavior such as request/response handling, SSE parsing, tool-call continuity, error handling, and cancellation. They cannot prove model intelligence, skill adherence, correct tool choice, context recall, throughput, or VRAM behavior.</p>
+
+<h2>8. Qwen Coder nuance</h2>
+<p>Do not assume “Qwen Coder on hxs-3” automatically means the existing <code>vllm-qwen</code> profile. A future hxs-3 development workload may use a distinct model/runtime profile. The runtime contract should make adding that profile possible without redefining hxs-3 or rewriting the contract.</p>
+
+<h2>9. Cross-pass consistency checks</h2>
+<ul class="checks">
+<li>Runtime contract remains engine-neutral.</li>
+<li><code>vllm-qwen</code> remains PRIMARY.</li>
+<li><code>ds4-deepseek</code> remains EXPERIMENTAL.</li>
+<li>DS4 is workload-when-selected, not a server role.</li>
+<li>hxs-3 durable role remains registry-owned.</li>
+<li>Qwen Coder/another model remains possible.</li>
+<li>No concurrent heavy-model residency is assumed without evidence.</li>
+<li>No model weights downloaded.</li>
+<li>No ds4-agent adopted.</li>
+<li>No Ansible.</li>
+<li>No secrets.</li>
+<li>No second host/IP inventory.</li>
+<li>No vLLM/Qwen architecture change.</li>
+<li>Offline tests report OFFLINE / NO MODEL.</li>
+<li>Live tests SKIP cleanly.</li>
+<li>Docling/LangGraph changes are absent from the feature branch.</li>
+<li><code>SERVER-REGISTRY.md</code> is unchanged unless correcting an already-present incorrect DS4 role.</li>
+</ul>
+
+<h2>10. Workstream boundaries</h2>
+<p>This is an independent AI-runtime validation workstream. It should not be merged into the Docling pilot branch, should not start LangGraph, and should not become a host-deployment or model-installation exercise.</p>
+
+<p>Allowed now:</p>
+<ul>
+<li>repository code;</li>
+<li>tests;</li>
+<li>fixtures;</li>
+<li>profiles;</li>
+<li>governance/operations documents;</li>
+<li>model-free validation;</li>
+<li>completion reports.</li>
+</ul>
+
+<p>Not allowed now:</p>
+<ul>
+<li>model download;</li>
+<li>SSH/host execution;</li>
+<li>package install on hxs hosts;</li>
+<li>infrastructure mutation;</li>
+<li>runtime activation;</li>
+<li>LangGraph implementation;</li>
+<li>merge to main.</li>
+</ul>
+
+<h2>11. Definition of done</h2>
+<ul class="checks">
+<li>Feature branch is based directly on the canonical mainline commit.</li>
+<li>Preferably implemented in a separate worktree.</li>
+<li>Pass 1 and Pass 2 are separate reviewable commits.</li>
+<li>Offline runtime acceptance suite runs model-free.</li>
+<li>Live-required tests skip cleanly.</li>
+<li>hxs-3 durable role is not redefined.</li>
+<li>DS4 is represented only as an eligible experimental workload/profile.</li>
+<li>Qwen Coder/another model remains possible.</li>
+<li>Capacity gate exists and can return BLOCKED when evidence is insufficient.</li>
+<li>No unrelated Docling/LangGraph changes appear in the branch.</li>
+<li>Completion reports record base commit, branch/worktree, pass commits, final HEAD, test results, registry status, and deferred live-validation gates.</li>
+</ul>
+
+<footer>
+This document consolidates the approved interpretation of the four current DS4/runtime-placement documents and the subsequent Claude AI review. It is orchestration guidance: it does not replace the four underlying design/execution documents.
+</footer>
+</main></body></html>

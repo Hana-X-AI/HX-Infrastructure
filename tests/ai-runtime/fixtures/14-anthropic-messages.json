@@ -1,0 +1,28 @@
+{
+  "id": "F14",
+  "capability": "RT-04",
+  "evidence_class": "A",
+  "api_style": "anthropic-messages",
+  "description": "Anthropic-style messages response parses; content is a block list.",
+  "response": {
+    "id": "msg_1",
+    "type": "message",
+    "role": "assistant",
+    "stop_reason": "end_turn",
+    "content": [
+      {
+        "type": "text",
+        "text": "FIXTURE RESPONSE - NOT MODEL OUTPUT"
+      }
+    ],
+    "usage": {
+      "input_tokens": 1,
+      "output_tokens": 6
+    }
+  },
+  "expect": {
+    "json_path": "content.0.type",
+    "equals": "text",
+    "stop_reason": "end_turn"
+  }
+}

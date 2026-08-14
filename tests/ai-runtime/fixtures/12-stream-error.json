@@ -1,0 +1,16 @@
+{
+  "id": "F12",
+  "capability": "RT-05",
+  "evidence_class": "A",
+  "api_style": "openai-chat",
+  "description": "Mid-stream error terminates the stream and is reported.",
+  "sse": [
+    "data: {\"choices\":[{\"delta\":{\"content\":\"par\"}}]}",
+    "data: {\"error\":{\"message\":\"backend fault\",\"type\":\"server_error\"}}"
+  ],
+  "expect": {
+    "stream_error": true,
+    "error_type": "server_error",
+    "terminal_event_absent": true
+  }
+}

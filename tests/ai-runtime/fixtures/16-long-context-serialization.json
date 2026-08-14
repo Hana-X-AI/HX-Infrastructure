@@ -1,0 +1,16 @@
+{
+  "id": "F16",
+  "capability": "RT-14",
+  "evidence_class": "A",
+  "api_style": "openai-chat",
+  "description": "Large system payload serializes intact. Serialization only.",
+  "system_repeat": {
+    "unit": "HX GOVERNANCE BLOCK. ",
+    "count": 2000
+  },
+  "expect": {
+    "min_chars": 40000,
+    "round_trips_intact": true,
+    "explicitly_not_proven": "runtime acceptance of the payload at the configured context size"
+  }
+}

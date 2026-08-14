@@ -1,0 +1,19 @@
+{
+  "profile": "offline-fixture",
+  "status": "executable-now",
+  "mode": "OFFLINE",
+  "classification": "model-free deterministic protocol validation",
+  "description": "Replays recorded fixtures through the HX contract tests. Proves evidence class A only.",
+  "endpoint": { "source": "none", "base_url": null },
+  "api_styles": ["openai-chat", "anthropic-messages"],
+  "model": { "identity": null, "quantization": null },
+  "backend": null,
+  "context_setting": null,
+  "timeouts": { "request_seconds": 5 },
+  "capabilities": {
+    "declared": ["RT-01","RT-02","RT-03","RT-04","RT-05","RT-06","RT-07","RT-08","RT-09","RT-10","RT-11","RT-12","RT-13","RT-14","RT-15","RT-16","RT-17","RT-18"],
+    "unsupported": []
+  },
+  "evidence_classes_provable": ["A"],
+  "live": false
+}

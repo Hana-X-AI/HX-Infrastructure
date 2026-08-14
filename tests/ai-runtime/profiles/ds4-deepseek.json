@@ -1,0 +1,32 @@
+{
+  "profile": "ds4-deepseek",
+  "status": "EXPERIMENTAL",
+  "mode": "LIVE",
+  "classification": "experimental runtime profile",
+  "classification_scope": "The EXPERIMENTAL label applies to this runtime/workload profile, not to any physical server.",
+  "description": "Secondary backend for cross-runtime conformance, Anthropic-compatible client testing, tool fidelity and prefix/cache experiments. Configuration contract only.",
+  "endpoint": {
+    "source": "environment",
+    "base_url_env": "HX_DS4_BASE_URL",
+    "base_url": null,
+    "note": "Placement is supplied by the selected workload profile and the capacity gate. This file names no host."
+  },
+  "api_styles": ["openai-chat", "openai-responses", "anthropic-messages"],
+  "model": {
+    "identity_env": "HX_DS4_MODEL",
+    "identity": null,
+    "quantization": null,
+    "note": "Exact model and quantization must be selected and pass the capacity gate before any download."
+  },
+  "backend": null,
+  "context_setting": null,
+  "timeouts": { "request_seconds": 300 },
+  "capabilities": {
+    "declared": ["RT-01","RT-02","RT-03","RT-04","RT-05","RT-06","RT-07","RT-08","RT-09","RT-10","RT-11","RT-12","RT-13","RT-14","RT-15","RT-16","RT-17","RT-18","RT-19","RT-20","RT-21","RT-22","RT-23","RT-24","RT-25","RT-26"],
+    "unsupported": []
+  },
+  "evidence_classes_provable": ["A","B","C"],
+  "live": false,
+  "live_enabled_when": "HX_DS4_BASE_URL is set, reachable, and the workload capacity gate has passed",
+  "gates": ["hx-capacity-gate"]
+}

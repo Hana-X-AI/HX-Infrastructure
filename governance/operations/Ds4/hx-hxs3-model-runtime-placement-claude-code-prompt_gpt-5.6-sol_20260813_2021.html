@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code Prompt — Correct hxs-3 DS4 Placement</title>
+<style>
+:root{
+  --bg:#071019;--panel:#0d1823;--panel2:#11202d;--text:#e8f0f7;--muted:#9fb1c2;
+  --line:#263a4b;--cyan:#67d9ff;--green:#9bea77;--amber:#ffd166;--red:#ff7f8f;
+  --violet:#c7a7ff;--code:#06131d;--shadow:0 16px 42px rgba(0,0,0,.28)
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;background:
+ radial-gradient(circle at 8% -5%,rgba(103,217,255,.11),transparent 28%),
+ radial-gradient(circle at 92% 1%,rgba(199,167,255,.07),transparent 24%),
+ var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.56}
+main{width:min(1180px,calc(100% - 36px));margin:auto;padding:34px 0 72px}
+.hero{background:linear-gradient(145deg,rgba(17,32,45,.97),rgba(8,20,30,.97));border:1px solid var(--line);border-radius:18px;padding:34px 36px;box-shadow:var(--shadow)}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-weight:800;font-size:12px;color:var(--cyan)}
+h1{font-size:clamp(34px,5vw,56px);line-height:1.03;letter-spacing:-.035em;margin:8px 0 12px}
+h2{font-size:27px;letter-spacing:-.015em;margin:40px 0 14px}
+h3{font-size:19px;margin:20px 0 8px}
+p{margin:8px 0 14px}.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.pill{border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:999px;padding:7px 11px;color:var(--muted);font-size:12px}
+.good{color:var(--green)}.warn{color:var(--amber)}.bad{color:var(--red)}.violet{color:var(--violet)}
+.callout{margin:18px 0;padding:18px 20px;border:1px solid rgba(103,217,255,.25);border-left:4px solid var(--cyan);border-radius:11px;background:rgba(103,217,255,.055)}
+.callout.warn{border-color:rgba(255,209,102,.25);border-left-color:var(--amber);background:rgba(255,209,102,.045)}
+.callout.bad{border-color:rgba(255,127,143,.26);border-left-color:var(--red);background:rgba(255,127,143,.045)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.card{grid-column:span 6;background:linear-gradient(180deg,rgba(17,32,45,.93),rgba(13,24,35,.93));border:1px solid var(--line);border-radius:14px;padding:20px}.card.full{grid-column:1/-1}.card.third{grid-column:span 4}
+table{width:100%;border-collapse:collapse;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:rgba(13,24,35,.92)}
+th,td{padding:12px 13px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#cfe6f5;background:rgba(255,255,255,.03)}td{font-size:14px}tr:last-child td{border-bottom:0}
+code,pre{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}code{background:var(--code);border:1px solid rgba(255,255,255,.06);padding:2px 5px;border-radius:5px;color:#d2ecf8}
+pre{white-space:pre-wrap;background:var(--code);border:1px solid var(--line);border-radius:12px;padding:18px;overflow:auto;color:#dceaf3}
+ul,ol{padding-left:22px}li{margin:5px 0}.checks{list-style:none;padding-left:0}.checks li::before{content:"□";color:var(--green);font-weight:800;display:inline-block;width:1.3em}
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin:14px 0}.node{padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);font-size:13px}.arrow{color:var(--cyan);font-weight:800}
+.small{font-size:13px;color:var(--muted)}a{color:var(--cyan)}
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+.copybtn{position:sticky;top:10px;float:right;margin:12px 12px -52px 0;z-index:4;cursor:pointer;padding:8px 11px;border-radius:9px;border:1px solid var(--line);background:#142536;color:var(--text);font-weight:700}.copybtn:hover{border-color:var(--cyan)}
+#copyStatus{color:var(--green);font-size:12px;margin-left:8px}
+@media(max-width:820px){main{width:min(100% - 22px,1180px);padding-top:18px}.hero{padding:24px 20px}.card,.card.third{grid-column:1/-1}table{display:block;overflow-x:auto}}
+</style></head>
+<body><main>
+<section class="hero">
+<div class="eyebrow">HX-Infrastructure · Claude Code Handoff</div>
+<h1>Execution Prompt: Place DS4 on hxs-3 Without Assigning the Host to DS4</h1>
+<p>Implementation prompt to correct the DS4 placement model: hxs-3 remains reusable development-model compute capacity; DS4 is one selectable workload alongside Qwen Coder or another model.</p>
+<div class="meta">
+<span class="pill good">Correction approved</span>
+<span class="pill">Host: hxs-3</span>
+<span class="pill warn">No permanent DS4 role</span>
+<span class="pill violet">Profile-based workloads</span>
+<span class="pill">Prepared by GPT-5.6 Sol</span>
+<span class="pill">2026-08-13 20:21 America/Panama</span>
+</div>
+</section>
+<div class="callout"><strong>Use from the HX repository root.</strong> Claude is instructed to inspect <code>governance/operations</code>, current registry semantics, hxs-3 documentation, and the AI-runtime implementation before changing anything.</div>
+<h2>Claude Code execution prompt</h2>
+<div><button class="copybtn" onclick="copyPrompt()">Copy prompt</button><span id="copyStatus"></span>
+<pre id="prompt">You are Claude Code operating inside the canonical HX-Infrastructure repository.
+
+TASK
+Revise and implement the approved DS4 placement architecture so that hxs-3 is NOT assigned a permanent DS4-specific role or a permanent &quot;experimental AI runtime&quot; role.
+
+PURPOSE
+hxs-3 has sufficient GPU capacity to be a useful development-model execution host, but that capacity must remain flexible. It may house:
+- Qwen Coder
+- DS4/DeepSeek
+- another approved development model/runtime
+
+DS4 is therefore a WORKLOAD placed on hxs-3 when selected. It is not the identity of hxs-3.
+
+The key architectural rule is:
+
+    SERVER OWNS CAPACITY
+    MODEL/RUNTIME IS A WORKLOAD
+
+Do not convert scarce GPU hardware into a single-purpose server role unless a separate explicit architecture decision does so later.
+
+SOURCE / HANDOFF LOCATION
+The approved operations material is located under:
+
+C:\Users\JarvisRichardson\Desktop\HX-Infrastructure\governance\operations
+
+Run from the repository root:
+
+C:\Users\JarvisRichardson\Desktop\HX-Infrastructure
+
+Before editing:
+1. recursively inventory governance\operations
+2. identify the current DS4 integration plan and prompt
+3. identify any AI-runtime acceptance-contract work already implemented
+4. inspect SERVER-REGISTRY.md and current server-role semantics
+5. inspect hxs-3 documentation/discovery/configuration
+6. inspect current AI runtime/model profiles
+7. inspect current service/script/storage conventions
+8. inspect Git status and uncommitted work
+
+CURRENT DECISION
+Correct any earlier wording that makes hxs-3:
+- &quot;DS4 server&quot;
+- &quot;experimental AI runtime node&quot;
+- permanently bound to DeepSeek/DS4
+
+The revised model is:
+
+    hxs-3
+    └── flexible development-model compute capacity
+        ├── workload profile: qwen-coder + approved runtime
+        ├── workload profile: ds4-deepseek
+        └── workload profile: future development model/runtime
+
+The active workload can change.
+The durable host identity does not.
+
+DO NOT CHANGE
+- sdd-core remains the execution backbone.
+- HX governance/context routing remains authoritative.
+- Ansible remains permanently out of scope.
+- Native Bash/SSH fleet control remains authoritative.
+- vLLM/Qwen remains the primary runtime architecture where currently designated.
+- The HX AI Runtime Acceptance Contract remains engine-neutral.
+- TARGET-STATE / AS-BUILT / DISCOVERED / PROPOSED / LEGACY distinctions remain mandatory.
+- No DS4 model weights are authorized by this placement change.
+- No wholesale DS4 vendoring.
+- No ds4-agent adoption.
+
+PLACEMENT RULE
+DS4 may be placed on hxs-3 when selected because hxs-3 has sufficient GPU capacity for the intended workload, subject to an explicit hardware/model capacity gate.
+
+Do NOT express this as a permanent server role.
+
+Correct semantic separation:
+
+SERVER IDENTITY:
+    hxs-3
+    hardware/network identity
+    durable development-model compute capacity if current governance supports that wording
+
+WORKLOAD STATE:
+    current or target model/runtime profile
+    e.g. qwen-coder, ds4-deepseek, future-model
+
+If SERVER-REGISTRY.md does not currently support workload fields, do not redesign the registry automatically.
+Use the existing service/workload/configuration documentation structure.
+Propose a registry schema change separately only if genuinely necessary.
+
+REPOSITORY PLACEMENT
+Keep human-facing design and operating documents in the established governance/operations area.
+
+For implementation assets:
+- discover existing canonical AI-runtime/model/service locations
+- reuse them
+- do not create a new top-level DS4 hierarchy if a runtime/service hierarchy already exists
+
+Required separation:
+1. runtime profiles
+2. runtime binaries/source/builds
+3. model weights
+4. runtime-specific state/cache
+5. logs/evidence
+6. common acceptance tests
+
+Do not place model weights in Git.
+
+HOST FILESYSTEM PLACEMENT
+Inspect current hxs-3/HX storage and service conventions before choosing exact paths.
+
+Do NOT invent /opt, /srv, /data, or another root without evidence.
+
+If no canonical runtime layout exists, propose a structure conceptually equivalent to:
+
+    [HX AI runtime root]
+    ├── runtimes/
+    │   ├── vllm/
+    │   └── ds4/
+    ├── models/
+    │   ├── qwen-coder/
+    │   └── deepseek/
+    ├── profiles/
+    │   ├── qwen-coder.*
+    │   └── ds4-deepseek.*
+    └── state-or-logs/
+
+But adapt the actual path to HX storage/service authority.
+
+Do not treat the conceptual structure as permission to invent current-state paths.
+
+RUNTIME ISOLATION
+DS4 and Qwen Coder/other runtimes must coexist at the configuration level without contaminating each other.
+
+Require:
+- separate runtime configuration
+- separate model directories
+- separate model-specific environment variables
+- separate service/launch definitions
+- separate cache/state where appropriate
+- configurable ports/endpoints
+- clear start/stop/status procedures
+- shared CUDA/toolchain changes only when validated against all affected workloads
+- switching workloads must not require reinstalling the host
+- DS4 must be removable/deactivatable without making hxs-3 unusable for another model
+
+Do not assume multiple heavy models run simultaneously.
+
+WORKLOAD PROFILE MODEL
+Implement or document explicit workload profiles using current repository conventions.
+
+At minimum account for:
+
+1. qwen-coder
+   Purpose:
+   - development/coding model
+   Runtime:
+   - whatever current HX plan specifies
+   Status:
+   - may be selected for hxs-3
+
+2. ds4-deepseek
+   Purpose:
+   - DeepSeek/DS4 experiments
+   - Anthropic-compatible /v1/messages
+   - Claude Code local-runtime testing
+   - OpenAI compatibility
+   - structured tool testing
+   - runtime acceptance-contract testing
+   - long-prefix/KV experiments
+   Status:
+   - experimental workload
+   Placement:
+   - hxs-3 when selected and capacity gate passes
+
+3. future-model
+   Purpose:
+   - placeholder concept only; do not create fake config
+   - architecture must allow another development model without redefining hxs-3
+
+Do not encode &quot;DS4 active&quot; merely because DS4 is installed.
+
+CAPACITY GATE
+Before any model download or runtime activation on hxs-3, require evidence for:
+
+GPU:
+- device model
+- count
+- VRAM/device
+- aggregate usable VRAM
+- relevant topology/interconnect
+
+SYSTEM RAM:
+- total/available after OS/service reservation
+
+STORAGE:
+- model size
+- runtime/build size
+- cache
+- logs
+- temporary download/build space
+- alternate quantizations if retained
+
+MODEL/RUNTIME:
+- exact model identity
+- quantization
+- expected model residency
+- runtime overhead
+- context target
+- KV/cache allowance
+- concurrency target
+
+COEXISTENCE:
+- if another model/runtime remains active, use measured combined requirements
+- do not assume simultaneous residency fits
+
+Result:
+- PASS
+- FAIL
+- BLOCKED: insufficient evidence
+
+For DS4 specifically:
+NO MODEL DOWNLOAD until:
+- exact supported model is selected
+- exact quantization is selected
+- hxs-3 capacity is verified
+- storage destination is verified
+- intended experiment is documented
+- gate passes
+
+UPDATE PRIOR DS4 MATERIAL
+Search governance/operations and current repository documentation for wording that implies:
+- hxs-3 is an &quot;experimental AI runtime node&quot;
+- hxs-3 is a &quot;DS4 server&quot;
+- DS4 is the permanent hxs-3 role
+- DS4 profile permanently resolves to hxs-3 regardless of workload selection
+
+Revise those statements.
+
+Use wording like:
+- &quot;DS4 is an optional experimental runtime/workload intended for hxs-3 when selected.&quot;
+- &quot;hxs-3 remains available for Qwen Coder or another development model.&quot;
+- &quot;The experimental classification applies to the DS4 runtime/profile, not to the physical server.&quot;
+
+Do not rewrite unrelated documents.
+
+AI RUNTIME ACCEPTANCE CONTRACT
+Preserve the engine-neutral contract.
+
+It should remain usable against:
+- offline fixture
+- vLLM/Qwen
+- DS4/DeepSeek
+- future runtime profiles
+
+Host placement must be supplied by the current selected profile/configuration, not encoded into the contract itself.
+
+Runtime-specific tests remain profile-specific.
+
+USAGE MODEL
+Document an operator workflow equivalent to:
+
+1. Choose desired hxs-3 development workload.
+2. Select runtime/model profile.
+3. Run hxs-3 capacity gate.
+4. Verify runtime prerequisites.
+5. Verify/download model only if approved and capacity passes.
+6. Start selected runtime.
+7. Run HX AI Runtime Acceptance tests against selected profile.
+8. Record evidence.
+9. Stop/deactivate runtime when changing workloads.
+10. Select next workload and repeat capacity validation.
+
+The operator should not edit test source code to switch runtimes.
+
+SERVICE MANAGEMENT
+Follow existing HX service-management conventions.
+
+Do not invent a new orchestrator.
+Do not add Ansible.
+
+If systemd, scripts, compose, or another mechanism is already canonical for model services, follow current authority.
+
+Ensure runtime status identifies:
+- hxs-3
+- selected workload profile
+- runtime
+- model
+- endpoint
+- active/inactive state
+
+Do not make installation presence equivalent to active workload state.
+
+VALIDATION
+At minimum test/document:
+
+1. Current repository no longer assigns hxs-3 a permanent DS4 role.
+2. Current repository no longer assigns hxs-3 a permanent &quot;experimental AI runtime&quot; role.
+3. DS4 is represented as an optional workload/profile.
+4. Qwen Coder or another model can occupy hxs-3 without changing durable host identity.
+5. Runtime profile selection is explicit.
+6. DS4 and other runtime configuration are isolated.
+7. Model storage is outside Git.
+8. No second hardcoded host/IP inventory was created.
+9. Runtime Acceptance Contract remains engine-neutral.
+10. No model download occurred.
+11. Current hooks/skills tests still pass.
+12. Git diff contains no unrelated refactor.
+
+If current repo already has a stronger model workload abstraction, preserve it and map this decision into that abstraction.
+
+FILES / DOCS
+Update only the files needed to make this decision operational.
+
+Likely touched categories:
+- governance/operations DS4 placement/integration docs
+- AI runtime profile documentation/config
+- hxs-3 workload/service documentation
+- runtime acceptance-contract docs if they currently hardcode DS4 to hxs-3
+- tests validating profile/host separation
+- any current server-role documentation that incorrectly assigns DS4
+
+Do not alter SERVER-REGISTRY.md unless current authority requires a correction to an already-present incorrect role assignment.
+If changed, preserve target-state/current-state semantics.
+
+FINAL HUMAN REPORT
+Produce a polished dark-mode HTML completion report in the established human-facing report location.
+
+Include:
+- executive summary
+- purpose of the correction
+- before vs after placement semantics
+- files changed
+- hxs-3 durable identity
+- DS4 workload/profile placement
+- Qwen Coder coexistence/flexibility
+- runtime isolation model
+- exact filesystem/repository placement chosen and why
+- capacity-gate design
+- operator usage
+- validation results
+- any current-state vs target-state distinction
+- confirmation no DS4 model was downloaded
+- confirmation hxs-3 was not permanently assigned to DS4
+- confirmation DS4 remains an experimental workload, not a server role
+
+DEFINITION OF DONE
+The work is complete when:
+- hxs-3 remains a flexible development-model host
+- DS4 is an optional workload placed there when selected
+- Qwen Coder or another model can use the same host without governance redesign
+- runtime/model configuration is isolated
+- host identity and workload identity are separated
+- model activation requires a capacity gate
+- repository documentation no longer implies permanent DS4 ownership of hxs-3
+- the engine-neutral runtime acceptance architecture remains intact
+
+Do not return only a proposal. Apply the approved correction to the current repository, validate it, and document the resulting placement and usage model.
+</pre></div>
+<footer>Companion artifact: <code>hx-hxs3-model-runtime-placement-plan_gpt-5.6-sol_20260813_2021.html</code>.</footer>
+</main>
+<script>
+async function copyPrompt(){
+ const text=document.getElementById('prompt').innerText;
+ try{await navigator.clipboard.writeText(text);document.getElementById('copyStatus').textContent='Copied.';}
+ catch(e){const r=document.createRange();r.selectNodeContents(document.getElementById('prompt'));const s=window.getSelection();s.removeAllRanges();s.addRange(r);document.getElementById('copyStatus').textContent='Selected — copy manually.';}
+}
+</script>
+</body></html>

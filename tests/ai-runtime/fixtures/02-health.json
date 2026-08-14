@@ -1,0 +1,14 @@
+{
+  "id": "F02",
+  "capability": "RT-02",
+  "evidence_class": "A",
+  "api_style": "openai-chat",
+  "description": "Health/readiness signal.",
+  "response": {
+    "status": "ok"
+  },
+  "expect": {
+    "json_path": "status",
+    "equals": "ok"
+  }
+}

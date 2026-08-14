@@ -1,0 +1,16 @@
+{
+  "id": "F17",
+  "capability": "RT-13",
+  "evidence_class": "A",
+  "api_style": "openai-chat",
+  "description": "A valid call succeeds after an error and after a cancellation.",
+  "sequence": [
+    "10-server-error",
+    "11-timeout-cancel",
+    "03-basic-chat"
+  ],
+  "expect": {
+    "final_result": "PASS",
+    "state_not_corrupted": true
+  }
+}

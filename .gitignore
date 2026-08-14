@@ -1,1 +1,7 @@
 .env
+
+# AI runtime acceptance run output (evidence is generated, not source)
+tests/ai-runtime/evidence/*.json
+
+# DS4 upstream source: reference only, never vendored into HX (MIT, github.com/antirez/ds4)
+governance/operations/Ds4/ds4-main/
