@@ -105,6 +105,7 @@ the service across its own boundary, this design disables it by default and says
 | `mem0` | Owns the memory boundary; stakeholder on the Store decision. |
 | `infrastructure-ops` | Host, runtime, service model, operational checks. |
 | `testing-qa` | Validation requirements and whether the gates can fail. |
+| `mcp-plane` | Owns the tool plane, transport standard and admitted tool surface. Mandatory per owner decision 4. |
 | `lightrag` | Consulted on the retrieval boundary and the parsing handoff. |
 
 ---
@@ -163,74 +164,100 @@ current fleet architecture. Co-location is not integration.
 
 ## Upstream pinning
 
-`VERIFICATION REQUIRED — NOT YET PINNED. This is an acceptance-gate failure, recorded rather than
-concealed.`
+**PINNED 2026-08-14.** Verified against PyPI release metadata and corroborated against the vendored
+source drop at `governance/operations/langgraph/langgraph-main`, which reports `langgraph 1.2.11` —
+matching the pin exactly.
 
-The brief requires each independently-versioned package pinned to a release with the date checked,
-and the migration pattern's DESIGN gate asserts "upstream pinned to one release". This pass
-verified current upstream *behaviour* — the agent-constructor shape, the checkpointer/Store split,
-the persistence model — but did **not** pin releases. Every current-upstream claim below therefore
-rests on documentation retrieved 2026-08-14 without a version number.
-
-These do not move together and must be pinned separately:
-
-| Package | Pin | Checked |
+| Package | Pin | Source of the pin |
 | --- | --- | --- |
-| `langgraph` | `VERIFICATION REQUIRED` | — |
-| `langchain-core` | `VERIFICATION REQUIRED` | — |
-| the agent-constructor package (LangChain agents) | `VERIFICATION REQUIRED` | — |
-| `langgraph-checkpoint` | `VERIFICATION REQUIRED` | — |
-| `langgraph-checkpoint-postgres` | `VERIFICATION REQUIRED` | — |
-| `psycopg` (with pool extra) | `VERIFICATION REQUIRED` | — |
-| MCP client adapter | `VERIFICATION REQUIRED` | — |
-| Mem0 | `VERIFICATION REQUIRED` | — |
+| `langgraph` | **1.2.11** | PyPI; corroborated by local source drop |
+| `langchain-core` | **>=1.4.7,<2** | dependency floor declared by `langgraph` 1.2.11 |
+| `langgraph-checkpoint` | **>=4.1.0,<5** | dependency floor declared by `langgraph` 1.2.11 |
+| `langgraph-prebuilt` | **>=1.1.0,<1.2** | dependency floor declared by `langgraph` 1.2.11 |
+| `langgraph-sdk` | **>=0.4.2,<0.5** | dependency floor declared by `langgraph` 1.2.11 |
+| `langgraph-checkpoint-postgres` | **3.1.2** | PyPI |
+| `psycopg` | **>=3.2.0** | dependency floor declared by the checkpointer |
+| `psycopg-pool` | **>=3.2.0** | dependency floor declared by the checkpointer |
+| `langchain-mcp-adapters` | **0.3.2** (2026-08-06) | PyPI |
+| `mcp` | **>=1.24.0,<2** | dependency floor declared by the adapter |
+| Mem0 | `VERIFICATION REQUIRED` | owned by `mem0`, not pinned here |
 
-Co-location adds a constraint the isolation rule alone does not cover: LangGraph and Mem0 sit in
-separate virtual environments **each pinned to compatible LangChain-family versions**, because
-Mem0 pulls LangChain-family dependencies of its own.
+**Python floor: >=3.10** for `langgraph` and the checkpointer; **>=3.11** for the packaged server
+line. hxs-11 runs **3.12.3**, so every floor clears. This closes the host-fit question that was
+previously deferred.
 
-## Deployment mode — RULED: packaged server
+Co-location constraint retained: LangGraph and Mem0 sit in separate virtual environments **each
+pinned to compatible LangChain-family versions**, since Mem0 pulls LangChain-family dependencies of
+its own and `langchain-core` is constrained `<2` here.
 
-**Owner ruling 2026-08-14, decision 3: LangGraph runs as the packaged server**, as its own service
-with its own lifecycle — not as a library embedded in a host process.
+## Deployment mode — RULED: self-hosted packaged server
 
-What the ruling buys: failure isolation, independent restart, and a clean process boundary between
-orchestration and whatever calls it.
+**Owner ruling 2026-08-14, decision 3, refined:** LangGraph runs as the **self-hosted production
+packaged server**, Postgres-backed, as its own service with its own lifecycle.
 
-What it costs, stated plainly because three sections of this document were written assuming the
-other answer:
+The refinement matters. The pip-installable `langgraph-api` is documented by its own maintainers as
+development and testing — *"backed by a predominantly in-memory data store that is persisted to local
+disk when the server is restarted"* — and its dependency floors lag the shipping line badly
+(`langgraph>=0.4.10` against 1.2.11 pinned above). An in-memory-plus-local-disk store would also
+contradict placing durable state on hxs-9. The ruling therefore selects the **production self-hosted
+deployment**, not that package as shipped.
 
-| Area | Effect of the ruling |
+`VERIFICATION REQUIRED` — the exact self-hosted production distribution and its own pin. It is not
+in the vendored source drop, which carries `cli`, `langgraph`, `checkpoint*`, `prebuilt` and `sdk`
+but **no server runtime**, so the server's internals are not source-verifiable here.
+
+What the ruling settles and costs:
+
+| Area | Effect |
 | --- | --- |
-| Served interface | A **new endpoint and access model** now definitely exist. The "does LangGraph serve an interface at all" question in *Values requiring current resolution* is answered — yes — and listen address, port and transport become required values, not optional ones. |
-| Store | **The load-bearing claim is now false.** The packaged runtime provisions a base store automatically, so "no `BaseStore` is constructed" no longer holds by construction. See below. |
-| Checkpointer | The server handles persistence infrastructure itself. Whether the three psycopg connection parameters remain caller-supplied, and whether the four-table shape and dedicated schema survive, must be re-derived at the pinned release rather than inherited from the embedded-mode assumption. |
-| Redis | May move from INDIRECT to required, depending on what the packaged runtime uses it for. Re-derive. |
+| Served interface | **A served endpoint now exists by definition.** Listen address, port and transport become required values, not conditional ones. |
+| Store | The base store is always present. Resolved below — it is kept inert rather than absent. |
+| Checkpointer | Re-derived below against `langgraph-checkpoint-postgres` 3.1.2. |
+| Redis | `VERIFICATION REQUIRED` against the production distribution. Unchanged invariants: no durable graph state in Redis, and no correctness property dependent on it. |
 
-<a id="store-ruling-affected"></a>
-### Consequence for the Store ruling — flagged, not resolved
+### The store on the server path — resolved, source-verified
 
-The Store decision below rules that the Store **is not used in HX**, and its defence rested on
-three statements. The third was: *"HX does not run the LangGraph Server / Platform runtime"* — the
-statement that made the other two true by construction rather than by discipline.
+The question was whether the packaged runtime permits the store to be disabled. **It does not, and
+it does not need to.** From the vendor's own configuration schema in the source drop
+(`libs/cli/schemas/schema.json`), for the `store` key:
 
-**That statement is now false.** On the packaged-server path a base store is provisioned
-automatically, so the ruling changes character: it is no longer a description of what does not
-exist, it is a **policy that must be actively enforced against a runtime that provides the thing**.
+> *"Optional. Configuration for the built-in long-term memory store, including semantic search
+> indexing. **If omitted, no vector index is set up (the object store will still be present,
+> however).**"*
 
-The ruling itself still stands — HX has one durable memory authority and it is Mem0. What changes
-is that the enforcement points become load-bearing rather than confirmatory:
+Corroborated in the CLI itself — `libs/cli/langgraph_cli/config.py` emits a store environment
+variable **only** when the key is present:
 
-- Startup refusal must actively disable or refuse a provisioned store, not merely assert none was
-  constructed.
-- The negative database assertion — no store tables in the schema — moves from a belt-and-braces
-  check to **the primary detection mechanism**.
-- `VERIFICATION REQUIRED` — whether the packaged runtime permits a store to be disabled at all at
-  the pinned release. If it does not, this is an owner decision, not a design detail, and it
-  requires `mem0` agreement.
+```python
+if (store_config := config.get("store")) is not None:
+    env_vars.append(f"ENV LANGGRAPH_STORE='{json.dumps(store_config)}'")
+```
 
-This is marked rather than rewritten. Guessing at packaged-runtime behaviour without a pinned
-release would repeat exactly the error the upstream-pinning gate exists to prevent.
+**Owner ruling 2026-08-14 — option A: the store is present but inert.**
+
+| Property | Position |
+| --- | --- |
+| Object store exists | **Yes, unavoidably.** Not a failure; a fact of the runtime. |
+| Semantic search over it | **No.** The `store` key is omitted, so no vector index is created. |
+| Application use | **None.** No graph code reads from or writes to the store. |
+| Durable memory authority | **Mem0, solely.** Unchanged. |
+
+This is a stronger position than the original "no store exists" claim, because it is the runtime's
+own documented behaviour on omission rather than an assertion that has to hold by discipline. The
+capability that actually competes with Mem0 is *semantic* memory, and that is off by construction.
+
+It also protects a second boundary: configuring `store.index` would require an embedding model and
+dimensions, introducing a second embedding client and a second vector index outside the frozen
+Qdrant collection design — in breach of the rule that embedding requests route through retrieval.
+
+Enforcement, all three falsifiable:
+
+- **Configuration** — no `store` key in `langgraph.json`; startup refuses a configuration that adds
+  one.
+- **Database** — no `store_vectors` table in the schema. The plain object-store table may exist and
+  is permitted; a **vector** table means semantic indexing was enabled and the boundary is breached.
+  This is the primary detection point.
+- **Tool surface** — no store-backed memory tool admitted; memory tools are Mem0's alone.
 
 ## Architecture
 
@@ -337,10 +364,14 @@ the correct order: the library owns its own tables, so its migrations remain val
 table names above are **2025-observed library output**, recorded as what to expect and confirm at
 the pinned release — not as a shape this design specifies.
 
-Serialisation: the current fleet architecture specifies strict message-pack serialisation for
-LangGraph checkpoints on this host. Adopted here. `VERIFICATION REQUIRED` — that it remains
-applicable at the pinned checkpointer release. It bounds what can be written into a checkpoint,
-which matters directly to the memory boundary below.
+Serialisation: the fleet architecture specifies strict message-pack serialisation for LangGraph
+checkpoints on this host. **Confirmed at the pin, and it is a security control rather than a
+preference.** The checkpointer package states that `LANGGRAPH_STRICT_MSGPACK=true`, or an explicit
+allowed-modules list, restricts checkpoint deserialisation to *"prevent code execution
+vulnerabilities if database compromise occurs"*. Adopted, and now adopted for the stated reason: a
+checkpoint is deserialised data from a shared database, and unrestricted deserialisation makes that
+database a code-execution path. It also bounds what can be smuggled into a checkpoint, which serves
+the memory boundary.
 
 ### Lifecycle, growth and recovery
 
@@ -377,14 +408,20 @@ not two:
   one that connects to the next section: it turns off psycopg's automatic prepared statements,
   which is precisely the mechanism a transaction-mode pooler breaks.
 
-The autocommit failure mode is accurately described above and is the dangerous one, because it is
-silent. Whether each parameter is still **caller-supplied** is a different question and is open:
-recent checkpointer versions may set the row factory on the cursor rather than requiring it on the
-connection, and the convenience constructor may supply all three. No claim is made here that these
-survive the version change unexamined.
+**ANSWERED AT THE PIN.** At `langgraph-checkpoint-postgres` **3.1.2**, both are still the caller's
+responsibility, and the vendor states why:
 
-`VERIFICATION REQUIRED` — the checkpointer package name and import path at the pinned release, and
-which of the three parameters remain the caller's responsibility.
+- `autocommit=True` — *"Required for the `.setup()` method to properly commit the checkpoint tables
+  to the database."*
+- `row_factory=dict_row` — *"Required because the PostgresSaver implementation accesses database
+  rows using dictionary-style syntax."*
+
+So neither is defaulted by the library, and the row-factory gate **remains falsifiable and is
+retained** — the conditional deletion that `testing-qa` allowed for does not apply.
+
+`prepare_threshold` is **not** confirmed as required at this release from the pinned metadata. It is
+retained as an open item tied to the pooler question rather than asserted, because asserting it
+would be exactly the inherited-value error this document warns against.
 
 All three belong in a validation test, not a runbook — see Validation.
 
@@ -674,9 +711,15 @@ stakeholder.
 LangGraph is an MCP **client**. It does not register servers, does not own gateway policy, and
 does not become a second control plane (`lgc-279` FR-017, `lgc-285`).
 
-`VERIFICATION REQUIRED` on all of: the current client adapter package and release; transport;
-tool discovery; the allowed tool surface; namespace handling for tools reached through a gateway;
-and failure semantics when a tool or the gateway is unavailable.
+**Adapter pinned:** `langchain-mcp-adapters` **0.3.2** (2026-08-06), requiring `mcp >=1.24.0,<2`.
+It provides a multi-server client and supports stdio, SSE and **Streamable HTTP**.
+
+**Transport settled:** the fleet architecture directs standardising on **Streamable HTTP**, and the
+pinned adapter supports it. This is no longer an open verification item — it was already ruled by
+current authority and is achievable at the pin.
+
+Still `VERIFICATION REQUIRED`: tool discovery; the allowed tool surface; namespace handling for
+tools reached through a gateway; and failure semantics when a tool or the gateway is unavailable.
 
 Two cautions carry from the Docling pass and from 2025. First, the client must not depend on
 server-implementation specifics of whatever framework backs the gateway — the 2025 design bound
@@ -983,9 +1026,9 @@ deferred** by owner decisions 2 and 4 rather than satisfied:
   superseded by OmniRoute in target state, so building it would formalise a dead component. No
   gateway contract is built for either name. The dependency is OmniRoute reconciliation, not a
   missing contract.
-- **MCP tool plane** — the requirement **stands**. Owner decision 4 kept the CURRENT REQUIRED
-  classification, so an MCP-plane capability contract is mandatory and must be written and its
-  review run before the SME gate can pass. It does not exist and is not built in this pass.
+- **MCP tool plane** — the requirement **stands and is now satisfied**. Owner decision 4 kept the
+  CURRENT REQUIRED classification, so the `mcp-plane` capability contract was written
+  (`.claude/agents/mcp-plane.md`) and its review runs with the others.
 
-So one requirement was withdrawn as superseded and one was confirmed as real. The SME gate does
-**not** pass: it now waits on a single named, accepted blocker rather than on two contested ones.
+One requirement was withdrawn as superseded and one was confirmed and then met. **Five** capability
+reviews now cover this design rather than four.
