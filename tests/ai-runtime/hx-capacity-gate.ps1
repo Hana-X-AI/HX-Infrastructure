@@ -52,6 +52,21 @@ if (-not (Test-Path $wlPath))   { Write-Host "Unknown workload '$Workload'." -Fo
 if (-not (Test-Path $registry)) { Write-Host 'SERVER-REGISTRY.md not found.' -ForegroundColor Red; exit 2 }
 $wl = Get-Content $wlPath -Raw | ConvertFrom-Json
 
+# --- a deferred workload is reported, not gated ---------------------------------------
+if ($wl.status -and ($wl.status.status -match 'DEFERRED|ABORTED' -or $wl.status.commissioning -eq 'ABORTED')) {
+    Write-Host ("Workload      : {0}" -f $wl.workload)
+    Write-Host ("Status        : {0}   commissioning {1}" -f $wl.status.status, $wl.status.commissioning) -ForegroundColor Yellow
+    Write-Host ''
+    Write-Host '  This workload is DEFERRED. The capacity gate is not evaluated for it.' -ForegroundColor Yellow
+    Write-Host '  No model download or runtime activation is authorized.' -ForegroundColor Yellow
+    Write-Host ("  Reason: {0}" -f $wl.status.reason) -ForegroundColor DarkYellow
+    Write-Host ''
+    Write-Host '  Prior findings are retained in the workload record as reference.' -ForegroundColor DarkGray
+    Write-Host '========================================='
+    Write-Host ''
+    exit 4
+}
+
 $row = Select-String -Path $registry -Pattern "^\|\s*$TargetHost\s*\|" | Select-Object -First 1
 if (-not $row) { Write-Host "Host '$TargetHost' not in SERVER-REGISTRY.md." -ForegroundColor Red; exit 2 }
 $cols = $row.Line -split '\|' | ForEach-Object { $_.Trim() }

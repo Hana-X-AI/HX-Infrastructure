@@ -1,6 +1,14 @@
 # hxs-3 workload placement
 
-**Status:** TARGET-STATE placement semantics
+**Status:** TARGET-STATE placement semantics — **DS4 candidacy withdrawn 2026-08-14**
+
+> **DS4 is no longer a candidate workload for hxs-3.** Its commissioning was aborted and the
+> workload is DEFERRED / RESEARCH with host assignment NONE. The placement *semantics* below
+> are retained because they are reusable for any future workload; the DS4-specific candidacy
+> is not.
+>
+> hxs-3 was never modified during that work — no SSH, no install, no download, no service, no
+> registry change — and retains its durable role.
 **As-built status:** NOT ASSERTED BY THIS DOCUMENT
 **Authority:** `SERVER-REGISTRY.md` owns durable host identity and role. This document owns
 workload eligibility only.

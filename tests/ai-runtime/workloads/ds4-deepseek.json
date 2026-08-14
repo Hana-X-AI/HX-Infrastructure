@@ -1,7 +1,7 @@
 {
   "workload": "ds4-deepseek",
-  "classification": "EXPERIMENTAL",
-  "classification_scope": "The EXPERIMENTAL label applies to this workload and runtime profile, not to any physical server.",
+  "classification": "DEFERRED / RESEARCH",
+  "classification_scope": "Applies to this workload. No server is classified by it.",
   "runtime": "ds4",
   "runtime_profile": "ds4-deepseek",
   "commissioning_state": "MODEL SELECTED",
@@ -13,11 +13,6 @@
     "long-prefix and KV cache experiments",
     "cross-runtime conformance against the HX acceptance contract"
   ],
-  "candidate_placement": {
-    "host": "hxs-3",
-    "basis": "GPU capacity, when this workload is explicitly selected and the capacity gate passes",
-    "note": "Candidate placement only. This does not assign hxs-3 to DS4 and does not alter its durable role."
-  },
   "model_selection": {
     "_comment": "PHASE A. Every field is required before the capacity gate can compute residency. Arbitrary GGUF support is NOT assumed - the model must be one the installed DS4 revision explicitly supports.",
     "identity": "DeepSeek V4 Flash",
@@ -38,7 +33,8 @@
       "attn_proj": "Q8",
       "shared_expert": "Q8",
       "output": "Q8"
-    }
+    },
+    "record_status": "RESEARCH RECORD ONLY - not an acquisition authorization"
   },
   "capacity_gate_result": {
     "_comment": "PHASE B. The gate must be RERUN against the exact selected artifact. verdict_for_model must equal model_selection.identity + quantization, or the result is stale and the gate reopens.",
@@ -64,7 +60,7 @@
     "storage_path": null,
     "storage_path_status": "PROPOSED - no canonical HX model-storage root exists yet. No download is authorized: the artifact-bound capacity gate FAILs for hxs-3.",
     "weights_in_git": false,
-    "authorization_condition": "AUTHORIZED ONLY AFTER the hxs-3 NVMe storage gate passes"
+    "authorization_condition": "NONE - acquisition is disabled while this workload is DEFERRED"
   },
   "ds4_runtime": {
     "revision": null,
@@ -104,7 +100,7 @@
   "activation": {
     "requires_gate": "hx-capacity-gate",
     "model_download_allowed": false,
-    "note": "No model download is authorized by this definition. Installation presence is not activation."
+    "note": "Operationalization aborted. No download, install or activation is authorized from this definition."
   },
   "isolation": {
     "config_separate_from": [
@@ -138,11 +134,6 @@
       "if_approved_later": "own branch, own test plan, own acceptance decision"
     }
   },
-  "deployment_host": {
-    "host": "hxs-3",
-    "status": "FIXED",
-    "note": "hxs-3 is the fixed deployment host for this workload. Host selection is not open. If a mode fails, evaluate supported execution modes on hxs-3."
-  },
   "execution_modes": {
     "full_resident_cuda_tp": {
       "status": "FAIL",
@@ -150,9 +141,9 @@
       "pursue": false
     },
     "cuda_ssd_streaming_single_gpu": {
-      "status": "COMMISSIONING CANDIDATE - LIVE VALIDATION REQUIRED",
+      "status": "DEFERRED - was a commissioning candidate; not pursued",
       "reason": "SSD streaming avoids requiring the routed-expert portion to stay resident. Mainline supports it on CUDA and QA tests it.",
-      "pursue": true,
+      "pursue": false,
       "gpu_residency": "single GPU",
       "gpu_count_required": 1,
       "multi_gpu_supported": false,
@@ -178,7 +169,7 @@
     }
   },
   "storage_gate": {
-    "status": "MUST VERIFY",
+    "status": "NOT APPLICABLE - commissioning aborted",
     "gates": "model download",
     "note": "Under SSD streaming the storage device is in the inference path, not cold storage. Capacity and sustained performance both matter.",
     "requirements": {
@@ -194,5 +185,43 @@
     "target_filesystem": null,
     "measured_free_gb": null,
     "measured_sequential_read": null
+  },
+  "status": {
+    "status": "DEFERRED / RESEARCH",
+    "installed": "NO",
+    "model_present": "NO",
+    "service_active": "NO",
+    "host_assignment": "NONE",
+    "commissioning": "ABORTED",
+    "aborted_on": "2026-08-14",
+    "reason": "Poor fit for the immediate HX local-model objective. Hardware and runtime fit were discovered late in commissioning rather than before implementation.",
+    "operationalization": "DISABLED - no install, download, activation or host configuration is permitted from this definition"
+  },
+  "host_assignment": {
+    "host": null,
+    "status": "NONE",
+    "note": "DS4 is not assigned to any host. Prior hxs-3 candidacy is withdrawn; hxs-3 retains its durable registry role and was never modified."
+  },
+  "rollback": {
+    "date": "2026-08-14",
+    "boundary": "Removed DS4 deployment and operationalization. Preserved the engine-neutral runtime acceptance work.",
+    "preserved": [
+      "HX AI Runtime Acceptance Contract",
+      "offline fixture/protocol harness",
+      "L0-L5 validation model",
+      "runtime evidence format",
+      "capacity-gate framework",
+      "commissioning state-machine concept",
+      "vllm-qwen PRIMARY",
+      "DS4 findings as reference"
+    ],
+    "removed_or_disabled": [
+      "DS4 host assignment",
+      "DS4 model acquisition path",
+      "DS4 activation",
+      "DS4 live workload configuration"
+    ],
+    "hxs_3": "Returned to prior state. It was never modified: no SSH, no install, no download, no service, no registry change.",
+    "evidence_preserved": "History is not squashed. The capacity and commissioning work is retained because it is what exposed the mismatch."
   }
 }

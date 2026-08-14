@@ -41,18 +41,33 @@ $vq  = Get-Content (Join-Path $here 'profiles\vllm-qwen.json')     -Raw | Conver
 $reg = Get-Content (Join-Path $repoRoot 'SERVER-REGISTRY.md') -Raw
 $contract = Get-Content (Join-Path $repoRoot 'governance\policy\ai-runtime-acceptance-contract.md') -Raw
 
-Test-Invariant 'ds4-deepseek workload remains EXPERIMENTAL' {
-    if ($wl.classification -eq 'EXPERIMENTAL') { $true } else { "classification is '$($wl.classification)'" } }
+Test-Invariant 'ds4-deepseek is DEFERRED / RESEARCH, not operational' {
+    if ($wl.status.status -match 'DEFERRED' -and $wl.status.commissioning -eq 'ABORTED') { $true }
+    else { "status '$($wl.status.status)', commissioning '$($wl.status.commissioning)'" } }
 
-Test-Invariant 'ds4-deepseek profile remains EXPERIMENTAL' {
-    if ($pr.status -eq 'EXPERIMENTAL') { $true } else { "status is '$($pr.status)'" } }
+Test-Invariant 'ds4-deepseek profile is DEFERRED and disabled' {
+    if ($pr.status -eq 'DEFERRED' -and $pr.enabled -eq $false) { $true }
+    else { "status '$($pr.status)', enabled=$($pr.enabled)" } }
 
 Test-Invariant 'vllm-qwen remains PRIMARY' {
     if ($vq.status -eq 'PRIMARY') { $true } else { "status is '$($vq.status)'" } }
 
-Test-Invariant 'EXPERIMENTAL is scoped to the workload, not a server' {
-    if ($wl.classification_scope -match 'not to any physical server') { $true }
-    else { 'classification_scope does not exclude the server' } }
+Test-Invariant 'DS4 has no host assignment' {
+    if ($wl.status.host_assignment -eq 'NONE' -and -not $wl.host_assignment.host) { $true }
+    else { 'DS4 still carries a host assignment' } }
+
+Test-Invariant 'DS4 is not installed, present or active' {
+    $s = $wl.status
+    if ($s.installed -eq 'NO' -and $s.model_present -eq 'NO' -and $s.service_active -eq 'NO') { $true }
+    else { 'DS4 is recorded as installed, present or active' } }
+
+Test-Invariant 'commissioning refuses to run for a deferred workload' {
+    $src = Get-Content (Join-Path $here 'hx-workload-commission.ps1') -Raw
+    if ($src -match "DEFERRED\|ABORTED" -and $src -match 'Commissioning is DISABLED') { $true }
+    else { 'driver would still walk gates for a deferred workload' } }
+
+Test-Invariant 'rollback reason is recorded' {
+    if ($wl.status.reason -and $wl.rollback.date) { $true } else { 'no rollback record' } }
 
 Test-Invariant 'hxs-3 durable role comes from SERVER-REGISTRY.md' {
     $row = ($reg -split "`n") | Where-Object { $_ -match '^\|\s*hxs-3\s*\|' } | Select-Object -First 1
@@ -93,12 +108,13 @@ Test-Invariant 'live tests SKIP when no live runtime is configured' {
     if ($src -match 'LIVE RUNTIME NOT CONFIGURED') { $true } else { 'no explicit not-configured skip reason' } }
 
 Test-Invariant 'model identity and checksum are required before OPERATIONAL' {
-    $src = Get-Content (Join-Path $here 'hx-ds4-commission.ps1') -Raw
+    $src = Get-Content (Join-Path $here 'hx-workload-commission.ps1') -Raw
+    $src = Get-Content (Join-Path $here 'hx-workload-commission.ps1') -Raw
     $ok = ($src -match 'checksum_sha256') -and ($src -match 'no exact model and quantization selected')
     if ($ok) { $true } else { 'commissioning does not require model identity and checksum' } }
 
 Test-Invariant 'commissioning states are not collapsed' {
-    $src = Get-Content (Join-Path $here 'hx-ds4-commission.ps1') -Raw
+    $src = Get-Content (Join-Path $here 'hx-workload-commission.ps1') -Raw
     $states = 'MODEL SELECTED','EXECUTION MODE SELECTED','STORAGE VERIFIED','DS4 INSTALLED',
               'MODEL ACQUIRED','CLI VERIFIED','CACHE SWEEP PASSED','CONTEXT SWEEP PASSED',
               'BENCHMARKED','LOCAL SERVER VERIFIED','API VERIFIED','HX CONTRACT VERIFIED',
@@ -107,23 +123,19 @@ Test-Invariant 'commissioning states are not collapsed' {
     if (-not $missing) { $true } else { "missing states: $($missing -join ', ')" } }
 
 Test-Invariant 'capacity gate result is bound to the exact artifact' {
-    $src = Get-Content (Join-Path $here 'hx-ds4-commission.ps1') -Raw
+    $src = Get-Content (Join-Path $here 'hx-workload-commission.ps1') -Raw
     $ok = ($src -match 'verdict_for_model') -and ($src -match 'verdict_for_quantization') -and ($src -match 'STALE')
     if ($ok) { $true } else { 'a stale capacity verdict would not reopen the gate' } }
-
-Test-Invariant 'hxs-3 is the fixed deployment host' {
-    if ($wl.deployment_host.host -eq 'hxs-3' -and $wl.deployment_host.status -eq 'FIXED') { $true }
-    else { 'deployment host is not recorded as fixed' } }
 
 Test-Invariant 'full-resident CUDA TP mode is recorded FAIL and not pursued' {
     $m = $wl.execution_modes.full_resident_cuda_tp
     if ($m.status -eq 'FAIL' -and $m.pursue -eq $false) { $true }
     else { "full-resident mode status is '$($m.status)', pursue=$($m.pursue)" } }
 
-Test-Invariant 'CUDA SSD streaming single-GPU is the pursued mode' {
-    $m = $wl.execution_modes.cuda_ssd_streaming_single_gpu
-    if ($m.pursue -eq $true -and $m.gpu_count_required -eq 1 -and $m.multi_gpu_supported -eq $false) { $true }
-    else { 'ssd-streaming mode is not recorded as single-GPU and pursued' } }
+Test-Invariant 'no DS4 execution mode is pursued' {
+    $a = $wl.execution_modes.full_resident_cuda_tp.pursue
+    $b = $wl.execution_modes.cuda_ssd_streaming_single_gpu.pursue
+    if ($a -eq $false -and $b -eq $false) { $true } else { 'a DS4 execution mode is still pursued' } }
 
 Test-Invariant 'multi-GPU SSD streaming stays excluded as unmerged' {
     if ($wl.cuda_ssd_streaming.multi_gpu_ssd_streaming.status -match 'EXCLUDED') { $true }
@@ -134,10 +146,10 @@ Test-Invariant 'system RAM is not conflated with CUDA device memory' {
     if ($src -match 'NOT a full-residency pass' -and $src -match 'NOT an automatic SSD-streaming fail') { $true }
     else { 'gate does not scope the system RAM finding' } }
 
-Test-Invariant 'storage gate gates the model download' {
-    $ok = ($wl.storage_gate.gates -eq 'model download') -and
-          ($wl.model_acquisition.authorization_condition -match 'storage gate')
-    if ($ok) { $true } else { 'model download is not gated on the storage gate' } }
+Test-Invariant 'runtime acceptance layer is preserved' {
+    $keep = @('hx-runtime-acceptance.ps1','hx-capacity-gate.ps1','hx-workload-commission.ps1','README.md')
+    $missing = $keep | Where-Object { -not (Test-Path (Join-Path $here $_)) }
+    if (-not $missing) { $true } else { "missing: $($missing -join ', ')" } }
 
 Test-Invariant 'model download remains unauthorized' {
     if ($wl.activation.model_download_allowed -eq $false -and $wl.model_acquisition.authorized -eq $false) { $true }

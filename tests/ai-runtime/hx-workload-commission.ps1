@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    DS4 commissioning state machine - takes a workload from NOT PRESENT to OPERATIONAL.
+    Workload commissioning state machine - takes a workload from NOT PRESENT to OPERATIONAL.
 
 .DESCRIPTION
     Evaluates each commissioning gate against current repository evidence and reports the
@@ -25,8 +25,8 @@
 #>
 [CmdletBinding()]
 param(
-    [string]$Workload   = 'ds4-deepseek',
-    [string]$TargetHost = 'hxs-3',
+    [Parameter(Mandatory=$true)][string]$Workload,
+    [string]$TargetHost,
     [string]$EvidencePath
 )
 
@@ -41,6 +41,29 @@ if (-not (Test-Path $EvidencePath)) { New-Item -ItemType Directory -Path $Eviden
 if (-not (Test-Path $wlPath)) { Write-Host "Unknown workload '$Workload'." -ForegroundColor Red; exit 2 }
 $wl = Get-Content $wlPath -Raw | ConvertFrom-Json
 
+# --- refuse to commission a deferred or aborted workload ------------------------------
+if ($wl.status -and ($wl.status.status -match 'DEFERRED|ABORTED' -or $wl.status.commissioning -eq 'ABORTED')) {
+    Write-Host ''
+    Write-Host '=========================================' -ForegroundColor Cyan
+    Write-Host ' Workload Commissioning State Machine' -ForegroundColor Cyan
+    Write-Host '=========================================' -ForegroundColor Cyan
+    Write-Host ("Workload      : {0}" -f $wl.workload)
+    Write-Host ("Status        : {0}" -f $wl.status.status) -ForegroundColor Yellow
+    Write-Host ("Commissioning : {0}" -f $wl.status.commissioning) -ForegroundColor Yellow
+    Write-Host ("Installed     : {0}    Model present: {1}    Service active: {2}" -f `
+                $wl.status.installed, $wl.status.model_present, $wl.status.service_active)
+    Write-Host ("Host assignment: {0}" -f $wl.status.host_assignment)
+    Write-Host ''
+    Write-Host ("  Reason: {0}" -f $wl.status.reason) -ForegroundColor DarkYellow
+    Write-Host ''
+    Write-Host '  Commissioning is DISABLED for this workload.' -ForegroundColor Yellow
+    Write-Host '  No gate is evaluated. No install, download or activation is authorized.' -ForegroundColor Yellow
+    Write-Host '========================================='
+    Write-Host ''
+    exit 4
+}
+
+if (-not $TargetHost) { Write-Host 'A -TargetHost is required to commission an active workload.' -ForegroundColor Red; exit 2 }
 $row = Select-String -Path $registry -Pattern "^\|\s*$TargetHost\s*\|" | Select-Object -First 1
 if (-not $row) { Write-Host "Host '$TargetHost' not in SERVER-REGISTRY.md." -ForegroundColor Red; exit 2 }
 $cols = $row.Line -split '\|' | ForEach-Object { $_.Trim() }
@@ -54,7 +77,7 @@ function Add-Gate {
 
 Write-Host ''
 Write-Host '=========================================' -ForegroundColor Cyan
-Write-Host ' DS4 Commissioning State Machine' -ForegroundColor Cyan
+Write-Host ' Workload Commissioning State Machine' -ForegroundColor Cyan
 Write-Host '=========================================' -ForegroundColor Cyan
 Write-Host ("Workload     : {0}  ({1})" -f $wl.workload, $wl.classification)
 Write-Host ("Target host  : {0}" -f $TargetHost)

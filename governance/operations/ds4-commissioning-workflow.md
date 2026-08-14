@@ -1,19 +1,44 @@
-# DS4 commissioning workflow
+# DS4 commissioning workflow — ABORTED
 
-**Status:** TARGET-STATE workflow
-**Current state:** `COMMISSIONING` — artifact selected, execution mode selected, next gate is
-STORAGE VERIFIED. DS4 is not installed and no model has been downloaded.
-**As-built status:** NOT ASSERTED BY THIS DOCUMENT
+**Status:** ABORTED / DEFERRED — retained as a record, not an operational procedure
+**DS4 status:** DEFERRED / RESEARCH · installed NO · model present NO · service active NO ·
+host assignment NONE
+**Rolled back:** 2026-08-14
 
-Installed is not operational. A successful build is not proof of model fit, and a working HTTP
-endpoint is not proof that an agent client behaves correctly. These states are deliberately not
-collapsed.
+## Why this was aborted
+
+Hardware and runtime fit were discovered **late in commissioning rather than before
+implementation**. DS4 is a poor fit for the immediate HX local-model objective, so
+operationalization was abandoned before it became operational.
+
+Nothing was installed, downloaded, activated or configured. hxs-3 was never modified and
+retains its durable registry role.
+
+**This document is preserved deliberately.** The capacity and commissioning work is what
+exposed the mismatch, and erasing it would erase the lesson. The commissioning driver now
+refuses to walk any gate for this workload.
+
+## The rule this produced
+
+```
+Hardware fit first.
+Runtime and model selection second.
+Implementation third.
+```
+
+The sequence here ran the other way: machinery was built, then a model was selected, then the
+hardware was found not to fit. The gate did its job and caught it — but later than it should
+have been asked.
 
 ---
 
+## Original workflow, retained for reference
+
+Everything below documents what was designed. It is **not** an active procedure.
+
 ## Deployment host and execution mode
 
-**hxs-3 is the fixed deployment host.** Host selection is not part of this decision. When an
+**hxs-3 was the intended deployment host. That assignment is withdrawn.** Host selection is not part of this decision. When an
 execution mode fails, the response is to evaluate the other supported modes on hxs-3 — not to
 look for a different machine.
 
