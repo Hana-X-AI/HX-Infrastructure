@@ -38,8 +38,14 @@ Write-Host '=========================================' -ForegroundColor Cyan
 $wl  = Get-Content (Join-Path $here 'workloads\ds4-deepseek.json') -Raw | ConvertFrom-Json
 $pr  = Get-Content (Join-Path $here 'profiles\ds4-deepseek.json')  -Raw | ConvertFrom-Json
 $vq  = Get-Content (Join-Path $here 'profiles\vllm-qwen.json')     -Raw | ConvertFrom-Json
+$qw  = Get-Content (Join-Path $here 'workloads\qwen35-9b-ollama.json') -Raw | ConvertFrom-Json
 $reg = Get-Content (Join-Path $repoRoot 'SERVER-REGISTRY.md') -Raw
 $contract = Get-Content (Join-Path $repoRoot 'governance\policy\ai-runtime-acceptance-contract.md') -Raw
+# Loaded tolerantly on purpose. If this record is deleted the suite must FAIL the invariant
+# that depends on it, not crash before any invariant runs - a crash reads as a broken test.
+$decisionsPath = Join-Path $repoRoot 'governance\policy\runtime-acceptance-decisions.md'
+$decisions = ''
+if (Test-Path $decisionsPath) { $decisions = Get-Content $decisionsPath -Raw }
 
 Test-Invariant 'ds4-deepseek is DEFERRED / RESEARCH, not operational' {
     if ($wl.status.status -match 'DEFERRED' -and $wl.status.commissioning -eq 'ABORTED') { $true }
@@ -212,6 +218,32 @@ Test-Invariant 'DS4 upstream source is not vendored' {
     $tracked = git ls-files | Where-Object { $_ -match 'ds4-main/' }
     Pop-Location
     if (-not $tracked) { $true } else { "$($tracked.Count) DS4 source files are tracked" } }
+
+# --- Qwen3.5-9B acceptance verdict, locked -------------------------------------------------
+# The distinction below is the whole point: accepted for one use, refused for another.
+# Prose can be skimmed past. These fail the suite if the verdict is quietly widened.
+
+Test-Invariant 'Qwen3.5-9B IS accepted for local utility inference' {
+    $a = $qw.acceptance_states.A_qwen_local_runtime_operational
+    $b = $qw.acceptance_states.B_hx_validation_operational
+    if ($a -match 'REACHED' -and $b -match 'REACHED') { $true }
+    else { 'the accepted-for states were weakened; re-measure before narrowing them' } }
+
+Test-Invariant 'Qwen3.5-9B is NOT accepted as a Claude Code backend' {
+    $c = $qw.acceptance_states.C_claude_code_qualified
+    $v = $qw.claude_code_qualification.verdict
+    if ($c -match 'NOT REACHED' -and $v -eq 'NOT QUALIFIED') { $true }
+    else { "Claude Code acceptance was widened to '$v'. That requires NEW measured evidence: a window with real headroom above the ~28,440-token baseline, and overflow that errors instead of truncating. See iss-016." } }
+
+Test-Invariant 'the evidence for refusing Claude Code is preserved' {
+    if ($qw.claude_code_qualification.blocking_reasons.Count -ge 3 -and
+        $qw.context_overflow_behavior.behavior_on_overflow -match 'SILENT') { $true }
+    else { 'the blocking reasons or the silent-truncation finding were removed - the verdict cannot be audited without them' } }
+
+Test-Invariant 'the acceptance decision is recorded in durable governance' {
+    if ($decisions -match 'NOT ACCEPTED' -and $decisions -match 'Claude Code' -and
+        $decisions -match 'qwen35-9b-ollama') { $true }
+    else { 'governance/policy/runtime-acceptance-decisions.md no longer records the Qwen verdict' } }
 
 Write-Host ''
 Write-Host '-----------------------------------------'
