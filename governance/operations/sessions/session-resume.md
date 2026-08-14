@@ -65,8 +65,14 @@ value. Tracked as `iss-012`, still open.
    git gc --prune=now
    ```
 
-   Verify with: `git rev-list --all | while read c; do git grep -l "<token>" $c 2>/dev/null; done`
-   — empty output means clean.
+   Verify with:
+   ```
+   # Run once per credential, providing each value through protected input:
+   read -rs CRED1 && git grep -F -- "$CRED1" $(git rev-list --all)
+   read -rs CRED2 && git grep -F -- "$CRED2" $(git rev-list --all)
+   ```
+   Empty output for each credential means clean history. Never embed credential values
+   in shell commands or scripts.
 3. **Get the repository off this workstation.** `act-005`, open since 2026-08-11. 24 commits
    exist in exactly one place. The destination is valid and already owned:
    `Hana-X-AI/HX-Infrastructure`, private, 522 files, 22 commits. That action was blocked for
@@ -106,6 +112,16 @@ credentials; keep `legacy-secret-002` inspect-only.
 **To resume:** confirm plan mode is off, obtain the §3 header, then execute Phase 2 on a
 dedicated document-migration branch. Hard limits stand — no SSH, no installs, no service
 config, no deployment, no registry role changes.
+
+Before writing `service.md`, require one of:
+- an immutable repository commit SHA and the exact source paths within `legacy/2025-sanitized`
+  at that commit; or
+- a restored, verified manifest (`governance/reports/claude/manifestv3.1resolved.jsonl`) with
+  SHA-256 identity confirmed against the pinned digest.
+
+Do not write `service.md` from an unversioned snapshot or a live-repository-only instruction
+without a pinned commit reference. The existing exclusions (lgc-134, lgc-260, lgc-261),
+credential scanning controls, and other hard limits remain unchanged.
 
 ## Standing instructions
 

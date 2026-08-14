@@ -31,8 +31,10 @@ ip -br addr
 Confirm the active interface already has the approved static address:
 
 ```text
-<server-ip>/24
+<server-ip>/<approved-cidr-prefix>
 ```
+
+(Substitute the approved CIDR prefix from the fleet addressing plan; do not assume /24.)
 
 Do not change Netplan, routes, DNS, interfaces, or other network configuration as part of this checklist.
 
@@ -43,6 +45,12 @@ If the IP is wrong, stop and correct it outside this checklist before Phase 1 di
 ## 3. configure permanent noninteractive sudo for hxsa
 
 Configure `hxsa` for permanent passwordless sudo before Claude begins discovery.
+
+> **Security note:** `NOPASSWD: ALL` grants unrestricted root access. This must be
+> intentionally approved and removed or tightened after Phase 1 is complete for every server.
+> If a least-privilege command allowlist is known, substitute it here.
+> If unrestricted access is genuinely required, document that approval and the planned
+> removal date before running this step.
 
 Run:
 
@@ -80,8 +88,12 @@ Verify:
 
 ```bash
 sudo ufw status
-systemctl is-enabled ufw || true
-systemctl is-active ufw || true
+systemctl is-enabled ufw
+systemctl is-active ufw
+# Inspect the loaded kernel nftables ruleset directly; empty output means no rules loaded
+sudo nft list ruleset
+# Check whether firewalld is running (unit may be absent on Ubuntu — that is acceptable)
+systemctl is-active firewalld || echo "firewalld unit not found or inactive"
 ```
 
 Expected:
@@ -90,7 +102,13 @@ Expected:
 Status: inactive
 disabled
 inactive
+# nft list ruleset: empty output (no rules loaded)
+# firewalld: inactive or unit not found
 ```
+
+If `nft list ruleset` returns rules, or any backend reports active, investigate and disable
+before handoff. A non-zero `nft list ruleset` output must be explained even if systemctl
+reports all units inactive — the kernel ruleset is the authoritative state.
 
 This is a human-preparation change. Claude must not change firewall state during Phase 1.
 
@@ -126,6 +144,22 @@ Only the **public** key is placed on the server. The private key never leaves th
 
 From the Windows workstation:
 
+Verify the fleet key fingerprint **before** installing it:
+
+```powershell
+ssh-keygen -lf "$HOME\.ssh\hx_fleet_ed25519.pub"
+```
+
+Expected fingerprint:
+
+```text
+SHA256:fpIJEHjkhRYRqnhvRhtgSqggOAjkTU90vSGWbh0vsPk  hx-fleet-20260810 (ED25519)
+```
+
+If the fingerprint does not match, **stop**. Do not send this key to the server.
+
+Once the fingerprint is confirmed, install the key:
+
 ```powershell
 Get-Content "$HOME\.ssh\hx_fleet_ed25519.pub" | ssh hxsa@<server-ip> "mkdir -p -m 700 ~/.ssh && cat >> ~/.ssh/authorized_keys && grep -v 'hx_fleet_ed25519\.pub$' ~/.ssh/authorized_keys | sort -u > ~/.ssh/ak.tmp && mv ~/.ssh/ak.tmp ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys && echo INSTALLED"
 ```
@@ -137,7 +171,7 @@ Enter the account password once. This is the last password this server should re
 Verify from the workstation:
 
 ```powershell
-ssh -i "$HOME\.ssh\hx_fleet_ed25519" -o BatchMode=yes hxsa@<server-ip> "id -un; sudo -n true && echo SUDO_NOPASSWD=yes"
+ssh -i "$HOME\.ssh\hx_fleet_ed25519" -o BatchMode=yes -o IdentitiesOnly=yes hxsa@<server-ip> "id -un; sudo -n true && echo SUDO_NOPASSWD=yes"
 ```
 
 Expected:
@@ -147,18 +181,12 @@ hxsa
 SUDO_NOPASSWD=yes
 ```
 
-`BatchMode=yes` fails rather than prompting, so a successful result proves key authentication actually worked.
+`BatchMode=yes` fails rather than prompting; `IdentitiesOnly=yes` ensures only the specified key is offered, so a successful result proves that exact fleet key authenticated.
 
 The expected key is:
 
 ```text
 SHA256:fpIJEHjkhRYRqnhvRhtgSqggOAjkTU90vSGWbh0vsPk  hx-fleet-20260810 (ED25519)
-```
-
-Confirm the fingerprint matches before authorizing it:
-
-```powershell
-ssh-keygen -lf "$HOME\.ssh\hx_fleet_ed25519.pub"
 ```
 
 ### why this is human preparation, not discovery
@@ -178,6 +206,8 @@ Before handing the server to Claude Code, confirm:
 - [ ] `sudo -n true` succeeds;
 - [ ] UFW is inactive;
 - [ ] UFW service is disabled and inactive;
+- [ ] `nft list ruleset` returns empty output (no kernel rules loaded);
+- [ ] nftables and firewalld units are inactive or absent;
 - [ ] SSH is active on TCP/22;
 - [ ] fleet public key authorized, and key authentication verified with `BatchMode=yes`;
 - [ ] expected hardware counts stated below, from physical knowledge rather than from a command.

@@ -62,8 +62,8 @@ ul.tight li{margin:4px 0}ul.tight b,ul.tight code{color:var(--fg)}
 <p style="margin-top:8px">This is the <b>second and final method pilot</b>. Docling validated the basic distillation mechanics; LangGraph validates the method against a <i>stateful orchestration service with several external contracts</i>. If it lands, the migration method stops being a "pilot" and becomes the repository's standard legacy-mining workflow.</p></div>
 
 <h2><span class="k">0</span>Operating mode, branch &amp; hard boundaries</h2>
-<div class="callout warn"><h3>Branch from <code>migration/docling-pilot</code>, not <code>main</code></h3>
-<p>The frozen pattern, the resolved ledger, and the four SME contracts live on <code>migration/docling-pilot</code> — <code>main</code> is still the 2025 lineage and does not have them. Create <code>migration/langgraph-pilot</code> <b>off the accepted Docling baseline <code>59cc73b</code></b> on <code>migration/docling-pilot</code> so it inherits those assets from that commit. (<code>legacy/2025</code> is a repository-wide ref that exists independently — the branch doesn't "inherit" it, it just resolves it.) Do not branch from <code>main</code>. Do not merge to <code>main</code> (that is the deferred consolidation decision).</p></div>
+<div class="callout warn"><h3>Branch from the current tip of <code>migration/docling-pilot</code>, not from <code>main</code></h3>
+<p>The frozen pattern, the resolved ledger, and the four SME contracts live on <code>migration/docling-pilot</code> &mdash; <code>main</code> is still the 2025 lineage and does not have them. Create <code>migration/langgraph-pilot</code> <b>from the current tip of <code>migration/docling-pilot</code></b>. The accepted baseline commit <code>59cc73b</code> must be an ancestor of that tip; verify this before proceeding. (<code>legacy/2025</code> is a repository-wide ref that exists independently &mdash; the branch doesn&rsquo;t &ldquo;inherit&rdquo; it, it just resolves it.) Do not branch from <code>main</code>. Do not merge to <code>main</code> (that is the deferred consolidation decision).</p></div>
 <div class="callout stop"><h3>Boundaries</h3>
 <p><b>Document/ledger writes only.</b> No SSH, package installs, server/service config, deployment, model download, or infrastructure mutation. This is a distillation, not a commissioning — unlike the hxs-4 runtime work, nothing here touches a host.</p>
 <p><b>GO for distillation, NO-GO for deployment.</b> Do NOT begin any LangGraph implementation or deployment on hxs-11 during this pass. The persistence boundaries, model-routing contract, Mem0 relationship and Docling→LightRAG handoff all touch LangGraph — the target-state design must be settled before a running service starts creating facts we then have to reconcile.</p>
@@ -88,6 +88,9 @@ ul.tight li{margin:4px 0}ul.tight b,ul.tight code{color:var(--fg)}
    path  : governance/reports/claude/manifestv3.1resolved.jsonl
    sha256: 64eb356f5b22d39c4705e2babb48a16fe6a20e3fa4d5747cba6ed7516c64cd59
    record it as manifest_resolved_sha256; if the hash does not match, STOP.
+   base manifest path  : governance/reports/claude/manifestv3.jsonl
+   base manifest sha256: &lt;record exact sha256sum of manifestv3.jsonl here before execution&gt;
+   record it as manifest_base_sha256; verify before reading provenance.
 
 3. Source of record (the intentional protected RAW archive — see risk-003):
    ref    : legacy/2025
@@ -158,7 +161,7 @@ Authority boundary:
 
 <h2><span class="k">6</span>Re-verify current LangGraph upstream (the Docling lesson)</h2>
 <div class="callout warn"><p>Docling taught this the hard way: the 2025 material said "FastMCP" and the current package had moved to MCP SDK v2. <b>Do the same check here.</b> Before authoring, re-verify current LangGraph from source and pin a release + tag/commit + date checked.</p>
-<p style="margin-top:8px"><b>Pin each independently-versioned package independently.</b> <code>langgraph</code>, <code>langchain-core</code>, <code>langgraph-checkpoint</code>, <code>langgraph-checkpoint-postgres</code>, and any agent/supervisor package do NOT move together — the current release lines are separate. Specifically: the 2025 <code>langgraph-supervisor</code> pattern is being <b>superseded</b> (current guidance points toward <code>create_agent</code> + tool-wrapped subagents). Treat the orchestration pattern itself as <code>VERIFICATION REQUIRED</code>, not a given — see §9.</p>
+<p style="margin-top:8px"><b>Pin each independently-versioned package independently.</b> <code>langgraph</code>, <code>langchain-core</code>, <code>langgraph-checkpoint</code>, <code>langgraph-checkpoint-postgres</code>, and any agent/supervisor package do NOT move together &mdash; the current release lines are separate. Specifically: the <b><code>langgraph-supervisor</code> package</b> is superseded or unmaintained (the supervisor <i>architecture</i> itself may still be valid &mdash; verify the current orchestration pattern independently). Current upstream guidance points toward <code>create_agent</code> + tool-wrapped subagents as the preferred alternative; treat the orchestration pattern as <code>VERIFICATION REQUIRED</code>, not a given &mdash; see &sect;9.</p>
 <p style="margin-top:8px">Do NOT carry 2025 version pins or API shapes forward as current. Note also the 2025 material assumes Ollama-served models; the current fleet plan is vLLM/Qwen primary — reconcile the model-backend assumption, don't inherit it.</p></div>
 
 <h2><span class="k">7</span>The organizing question: what does LangGraph own?</h2>
@@ -257,7 +260,7 @@ Integration SMEs if CURRENT REQUIRED: <span class="sme">litellm</span>
 │   ├── Model gateway (LiteLLM)  # + context-window discipline (§7 current-fact input)
 │   ├── LightRAG                 # pipeline-required, contract NOT established
 │   ├── Postgres / Redis
-│   └── MCP tools (FastMCP gw)
+│   └── MCP tools (provider-neutral MCP gateway)
 ├── Runtime and service model   # bare-metal venv, systemd; no containers
 ├── Configuration model         # no hardcoded endpoints/paths; resolve from registry
 ├── Validation requirements     # re-baselined; no 2025 counts

@@ -346,6 +346,17 @@ Do not invoke unrelated external-service tools merely because they exist.
 Verify destructive-command gate behavior with SAFE TEST FIXTURES only.
 Do not test catastrophic commands against real user/home/repo paths.
 
+PHASE 4.5 — POLICY-ENFORCEMENT GATE (required before PHASE 5)
+
+Before any repository writes in PHASE 5, confirm the policy-enforcement hook is active
+and fail-closed. This gate must be passed deterministically before bounded write operations
+can begin; the fail-open pre_tool hook alone is not sufficient.
+
+Verify:
+- the permanent policy guard hook is registered and active (not only planned)
+- a test fixture confirms dangerous-command denial is deterministic and fail-closed
+- if the gate cannot be confirmed: STOP and report; do not proceed to PHASE 5
+
 PHASE 5 — BOUNDED WRITE TEST
 
 Create a deliberately bounded change on the pilot branch/worktree.

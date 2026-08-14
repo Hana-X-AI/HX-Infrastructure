@@ -53,13 +53,19 @@
   <button id="themeToggle" type="button">◐ Theme</button>
 </header>
 
+<div class="card good">
+<strong>RESOLVED — pre-flight now passes 5 of 5.</strong> The ledger was restored to its pinned bytes and
+hashes to <code>64eb356f…cd59</code> again. A protection rule was added so the failure cannot recur: git
+now <em>refuses</em> to stage one of these artifacts with corrupted line endings. Two edits were reverted
+that may have been wanted — see section 6. The pilot is ready to start on a clean pin.
+</div>
+
 <div class="card stop">
-<strong>STOPPED at pre-flight, as the brief requires.</strong> One condition fails: the frozen ledger
-no longer hashes to the pinned value. It was modified after the Docling pilot was accepted — a
-line-ending conversion across all 522 rows, one character destroyed by an encoding round-trip, and
-five deliberate-looking field edits, two of which contradict a boundary this brief itself restates.
-<strong>My commit <code>41aa663</code> put that change into history</strong>, though I did not author the
-edits. Detail in section 2. No branch was created and no distillation was started.
+<strong>What halted it.</strong> The frozen ledger no longer hashed to the pinned value. It had been
+modified after the Docling pilot was accepted — a line-ending conversion across all 522 rows, one
+character destroyed by an encoding round-trip, and five deliberate-looking field edits, three of which
+contradict a boundary this brief itself restates. <strong>My commit <code>41aa663</code> put that change
+into history</strong>, though I did not author the edits. Detail in section 2.
 </div>
 
 <div class="card good">
@@ -186,19 +192,89 @@ deliberate governance changes, not damage. The options:</p>
 either way the three rotation edits need an explicit owner ruling, because they reverse a closed decision
 rather than record a new fact.</p>
 
-<h2>5. State on hold</h2>
+<h2>5. Resolution applied</h2>
+
+<h3>Ledger restored to the pin</h3>
+<pre><code>git checkout 59cc73b -- governance/reports/claude/manifestv3.1resolved.jsonl
+
+  bytes  730258      CR 0      LF 522      U+FFFD 0
+  sha256 64eb356f5b22d39c4705e2babb48a16fe6a20e3fa4d5747cba6ed7516c64cd59   MATCHES PIN</code></pre>
+<p>The encoding damage is gone, the line endings are back to LF, and pre-flight item 2 passes. Option A
+from the table below was taken.</p>
+
+<h3>Recurrence prevented</h3>
+<p>The root cause was not git — <code>.gitattributes</code> carries a deliberate <code>* -text</code>
+rule, so git converts nothing. An editor re-saved the file with Windows line endings and git faithfully
+stored what it was given. A narrower rule now covers the pinned artifacts:</p>
+<pre><code>*.jsonl text eol=lf</code></pre>
+<p>All four tracked <code>.jsonl</code> artifacts were already LF, so this changed no content and no
+existing hash. It does not touch the hook byte-parity check, which covers <code>.py</code> and
+<code>.ps1</code> only.</p>
+
+<div class="card good">
+<p style="margin:0"><strong>Verified by trying to break it.</strong> CRLF was injected into all 522 rows
+and staged. Git did not silently normalise it — with <code>core.safecrlf=true</code> it refused
+outright:</p>
+<pre style="margin:8px 0 0"><code>fatal: CRLF would be replaced by LF in
+       governance/reports/claude/manifestv3.1resolved.jsonl</code></pre>
+<p style="margin:8px 0 0">The staged blob stayed at <code>64eb356f…cd59</code> throughout. A
+line-ending-corrupted ledger can no longer reach a commit at all.</p>
+</div>
+
+<h2>6. What the restore reverted — one item still needs a ruling</h2>
+
+<p>Restoring the exact pinned bytes necessarily reverted all five edits. They are not equal in
+character:</p>
+
+<div class="scroll">
+<table>
+<thead><tr><th>Rows</th><th>Edit</th><th>Disposition</th></tr></thead>
+<tbody>
+<tr><td><code>lgc-059</code>, <code>lgc-260</code>, <code>lgc-261</code></td>
+  <td>reinstated credential rotation as outstanding</td>
+  <td class="pass"><strong>Correctly reverted.</strong> These contradicted §0 of this brief and the closure of <code>iss-012</code> under <code>risk-003</code>. Two also carried the destroyed character.</td></tr>
+<tr><td><code>lgc-014</code>, <code>lgc-019</code></td>
+  <td><code>covered_by</code> set to <code>governance/actions-and-issues.md</code></td>
+  <td class="warn"><strong>Reverted, and may have been wanted.</strong> These look like legitimate forward progress rather than damage.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="card flag">
+<p style="margin:0">Those two <code>covered_by</code> values <strong>cannot be re-applied now</strong>
+without breaking the pin this pilot depends on — any change alters the hash the brief cites. If they are
+wanted, the clean route is to re-apply them <em>after</em> the pilot completes, as a deliberate ledger
+revision with a newly recorded hash, rather than as an untracked edit to a frozen artifact.</p>
+<p style="margin:8px 0 0">Flagging rather than deciding: I reverted them to satisfy the pin, not because
+they are wrong.</p>
+</div>
+
+<h2>7. State</h2>
 
 <ul>
 <li>No branch created. <code>migration/langgraph-pilot</code> does <strong>not</strong> exist yet.</li>
 <li>No distillation started, no <code>service.md</code> drafted, no SME contract written.</li>
 <li>Nothing read from <code>legacy/2025</code>.</li>
-<li>Two commits on <code>migration/docling-pilot</code>: <code>165d1c0</code> (policy reconciliation) and this report.</li>
+<li>Commits on <code>migration/docling-pilot</code>: <code>165d1c0</code> policy reconciliation, <code>c5340f2</code> this report, plus the ledger restore and line-ending protection.</li>
 </ul>
 
-<p>Everything else is verified and ready. The moment the ledger question is settled, pre-flight passes
-in full and the pilot can start from a clean pin: parent baseline confirmed, source of record confirmed
-byte-for-byte, scope confirmed at 213 rows with the retired row correctly identified, and all five
-required assets present.</p>
+<div class="scroll">
+<table>
+<thead><tr><th>#</th><th>Pre-flight condition</th><th>Now</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Parent baseline — <code>59cc73b</code> ancestor confirmed</td><td class="pass">PASS</td></tr>
+<tr><td>2</td><td>Frozen ledger identity — <code>64eb356f…cd59</code></td><td class="pass">PASS</td></tr>
+<tr><td>3</td><td>Source of record — <code>legacy/2025 @ a98846d6</code></td><td class="pass">PASS</td></tr>
+<tr><td>4</td><td>Ledger scope — 213 rows, <code>lgc-302</code> retired</td><td class="pass">PASS</td></tr>
+<tr><td>5</td><td>Required assets — all five on the branch</td><td class="pass">PASS</td></tr>
+</tbody>
+</table>
+</div>
+
+<p><strong>Pre-flight passes 5 of 5.</strong> The pilot can begin: branch <code>migration/langgraph-pilot</code>
+from the current tip, and distil the 213 rows against a pin that is now both correct and protected. The
+only outstanding item is whether the two <code>covered_by</code> values in section 6 should be restored
+afterwards — it does not block the pilot.</p>
 
 <footer>
 Claude Opus 5 &middot; 2026-08-14 &middot; LangGraph distillation pilot, pre-flight halt<br>

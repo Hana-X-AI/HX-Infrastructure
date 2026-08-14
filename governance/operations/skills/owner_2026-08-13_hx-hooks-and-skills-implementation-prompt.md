@@ -731,7 +731,6 @@ PreToolUse shell
   -> hx-permanent-policy-guard.ps1
 
 PreToolUse Write/Edit
-  -> hx-phase1-guard.ps1 where applicable
   -> hx-authority-edit-guard.ps1
 
 PostToolUse Write/Edit
@@ -746,6 +745,9 @@ Notification
 ConfigChange project settings
   -> hx-config-integrity.ps1
 ```
+
+Note: `hx-phase1-guard.ps1` is registered on PreToolUse shell only. Write/Edit
+events are governed by `hx-authority-edit-guard.ps1` alone.
 
 Do not rely on handler ordering for correctness.
 

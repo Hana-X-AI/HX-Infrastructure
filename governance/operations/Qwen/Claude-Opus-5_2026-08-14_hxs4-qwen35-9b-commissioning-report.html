@@ -261,8 +261,9 @@ corrected ladder disproves it.</p>
 
 <h2>6. Claude Code, tested end to end</h2>
 
-<p>Reachability was solved with an SSH tunnel, so the service never left loopback and the connection is
-authenticated by your key:</p>
+<p>Reachability was solved with an SSH tunnel: the SSH session is authenticated by the fleet key, and
+the transport is encrypted. The forwarded <code>localhost:11434</code> HTTP endpoint is unprotected
+once inside the tunnel &mdash; the Ollama API has no built-in authentication:</p>
 <pre><code>ssh -N -L 11434:127.0.0.1:11434 -i ~/.ssh/hx_fleet_ed25519 hxsa@&lt;hxs-4&gt;</code></pre>
 
 <p>Claude Code 2.1.221 was then pointed at it. Three tests, and they tell a layered story.</p>
