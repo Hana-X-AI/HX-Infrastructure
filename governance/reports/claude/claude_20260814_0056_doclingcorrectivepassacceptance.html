@@ -1,0 +1,109 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Docling Corrective Pass — Acceptance Sign-off</title>
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--panel2:#1c2129;--bd:#30363d;--fg:#e6edf3;--dim:#8b949e;--acc:#58a6ff;
+--ok:#3fb950;--warn:#d29922;--stop:#f85149;--purple:#bc8cff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.62 -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.wrap{max-width:1040px;margin:0 auto;padding:32px 22px 90px}
+header.hero{border:1px solid var(--bd);border-radius:14px;background:linear-gradient(150deg,#161b22,#0d1117);padding:26px 28px;margin-bottom:22px}
+.hero h1{margin:0 0 6px;font-size:24px}
+.hero .sub{color:var(--dim);font-size:14px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.meta span{background:var(--panel2);border:1px solid var(--bd);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--dim)}
+.meta b{color:var(--fg)}
+h2{font-size:18px;margin:30px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--bd)}
+h2 .k{color:var(--acc);font-weight:700;margin-right:8px}
+h3{font-size:15px;margin:18px 0 6px}
+.lead{color:var(--dim);margin:-2px 0 14px;font-size:14px}
+p{margin:9px 0}
+.callout{border-left:4px solid var(--acc);background:var(--panel2);border-radius:0 10px 10px 0;padding:14px 18px;margin:14px 0}
+.callout.stop{border-left-color:var(--stop)}.callout.ok{border-left-color:var(--ok)}.callout.warn{border-left-color:var(--warn)}
+.callout h3{margin:0 0 6px;font-size:15px}
+.callout p{margin:0 0 6px;color:var(--dim);font-size:13.5px}.callout p:last-child{margin-bottom:0}
+code{background:#0d1117;border:1px solid var(--bd);border-radius:5px;padding:1px 5px;font:12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:#79c0ff}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--bd);vertical-align:top}
+th{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.5px;background:var(--panel)}
+.mono{font-family:ui-monospace,Menlo,monospace;font-size:11.5px}
+.verdict{display:flex;gap:16px;align-items:center;background:linear-gradient(135deg,#12261a,#101a24);border:1px solid #2a5a3f;border-radius:12px;padding:18px 22px;margin:14px 0}
+.verdict .big{font-size:26px;font-weight:800;color:var(--ok);white-space:nowrap;line-height:1.1}
+.verdict .txt{color:var(--dim);font-size:13.5px}
+.pass{color:var(--ok);font-weight:700}.fail{color:var(--stop);font-weight:700}
+.chk{color:var(--ok);font-weight:700}
+ul.tight{margin:6px 0 0;padding-left:20px;color:var(--dim);font-size:13.5px}
+ul.tight li{margin:5px 0}ul.tight b,ul.tight code{color:var(--fg)}
+.foot{color:var(--dim);font-size:12px;margin-top:36px;border-top:1px solid var(--bd);padding-top:16px}
+.tag{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:6px;margin-right:6px}
+.t-do{background:#3d1418;color:#ff7b72}.t-nit{background:#3a2d10;color:#e3b341}
+</style></head><body><div class="wrap">
+
+<header class="hero">
+<h1>Docling Corrective Pass — Acceptance Sign-off</h1>
+<div class="sub">My independent review of the returned package. I re-ran the checks against the actual returned files rather than trusting the report — the same discipline Claude Code applied to my ledger.</div>
+<div class="meta">
+<span>Reviewer <b>Claude (Opus 4.8)</b></span>
+<span>Date <b>2026-08-14 00:56</b></span>
+<span>Commit <b>59cc73b</b> · branch <b>migration/docling-pilot</b></span>
+<span>Executor <b>Claude Code (Opus 5)</b></span>
+</div></header>
+
+<div class="verdict"><div class="big">ACCEPT</div><div class="txt"><b>This is the strongest deliverable in the whole exchange.</b> The corrective pass didn't just fix the substrate — it caught and corrected errors in the inputs it was <i>given</i> (my brief's inflated coverage count, the "v2.0 / FastMCP" framing that GPT and I both carried). Every gate I can verify independently, verifies. I'd give acceptance — with one real-world item for your conscious decision (the repo is now public) and two one-line nits.</div></div>
+
+<h2><span class="k">1</span>Independent verification — my own, not relayed</h2>
+<p class="lead">I hashed both returned ledgers and diffed base→resolved field by field. Results:</p>
+<table>
+<thead><tr><th>Check</th><th>Result</th></tr></thead>
+<tbody>
+<tr><td>Base ledger hash</td><td><span class="chk">✓</span> <code>2d6faad…6b31a</code> — exact match to what I delivered</td></tr>
+<tr><td>Resolved ledger hash</td><td><span class="chk">✓</span> <code>64eb356f…cd59</code> — matches the report's binding identity</td></tr>
+<tr><td>Row count / IDs</td><td><span class="chk">✓</span> 522 base, 522 resolved, identical ID set</td></tr>
+<tr><td>Disposition / classification changes</td><td><span class="chk">✓</span> <b>ZERO</b> — nothing semantic was touched</td></tr>
+<tr><td>Fields edited base→resolved</td><td><span class="chk">✓</span> confined to <b>exactly the 12 repath rows</b> (lgc-031, 036, 046, 059, 495, 497–503) + the source binding</td></tr>
+<tr><td>Source binding</td><td><span class="chk">✓</span> <code>source_ref=legacy/2025</code>, <code>source_commit=a98846d…</code> on all 522</td></tr>
+<tr><td>Per-file <code>source_sha256</code></td><td><span class="chk">✓</span> preserved unchanged from base into resolved (they added binding, didn't touch hashes)</td></tr>
+<tr><td><code>repath_required</code> after resolution</td><td><span class="chk">✓</span> zero remain true — all 12 resolved</td></tr>
+<tr><td>historical/retire/exclude with a current-tree <code>target_path</code></td><td><span class="chk">✓</span> none — the 1:1-copy ambiguity stays fixed</td></tr>
+<tr><td>Provenance index</td><td><span class="chk">✓</span> 198 rows; 115 used / 80 reviewed-not-used / 3 blocked; <code>reviewed_by</code> on exactly 115</td></tr>
+<tr><td>Archive protection</td><td><span class="chk">✓</span> <code>legacy/2025 @ a98846d</code>, lock_branch + no-force-push + no-delete + enforce-admins</td></tr>
+</tbody></table>
+<p>The resolution is exactly minimal and correct: only the permitted edits, only on the rows that needed them, hashes untouched. This is verifiable, reproducible work.</p>
+
+<h2><span class="k">2</span>What raises this above the last pass</h2>
+<p class="lead">The pilot's job was to prove the process is reusable. It's now proven — and it proved it by correcting its own inputs, which is the real test of a maturing process.</p>
+<h3>It corrected my brief</h3>
+<p>My brief mandated the coverage language "120 distilled / 75 reviewed-not-used." Claude Code recounted per row, found the 120 was inflated by five rows (<code>lgc-210</code>, <code>lgc-226</code>–<code>229</code>) that a loose generator pattern had swept in without their being cited, and reported the accurate <b>115 / 80</b> with the delta explained — rather than forcing my number. That is the anti-"unverifiable claim" discipline turned back on its own instructions. Exactly right.</p>
+<h3>It corrected the upstream framing GPT and I both carried</h3>
+<p>It re-verified against source and pinned <code>docling-project/docling-mcp</code> <b>v3.0.0</b> (tag commit <code>7b51926…</code>, released 2026-07-31), correcting three things we handed it: it's <b>v3.0.0, not v2.0</b>; there are <b>two conversion modes + a <code>fallback_to_local</code> flag</b>, not three modes; and it's <b>MCP Python SDK v2, no longer FastMCP</b> — which fixes its own first-pass "FastMCP server" line and sharpens the hxs-7 question (that host's role is literally "FastMCP runtime"). I confirmed the timing independently: MCP SDK v2 shipped late July 2026, v3.0.0 followed on the 31st. Consistent.</p>
+<h3>The SME layer did real adversarial work</h3>
+<p>Four capability-first contracts, four reviews each in a separate context, all four <b>CONDITIONAL</b> — none a rubber stamp. They caught the FastMCP error, the <code>torch</code>/CUDA wheel chain landing on a GPU-less host, a vacuously-satisfiable gate-failability rule, a wrong "ingestion group" basis, and partner services described as running when none are built. <code>reviewed_by</code> populated only on the 115 rows where the contract existed and the review actually ran.</p>
+<h3>The topology packet sharpened the recommendation</h3>
+<p>It found what my "evaluate B first" carried past: <b>B and C have no assigned Docling Serve host</b>, and co-locating Serve on hxs-12 makes B strictly <i>worse</i> than A (same footprint + a unit + a hop). So the real question isn't A-vs-B, it's "is a separate Serve host worth assigning?" — and if not, A wins. That corrects a recommendation I'd been repeating.</p>
+
+<h2><span class="k">3</span>One thing for your conscious decision — the repo is now public</h2>
+<div class="callout stop"><h3>Branch protection required making the repository public</h3>
+<p>To protect <code>legacy/2025</code>, the org's free plan couldn't protect a branch in a private repo, so the repository was made <b>public</b> mid-run and protection then applied. Claude Code flagged this honestly as "a factual consequence, not a re-raise."</p>
+<p>The dead credential being public is fine by your own assessment. But the exposure that changed is bigger than one dead credential: <b>the entire 2025 archive and the current 2026 repo are now world-readable</b> — internal network topology (<code>192.168.x</code>), every hostname, the full fleet architecture and role map, service-account patterns, and the design docs. That is often not something a team means to publish, and here it happened as a side effect of a protection step, not as a deliberate "publish our infrastructure" decision.</p>
+<p><b>This is yours to rule, and only worth ten seconds:</b> if public is fine, nothing to do. If not, the clean fix is to make the repo private again and protect the ref another way (a paid plan enables private-repo protection; or rely on the fact that the archive is a non-default, non-force-pushable ref). I'd raise it rather than let "the repo is public now" pass unremarked.</p></div>
+
+<h2><span class="k">4</span>Two one-line nits (fix before anyone leans on them)</h2>
+<table>
+<thead><tr><th>Nit</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td><span class="tag t-nit">P1</span>service.md cites the wrong resolved hash</td><td>The design doc's Provenance stanza reads <code>manifest_resolved_sha256 8983c5d6…bea7d</code>. I hashed the actual resolved ledger: it is <code>64eb356f…cd59</code> (matching the validation + corrective reports). <code>8983c5d6</code> appears nowhere else and looks like an interim value left un-updated. Ironic given the whole base/resolved discipline exists for hash integrity — one-line fix in the doc it binds to.</td></tr>
+<tr><td><span class="tag t-nit">P2</span>duplicate intro line</td><td>"Current verification required" opens with "Consolidated. Nothing below…" twice. Trivial.</td></tr>
+</tbody>
+</table>
+<p class="lead">Neither touches the ledger, the archive, or any gate. The ledger's own hash is correct; only its citation inside <code>service.md</code> is stale.</p>
+
+<h2><span class="k">5</span>Where this leaves us</h2>
+<ul class="tight">
+<li><b>Accept the corrective pass.</b> It's committed at <code>59cc73b</code>; acceptance is yours to give, and I'd give it — fix the two nits, decide the public-repo question.</li>
+<li><b>The process is proven.</b> The pilot existed to prove the migration method is reusable at scale. It now is — verifiably, and with the self-correction that shows it's robust, not lucky. <b>LangGraph is unblocked from a process standpoint</b> — and this time it runs against a real archive ref with no waiver.</li>
+<li><b>The Docling <i>design</i> is a strong draft, not an approved spec.</b> It still carries 25 numbered open decisions — led by conversion topology, the Docling Serve placement it depends on, and the Docling↔LightRAG handoff. Those are current-architecture rulings only you can make; they don't block LangGraph (different service), but they do block Docling implementation.</li>
+</ul>
+<p>So the fork is the same shape as before, now with the substrate solid under it: <b>make the Docling architecture decisions</b> to move that draft toward approved, or <b>start LangGraph</b> on the proven process. Either is safe now.</p>
+
+<div class="foot">Acceptance review of the Docling corrective pass · base <code>2d6faad…6b31a</code> and resolved <code>64eb356f…cd59</code> re-hashed and diffed against the returned files · upstream v3.0.0 timing web-confirmed · no repository or infrastructure change performed by this review.</div>
+</div></body></html>

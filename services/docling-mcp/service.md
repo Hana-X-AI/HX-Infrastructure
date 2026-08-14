@@ -802,9 +802,11 @@ The recount above is derived per row from the provenance index and is the accura
 The three blocked rows are `lgc-134`, `lgc-260` and `lgc-261`, referenced by identifier only.
 
 **Source of record.** `Hana-X-AI/HX-Infrastructure`, ref `legacy/2025`, commit
-`a98846d6930f7b0097e7ac237c93b60280f99e44` — a protected, read-only archive ref. Every row
-binds to a per-file SHA-256 verified against that commit. Ledger identity:
-`manifest_base_sha256` `2d6faadc…6b31a`, `manifest_resolved_sha256` `8983c5d6…bea7d`.
+`a98846d6930f7b0097e7ac237c93b60280f99e44` — a **raw, protected archive ref, not a sanitized
+lineage**. It preserves the original 2025 history without rewrite and is non-authoritative:
+evidence and lessons only. Every row binds to a per-file SHA-256 verified against that commit.
+Ledger identity: `manifest_base_sha256` `2d6faadc…6b31a`, `manifest_resolved_sha256`
+`64eb356f…cd59`.
 
 | Section | Ledger rows |
 | --- | --- |
