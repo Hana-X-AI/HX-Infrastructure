@@ -1,10 +1,11 @@
 {
   "workload": "qwen35-9b-ollama",
-  "classification": "CANDIDATE",
+  "classification": "COMMISSIONED",
   "classification_scope": "Applies to this workload. No server is classified by it.",
   "runtime": "ollama",
   "runtime_profile": "ollama-qwen35-9b",
-  "commissioning_state": "ELIGIBILITY EVALUATION",
+  "commissioning_state": "OPERATIONAL - LOOPBACK ONLY",
+  "commissioned_on": "2026-08-14",
 
   "purpose": [
     "first real HX local inference/API/tool validation runtime",
@@ -14,6 +15,7 @@
 
   "target_host": {
     "host": "hxs-4",
+    "address_source": "SERVER-REGISTRY.md - never duplicated here",
     "durable_role": "Retrieval & AI utility",
     "durable_role_source": "SERVER-REGISTRY.md",
     "note": "Placement candidate. Durable role is registry-owned and is not redefined by this workload."
@@ -24,28 +26,46 @@
     "tag": "qwen3.5:9b-q4_K_M",
     "quantization": "Q4_K_M",
     "published_artifact_size_gb": 6.6,
-    "size_source": "stated in the approved commissioning prompt; MUST be re-verified against official Ollama metadata at execution time",
-    "digest": null,
-    "verified_upstream_on": null,
-    "supported_by_runtime_version": null
+    "published_artifact_size_bytes": 6594474236,
+    "size_source": "AS-BUILT: registry.ollama.ai manifest, HTTP 200, verified 2026-08-14",
+    "digest": "6488c96fa5fa",
+    "verified_upstream_on": "2026-08-14",
+    "supported_by_runtime_version": "0.32.9",
+    "runtime_minimum_required": "0.17.1",
+    "parameters": "9.7B",
+    "native_context_length": 262144,
+    "embedding_length": 4096,
+    "capabilities": ["completion", "vision", "tools", "thinking"],
+    "architecture_note": "AS-BUILT: hybrid attention. The runtime allocates BOTH a KV cache and a separate recurrent-state (RS) buffer. Only the full-attention layers scale with context, so KV grows sublinearly - 12x from 4K to 64K, not 16x. Do not size this model with a standard transformer KV formula."
   },
 
   "gpu_isolation": {
     "required": true,
+    "proven": true,
+    "proven_on": "2026-08-14",
     "reason": "Current Ollama behaviour may spread a model across all visible GPUs if it does not fit one. hxs-4 has an asymmetric pair, so isolation is mandatory before any residency conclusion is valid.",
     "target_device": {
       "name": "NVIDIA GeForce RTX 5060",
       "pci_bus_id": "00000000:07:00.0",
       "vram_mib": 8151,
-      "uuid": null,
-      "uuid_status": "NOT IN REPOSITORY EVIDENCE - requires a live nvidia-smi -L query on the host",
+      "uuid": "GPU-cc758e31-d23b-3c53-bee6-dae3299a6f11",
+      "uuid_status": "AS-BUILT: confirmed by live nvidia-smi -L on hxs-4",
+      "compute_capability": "12.0",
       "durable_identity": "UUID, never GPU index"
     },
     "excluded_device": {
       "name": "NVIDIA GeForce RTX 5060 Ti",
       "pci_bus_id": "00000000:01:00.0",
       "vram_mib": 16311,
-      "reason": "reserved; must remain invisible to Ollama"
+      "uuid": "GPU-11b1a30e-8c11-001b-7b8b-7b1e15ab6978",
+      "reason": "reserved; must remain invisible to Ollama",
+      "verified_absent": true
+    },
+    "mechanism": {
+      "CUDA_VISIBLE_DEVICES": "target UUID",
+      "GGML_VK_VISIBLE_DEVICES": "999",
+      "OLLAMA_VULKAN": "0",
+      "why_vulkan_must_be_disabled": "AS-BUILT DEFECT: CUDA_VISIBLE_DEVICES does NOT constrain Ollama's Vulkan backend. With Vulkan enabled the runtime re-enumerated BOTH cards including the excluded 16 GB device, silently defeating isolation. CUDA-only isolation is insufficient on this host."
     }
   },
 
@@ -59,20 +79,83 @@
     "context_guidance_source": "current Ollama docs: systems under 24 GiB VRAM default to 4K; at least 64K recommended for coding/agent tools"
   },
 
+  "measured_residency": {
+    "_comment": "AS-BUILT. Every row observed on hxs-4 2026-08-14. KV is measured, never estimated.",
+    "as_built_host": {
+      "driver_version": "580.173.02",
+      "cuda_version": "13.0",
+      "ollama_version": "0.32.9",
+      "device_total_mib": 8151
+    },
+    "buffers_at_4096": {
+      "model_buffer_mib": 4717.38,
+      "kv_buffer_mib": 128.00,
+      "recurrent_state_buffer_mib": 50.25,
+      "compute_buffer_mib": 248.10
+    },
+    "ladder": [
+      { "context": 4096,  "kv_mib": 128,  "vram_used_mib": 6394, "processor": "100% GPU",       "gen_tok_s": null },
+      { "context": 8192,  "kv_mib": 256,  "vram_used_mib": 6530, "processor": "100% GPU",       "gen_tok_s": 119.41 },
+      { "context": 16384, "kv_mib": 512,  "vram_used_mib": 6794, "processor": "100% GPU",       "gen_tok_s": 124.05 },
+      { "context": 32768, "kv_mib": 1024, "vram_used_mib": 6932, "processor": "15%/85% CPU/GPU", "gen_tok_s": 75.70 },
+      { "context": 65536, "kv_mib": 1536, "vram_used_mib": 6984, "processor": "28%/72% CPU/GPU", "gen_tok_s": 49.98 }
+    ],
+    "full_gpu_residency_ceiling": 16384,
+    "identical_workload_comparison": {
+      "_comment": "Same 8311-token prompt at two context settings. Larger context is strictly slower below its own limit.",
+      "prompt_tokens": 8311,
+      "at_16384": { "prompt_tok_s": 2449, "gen_tok_s": 70, "processor": "100% GPU", "recall": "correct" },
+      "at_65536": { "prompt_tok_s": 1216, "gen_tok_s": 26, "processor": "28%/72% CPU/GPU", "recall": "correct" }
+    },
+    "long_context_load_test": {
+      "context": 65536,
+      "prompt_tokens": 22846,
+      "prompt_tok_s": 1182,
+      "gen_tok_s": 17,
+      "wall_clock_s": 25,
+      "recall": "correct - retrieved a fact buried at mid-depth",
+      "stability": "no D-state processes, no driver wedge"
+    }
+  },
+
+  "api_surface": {
+    "_comment": "AS-BUILT. All verified live on 2026-08-14.",
+    "anthropic_messages": {
+      "endpoint": "/v1/messages",
+      "native": true,
+      "significance": "Ollama 0.32.9 serves the Anthropic Messages API directly. Claude Code needs no translation proxy.",
+      "verified": ["system prompt", "tool_use", "tool_result round-trip", "SSE streaming"],
+      "sse_events": ["message_start", "content_block_start", "content_block_delta", "content_block_stop", "message_delta", "message_stop"],
+      "thinking_disable": "thinking:{\"type\":\"disabled\"} is honoured - output drops from 159 to 5 tokens for the same answer"
+    },
+    "openai_compatible": { "endpoint": "/v1/chat/completions", "verified": ["completion", "tool calling"] },
+    "ollama_native": { "endpoints": ["/api/generate", "/api/chat", "/api/show"], "verified": ["streaming", "tool calling", "thinking"] },
+    "client_constraint": "MEASURED: thinking blocks consume the max_tokens budget BEFORE any text block is emitted. At max_tokens=128 the response contained no text at all. Clients must either send a generous max_tokens (>=1024) or disable thinking."
+  },
+
   "acceptance_states": {
     "_comment": "Deliberately not collapsed.",
-    "A_qwen_local_runtime_operational": "NOT REACHED",
-    "B_hx_validation_operational": "NOT REACHED",
-    "C_claude_code_qualified": "NOT REACHED"
+    "A_qwen_local_runtime_operational": "REACHED 2026-08-14 - 100% GPU residency on the isolated device, correct output, stable under a 22.8K-token load",
+    "B_hx_validation_operational": "REACHED 2026-08-14 - Anthropic, OpenAI and native surfaces verified including full tool round-trip",
+    "C_claude_code_qualified": "NOT REACHED - blocked on network reachability, see network_exposure"
+  },
+
+  "network_exposure": {
+    "state": "LOOPBACK ONLY",
+    "listener": "127.0.0.1:11434",
+    "note": "Ollama has no authentication. Binding it to 0.0.0.0 publishes an unauthenticated inference endpoint that will emit tool-call payloads to any host that can route to it. Not applied.",
+    "recommended_access": "SSH port-forward, which keeps the service on loopback. Resolve the host address from SERVER-REGISTRY.md: ssh -N -L 11434:127.0.0.1:11434 <user>@<hxs-4>",
+    "owner_decision_required": true
   },
 
   "concurrency": { "assume_coexistence": false },
 
   "activation": {
     "requires_gate": "hx-capacity-gate",
-    "model_download_allowed": false,
-    "host_mutation_authorized": false,
-    "note": "Ollama install, model pull and systemd configuration are Phase 3 server implementation. No download or install is authorized by this definition."
+    "model_download_allowed": true,
+    "host_mutation_authorized": true,
+    "authorized_by": "owner instruction 'proceed with install', 2026-08-14",
+    "note": "Ollama install, model pull and systemd configuration executed under that authorization."
   },
 
   "isolation": {
@@ -81,5 +164,18 @@
     "env_scoped_to_profile": true,
     "removable_without_host_rebuild": true,
     "service_represents": "the Qwen workload, never the host role"
-  }
+  },
+
+  "incidents": [
+    {
+      "id": "hxs4-wedge-001",
+      "date": "2026-08-14",
+      "summary": "NVIDIA kernel context wedged; nvidia-smi entered unkillable D-state and the host required a reboot.",
+      "trigger": "A context-ladder loop requested a new num_ctx without unloading the previous runner. Ollama spawns a separate runner per context size, so two ~5.5 GB runners attempted to coexist on an 8 GB device.",
+      "root_cause": "test-harness defect, not a hardware or model limit",
+      "evidence": "two llama-server processes in D-state for ~20 minutes; every subsequent nvidia-smi also entered D-state",
+      "resolution": "graceful reboot; all rungs including 65536 subsequently passed with an unload between each",
+      "standing_rule": "Always unload and confirm the device is clear before changing num_ctx on a single-GPU host. An OOM here does not degrade gracefully - it wedges the driver."
+    }
+  ]
 }
