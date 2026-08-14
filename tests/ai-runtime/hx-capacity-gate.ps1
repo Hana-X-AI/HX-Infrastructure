@@ -8,7 +8,7 @@
     Downloads nothing.
 
     Backend awareness matters. For a CUDA runtime, host RAM is NOT a substitute for device
-    memory in full-resident mode: current DS4 reserves memory for graph and KV and refuses
+    memory in full-resident mode: current
     to start if model layers would spill to CPU.
 
     Mode awareness matters just as much. A model too large to hold resident may still run
@@ -20,7 +20,7 @@
     A decisive FAIL in one mode does not condemn another mode.
 
 .EXAMPLE
-    powershell -File .\tests\ai-runtime\hx-capacity-gate.ps1 -Workload ds4-deepseek -TargetHost hxs-3
+    powershell -File .\tests\ai-runtime\hx-capacity-gate.ps1 -Workload
 #>
 [CmdletBinding()]
 param(

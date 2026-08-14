@@ -18,10 +18,9 @@ Every workload passes `hx-capacity-gate.ps1` before any model download or activa
 A workload whose status is DEFERRED or whose commissioning is ABORTED cannot be commissioned:
 the driver refuses to evaluate any gate for it.
 
-
 | Workload | Classification | Candidate placement |
 | --- | --- | --- |
-| `ds4-deepseek` | DEFERRED / RESEARCH | none — commissioning aborted 2026-08-14 |
+| `
 
 ## Deliberately absent
 

@@ -20,7 +20,7 @@ that is testable today. This contract draws the line between what can be proven 
 inference and what genuinely requires a live model, so that neither gets claimed on the
 other's evidence.
 
-Design source: the reviewed DwarfStar (DS4) snapshot, mined for its treatment of an AI runtime
+Design source: the reviewed DwarfStar snapshot, mined for its treatment of an AI runtime
 as a protocol, state, tooling and QA surface. See *Provenance* below.
 
 ---
@@ -97,7 +97,7 @@ failure and must never be reported as a pass.
 
 ## The tool round-trip invariant
 
-Mined from DS4's exact tool-call replay mechanism. DS4 keeps a bounded map from tool ID to the
+Mined from
 exact sampled representation, using canonical re-rendering only as a fallback, because
 re-serializing a tool call can differ from what the model actually emitted and break
 continuation and cache identity.
@@ -113,8 +113,6 @@ tool call generated
   -> next turn receives coherent history
 ```
 
-DS4's DSML representation is **not** adopted as an HX format.
-
 ---
 
 ## Profiles
@@ -126,9 +124,9 @@ style, capability declarations, timeouts, live/offline status.
 | --- | --- | --- |
 | `offline-fixture` | executable now | Model-free deterministic protocol validation |
 | `vllm-qwen` | PRIMARY — configuration now, live later | The intended primary HX local model runtime |
-| `ds4-deepseek` | EXPERIMENTAL — configuration now, live later | Anthropic-compatible and OpenAI-compatible cross-runtime testing, tool fidelity, cache experiments |
+| ` live later | Anthropic-compatible and OpenAI-compatible cross-runtime testing, tool fidelity, cache experiments |
 
-**The experimental classification applies to the `ds4-deepseek` runtime profile, not to any
+**The experimental classification applies to the ` not to any
 server.** Adding a further profile must not require editing this contract.
 
 No credentials, no secrets and no live host are hardcoded anywhere in this contract or in the
@@ -164,24 +162,24 @@ Machine-readable JSON plus a human-readable summary.
 - It does not treat a runtime-specific optional capability as a failure unless the contract
   marks it REQUIRED.
 - It does not replace the primary vLLM/Qwen runtime decision.
-- It does not adopt `ds4-agent` as an HX orchestration framework.
+- It does not adopt `
 
 ---
 
 ## Provenance
 
-Design inspiration only — the reviewed DS4 snapshot `ds4-main.zip`, SHA-256
+Design inspiration only — the reviewedzip`, SHA-256
 `e4e5a5ad5124436f13f6bb6b0ef91d496c6c2e5cd954e20fef709510a7f43bac`, upstream
-`github.com/antirez/ds4`, MIT licensed, copyright the ds4.c authors and the ggml authors.
+`github.com/antirez/ MIT licensed, copyrightc authors and the ggml authors.
 
-**No DS4 source code was copied into HX.** The patterns adopted — evidence-class separation,
+**No** The patterns adopted — evidence-class separation,
 the tool-call fidelity invariant, cold/warm cache distinctions, and separating fast protocol
 regression from model-backed quality testing — were independently implemented in the existing
 HX test language. No MIT notice obligation is triggered by idea reuse; had source been copied,
 the notice and source path would be recorded here.
 
-Facts asserted about DS4 come from that snapshot and are not broadened: it is a narrow
-inference engine targeting DeepSeek V4 Flash, not a general GGUF runner; it exposes
+Facts asserted about
+inference engine targeting not a general GGUF runner; it exposes
 `/v1/models`, `/v1/chat/completions`, `/v1/responses`, `/v1/completions` and an
 Anthropic-compatible `/v1/messages`; it supports Metal, CUDA and ROCm; the snapshot contained
 1,166 files and zero model weights.

@@ -14,7 +14,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\ai-runtime\hx-runtim
 
 # against a named profile
 powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\ai-runtime\hx-runtime-acceptance.ps1 -Profile vllm-qwen
-powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\ai-runtime\hx-runtime-acceptance.ps1 -Profile ds4-deepseek
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\ai-runtime\hx-runtime-acceptance.ps1 -Profile
 ```
 
 Exit code is the failure count, so it fails a pipeline correctly.
@@ -54,9 +54,9 @@ A profile becomes live when its endpoint environment variable is set:
 | --- | --- | --- |
 | `offline-fixture` | none | always offline |
 | `vllm-qwen` | `HX_VLLM_BASE_URL` | **PRIMARY** |
-| `ds4-deepseek` | `HX_DS4_BASE_URL` | EXPERIMENTAL, also gated by the capacity gate |
+| ` also gated by the capacity gate |
 
-Model identity comes from `HX_VLLM_MODEL` / `HX_DS4_MODEL`. Nothing is hardcoded, and no
+Model identity comes from `HX_VLLM_MODEL` / `HX_ Nothing is hardcoded, and no
 credential belongs in a profile.
 
 Running a live-status profile with no endpoint still executes the L1 contract tests, because
@@ -75,7 +75,7 @@ contract or the runner.
 tests/ai-runtime/
 ├── hx-runtime-acceptance.ps1   the runner
 ├── hx-capacity-gate.ps1        workload capacity gate (see below)
-├── profiles/                   offline-fixture, vllm-qwen, ds4-deepseek
+├── profiles/                   offline-fixture, vllm-qwen
 ├── fixtures/                   17 recorded protocol cases
 ├── workloads/                  workload placement definitions
 └── evidence/                   run output, git-ignored
@@ -93,7 +93,7 @@ was measured. Evidence is git-ignored — it is run output, not source.
 Before any model download or runtime activation:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\ai-runtime\hx-capacity-gate.ps1 -Workload ds4-deepseek -Host hxs-3
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\ai-runtime\hx-capacity-gate.ps1 -Workload
 ```
 
 It returns PASS, FAIL, or **BLOCKED** when evidence is insufficient. It reads current
@@ -102,8 +102,8 @@ two heavy models fit concurrently.
 
 ## Provenance
 
-Design inspiration from the reviewed DwarfStar (DS4) snapshot, upstream
-`github.com/antirez/ds4`, MIT licensed. **No DS4 source was copied.** The adopted ideas —
+Design inspiration from the reviewed DwarfStar snapshot, upstream
+`github.com/antirez/ MIT licensed. **No** The adopted ideas —
 evidence-class separation, the tool-call fidelity invariant, cold/warm cache distinctions, and
 separating fast protocol regression from model-backed quality testing — were independently
 implemented here in PowerShell. See the contract's *Provenance* section.

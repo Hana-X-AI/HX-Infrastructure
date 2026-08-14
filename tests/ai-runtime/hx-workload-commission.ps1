@@ -15,13 +15,13 @@
     live host execution report SKIP or BLOCKED with a precise reason. Nothing is fabricated.
 
 .PARAMETER Workload
-    Workload name under workloads/. Default: ds4-deepseek.
+    Workload name under workloads/. Default:
 
 .PARAMETER TargetHost
     Host the workload is being commissioned on. Default: hxs-3.
 
 .EXAMPLE
-    powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\ai-runtime\hx-ds4-commission.ps1
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\ai-runtime\hxps1
 #>
 [CmdletBinding()]
 param(
@@ -90,7 +90,7 @@ $defs = @(
     @{ phase='1'; state='MODEL SELECTED'; test={
         $m = $wl.model_selection
         $missing = @()
-        foreach ($f in 'identity','quantization','gguf_filename','supported_by_ds4_revision','source_provenance','expected_file_size_gb') {
+        foreach ($f in 'identity','quantization','gguf_filename','supported_by_'source_provenance','expected_file_size_gb') {
             if (-not $m.$f) { $missing += $f }
         }
         if ($missing.Count -eq 0) { $null }
@@ -117,9 +117,9 @@ $defs = @(
             "measured $($sg.measured_free_gb) GB free is below the $($sg.requirements.minimum_free_gb) GB minimum"
         } else { $null } } }
 
-    @{ phase='3'; state='DS4 INSTALLED'; test={
-        if ($wl.ds4_runtime.install_path -and $wl.ds4_runtime.revision) { $null }
-        else { 'DS4 mainline CUDA build not present: no install_path or revision recorded. Applicable model-free vendor tests are run as part of this gate' } } }
+    @{ phase='3'; state=' test={
+        if ($wl.install_path -and $wl.revision) { $null }
+        else { ' Applicable model-free vendor tests are run as part of this gate' } } }
 
     @{ phase='4'; state='MODEL ACQUIRED'; test={
         $a = $wl.model_acquisition
@@ -144,7 +144,7 @@ $defs = @(
         'cold and warm benchmark not run; timing is never fabricated offline' } }
 
     @{ phase='9'; state='LOCAL SERVER VERIFIED'; test={
-        'ds4-server on localhost not commissioned; loopback validation precedes any network exposure' } }
+        ' loopback validation precedes any network exposure' } }
 
     @{ phase='10'; state='API VERIFIED'; test={
         'API, streaming and tool round-trip require a reachable local endpoint; offline protocol results are class A evidence only' } }
@@ -194,7 +194,7 @@ Write-Host '-----------------------------------------'
 Write-Host ("  CURRENT STATE : {0}" -f $reported) -ForegroundColor $(if ($operational) {'Green'} else {'Yellow'})
 Write-Host ("  reached       : {0}" -f $currentState)
 if ($blockedAt) { Write-Host ("  next gate     : {0}" -f $blockedAt) }
-Write-Host ("  DS4 is NOT operational. Installed is not operational.") -ForegroundColor DarkYellow
+Write-Host (" Installed is not operational.") -ForegroundColor DarkYellow
 Write-Host ("  Durable role of {0} unchanged: {1}" -f $TargetHost, $durableRole)
 Write-Host '========================================='
 Write-Host ''
@@ -210,7 +210,7 @@ $ev = [pscustomobject]@{
     reported_state        = $reported
     highest_state_reached = $currentState
     next_gate             = $blockedAt
-    ds4_revision          = $wl.ds4_runtime.revision
+revision
     model_identity        = $wl.model_selection.identity
     quantization          = $wl.model_selection.quantization
     checksum_sha256       = $wl.model_acquisition.checksum_sha256
@@ -222,7 +222,7 @@ $ev = [pscustomobject]@{
     gates                 = $script:gates
     note                  = 'No host was contacted, nothing was downloaded, nothing was installed. Gates requiring live execution report BLOCKED or SKIP with a reason.'
 }
-$out = Join-Path $EvidencePath "ds4-commission_$($TargetHost)_$stamp.json"
+$out = Join-Path $EvidencePath "_$stamp.json"
 $ev | ConvertTo-Json -Depth 8 | Set-Content -Path $out -Encoding UTF8
 Write-Host ("  evidence: {0}" -f (Resolve-Path $out).Path)
 Write-Host ''

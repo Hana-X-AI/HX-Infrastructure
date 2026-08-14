@@ -374,7 +374,7 @@
   },
 
   "isolation": {
-    "config_separate_from": ["vllm", "ds4"],
+    "config_separate_from": ["vllm"],
     "model_dir_separate": true,
     "env_scoped_to_profile": true,
     "removable_without_host_rebuild": true,
