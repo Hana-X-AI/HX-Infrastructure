@@ -80,8 +80,8 @@ historical evidence and are not current sign-off.
 
 ## Architecture
 
-Three layers. The protocol and handoff layers are settled; **where conversion physically runs
-is an open decision** — see *Conversion topology* below.
+Three layers, all settled. Conversion runs in a co-located Docling Serve instance — see
+*Conversion topology* below.
 
 **1. Protocol layer.** The package exposes its tool surface using the **MCP Python SDK v2**
 (`mcp.server.mcpserver.MCPServer`), pinned `mcp[cli]>=2.0.0,<3.0.0`. It is **not** a FastMCP
@@ -96,9 +96,9 @@ co-existence, and is **VERIFICATION REQUIRED**.
 
 **2. Processing layer.** A document arrives, its format is detected, a backend is selected,
 and a pipeline produces a structured document with headings, tables, lists, code blocks,
-images and reading order preserved. **Whether that pipeline executes inside this service or
-inside a separate Docling Serve instance is the topology decision.** The 2025 design assumed
-in-process only; the current package defaults to the opposite.
+images and reading order preserved. **This pipeline runs inside Docling Serve**, a separate
+process on the same host, reached over loopback. The 2025 design assumed in-process
+conversion; that is not how the current package works and not how this service is built.
 
 **3. Handoff layer.** Parsed output leaves the service. Docling does not store knowledge,
 does not build graphs and does not own a vector collection.
@@ -115,69 +115,64 @@ Provenance: lgc-105 (ADR-001), lgc-107, lgc-067, lgc-068.
 
 ## Conversion topology
 
-**conversion topology: VERIFICATION REQUIRED.** This is an owner decision and is not inferred
-here. The decision packet is
+**RESOLVED by owner decision, 2026-08-13: remote mode, with Docling Serve co-located on
+hxs-12.** Recorded in
 `governance/reports/claude-code/Claude-Opus-5_2026-08-13_docling-topology-decision-packet.html`.
 
-Verified on 2026-08-13 against a single pinned authority: `docling-project/docling-mcp`
-**v3.0.0**, tag commit `7b51926920550c4a2c6e888977b8e38a08bafdbd`, released 2026-07-31, read
-from the project's own source. Unreleased work on `main` is deliberately **not** cited here —
-it carries additional object-storage extras and a changed cache-keying scheme that are not in
-any release, and mixing a release with a moving tip is the error this document warns others
-against.
+Two services on one host:
 
-- `ConversionMode` has exactly **two** values: `remote` (calls a Docling Serve API) and
-  `local` (in-process converter). **The package default is `remote`.**
-- What is often described as a third "hybrid" mode is **not a mode**. It is a separate flag,
-  `fallback_to_local`, defaulting to `false`, which lets remote mode fall back to a local
-  converter when the local extra is installed.
-- Local conversion requires the `docling-mcp[local]` extra and is unavailable without it.
+```
+hxs-12
+├─ docling-serve        parses. Owns native libraries, model weights, parser cache.
+│                       Listens on loopback.
+└─ docling-mcp          MCP surface. conversion_mode=remote, service_url -> loopback.
+                        Holds no model weights.
+```
 
-So the three candidates are configurations, not three modes:
+Verified against pinned upstream on 2026-08-13:
 
-| Option | Configuration | What it means for hxs-12 |
+| Package | Version | Identity |
 | --- | --- | --- |
-| **A · Local** | `conversion_mode=local` + `docling-mcp[local]` | Native libraries, model weights and parser cache all live on hxs-12. What the 2025 design assumed |
-| **B · Remote** | `conversion_mode=remote` + `service_url` → Docling Serve | Parsing concerns move to Docling Serve. This service becomes a thin façade holding no model weights |
-| **C · Remote with fallback** | B plus `fallback_to_local=true` and the local extra | Both footprints present; resilience at the cost of carrying the local dependency set anyway |
+| `docling-mcp` | v3.0.0 | tag commit `7b51926920550c4a2c6e888977b8e38a08bafdbd`, released 2026-07-31 |
+| `docling-serve` | v1.30.0 | released 2026-08-07 |
 
-**B and C have no host, and that is a precondition, not a detail.** No row in
-`SERVER-REGISTRY.md` assigns a Docling Serve workload to any server, and the ratified fleet
-map contains no Serve instance. So B and C require one of:
+Both declare `requires-python >=3.10`; the host carries 3.12.3.
 
-- **Co-locating Serve on hxs-12** — under which B is strictly *worse* than A: the same native
-  libraries and model weights land on the same filesystem, plus a second unit and a network
-  hop. The footprint relief B appears to offer does not materialise.
-- **A new owner placement decision** recorded in the registry. Every GPU-less candidate in the
-  fleet is a 4–6 core machine, so the CPU parsing cost is relocated, not removed.
+### What this ruling buys
 
-Choosing B would also make hxs-12's registry role — "Ingestion — parsing" — inaccurate, since
-hxs-12 would no longer parse. **Serve placement is therefore its own owner decision and a
-precondition of B or C, not a consequence of them.**
+- **Lifecycle separation on one box.** A parser upgrade restarts Serve, not the MCP surface.
+  This is the phase-4 parsing / phase-5 MCP split expressed as two units rather than two hosts.
+- **The upstream default path.** `conversion_mode` defaults to `remote`; this is the
+  configuration the package is built around, not a variant.
+- **A CPU-only dependency path that actually exists.** Serve ships a `cpu` extra
+  (`docling-serve[cpu]`) resolved against a CPU-only torch index. `docling-mcp[local]` has no
+  equivalent, so the local topology would have pulled the CUDA runtime onto a GPU-less host
+  unless torch were pinned by hand. **This ruling removes that hazard rather than managing it.**
+- **Relocation stays cheap.** Moving Serve to another host later is a `service_url` change and
+  a registry update, not a redesign.
+- **The registry stays accurate.** hxs-12 still parses, so its assigned role — "Ingestion —
+  parsing" — remains correct. No role change is required or made.
 
-**Topology A and C carry a GPU runtime this host cannot use.** `docling-mcp[local]` resolves
-through `docling-slim[standard]` to `torch`, whose Linux metadata declares the CUDA toolkit,
-cuDNN, NCCL, cuSPARSELt, NVSHMEM and Triton unconditionally — well over 1.5 GB of GPU runtime
-wheels on a machine with no NVIDIA hardware and one 238.5 GB disk. Avoiding it requires
-deliberately resolving torch from the CPU-only package index. Under B none of this is
-installed. This is a dependency-resolution constraint, and the exact installed footprint is
-**VERIFICATION REQUIRED** on the host.
+### What it costs
 
-Until the owner rules, scope every parsing-side requirement conditionally:
+- Two systemd units instead of one, and a loopback HTTP hop per conversion.
+- The parsing footprint — native libraries, model weights, parser cache — still lands on
+  hxs-12's single 238.5 GB disk. Co-location moves the ownership, not the bytes.
+- `service_timeout` (default 300.0) and `service_max_retries` (default 3) are declared in
+  `docling-mcp` settings but **not consumed** by its remote client at v3.0.0, so a conversion
+  cannot currently be bounded through that configuration. Over loopback to a local process the
+  exposure is materially smaller than it would be across the network, but it is not zero and
+  it is not configurable.
 
-- **If A** — native libraries, model artefacts and cache belong to this service on hxs-12.
-- **If B** — those belong to Docling Serve. This service needs neither model weights nor the
-  imaging native libraries, and the single-disk cache pressure described later largely moves
-  with them.
-- **If C** — account for both footprints; the local dependency set must be present even when
-  it is only a fallback.
+### Settings this fixes
 
-Related current settings, all prefixed `DOCLING_MCP_`: `service_url`, `service_api_key`,
-`service_timeout` (default 300.0), `service_max_retries` (default 3), `keep_images`
-(default false), `images_scale` (default 1.0), `do_ocr` (default **true**),
-`do_table_structure` (default true).
-
----
+| Setting | Value |
+| --- | --- |
+| `DOCLING_MCP_CONVERSION_MODE` | `remote` |
+| `DOCLING_MCP_SERVICE_URL` | Serve on loopback — port **VERIFICATION REQUIRED**, Serve's uvicorn default is 5001 |
+| `DOCLING_MCP_FALLBACK_TO_LOCAL` | `false` — no local converter is installed, so a fallback would fail rather than degrade |
+| Serve bind address | Loopback. Serve's uvicorn default is `0.0.0.0`, which must be overridden: nothing outside the host needs to reach the parser directly |
+| Serve install | `docling-serve[cpu]`, resolved against the CPU-only torch index |
 
 ## MCP tool surface
 
@@ -245,40 +240,38 @@ Provenance: lgc-064, lgc-067, lgc-124, lgc-070.
   `docling-slim[service-client]~=2.92`, `docling-core>=2.51.0`, `mcp[cli]>=2.0.0,<3.0.0`,
   `pydantic~=2.10`, `pydantic-settings~=2.4`. Note `docling-core` is present under **every**
   topology, so document-model types and thumbnail support exist even under B.
-- **Package extras** — `docling-mcp[local]` (which pulls `docling-slim[standard]~=2.92`) is
-  required **only** for topology A or C. Under B the base package is sufficient and no local
-  conversion dependency is installed. See the GPU-runtime constraint above.
+- **`docling-mcp[local]` is NOT installed.** The base package is sufficient in remote mode.
+  This is what keeps the CUDA wheel chain off the host.
+- **Docling Serve is installed separately** as `docling-serve[cpu]`, resolved against the
+  CPU-only torch index (`torch>=2.7.1`, `torchvision>=0.22.1`, with a torchvision exclusion
+  for linux x86_64). Serve v1.30.0 declares `requires-python >=3.10`.
 
-### Native libraries — topology-dependent
+### Native libraries — Docling Serve owns these
 
-**Applies to topology A and C only.** Under topology B these belong to Docling Serve, not to
-this service.
+The imaging and OCR stack needs shared libraries present on the host. Under this topology they
+are **Docling Serve's** prerequisites, not `docling-mcp`'s — but Serve runs on hxs-12, so they
+still land here.
 
-The document-processing library pulls in imaging dependencies that need shared libraries
-present on the host. In 2025 a missing OpenGL shared library stopped the service from
-starting at all, and the fix was complicated by a package rename: **the package name used
-before Ubuntu 24.04 no longer exists on 24.04**, so an installation instruction carried
-forward verbatim fails. hxs-12 runs 24.04.4, so this applies directly.
+In 2025 a missing OpenGL shared library stopped the service starting at all, and the fix was
+complicated by a package rename: **the name used before Ubuntu 24.04 no longer exists on
+24.04**, so an installation instruction carried forward verbatim fails. hxs-12 runs 24.04.4, so
+this applies directly.
 
-Native library prerequisites must be declared explicitly as part of the service definition,
-resolved against the 24.04 package set, and verified on the host. The exact package names are
-**VERIFICATION REQUIRED** — they must be confirmed on hxs-12 rather than inherited from a
-2025 document.
+Native prerequisites are declared explicitly against the 24.04 package set and verified on the
+host. Exact package names are **VERIFICATION REQUIRED** — confirmed on hxs-12, not inherited
+from a 2025 document.
 
-### Model artefacts — topology-dependent
+### Model artefacts — Docling Serve owns these
 
-**Applies to topology A and C only.** The processing pipeline downloads model weights for
-layout analysis, table structure and OCR on first use. These land in a cache directory and are
-not small. On a host with one 238.5 GB disk and no spare device, that cache shares space with
-the operating system and with parsed output. See *Data and cache paths*.
+Serve downloads model weights for layout analysis, table structure and OCR on first use. They
+land in Serve's cache directory on hxs-12's single disk.
 
-**Under topology B this service downloads no model weights at all** — the current package
-advertises exactly that as the benefit of remote mode. The storage pressure moves to whichever
-host runs Docling Serve.
+`docling-mcp` downloads **no** model weights under this topology. That separation is the point
+of the ruling: one service owns the parsing footprint, and the MCP surface stays light.
 
-Provenance: lgc-081 (native library defect), lgc-067, lgc-079, lgc-135, lgc-136, lgc-137.
-
----
+Pre-fetching those weights at install time rather than on the first production conversion is
+**VERIFICATION REQUIRED** — otherwise the first document to arrive also triggers the first
+download, and a network or storage failure surfaces as a conversion failure.
 
 ## Integration contracts
 
@@ -450,9 +443,10 @@ Core document conversion is not served by a language model and must not be descr
 though it were. Layout analysis, table structure recognition, reading order and OCR are
 computer-vision and parsing models that run inside the processing library on the host.
 
-**hxs-12 has no GPU.** Therefore:
+**hxs-12 has no GPU, and Docling Serve runs on it.** Therefore:
 
-- The pipeline's accelerator setting resolves to CPU. There is no CUDA device to select.
+- Serve's accelerator setting resolves to CPU. There is no CUDA device to select, which is why
+  it is installed from the `cpu` extra rather than a CUDA-indexed build.
 - OCR runs on CPU. The 2025 measurements put OCR-enabled throughput roughly five to ten times
   below OCR-disabled throughput, and those numbers were not taken on this hardware.
 - Vision-model pipelines — picture description, picture classification, and the vision-model
@@ -470,8 +464,12 @@ Provenance: lgc-066, lgc-069, `servers/hxs-12/discovery.md`.
 
 - **Bare metal, systemd, no containers.** This matches both the inherited decision and the
   current fleet's practice. The host has no container runtime installed.
-- **Single process.** The upstream cache is per-process, so a second instance would not share
-  it. Horizontal scaling is not part of this design.
+- **Two units, one host.** `docling-serve` parses; `docling-mcp` presents the MCP surface and
+  calls it over loopback. Each is a single process; the document cache is per-process, so a
+  second instance of either would not share it. Horizontal scaling is not part of this design.
+- **Unit ordering.** `docling-mcp` is ordered *after* `docling-serve`, but must not hard-require
+  it — see the next point. Serve restarting is a degraded window, not a reason for the MCP
+  surface to exit.
 - **No hard systemd dependency on remote services.** The 2025 architecture review specifically
   required removing a `Requires=` directive on remote units, replacing it with
   application-level dependency checking and retry. A parsing service must start and stay
@@ -518,7 +516,11 @@ lgc-110, lgc-180, lgc-181, lgc-182, lgc-183.
 
 | Setting | Status |
 | --- | --- |
-| Listen port | **VERIFICATION REQUIRED** — 2025 used 8000; no current decision recorded |
+| MCP listen port | **VERIFICATION REQUIRED** — package default 8000 |
+| Serve listen port | **VERIFICATION REQUIRED** — Serve's uvicorn default is 5001, loopback only |
+| `conversion_mode` | **Settled** — `remote` |
+| `service_url` | **Settled in shape** — Serve on loopback; port per above |
+| `fallback_to_local` | **Settled** — `false`; no local converter is installed |
 | Bind address | **Settled** — the standing fleet rule is to bind the LAN interface, not `0.0.0.0` |
 | Transport | **Settled** — the fleet standardises on Streamable HTTP |
 | Service root path | **VERIFICATION REQUIRED** |
@@ -544,8 +546,9 @@ percent used — roughly 222 GB free — with no second device, no spare capacit
 redundancy. Four kinds of data compete for it:
 
 1. **Model artefacts** — layout, table-structure and OCR weights, downloaded on first use.
-   **Topology A and C only.**
-2. **Converted document cache** — on-disk exports of parsed documents. **All topologies.**
+   **Owned by Docling Serve**, on this host.
+2. **Converted document cache** — `docling-mcp`'s own on-disk exports of parsed documents,
+   separate from Serve's model cache.
 3. **Working files** — whatever a conversion needs mid-flight.
 4. **Swap** — the host uses a swapfile on this same and only device.
 
@@ -553,8 +556,8 @@ redundancy. Four kinds of data compete for it:
 `CACHE_DIR` environment variable — outside the typed settings model, so it is *not* covered by
 the startup validation rule below. Left unset it creates a `_cache` directory **inside the
 installed package tree**, and the document-save and page-thumbnail tools write there. This
-applies under **every** topology, including B. It must be pinned explicitly to the service
-root.
+applies regardless of where conversion runs, so it is `docling-mcp`'s to pin explicitly to
+the service root — separately from Serve's model cache.
 
 Requirements:
 
@@ -675,21 +678,24 @@ lgc-164, lgc-066.
 way.** The 2025 design asserted a health endpoint on a dedicated port and wrote health tests
 against it.
 
-- **Topology A** — the package exposes no health endpoint of its own. Any health capability is
-  HX-authored, and its existence must be decided rather than assumed.
-- **Topology B or C** — health means two separate questions: is the MCP façade up, and is the
-  Docling Serve instance it depends on reachable. The second is a check against Serve, not
-  against this service. Whether a failure of the second should make the first report unhealthy
-  is **VERIFICATION REQUIRED**.
+Under the chosen topology, health is **two questions**: is the MCP surface up, and is Docling
+Serve reachable on loopback. The second is a check against Serve, not against `docling-mcp`.
+Whether a Serve failure should make the MCP surface report unhealthy — rather than report
+healthy-but-degraded — is **VERIFICATION REQUIRED**.
+
+`docling-mcp` itself still exposes no health endpoint, so whatever probes these two questions
+is HX-authored.
 
 The remaining upstream capability boundaries stand regardless of topology: no authentication,
 no multi-tenancy, no request metrics, no distributed cache.
 
 Minimum operational checks for a parsing service:
 
-- Process is running and the MCP endpoint answers a tool-discovery request.
+- The MCP endpoint answers a tool-discovery request.
+- **Docling Serve answers on loopback.** This is a distinct check with a distinct failure mode:
+  the MCP surface can be perfectly healthy while conversion is unavailable.
 - The enabled tool groups are the ones intended.
-- Model artefacts are present and readable by the service account.
+- Serve's model artefacts are present and readable by its service account.
 - Disk headroom on the single device is above a defined floor.
 - A known-good sample document converts end to end.
 
@@ -725,57 +731,55 @@ Short list, each one traceable, each one a thing that actually went wrong:
 
 ## Current verification required
 
-Consolidated. Nothing below may be treated as decided.
-
 Consolidated and renumbered. Nothing below may be treated as decided.
 
+**Settled — recorded so they are not reopened**
+
+Conversion topology (remote, Serve co-located on hxs-12, owner ruling 2026-08-13);
+`conversion_mode=remote`; `fallback_to_local=false`; virtualenv per service with an absolute
+interpreter in `ExecStart`; Streamable HTTP as the fleet transport standard; the standing
+bind-to-LAN-interface rule, which for Serve means loopback only.
+
 **Architecture and boundaries**
-1. **Conversion topology — A (local), B (remote to Docling Serve), or C (remote with local
-   fallback).** Gates the dependency, storage, cache and health sections.
-2. **Docling Serve placement**, a precondition of B and C: no host is assigned one today, and
-   co-locating it on hxs-12 removes B's only advantage.
-3. Direction, initiator and transport of the Docling↔LightRAG handoff.
-4. Relationship with the runtime on hxs-7, sharpened by the SDK v2 change.
-5. Whether any shared cache or session store is wanted, given the package cache is in-process.
-6. Whether any optional RAG or information-extraction toolgroup is ever enabled — all are
+1. Direction, initiator and transport of the Docling↔LightRAG handoff.
+2. Relationship with the runtime on hxs-7, sharpened by the SDK v2 change — that host's
+   assigned workload is a FastMCP runtime and this is no longer a FastMCP server.
+3. Whether any shared cache or session store is wanted, given the package cache is in-process.
+4. Whether any optional RAG or information-extraction toolgroup is ever enabled — all are
    disabled by HX default.
 
 **Interface**
-7. The authoritative tool names within the enabled groups, read from the pinned version.
-8. Which tool groups are enabled.
+5. The authoritative tool names within the enabled groups, read from the pinned version.
+6. Which tool groups are enabled.
 
 **Configuration**
-9. Listen port.
-10. Service root, cache path, and the **mechanism** that enforces the cache size bound.
-11. Maximum document size, bound together with item 13 as one memory budget.
-12. OCR enabled or disabled by default, decided against measured CPU cost.
-13. Concurrency and worker count, set from measurement on hxs-12.
+7. MCP listen port, and Serve's loopback port.
+8. Service roots and cache paths for **both** units, kept distinct.
+9. The mechanism that enforces the cache size bound, and the disk-headroom floor value.
+10. Maximum document size, bound together with item 12 as one memory budget.
+11. OCR enabled or disabled by default, decided against measured CPU cost.
+12. Concurrency and worker count for both units, set from measurement on hxs-12.
 
 **Runtime**
-14. Dependency versions at the pinned release, with upper bounds declared, and CPU-only torch
-    resolution under topology A or C.
-15. Exact native library package names on Ubuntu 24.04.
-16. Service account identity and whether it is local or directory-integrated.
-17. Measured model-artefact footprint under topology A or C — the cache bound cannot be
-    computed without it.
+13. Dependency versions at both pinned releases, with upper bounds declared.
+14. Exact native library package names on Ubuntu 24.04, confirmed on the host.
+15. Service account identity for each unit, and whether local or directory-integrated.
+16. Measured model-artefact footprint for Serve — the cache bound cannot be computed without it.
+17. Model pre-fetch at install time, so the first conversion is not also the first download.
+18. Restart policy and start rate limiting for both units; pre-start validation scoped to local
+    preconditions only, so the removed hard dependency is not reintroduced through `ExecStartPre`.
+19. How a conversion is bounded, given `service_timeout` and `service_max_retries` are declared
+    but unconsumed at v3.0.0.
 
 **Validation and operations**
-18. Coverage thresholds.
-19. The gate inventory, and a recorded failing run for each gate.
-20. The supported input-format inventory, without which per-format coverage is unmeasurable.
-21. Health check mechanism and probe frequency.
-22. Log destination — journal or file — before its retention bound can be set.
-23. Restart policy and the scope of pre-start validation.
-24. Circuit-breaker acceptance criterion (deferred in 2025).
-25. Schema versioning approach (deferred in 2025).
-
-**Settled elsewhere — recorded here so they are not reopened**
-
-Virtual environment per service with an absolute venv interpreter in `ExecStart`; Streamable
-HTTP as the fleet transport standard; the standing bind-to-LAN-interface rule. All three are
-fixed by ratified fleet documents and are not open questions for this service.
-
----
+20. Coverage thresholds.
+21. The gate inventory, and a recorded failing run for each gate.
+22. The supported input-format inventory, without which per-format coverage is unmeasurable.
+23. Health probe mechanism and frequency, covering both the MCP surface and Serve.
+24. Whether a Serve outage makes the MCP surface report unhealthy or healthy-but-degraded.
+25. Log destination — journal or file — before its retention bound can be set.
+26. Circuit-breaker acceptance criterion (deferred in 2025).
+27. Schema versioning approach (deferred in 2025).
 
 ## Provenance
 

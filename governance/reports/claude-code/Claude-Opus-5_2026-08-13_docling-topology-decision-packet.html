@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Docling Conversion Topology — Owner Decision Packet</title>
+<title>Docling Conversion Topology — DECIDED</title>
 <style>
 :root{--bg:#fff;--panel:#f6f8fa;--panel2:#eef1f4;--bd:#d0d7de;--fg:#1f2328;--dim:#59636e;
 --acc:#0969da;--ok:#1a7f37;--warn:#9a6700;--stop:#cf222e}
@@ -37,9 +37,30 @@ border:1px solid var(--bd);border-radius:20px;padding:7px 14px;font-size:12.5px;
 <div class="wrap">
 
 <header class="hero">
-<h1>Docling Conversion Topology — Owner Decision Packet</h1>
-<div class="sub">One decision, three options. Everything below is verified against docling-mcp v3.0.0 and the current registry. The design document holds <code>conversion topology: VERIFICATION REQUIRED</code> until you rule.</div>
+<h1>Docling Conversion Topology — DECIDED</h1>
+<div class="sub">Ruled 2026-08-13: <b>remote mode, Docling Serve co-located on hxs-12</b>. The options and their trade-offs are kept below as the record of what was weighed.</div>
 </header>
+
+<div class="callout ok" style="border-left-color:var(--ok)"><h3>RULING &mdash; 2026-08-13</h3>
+<p><b>Remote mode, with Docling Serve co-located on hxs-12.</b> Two units on one host:
+<code>docling-serve</code> parses and owns the native libraries, model weights and parser
+cache; <code>docling-mcp</code> presents the MCP surface with
+<code>conversion_mode=remote</code> and <code>service_url</code> pointed at loopback.
+<code>fallback_to_local</code> stays <code>false</code>, since no local converter is installed.</p>
+<p><b>Correction to this packet’s own analysis.</b> It said co-locating Serve on hxs-12 made
+option B "strictly worse than A". That was overstated. Co-location still delivers lifecycle
+separation — a parser upgrade restarts Serve, not the MCP surface — it is the upstream default
+path, it keeps hxs-12’s registry role accurate because the host still parses, and relocating
+Serve later becomes a <code>service_url</code> change rather than a redesign.</p>
+<p><b>And one advantage the packet missed entirely:</b> <code>docling-serve</code> ships a
+<code>cpu</code> extra resolved against a CPU-only torch index.
+<code>docling-mcp[local]</code> has no equivalent. So the CUDA-wheel hazard flagged against
+option A is not merely mitigated by this ruling — it is designed out, because the parsing
+dependency set is installed from a package that supports a CPU-only build as a first-class
+option.</p>
+<p>Verified 2026-08-13: <code>docling-serve</code> v1.30.0 (released 2026-08-07),
+<code>requires-python &gt;=3.10</code>, uvicorn defaults <code>host 0.0.0.0</code> /
+<code>port 5001</code> — the bind must be overridden to loopback.</p></div>
 
 <div class="callout warn"><h3>First, a correction to how this was framed</h3>
 <p>The prior review described "three conversion modes". The package source says otherwise.
@@ -107,7 +128,7 @@ co-located on hxs-12, B delivers none of its benefit and A is the better answer.
 artefacts, cache and health conditionally, so it stays correct whichever way you rule.</p>
 </div>
 
-<h2>What your ruling unblocks</h2>
+<h2>What the ruling unblocked</h2>
 <div class="tw"><table>
 <thead><tr><th>Blocked item</th><th>Why it waits</th></tr></thead>
 <tbody>
@@ -119,10 +140,9 @@ artefacts, cache and health conditionally, so it stays correct whichever way you
 <tr><td>The deployment and multimodal test groups</td><td>They test different things per topology</td></tr>
 </tbody></table></div>
 
-<div class="foot">Verified 2026-08-13 against <code>docling-project/docling-mcp</code> v3.0.0, tag
+<div class="foot">Ruled 2026-08-13. Verified against <code>docling-project/docling-mcp</code> v3.0.0, tag
 commit <code>7b51926920550c4a2c6e888977b8e38a08bafdbd</code>, and against
-<code>SERVER-REGISTRY.md</code> plus <code>servers/hxs-12/discovery.md</code>. No option has been
-selected; no infrastructure was contacted.</div>
+<code>SERVER-REGISTRY.md</code> plus <code>servers/hxs-12/discovery.md</code>. Option B selected with Serve co-located; no infrastructure was contacted.</div>
 </div>
 <script>
 (function(){var b=document.getElementById('themeToggle'),r=document.documentElement;
