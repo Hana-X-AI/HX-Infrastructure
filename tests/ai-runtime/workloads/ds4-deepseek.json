@@ -1,0 +1,45 @@
+{
+  "workload": "ds4-deepseek",
+  "classification": "EXPERIMENTAL",
+  "classification_scope": "The EXPERIMENTAL label applies to this workload and runtime profile, not to any physical server.",
+  "runtime": "ds4",
+  "runtime_profile": "ds4-deepseek",
+  "purpose": [
+    "Anthropic-compatible /v1/messages testing for Claude Code-style clients",
+    "OpenAI chat and responses cross-client testing",
+    "tool-call fidelity testing",
+    "long-prefix and KV cache experiments",
+    "cross-runtime conformance against the HX acceptance contract"
+  ],
+  "candidate_placement": {
+    "host": "hxs-3",
+    "basis": "GPU capacity, when this workload is explicitly selected and the capacity gate passes",
+    "note": "Candidate placement only. This does not assign hxs-3 to DS4 and does not alter its durable role."
+  },
+  "model": {
+    "identity": null,
+    "quantization": null,
+    "selection_required": true,
+    "note": "Exact model and quantization must be selected before the gate can evaluate residency. Until then the gate returns BLOCKED."
+  },
+  "requirements": {
+    "backend": ["cuda", "rocm", "metal"],
+    "documented_reference_target": {
+      "model": "ds4f-q2",
+      "system_ram_gb": 96,
+      "source": "DS4 snapshot README - download_model.sh ds4f-q2 documented for 96/128 GB RAM machines"
+    }
+  },
+  "concurrency": { "assume_coexistence": false },
+  "activation": {
+    "requires_gate": "hx-capacity-gate",
+    "model_download_allowed": false,
+    "note": "No model download is authorized by this definition. Installation presence is not activation."
+  },
+  "isolation": {
+    "config_separate_from": ["vllm", "qwen"],
+    "model_dir_separate": true,
+    "env_scoped_to_profile": true,
+    "removable_without_host_rebuild": true
+  }
+}
