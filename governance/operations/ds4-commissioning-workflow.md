@@ -135,8 +135,8 @@ result            : BLOCKED - capacity result is STALE, the gate must be rerun
 Evaluate with:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .	estsi-runtime\hx-ds4-commission.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File .	estsi-runtime\hx-capacity-gate.ps1 -Workload ds4-deepseek -TargetHost hxs-3
+powershell -NoProfile -ExecutionPolicy Bypass -File .	estsi-runtime\hx-ds4-commission.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .	estsi-runtime\hx-capacity-gate.ps1 -Workload ds4-deepseek -TargetHost hxs-3
 ```
 
 ---

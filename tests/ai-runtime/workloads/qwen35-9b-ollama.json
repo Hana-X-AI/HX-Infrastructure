@@ -1,0 +1,85 @@
+{
+  "workload": "qwen35-9b-ollama",
+  "classification": "CANDIDATE",
+  "classification_scope": "Applies to this workload. No server is classified by it.",
+  "runtime": "ollama",
+  "runtime_profile": "ollama-qwen35-9b",
+  "commissioning_state": "ELIGIBILITY EVALUATION",
+
+  "purpose": [
+    "first real HX local inference/API/tool validation runtime",
+    "exercise the HX AI Runtime Acceptance contract against a live model",
+    "Anthropic-compatible client testing"
+  ],
+
+  "target_host": {
+    "host": "hxs-4",
+    "durable_role": "Retrieval & AI utility",
+    "durable_role_source": "SERVER-REGISTRY.md",
+    "note": "Placement candidate. Durable role is registry-owned and is not redefined by this workload."
+  },
+
+  "model_selection": {
+    "identity": "Qwen3.5-9B",
+    "tag": "qwen3.5:9b-q4_K_M",
+    "quantization": "Q4_K_M",
+    "published_artifact_size_gb": 6.6,
+    "size_source": "stated in the approved commissioning prompt; MUST be re-verified against official Ollama metadata at execution time",
+    "digest": null,
+    "verified_upstream_on": null,
+    "supported_by_runtime_version": null
+  },
+
+  "gpu_isolation": {
+    "required": true,
+    "reason": "Current Ollama behaviour may spread a model across all visible GPUs if it does not fit one. hxs-4 has an asymmetric pair, so isolation is mandatory before any residency conclusion is valid.",
+    "target_device": {
+      "name": "NVIDIA GeForce RTX 5060",
+      "pci_bus_id": "00000000:07:00.0",
+      "vram_mib": 8151,
+      "uuid": null,
+      "uuid_status": "NOT IN REPOSITORY EVIDENCE - requires a live nvidia-smi -L query on the host",
+      "durable_identity": "UUID, never GPU index"
+    },
+    "excluded_device": {
+      "name": "NVIDIA GeForce RTX 5060 Ti",
+      "pci_bus_id": "00000000:01:00.0",
+      "vram_mib": 16311,
+      "reason": "reserved; must remain invisible to Ollama"
+    }
+  },
+
+  "requirements": {
+    "backend": ["cuda"],
+    "min_compute_capability": 5.0,
+    "min_driver_version": 531,
+    "context_initial": 4096,
+    "context_ladder": [4096, 8192, 16384, 32768, 65536],
+    "claude_code_recommended_context": 65536,
+    "context_guidance_source": "current Ollama docs: systems under 24 GiB VRAM default to 4K; at least 64K recommended for coding/agent tools"
+  },
+
+  "acceptance_states": {
+    "_comment": "Deliberately not collapsed.",
+    "A_qwen_local_runtime_operational": "NOT REACHED",
+    "B_hx_validation_operational": "NOT REACHED",
+    "C_claude_code_qualified": "NOT REACHED"
+  },
+
+  "concurrency": { "assume_coexistence": false },
+
+  "activation": {
+    "requires_gate": "hx-capacity-gate",
+    "model_download_allowed": false,
+    "host_mutation_authorized": false,
+    "note": "Ollama install, model pull and systemd configuration are Phase 3 server implementation. No download or install is authorized by this definition."
+  },
+
+  "isolation": {
+    "config_separate_from": ["vllm", "ds4"],
+    "model_dir_separate": true,
+    "env_scoped_to_profile": true,
+    "removable_without_host_rebuild": true,
+    "service_represents": "the Qwen workload, never the host role"
+  }
+}
