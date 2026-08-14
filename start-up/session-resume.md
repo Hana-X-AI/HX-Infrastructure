@@ -15,7 +15,7 @@ Two branches exist on origin. That is the intended end state.
 
 | Ref | SHA | Meaning |
 | --- | --- | --- |
-| `main` | `5a134ca` | The 2026 lineage. All three workstreams consolidated. 229 files. |
+| `main` | see header | The 2026 lineage. All three workstreams consolidated, plus the hooks/skills control plane. |
 | `legacy/2025` | `a98846d` | Protected 2025 archive, 522 files. **Never modify, never delete.** |
 
 The two histories are **deliberately unrelated** — `git merge-base main legacy/2025` is empty, and
