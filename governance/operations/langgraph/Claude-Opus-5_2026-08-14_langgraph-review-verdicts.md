@@ -3,7 +3,8 @@
 **Date:** 2026-08-14
 **Subject:** `services/langgraph/service.md`
 **Branch:** `migration/langgraph-pilot` @ `a7961a0`
-**Design status:** REVISED / NOT ACCEPTED — parked pending an owner re-rule of decision 3
+**Design status:** REVISED / NOT ACCEPTED — PARKED. Pilot complete.
+**Decision 3:** FINAL — PACKAGED SERVER (owner ruling, not to be re-litigated)
 
 Five capability reviews ran in genuinely separate contexts against the revision that incorporated
 all four owner decisions and the upstream pin. **All five returned FAIL.**
@@ -23,24 +24,24 @@ here so the next re-review can verify corrections against the original claims.
 | `testing-qa` | **FAIL** | **regressed** from CONDITIONAL PASS | 9 |
 | `infrastructure-ops` | **FAIL** | was FAIL | 6 |
 
-## The decisive finding — decision 3 is not implementable as ruled
+## Decision 3 — FINAL: packaged server
 
-Found independently by `langgraph` and `infrastructure-ops`, from the pinned source.
+Two reviewers (`langgraph`, `infrastructure-ops`) independently established from pinned source what
+the packaged-server mode entails. **The owner ruling stands.** Those findings are therefore recorded
+as accepted deployment prerequisites, not as objections:
 
-Every production path for the packaged server is a **container artefact**: `langgraph build`
-("Build a Docker image"), `langgraph up` ("Launch … in Docker"), a generated compose file, base
-image `langchain/langgraph-server`. The only pip-installable server is the in-memory development
-runtime the ruling explicitly rejects. Production additionally requires
-**`LANGGRAPH_CLOUD_LICENSE_KEY`**, and upstream's own threat model places the runtime out of scope
-as **closed-source** — so it cannot meet the source-verification standard this programme runs on.
+- **Container runtime required.** Every evidenced production path is a container artefact —
+  `langgraph build` produces a Docker image, `langgraph up` launches in Docker, base image
+  `langchain/langgraph-server`, generated compose file. The only pip-installable server is the
+  in-memory development runtime. Neither hxs-11 nor hxs-9 has a container runtime installed, so
+  provisioning one is part of the deployment.
+- **`LANGGRAPH_CLOUD_LICENSE_KEY` required** for production use, per the CLI's own output.
+  Referenced by mechanism only.
+- **Closed-source runtime.** Upstream's threat model places the server runtime out of scope as
+  closed-source, so it cannot be source-verified to the standard applied elsewhere in this
+  programme. Accepted as a property of the chosen mode.
 
-Against that: the design states **"No containers"**; fleet architecture v0.3 mandates an absolute
-venv interpreter in `ExecStart`; and discovery records **no container runtime on hxs-11 or hxs-9**.
-
-No non-container, Postgres-backed production distribution is evidenced anywhere in the vendored
-source drop. **This cannot be resolved by editing the document.**
-
-## Consequences the ruling dragged in
+## Conditions the mode carries
 
 **The served surface inverts the design's own boundaries.** `disable_mcp`, `disable_store`,
 `disable_a2a` and `disable_webhooks` all default to `False` — enabled. So the packaged server
@@ -95,8 +96,15 @@ endorsed.
 
 ## Disposition
 
-Design **parked**, not abandoned. Blocked on an owner re-rule of decision 3. The correction list
-from all five reviews is largely contingent on that ruling, so applying it now would produce work
-against an architecture that may not survive.
+**Pilot complete. Design parked, not abandoned.**
+
+The pilot's purpose was to validate the migration method against a harder subject than Docling — a
+stateful orchestrator with six live integration boundaries. It did, under real adversarial pressure:
+five independent reviewers, unanimous FAIL, every one of them finding something the authoring
+context could not see. That is the method working, and it is the second validation.
+
+The design not reaching acceptance is a separate outcome from the method being proven. Decision 3 is
+final. The findings above become the **implementation-correction backlog** (`iss-019`), to be worked
+when LangGraph implementation is scheduled. They are not re-derived and not re-reviewed now.
 
 Related: `act-015`, `act-017`, `iss-017`, `iss-018`, `iss-019`.

@@ -2,15 +2,15 @@
 
 Status: TARGET-STATE DESIGN — **REVISED / NOT ACCEPTED — PARKED**
 
-Parked 2026-08-14 pending an owner re-rule of decision 3. Five capability reviews returned
-**unanimous FAIL**; two established independently from pinned source that the ruled packaged-server
-mode requires a container runtime, a commercial licence and a closed-source component, on hosts with
-no container runtime and against this document's own "No containers" standard. That cannot be fixed
-by editing this document. See `iss-019` and
+Parked 2026-08-14. The distillation pilot is **complete**: its purpose was to validate the
+migration method against a stateful orchestrator with six live integration boundaries, and it did.
+The design itself did not reach acceptance — five capability reviews returned FAIL — and their
+findings are carried as the **implementation-correction backlog** for whenever LangGraph
+implementation is scheduled. Not re-derived, not re-reviewed. See `iss-019` and
 `governance/operations/langgraph/Claude-Opus-5_2026-08-14_langgraph-review-verdicts.md`.
 
-Parked, not abandoned. The distillation, the provenance and the boundary work stand; the deployment
-architecture does not.
+Parked, not abandoned. The distillation, the provenance and the boundary work stand.
+
 Target placement: hxs-11 — Agent runtime (resolved from `SERVER-REGISTRY.md`)
 As-built status: NOT ASSERTED BY THIS DOCUMENT
 Implementation: **NOT AUTHORIZED**. Deployment on hxs-11 is NO-GO until acceptance.
@@ -45,7 +45,7 @@ MCP-plane capability contract that decision 4 confirmed is mandatory.
 | --- | --- | --- | --- |
 | 1 | **Qwen network-consumability** | **RULED 2026-08-14 — option B** | Qwen is **not promoted**; it stays loopback-bound on hxs-4, and remote consumption is authorized **only through OmniRoute**. Direct network consumption is refused permanently, not deferred. `accepted-network-consumable` remains NOT GRANTED — the ruling fixes which path may be measured, not that it has been. Still gating: OmniRoute must exist, and the mechanism by which it fronts a loopback-bound endpoint on another host must be defined and measured. |
 | 2 | **LiteLLM → OmniRoute reconciliation** | **APPLIED this pass** | Model gateway is now `BLOCKED / PENDING OMNIROUTE RECONCILIATION`. No gateway contract built for either name. Ownership boundary unchanged — only the named plane moved. |
-| 3 | **Deployment mode** | **RULED 2026-08-14 — packaged server** | LangGraph runs as its **own service with its own lifecycle**, not embedded in a host process. Gains: failure isolation and independent restart. Costs: a new served endpoint and access model, and — materially — the **Store, Redis and checkpointer sections below must be re-derived**, because the packaged runtime provisions persistence infrastructure automatically. See the consequences immediately below; this ruling changes the design more than any of the other three. |
+| 3 | **Deployment mode** | **FINAL 2026-08-14 — PACKAGED SERVER** | Owner ruling, not to be re-litigated. LangGraph runs as the packaged server, with its own lifecycle and failure isolation. The reviews established what that entails; those are recorded below as **accepted deployment prerequisites**, carried forward to implementation rather than treated as blockers. |
 | 4 | **Is MCP day-one required?** | **RULED 2026-08-14 — keep CURRENT REQUIRED** | The classification **stands**; no downgrade. The MCP tool plane is day-one required, so an **MCP-plane SME contract is mandatory** before the SME gate can pass. This is now a known, accepted blocker rather than an open question. The contract is not built in this pass. |
 
 Authority boundary:
@@ -200,30 +200,54 @@ Co-location constraint retained: LangGraph and Mem0 sit in separate virtual envi
 pinned to compatible LangChain-family versions**, since Mem0 pulls LangChain-family dependencies of
 its own and `langchain-core` is constrained `<2` here.
 
-## Deployment mode — RULED: self-hosted packaged server
+## Deployment mode — FINAL: packaged server
 
-**Owner ruling 2026-08-14, decision 3, refined:** LangGraph runs as the **self-hosted production
-packaged server**, Postgres-backed, as its own service with its own lifecycle.
+**Owner ruling 2026-08-14, decision 3. Final; not to be re-litigated.** LangGraph runs as the
+packaged server — its own service, its own lifecycle, independent restart, failure isolation.
 
-The refinement matters. The pip-installable `langgraph-api` is documented by its own maintainers as
-development and testing — *"backed by a predominantly in-memory data store that is persisted to local
-disk when the server is restarted"* — and its dependency floors lag the shipping line badly
-(`langgraph>=0.4.10` against 1.2.11 pinned above). An in-memory-plus-local-disk store would also
-contradict placing durable state on hxs-9. The ruling therefore selects the **production self-hosted
-deployment**, not that package as shipped.
+The five reviews established what that mode entails. Those findings are **not** treated as
+objections to the ruling; they are recorded here as prerequisites the implementation must satisfy.
 
-`VERIFICATION REQUIRED` — the exact self-hosted production distribution and its own pin. It is not
-in the vendored source drop, which carries `cli`, `langgraph`, `checkpoint*`, `prebuilt` and `sdk`
-but **no server runtime**, so the server's internals are not source-verifiable here.
+### Accepted deployment prerequisites
 
-What the ruling settles and costs:
+Carried forward to implementation. Each is a condition to be met, not a blocker to be argued.
 
-| Area | Effect |
+| Prerequisite | Detail |
 | --- | --- |
-| Served interface | **A served endpoint now exists by definition.** Listen address, port and transport become required values, not conditional ones. |
-| Store | The base store is always present. Resolved below — it is kept inert rather than absent. |
-| Checkpointer | Re-derived below against `langgraph-checkpoint-postgres` 3.1.2. |
-| Redis | `VERIFICATION REQUIRED` against the production distribution. Unchanged invariants: no durable graph state in Redis, and no correctness property dependent on it. |
+| **Container runtime on the target host** | Every evidenced production path is a container artefact — `langgraph build` produces a Docker image, `langgraph up` launches in Docker, with a generated compose file and a `langchain/langgraph-server` base image. hxs-11 and hxs-9 currently have **no container runtime installed**, so provisioning one is part of the deployment. This supersedes the bare-metal-only reading of the runtime section for **this** service; it does not change the fleet standard for others. |
+| **`LANGGRAPH_CLOUD_LICENSE_KEY`** | Production use of the packaged server requires a licence key, per the CLI's own output. Referenced by mechanism only; no value is ever recorded in this repository. Obtaining and provisioning it is a deployment precondition. |
+| **Default-enabled routes disabled at deploy** | The served surface enables `/store`, `/mcp`, `/a2a` and webhooks **by default** (`disable_store`, `disable_mcp`, `disable_a2a`, `disable_webhooks` all default `False`). All four are **disabled at deployment**. This is not optional tidying — see below. |
+
+### Why the route defaults must be disabled
+
+Left at their defaults they invert three of this design's own boundaries:
+
+- **`/mcp`** would make LangGraph an MCP **server**, contradicting the ownership rule that it is a
+  client only and does not register servers.
+- **`/store`** would make durable memory **network-reachable**, bypassing every store enforcement
+  point, which check configuration, database and tool surface but not HTTP.
+- **`/a2a` and webhooks** would expose an agent-to-agent surface and revive the 2025 webhook
+  arrangement this design records as retired.
+
+`disable_store: true` is what makes the store ruling below enforceable rather than aspirational.
+
+### Two further conditions the reviews established
+
+- **Redis is a hard, health-gated dependency** of this mode — the run-queue substrate, not a cache.
+  The deployment must point at the state-services host's Redis rather than standing up a local
+  instance, since the generated compose parameterises Postgres but **not** Redis.
+- **`STRICT_MSGPACK` requires an allowlist.** Without one it does not raise on a blocked type — it
+  returns raw data or nothing, degrading checkpoints **silently on resume**. HX's versioned state
+  schema and structured interrupts are not among the built-in/schema-derived safe types, so the
+  allowlist must name them explicitly and must be propagated to every checkpointer constructed by
+  the service (the same `allowed_msgpack_modules` list applies to the checkpointer factory and to
+  any independently constructed checkpointer used in tests or tooling). A checkpoint round-trip
+  test is required: build the checkpointer through the same factory the service uses; produce a
+  checkpoint containing versioned state and a structured interrupt payload; read back through both
+  an independent-connection checkpointer and a freshly constructed checkpointer; assert
+  deserialization succeeds and resumed values are byte-identical to the written values. Prove
+  failability: rebuild with `allowed_msgpack_modules` removed and assert the gate goes red,
+  retaining that red run as the artefact.
 
 ### The store on the server path — resolved, source-verified
 
@@ -779,9 +803,23 @@ decision: orchestration can drive it; the contract stays with `docling-mcp` and 
 
 ## Runtime and service model
 
-- Bare-metal Python virtual environment under systemd. No containers. Consistent with the fleet
-  philosophy and with 2025 (`lgc-262`, `lgc-296`).
-- One virtual environment per service even when co-located — LangGraph and Mem0 do not share one.
+**Owner ruling 2026-08-14, decision 3 — packaged server.** This supersedes the bare-metal
+virtualenv / systemd / no-containers statement that appeared here before the ruling.
+
+LangGraph runs as the packaged server (`langgraph build` / `langgraph up`):
+
+- **Container runtime required** on the target host (hxs-11). Every evidenced production path is a
+  container artefact: `langgraph build` produces a Docker image using the
+  `langchain/langgraph-server` base, and `langgraph up` launches it under a generated compose file.
+  Neither hxs-11 nor hxs-9 has a container runtime installed; provisioning one is part of the
+  deployment. This is specific to this service and does not change the fleet standard for others.
+- **Lifecycle**: `langgraph up` starts the composed service; restart policy is defined in the
+  generated compose and must be set to `unless-stopped` or equivalent. The container is rebuilt
+  with `langgraph build` on dependency or configuration changes.
+- **Failure isolation**: the packaged server runs as its own container, independent of other
+  services on the host.
+- **One virtual environment per service** for non-containerised co-located services: LangGraph and
+  Mem0 use separate environments pinned to compatible LangChain-family versions.
 - The service unit represents the LangGraph workload, never the host's role.
 - Removable without host rebuild.
 

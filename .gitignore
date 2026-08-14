@@ -1,1 +1,10 @@
 .env
+
+# Vendored upstream source drops under governance/operations/ are reference material,
+# not repository content. They are read for source verification (the migration pattern
+# prefers vendor source over vendor prose) and must never enter the tree: they carry
+# their own licences, LF line endings that collide with this repository's CRLF objects
+# under core.safecrlf, and tens of thousands of files.
+governance/operations/langgraph/langgraph-main/
+governance/operations/ollama/ollama-main/
+governance/operations/vllm/
