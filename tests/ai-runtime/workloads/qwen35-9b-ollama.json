@@ -69,6 +69,132 @@
     }
   },
 
+  "model_selection_rationale": {
+    "_comment": "Recorded 2026-08-14 so the selection is not re-litigated. Settled: keep Qwen3.5-9B at Q4_K_M on this 8 GB card.",
+    "verdict": "CORRECT MODEL FOR THIS TIER - do not substitute without new evidence",
+    "decided_by": "owner research, corroborated by measurement on hxs-4",
+
+    "published_benchmarks": {
+      "_provenance": "OWNER-SUPPLIED RESEARCH, not independently verified by measurement on this host. Treat as selection evidence, not as an HX test result.",
+      "gpqa_diamond": { "qwen35_9b": 81.7, "gpt_oss_120b": 80.1, "note": "9B beats a model 13x its size on graduate-level science" },
+      "mmlu_pro": { "qwen35_9b": 82.5, "gpt_oss_120b": 80.8 },
+      "mmlu_redux": { "qwen35_9b": 91.1, "gpt_oss_120b": 91.0 },
+      "hmmt_competition_maths": { "qwen35_9b": 83.2, "gpt_oss_120b": 90.0, "note": "the row the 9B loses - same table, same run" },
+      "function_calling": 66.1,
+      "multi_turn_tool_use": 79.1,
+      "instruction_following": 91.5,
+      "long_document_reasoning": 55.2,
+      "licence": "Apache 2.0"
+    },
+
+    "benchmark_to_observed_behaviour": {
+      "_comment": "The card predicted our results. GPQA is the headline; these two rows are the operating envelope.",
+      "function_calling_66_1": "MATCHES OBSERVATION. Simple tool surfaces succeeded - 4/4 correct tool selection from 3 tools, 5/5 valid strict-schema JSON. Claude Code's large multi-tool surface failed and hallucinated unrelated file paths. Good on simple, degrades on complex, exactly as a 66.1 predicts.",
+      "long_document_reasoning_55_2": "MATCHES OBSERVATION. The weakest row on the card and the one that bit us: a 4-line file was miscounted as 6, and post-truncation output was confidently wrong. Do not rely on this model for long-document accuracy.",
+      "selection_lesson": "Judge this model by function calling and long-document reasoning, NOT by GPQA. GPQA measures graduate science Q&A, which is not what this endpoint is for."
+    },
+
+    "measurement_vs_published_guidance": {
+      "_comment": "Where hxs-4 differs from the general 8 GB-tier guidance.",
+      "weights_q4_k_m": { "guidance": "~5.5 GB", "measured": "5.5 GB per ollama ps", "agreement": "match" },
+      "at_8k_context":  { "guidance": "~7 GB, still runs", "measured": "6530 MiB, 100% GPU", "agreement": "match, marginally better" },
+      "generation_rate": { "guidance": "~38 tok/s on an 8 GB card", "measured": "119 tok/s at 8192", "agreement": "MEASURED 3x FASTER - guidance predates Blackwell; this card is compute 12.0" },
+      "headroom": { "guidance": "~2.5 GB free after weights", "measured": "1.7 GB free at 4K", "agreement": "guidance omits ~1.2 GB CUDA context and allocator overhead - this is why the fit gate reserves overhead explicitly rather than subtracting weights from VRAM" }
+    },
+
+    "alternatives_evaluated": {
+      "_comment": "Verified against registry.ollama.ai manifests on 2026-08-14, not assumed from model names.",
+      "gemma4-e4b": {
+        "verdict": "REJECTED - NO BENEFIT, NOT BECAUSE IT CANNOT FIT",
+        "correction": "An earlier reading of this comparison was WRONG. It cited Ollama's library tag at 8.94 GB and concluded the model was too large. That figure is an artifact of Ollama's packaging, not the model.",
+        "ollama_library": { "gemma4:e4b": 8.94, "gemma4:e4b-it-q4_K_M": 8.94, "note": "the -q4_K_M tag returns an identical size to the default, so it is aliasing rather than shipping a real Q4 build. E4B STORES roughly 8B parameters (4B effective under MatFormer), so 8.94 GB is consistent with a Q8-class build plus the vision projector." },
+        "huggingface_actual": {
+          "unsloth/gemma-4-E4B-it-GGUF Q4_K_M": 4.63,
+          "unsloth/gemma-4-E4B-it-GGUF Q4_0": 4.5,
+          "google/gemma-4-E4B-it-qat-q4_0-gguf": 4.8,
+          "vision_projector_mmproj": 0.92,
+          "note": "separate file, only loaded for image work"
+        },
+        "real_reason_to_reject": "At Q4_K_M on HuggingFace, Gemma 4 E4B is 4.63 GB against Qwen3.5-9B's measured 4.61 GB text-only resident weight. The footprints are effectively IDENTICAL, so switching frees no VRAM and buys no context, while giving up the stronger benchmark profile. Not 'too big' - 'same size, weaker'.",
+        "source_discipline": "Compare artifacts from the SAME distribution channel. Ollama library tags and HuggingFace GGUF files for the same model differ by nearly 2x here."
+      },
+      "qwen3.5:4b":  { "size_gb": 3.15, "verdict": "VIABLE BUT UNNECESSARY", "reason": "would fit 65536 fully on GPU with no offload, but the 9B already meets the requirement at working context and is stronger. Untested." },
+      "qwen3.5:2b":  { "size_gb": 2.55, "verdict": "not evaluated" },
+      "gemma3:4b":   { "size_gb": 3.10, "verdict": "not evaluated" },
+      "llama3.2:3b": { "size_gb": 1.88, "verdict": "not evaluated" },
+      "smaller_quantization": {
+        "verdict": "REJECTED",
+        "reason": "Q4_K_M already fits with headroom at working context and runs 100% on GPU to 16384. Dropping to a lower quant would trade accuracy on precisely the two benchmark rows this model is already weakest on. Wrong lever."
+      }
+    },
+
+    "naming_hazard": "Model names no longer describe model sizes. 'Mistral Small 4' is 119B total parameters and ~238 GB at full precision; 'Gemma 4 E4B' is 8.94 GB despite the 4B in its name. Always resolve the actual manifest size before evaluating fit - never infer it from the name."
+  },
+
+  "runtime_tuning_levers_tested": {
+    "_comment": "Tested 2026-08-14 at num_ctx 65536. Recorded so they are not retried blind.",
+    "OLLAMA_FLASH_ATTENTION + OLLAMA_KV_CACHE_TYPE=q8_0": {
+      "verdict": "NO BENEFIT ON THIS HOST - reverted",
+      "measured": "KV cache fell from 1536 MiB to 1088 MiB (952 CUDA + 136 CPU), but the compute buffer rose from 248 MiB to 543 MiB, consuming most of the saving. CPU/GPU split improved slightly, 21%/79% against 28%/72%.",
+      "throughput": "NOT CLEANLY MEASURED. A follow-up attempt to isolate the two flags produced identical buffer figures across all three cases, which means the log window was re-reading a stale load rather than the current one. No throughput delta is claimed from it.",
+      "state": "both settings removed; service restored to the recorded configuration and re-verified"
+    }
+  },
+
+  "throughput_correction": {
+    "_comment": "Correction to the ladder figures recorded earlier in this file.",
+    "issue": "The ladder's generation rates were taken with trivial prompts producing very few tokens, which flatters the result.",
+    "ladder_figure_at_65536": 49.98,
+    "measured_with_real_generation": 28,
+    "guidance": "Treat the ladder as an ALLOCATION map. For steady-state throughput at 65536 under real generation, use ~28 tok/s and an 8.5 GB working set."
+  },
+
+  "forward_path_vllm_huggingface": {
+    "_comment": "Owner direction 2026-08-14: the fleet goes forward on vLLM with HuggingFace models rather than Ollama with library tags. Evaluated against this host on the same day.",
+    "verdict_for_this_8gb_card": "QWEN3.5-9B UNDER VLLM DOES NOT FIT THE 8 GB DEVICE",
+    "artifact_sizes_measured": {
+      "RedHatAI/Qwen3.5-9B-quantized.w4a16": 10.65,
+      "AxionML/Qwen3.5-9B-NVFP4": 8.71,
+      "Qwen/Qwen3.5-9B (bf16)": 17.98,
+      "device_usable_gb": 7.96
+    },
+    "why_larger_than_gguf": "GGUF Q4_K_M is 5.29 GB because it quantizes broadly. w4a16 keeps activations at 16-bit and commonly leaves embeddings and lm_head at higher precision, and these repositories ship the full vision tower (pipeline image-text-to-text). Do not assume a 4-bit vLLM artifact matches a 4-bit GGUF in size.",
+    "critical_behavioural_difference": "vLLM preallocates a KV block pool against gpu_memory_utilization and does NOT offload layers to CPU. Where Ollama degraded gracefully to a CPU/GPU split, vLLM fails to start. The forgiving behaviour that let a 9B model run at all on this card is an llama.cpp property and does not transfer.",
+    "what_vllm_fixes": "iss-015. vLLM returns an explicit error when input exceeds max_model_len rather than silently truncating. That is a material improvement over the silent collapse measured here, and on its own is a good reason to prefer it.",
+    "what_is_lost": "The native Anthropic Messages API. vLLM serves an OpenAI-compatible surface only, so any Anthropic-protocol client would need a translation proxy. Acceptable per owner note that Claude Code is unlikely to target this model.",
+    "placement_consequence": "The 16 GB RTX 5060 Ti in this same host is idle at 0 MiB and holds 16311 MiB. The w4a16 artifact at 10.65 GB fits it with roughly 5.6 GB left for a KV pool, fully resident, with continuous batching. If the fleet standardises on vLLM, that card is the correct target and the 8 GB card is not.",
+    "carries_over_from_this_commissioning": [
+      "GPU isolation by UUID - still required, and simpler under vLLM because it is CUDA-only with no Vulkan enumeration path (iss-013 does not apply)",
+      "the as-built hardware facts: device UUIDs, VRAM, driver 580.173.02, CUDA 13.0, compute capability 12.0",
+      "the engine-neutral acceptance contract and gates, which were written not to name a runtime precisely so this transition costs nothing",
+      "the overcommit lesson from iss-014"
+    ],
+    "does_not_carry_over": [
+      "the measured context ladder - vLLM's paged KV has a different memory model entirely",
+      "the GGUF artifacts",
+      "the Anthropic Messages API result"
+    ]
+  },
+
+  "intended_clients": {
+    "_comment": "Recorded 2026-08-14 after end-to-end testing of each.",
+    "langgraph": {
+      "status": "SUITABLE - PRIMARY INTENDED CLIENT",
+      "evidence": "5/5 valid strict-schema JSON and 4/4 correct tool selection from 3 tools, at 8192 context, 100% GPU, 119 tok/s",
+      "why_it_fits": "LangGraph controls its own prompt size, so it stays far below the 65,536 truncation cliff - the inverse of Claude Code's profile"
+    },
+    "docling": {
+      "status": "NOT APPLICABLE - DOES NOT USE THIS ENDPOINT",
+      "evidence": "services/docling-mcp/service.md: 'Core document conversion is not served by a language model and must not be described as [such]' - conversion runs computer-vision and parsing models inside the processing library on CPU-only torch",
+      "exception": "optional picture-description enrichment uses a vision model, which is a separate pipeline and not this chat endpoint"
+    },
+    "claude_code": {
+      "status": "NOT QUALIFIED - AND NOT A PROJECT GOAL",
+      "owner_position": "owner noted 2026-08-14 there is a good chance Claude Code never uses this model",
+      "detail": "see claude_code_qualification and iss-016; the disqualification is recorded for completeness, not as an outstanding blocker to resolve"
+    }
+  },
+
   "requirements": {
     "backend": ["cuda"],
     "min_compute_capability": 5.0,
