@@ -5,29 +5,38 @@ Target placement: hxs-11 — Agent runtime (resolved from `SERVER-REGISTRY.md`)
 As-built status: NOT ASSERTED BY THIS DOCUMENT
 Implementation: **NOT AUTHORIZED**. Deployment on hxs-11 is NO-GO until acceptance.
 
-Acceptance path: four owner decisions (below) → update this design to reflect the rulings →
-re-run all four capability reviews in separate contexts → only then ACCEPTED FOR IMPLEMENTATION.
+Acceptance path: ~~four owner decisions~~ **all ruled 2026-08-14** → re-derive the sections the
+packaged-server ruling affects, at a pinned release → write the MCP-plane contract → re-run all
+four capability reviews in separate contexts → only then ACCEPTED FOR IMPLEMENTATION.
 Decision packet: `governance/operations/langgraph/claude_20260814_0848_langgraphfourdecisions.html`
 
 Every section carries `SME REVIEW REQUIRED`. Four reviews ran on 2026-08-14 —
 `langgraph` FAIL, `mem0` FAIL, `infrastructure-ops` FAIL, `testing-qa` CONDITIONAL PASS. The
-corrected revision has **not** been re-reviewed, and re-reviewing before the decisions land would
-regenerate the same findings, because three of the four decisions change the design under review.
+corrected revision has **not** been re-reviewed.
+
+**All four owner decisions are now ruled** (2026-08-14). The design has been updated to record
+them, but decision 3 in particular invalidates parts of this document that were written assuming
+the opposite answer, and those parts are marked rather than rewritten from guesswork. Re-review
+runs after the re-derivation below, not before.
 
 ---
 
-## Open owner decisions
+## Owner decisions — all four ruled
 
-These are **decisions, not verification items**. Each changes the design, so all four land before
-the reviews re-run. Recommendations live in the decision packet; the rulings are the owner's and
-none is made here.
+All four were ruled on 2026-08-14. They were **decisions, not verification items**: each changed
+the design, which is why the re-review waited for them rather than running against a document
+they would invalidate.
+
+What remains before re-review is not a decision but work: re-derive the Store, Redis and
+checkpointer sections against the packaged-server ruling at a pinned release, and write the
+MCP-plane capability contract that decision 4 confirmed is mandatory.
 
 | # | Decision | Status | Effect |
 | --- | --- | --- | --- |
-| 1 | **Qwen network-consumability** — promote with an access and auth model, route remote consumption only through the traffic plane, or drop the Qwen dependency for first deployment. | **OPEN — gates everything** | Nothing in the model path is implementable until this clears. Recorded as two acceptance states in `runtime-acceptance-decisions.md`; `accepted-network-consumable` is NOT GRANTED. |
+| 1 | **Qwen network-consumability** | **RULED 2026-08-14 — option B** | Qwen is **not promoted**; it stays loopback-bound on hxs-4, and remote consumption is authorized **only through OmniRoute**. Direct network consumption is refused permanently, not deferred. `accepted-network-consumable` remains NOT GRANTED — the ruling fixes which path may be measured, not that it has been. Still gating: OmniRoute must exist, and the mechanism by which it fronts a loopback-bound endpoint on another host must be defined and measured. |
 | 2 | **LiteLLM → OmniRoute reconciliation** | **APPLIED this pass** | Model gateway is now `BLOCKED / PENDING OMNIROUTE RECONCILIATION`. No gateway contract built for either name. Ownership boundary unchanged — only the named plane moved. |
-| 3 | **Deployment mode** — embedded library vs packaged server. | **OPEN** | Silently decides Store enforcement, the Redis classification, and checkpointer construction, plus process lifecycle, failure isolation and networking. Needs a focused comparison against current architecture **including OmniRoute and jcode**, both of which post-date most of the 2025 material. Not a snap call; may warrant its own architecture pass. |
-| 4 | **Is MCP day-one required?** | **OPEN** | The design classifies the MCP tool plane CURRENT REQUIRED, which makes an MCP-plane SME contract mandatory. That may manufacture a blocker inconsistent with HX's deliberately deferred MCP posture. Candidate downgrade to LATER / DEFERRED unless minimum-useful first-deployment orchestration genuinely depends on MCP tools. |
+| 3 | **Deployment mode** | **RULED 2026-08-14 — packaged server** | LangGraph runs as its **own service with its own lifecycle**, not embedded in a host process. Gains: failure isolation and independent restart. Costs: a new served endpoint and access model, and — materially — the **Store, Redis and checkpointer sections below must be re-derived**, because the packaged runtime provisions persistence infrastructure automatically. See the consequences immediately below; this ruling changes the design more than any of the other three. |
+| 4 | **Is MCP day-one required?** | **RULED 2026-08-14 — keep CURRENT REQUIRED** | The classification **stands**; no downgrade. The MCP tool plane is day-one required, so an **MCP-plane SME contract is mandatory** before the SME gate can pass. This is now a known, accepted blocker rather than an open question. The contract is not built in this pass. |
 
 Authority boundary:
 - Authoritative for the current *intended* LangGraph service design.
@@ -131,7 +140,7 @@ rather than left implicit.
 | --- | --- |
 | Listen address and port | `VERIFICATION REQUIRED` — no fleet port-allocation authority exists; route to `infrastructure-ops` |
 | Served protocol and transport | `VERIFICATION REQUIRED` — the served interface is undefined; see below |
-| Whether LangGraph serves an interface at all | `VERIFICATION REQUIRED` — it may be invoked in-process rather than over a socket |
+| Whether LangGraph serves an interface at all | **ANSWERED — yes.** Owner decision 3 rules the packaged server, so a served endpoint exists by definition. Address, port and transport are therefore required values, not conditional ones. |
 | Service root path and ownership | `VERIFICATION REQUIRED` |
 | Service account | `VERIFICATION REQUIRED` |
 | Log path and retention bound | `VERIFICATION REQUIRED` — bounded against a single 238.5 GB root |
@@ -180,19 +189,48 @@ Co-location adds a constraint the isolation rule alone does not cover: LangGraph
 separate virtual environments **each pinned to compatible LangChain-family versions**, because
 Mem0 pulls LangChain-family dependencies of its own.
 
-## Deployment mode
+## Deployment mode — RULED: packaged server
 
-`OWNER DECISION REQUIRED.` Three sections of this document are conditional on it, so it is stated
-here rather than left implicit.
+**Owner ruling 2026-08-14, decision 3: LangGraph runs as the packaged server**, as its own service
+with its own lifecycle — not as a library embedded in a host process.
 
-| Mode | Consequence |
+What the ruling buys: failure isolation, independent restart, and a clean process boundary between
+orchestration and whatever calls it.
+
+What it costs, stated plainly because three sections of this document were written assuming the
+other answer:
+
+| Area | Effect of the ruling |
 | --- | --- |
-| **Embedded library in a custom process** (assumed throughout this document) | Checkpointer is constructed and configured by the caller; no store exists unless one is built; Redis is optional. |
-| **Packaged Agent/LangGraph Server** | The server provisions persistence infrastructure automatically — including a base store — so the Store ruling below becomes opt-*out* rather than absent, Redis may become mandatory, and the caller-supplied connection parameters may no longer be caller-supplied. |
+| Served interface | A **new endpoint and access model** now definitely exist. The "does LangGraph serve an interface at all" question in *Values requiring current resolution* is answered — yes — and listen address, port and transport become required values, not optional ones. |
+| Store | **The load-bearing claim is now false.** The packaged runtime provisions a base store automatically, so "no `BaseStore` is constructed" no longer holds by construction. See below. |
+| Checkpointer | The server handles persistence infrastructure itself. Whether the three psycopg connection parameters remain caller-supplied, and whether the four-table shape and dedicated schema survive, must be re-derived at the pinned release rather than inherited from the embedded-mode assumption. |
+| Redis | May move from INDIRECT to required, depending on what the packaged runtime uses it for. Re-derive. |
 
-This document assumes the embedded-library mode, consistent with the fleet's bare-metal venv model.
-**If the Server mode is chosen, the Store decision, the Redis classification and the checkpointer
-configuration section must all be re-derived**, and the Store decision requires `mem0` agreement.
+<a id="store-ruling-affected"></a>
+### Consequence for the Store ruling — flagged, not resolved
+
+The Store decision below rules that the Store **is not used in HX**, and its defence rested on
+three statements. The third was: *"HX does not run the LangGraph Server / Platform runtime"* — the
+statement that made the other two true by construction rather than by discipline.
+
+**That statement is now false.** On the packaged-server path a base store is provisioned
+automatically, so the ruling changes character: it is no longer a description of what does not
+exist, it is a **policy that must be actively enforced against a runtime that provides the thing**.
+
+The ruling itself still stands — HX has one durable memory authority and it is Mem0. What changes
+is that the enforcement points become load-bearing rather than confirmatory:
+
+- Startup refusal must actively disable or refuse a provisioned store, not merely assert none was
+  constructed.
+- The negative database assertion — no store tables in the schema — moves from a belt-and-braces
+  check to **the primary detection mechanism**.
+- `VERIFICATION REQUIRED` — whether the packaged runtime permits a store to be disabled at all at
+  the pinned release. If it does not, this is an owner decision, not a design detail, and it
+  requires `mem0` agreement.
+
+This is marked rather than rewritten. Guessing at packaged-runtime behaviour without a pinned
+release would repeat exactly the error the upstream-pinning gate exists to prevent.
 
 ## Architecture
 
@@ -371,11 +409,12 @@ factually wrong on one of the two paths:
 
 - No `BaseStore` is constructed, and none is passed at graph compilation.
 - No store key appears anywhere in runtime configuration.
-- **HX does not run the LangGraph Server / Platform runtime.** On the library path a store is
-  opt-*in*; on the Server path a base store is provisioned automatically and would be opt-*out*.
-  Saying "disabled by default" would be untrue there. HX runs a custom process in a virtual
-  environment under systemd — not the packaged API server — and that is what makes the statement
-  above true rather than aspirational.
+- **SUPERSEDED BY OWNER DECISION 3.** This bullet previously read that HX does not run the
+  packaged server, which is what made the two statements above true by construction. **HX now
+  does run it.** On the packaged path a base store is provisioned automatically, so the two
+  statements above are no longer structural facts — they are requirements that the enforcement
+  section must actively achieve. See *Consequence for the Store ruling* under Deployment mode.
+  The ruling stands; its defence is now enforcement, not absence.
 
 Current LangGraph provides two persistence systems, and the distinction matters:
 
@@ -527,7 +566,7 @@ Classified before any contract is written. Only CURRENT REQUIRED integrations ge
 | PostgreSQL checkpointer (hxs-9) | **CURRENT REQUIRED** | Orchestration state persistence; registry assigns LangGraph checkpoints to hxs-9. |
 | Mem0 (hxs-11) | **CURRENT REQUIRED (domain)** | Durable memory owner; co-located; own SME. |
 | LightRAG (hxs-3) | **CURRENT PIPELINE REQUIRED — contract not established** | Retrieval is reached through the pipeline; no direct service contract is asserted here. |
-| MCP tool plane (hxs-7) | **CLASSIFICATION UNDER REVIEW — owner decision 4** | The registry assigns an MCP runtime to hxs-7; that is an approved workload, not a running service. Classified CURRENT REQUIRED in the first revision, which makes an MCP-plane SME contract mandatory — possibly a manufactured blocker against HX's deferred MCP posture. Candidate downgrade to LATER / DEFERRED. Shape remains `VERIFICATION REQUIRED` either way. |
+| MCP tool plane (hxs-7) | **CURRENT REQUIRED — confirmed by owner ruling** | Owner decision 4 (2026-08-14) kept this classification. The registry assigns an MCP runtime to hxs-7 — an approved workload, not a running service. An **MCP-plane SME contract is mandatory** before the SME gate passes; it does not yet exist. Client shape, transport, discovery, allowed tool surface and failure semantics all remain `VERIFICATION REQUIRED`. |
 | Redis (hxs-9) | **INDIRECT — VERIFICATION REQUIRED** | See below. |
 | n8n (hxs-13) | **NO ORCHESTRATION CONTRACT** | n8n *is* a current registry assignment — hxs-13, Automation. What is retired is the 2025 arrangement in which LangGraph exposed endpoints and webhooks for it (`lgc-262`). No contract in either direction is asserted here. |
 | Crawl4AI (hxs-6) | **NO ORCHESTRATION CONTRACT** | Also a current assignment — hxs-6, Ingestion — crawling. If it is reached at all it is as a tool on the MCP plane, not as a LangGraph integration (`lgc-262`). |
@@ -944,9 +983,9 @@ deferred** by owner decisions 2 and 4 rather than satisfied:
   superseded by OmniRoute in target state, so building it would formalise a dead component. No
   gateway contract is built for either name. The dependency is OmniRoute reconciliation, not a
   missing contract.
-- **MCP tool plane** — the contract requirement is **held** pending owner decision 4, which
-  challenges the CURRENT REQUIRED classification against HX's deferred MCP posture. If downgraded
-  to LATER / DEFERRED, the requirement lapses.
+- **MCP tool plane** — the requirement **stands**. Owner decision 4 kept the CURRENT REQUIRED
+  classification, so an MCP-plane capability contract is mandatory and must be written and its
+  review run before the SME gate can pass. It does not exist and is not built in this pass.
 
-Neither blocker is now satisfied by construction, so the SME gate is gated on the decisions rather
-than on contract-writing.
+So one requirement was withdrawn as superseded and one was confirmed as real. The SME gate does
+**not** pass: it now waits on a single named, accepted blocker rather than on two contested ones.

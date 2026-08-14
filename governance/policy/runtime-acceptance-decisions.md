@@ -42,22 +42,32 @@ without new measurement.
 Accepted for local inference, API validation and tool-driven work **on hxs-4 itself, over
 loopback**, where the calling client controls its own prompt size.
 
-### `accepted-network-consumable` — NOT GRANTED / OPEN
+### `accepted-network-consumable` — NOT GRANTED. Path ruled; grant still pending.
 
-**Not granted.** No client on another host may consume this endpoint under the current
-acceptance. The measurement behind the grant above was taken against a loopback-bound service
-with no authentication; it does not carry to a networked configuration and must not be read as
-if it did.
+**Not granted.** No client on another host may consume this endpoint today.
 
-This is the live blocker for LangGraph, which is placed on hxs-11 and routes through a gateway on
-hxs-8 — neither can reach a loopback socket on hxs-4 (`iss-017`).
+**Owner ruling, 2026-08-14 — decision 1, option B.** The endpoint is **not promoted**. Qwen3.5-9B
+stays loopback-bound on hxs-4, and **remote consumption is authorized only through the OmniRoute
+traffic plane**. This preserves the loopback safety the commissioning deliberately chose — Ollama
+has no authentication, so publishing it on the LAN would expose an unauthenticated model *and
+tool* endpoint — while routing remote use through the plane that will own model traffic anyway.
 
-**Open pending owner decision 1**, per
-`governance/operations/langgraph/claude_20260814_0848_langgraphfourdecisions.html`. The candidate
-paths are recorded there — promote with an access and auth model, route remote consumption
-exclusively through the traffic plane, or drop the dependency for first deployment. **No path is
-chosen here.** Whichever is ruled, granting this state requires its own verification: the access
-path measured as configured, not inherited from the local grant.
+Consequences of the ruling:
+
+- **Direct network consumption is refused permanently**, not merely deferred. A client that reaches
+  this endpoint by any path other than OmniRoute is out of policy regardless of how it gets there.
+- The grant of `accepted-network-consumable` is **conditional on OmniRoute existing** and on its
+  own measurement. It is not granted by this ruling; the ruling fixes *which* path may be measured.
+- Widening beyond OmniRoute would re-open the acceptance and require new measurement.
+
+**Open mechanism question — not a challenge to the ruling.** OmniRoute is placed on hxs-8, and a
+process on hxs-8 cannot reach a loopback socket on hxs-4 any more than LangGraph can. So the ruling
+settles the *policy* — only OmniRoute may consume remotely — while the *mechanism* by which
+OmniRoute fronts a loopback-bound endpoint on a different host remains to be defined and measured.
+Candidates include co-locating a plane component on hxs-4 or an explicit forwarding path. That
+definition, and its measurement, are prerequisites to granting this state.
+
+Until then this remains the live blocker for LangGraph (`iss-017`), which is placed on hxs-11.
 
 ### Scope of the grant below
 
