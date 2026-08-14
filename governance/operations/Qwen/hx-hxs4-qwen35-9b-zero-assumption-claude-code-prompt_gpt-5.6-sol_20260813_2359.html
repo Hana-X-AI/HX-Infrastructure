@@ -1,0 +1,566 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Claude Code Prompt — hxs-4 Qwen3.5-9B Zero-Assumption Commissioning</title><style>
+:root{--bg:#071019;--panel:#0d1823;--panel2:#11202d;--text:#e8f0f7;--muted:#9fb1c2;--line:#263a4b;--cyan:#67d9ff;--green:#9bea77;--amber:#ffd166;--red:#ff7f8f;--violet:#c7a7ff;--code:#06131d;--shadow:0 16px 42px rgba(0,0,0,.28)}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 8% -5%,rgba(103,217,255,.11),transparent 28%),radial-gradient(circle at 92% 1%,rgba(199,167,255,.07),transparent 24%),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.58}
+main{width:min(1220px,calc(100% - 36px));margin:auto;padding:34px 0 78px}.hero{background:linear-gradient(145deg,rgba(17,32,45,.98),rgba(8,20,30,.98));border:1px solid var(--line);border-radius:18px;padding:34px 36px;box-shadow:var(--shadow)}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-weight:800;font-size:12px;color:var(--cyan)}h1{font-size:clamp(34px,5vw,56px);line-height:1.03;letter-spacing:-.035em;margin:8px 0 12px}h2{font-size:27px;letter-spacing:-.015em;margin:40px 0 14px}h3{font-size:19px;margin:20px 0 8px}p{margin:8px 0 14px}.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}.pill{border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:999px;padding:7px 11px;color:var(--muted);font-size:12px}
+.callout{margin:18px 0;padding:18px 20px;border:1px solid rgba(103,217,255,.25);border-left:4px solid var(--cyan);border-radius:11px;background:rgba(103,217,255,.055)}.callout.warn{border-color:rgba(255,209,102,.25);border-left-color:var(--amber);background:rgba(255,209,102,.045)}.callout.bad{border-color:rgba(255,127,143,.26);border-left-color:var(--red);background:rgba(255,127,143,.045)}.callout.ok{border-color:rgba(155,234,119,.25);border-left-color:var(--green);background:rgba(155,234,119,.04)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.card{grid-column:span 6;background:linear-gradient(180deg,rgba(17,32,45,.93),rgba(13,24,35,.93));border:1px solid var(--line);border-radius:14px;padding:20px}.card.full{grid-column:1/-1}.card.third{grid-column:span 4}
+table{width:100%;border-collapse:collapse;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:rgba(13,24,35,.92)}th,td{padding:12px 13px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#cfe6f5;background:rgba(255,255,255,.03)}td{font-size:14px}tr:last-child td{border-bottom:0}
+code,pre{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}code{background:var(--code);border:1px solid rgba(255,255,255,.06);padding:2px 5px;border-radius:5px;color:#d2ecf8}pre{white-space:pre-wrap;background:var(--code);border:1px solid var(--line);border-radius:12px;padding:18px;overflow:auto;color:#dceaf3}
+ul,ol{padding-left:22px}li{margin:5px 0}.checks{list-style:none;padding-left:0}.checks li::before{content:"□";color:var(--green);font-weight:800;display:inline-block;width:1.3em}
+.small{color:var(--muted);font-size:13px}.status-pass{color:var(--green);font-weight:800}.status-stop{color:var(--red);font-weight:800}.status-warn{color:var(--amber);font-weight:800}
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}.copybtn{position:sticky;top:10px;float:right;margin:12px 12px -52px 0;z-index:4;cursor:pointer;padding:8px 11px;border-radius:9px;border:1px solid var(--line);background:#142536;color:var(--text);font-weight:700}
+@media(max-width:820px){main{width:min(100% - 22px,1220px);padding-top:18px}.hero{padding:24px 20px}.card,.card.third{grid-column:1/-1}table{display:block;overflow-x:auto}}
+</style></head><body><main>
+<section class="hero"><div class="eyebrow">HX-Infrastructure · Claude Code Handoff</div><h1>Execution Prompt: Zero-Assumption hxs-4 Qwen3.5-9B Commissioning</h1>
+<p>Deep execution prompt covering the complete host stack, exact model acquisition, live residency, context qualification, HX acceptance, network exposure and Claude Code—without assuming any driver, CUDA, tool, service, storage or GPU state.</p>
+<div class="meta"><span class="pill">No assumptions</span><span class="pill">4K first</span><span class="pill">64K Claude Code gate separate</span><span class="pill">GPU UUID isolation</span><span class="pill">Prepared by GPT-5.6 Sol</span></div></section>
+<div class="callout"><strong>Stop at the first failed or missing prerequisite.</strong> Do not “repair” an unverified layer by installing broader tooling.</div>
+<h2>Claude Code execution prompt</h2>
+<button class="copybtn" onclick="navigator.clipboard.writeText(document.getElementById('prompt').innerText)">Copy prompt</button>
+<pre id="prompt">You are Claude Code operating inside the canonical HX-Infrastructure repository and, only under current HX authorization, on hxs-4.
+
+MISSION
+Commission Qwen3.5-9B Q4_K_M on hxs-4 with Ollama using a ZERO-ASSUMPTION, BOTTOM-UP procedure.
+
+This is not &quot;install Ollama and see what happens.&quot;
+The entire foundation must be verified first:
+authority -&gt; OS/kernel -&gt; PCIe/GPU -&gt; NVIDIA module/driver -&gt; CUDA runtime visibility -&gt; RAM/swap -&gt; storage/filesystem -&gt; network/DNS/time -&gt; host tools -&gt; conflicts -&gt; Ollama -&gt; GPU ownership -&gt; model -&gt; API -&gt; HX contract -&gt; network -&gt; Anthropic compatibility -&gt; Claude Code.
+
+CORE RULES
+1. NO ASSUMPTIONS.
+2. UNVERIFIED = BLOCKED, not PASS.
+3. OBSERVED MISMATCH = FAIL.
+4. Do not add software merely because a related command is missing.
+5. Never install CUDA toolkit simply because nvcc is absent.
+6. Do not pull the model until host foundation and Ollama GPU discovery are verified.
+7. Do not call the model &quot;Claude Code qualified&quot; merely because it runs at small context.
+8. Do not redefine hxs-4&#x27;s durable role.
+9. No Ansible.
+10. No second host/IP inventory.
+11. Preserve rollback before every mutation.
+
+APPROVED TARGET
+Host: hxs-4
+Runtime: Ollama
+Model: Qwen3.5-9B
+Exact tag: qwen3.5:9b-q4_K_M
+Current published artifact size: ~6.6 GB
+Initial context: 4096
+Primary purpose: first real HX local inference/API/tool validation runtime
+
+IMPORTANT CURRENT UPSTREAM CONSTRAINT
+Current Ollama documentation:
+- defaults systems with less than 24 GiB VRAM to 4K context
+- recommends at least 64K context for coding/agent tools such as Claude Code
+
+Therefore use separate acceptance states:
+A. QWEN LOCAL RUNTIME OPERATIONAL
+B. HX VALIDATION OPERATIONAL
+C. CLAUDE CODE QUALIFIED
+
+Do not collapse them.
+
+UPSTREAM PRECHECK
+Before host mutation, re-check official Ollama sources only:
+- qwen3.5 tags / qwen3.5:9b-q4_K_M metadata
+- Linux install docs
+- GPU support docs
+- context-length docs
+- FAQ/server environment docs
+- Anthropic compatibility / Claude Code docs
+
+Record retrieval date and the exact stable Ollama version selected for installation.
+
+REPOSITORY / AUTHORITY PREFLIGHT
+Read:
+- .specify/memory/constitution.md
+- knowledge/instructions.md
+- SERVER-REGISTRY.md
+- INFRASTRUCTURE-CONTRACT.md if present
+- hxs-4 discovery/as-built/configuration
+- network authority
+- current NVIDIA/driver records
+- HX AI Runtime Acceptance Contract
+- runtime profiles/tests
+- current service/model-storage conventions
+- current phase status
+
+Record:
+- durable hxs-4 role verbatim
+- authoritative host/IP source
+- repo branch/worktree/base/HEAD
+- whether host mutation is currently authorized
+- pre-existing uncommitted changes
+
+Do not modify SERVER-REGISTRY merely to install this workload.
+
+CREATE A MACHINE-READABLE COMMISSIONING RECORD
+Use the existing HX evidence conventions.
+Every gate must record:
+- timestamp
+- gate ID
+- observed commands/evidence
+- PASS / FAIL / BLOCKED / SKIP
+- reason
+- mutation performed, if any
+- rollback action
+- resulting state
+
+PHASE A — READ-ONLY FOUNDATION
+
+A1 HOST / OS / KERNEL
+Run:
+  hostnamectl
+  cat /etc/os-release
+  uname -a
+  uptime
+  systemctl --failed
+  mokutil --sb-state 2&gt;/dev/null || true
+  dkms status 2&gt;/dev/null || true
+
+Verify live hostname against authority.
+Record OS release, kernel, boot age, failed units, Secure Boot and DKMS context.
+Do not treat optional mokutil/dkms absence as failure unless current driver installation depends on it.
+
+A2 PCIe / GPU INVENTORY
+Run:
+  lspci -nnk
+  nvidia-smi -L
+  nvidia-smi --query-gpu=name,uuid,pci.bus_id,memory.total,driver_version,pstate,temperature.gpu --format=csv,noheader
+  nvidia-smi topo -m 2&gt;/dev/null || true
+
+Record every GPU.
+Identify the actual intended 8 GB NVIDIA device by UUID and PCI bus ID.
+Do not use &quot;GPU 0&quot; as durable identity.
+If the expected 8 GB device does not exist: FAIL and STOP.
+
+A3 NVIDIA DRIVER / MODULES / DEVICE NODES
+Run:
+  lsmod | grep -E &#x27;^nvidia&#x27;
+  modinfo nvidia
+  cat /proc/driver/nvidia/version 2&gt;/dev/null || true
+  ls -l /dev/nvidia*
+  dmesg -T | grep -iE &#x27;nvidia|nouveau|NVRM|Xid&#x27; | tail -n 150
+  nvidia-smi
+
+Prove:
+- NVIDIA module loaded
+- intended driver owns device
+- no unresolved nouveau conflict
+- no unresolved NVRM/Xid errors
+- device nodes exist
+- eventual Ollama service user can access them
+
+A4 CUDA LAYERS — DO NOT CONFLATE
+Run:
+  nvidia-smi
+  command -v nvcc &amp;&amp; nvcc --version || true
+  ldconfig -p | grep -E &#x27;libcuda|libnvidia&#x27; | head -n 80
+
+Record separately:
+- NVIDIA driver version
+- CUDA capability exposed by driver
+- CUDA toolkit / nvcc present or absent
+- CUDA/NVIDIA runtime libraries
+
+Current Ollama docs require supported NVIDIA GPU, compute capability &gt;= 5.0 and driver &gt;= 531.
+Verify actual device against current docs.
+
+nvcc absent is NOT automatic failure.
+Do NOT install CUDA toolkit unless current official Ollama path or a proven missing dependency requires it.
+
+A5 CPU / RAM / SWAP / PRESSURE
+Run:
+  lscpu
+  free -h
+  swapon --show
+  vmstat 1 5
+  ps -eo pid,user,%cpu,%mem,rss,cmd --sort=-rss | head -n 30
+
+Record actual available resources.
+
+A6 STORAGE / FILESYSTEM
+Run:
+  lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINTS,MODEL
+  df -hT
+  df -i
+  findmnt
+
+Determine authoritative HX model-store location.
+Current Ollama Linux default is /usr/share/ollama/.ollama/models, but HX convention wins if a dedicated path exists.
+If using a custom path, plan OLLAMA_MODELS and service-user ownership.
+Verify enough free space for:
+- 6.6 GB model blob
+- download/temp overhead
+- Ollama state/cache
+- logs/evidence
+- safe reserve
+
+Do not put models in Git.
+
+A7 NETWORK / DNS / TLS / TIME
+Run:
+  ip -br addr
+  ip route
+  getent hosts ollama.com
+  curl -fsSI https://ollama.com/ | head
+  timedatectl
+  chronyc tracking || true
+
+Verify:
+- live IP reconciles with authority
+- route
+- DNS
+- TLS/CA trust
+- synchronized time
+
+Do not change network configuration merely because an observation differs from expectation. Reconcile authority first.
+
+A8 HOST TOOLS
+Inventory:
+  curl
+  wget
+  git
+  jq
+  tar
+  gzip
+  zstd
+  sha256sum
+  systemctl
+  journalctl
+  ss
+  lspci
+
+Install only missing tools proven required.
+
+A9 GPU / SERVICE / PORT CONFLICTS
+Run:
+  nvidia-smi
+  ss -lntp
+  systemctl list-units --type=service --state=running
+  systemctl list-unit-files | grep -Ei &#x27;ollama|vllm|ds4&#x27; || true
+
+Verify:
+- target 8 GB GPU is not occupied by another workload
+- no stale DS4 process/service
+- port 11434 is not an unrelated service
+- no current service already owns the intended GPU
+
+FOUNDATION GATE
+All required A1-A9 must PASS before installation.
+If one fails or lacks evidence, STOP and report.
+
+PHASE B — MODEL ELIGIBILITY BEFORE ACQUISITION
+Re-verify qwen3.5:9b-q4_K_M current official metadata.
+
+Do NOT equate ~6.6 GB blob size with guaranteed 8 GB VRAM fit.
+Model weights + KV + runtime buffers matter.
+
+This gate answers:
+&quot;Is this artifact eligible to acquire for an empirical residency test on the verified hxs-4 configuration?&quot;
+
+Return:
+ELIGIBLE FOR ACQUISITION
+or
+FAIL
+or
+BLOCKED
+
+Do not substitute qwen3.5:4b or any other model without owner approval.
+
+PHASE C — INSTALL OLLAMA REPRODUCIBLY
+Resolve a current stable Ollama version.
+
+For auditability:
+  curl -fsSL https://ollama.com/install.sh -o /tmp/ollama-install.sh
+  sha256sum /tmp/ollama-install.sh
+
+Record source/date/hash.
+Inspect enough to confirm it is the expected official installer.
+Then execute under the approved sudo flow.
+
+After install:
+  ollama --version
+  systemctl status ollama --no-pager
+  systemctl cat ollama
+  systemctl show ollama -p User -p Group -p Environment
+  journalctl -u ollama -n 150 --no-pager
+
+Record exact version and service identity.
+
+PHASE D — CONFIGURE CONSERVATIVE COMMISSIONING ENVIRONMENT
+Before model pull, keep server loopback-only.
+
+If supported by installed Ollama version, configure:
+  CUDA_VISIBLE_DEVICES=GPU-&lt;VERIFIED-8GB-UUID&gt;
+  OLLAMA_MODELS=&lt;VERIFIED-HX-MODEL-STORE&gt;
+  OLLAMA_CONTEXT_LENGTH=4096
+  OLLAMA_NUM_PARALLEL=1
+  OLLAMA_MAX_LOADED_MODELS=1
+  OLLAMA_DEBUG=1
+
+Do NOT set OLLAMA_HOST=0.0.0.0 yet.
+
+Use systemd override via current Ollama/HX convention.
+Then:
+  systemctl daemon-reload
+  systemctl restart ollama
+  systemctl show ollama -p Environment
+  systemctl cat ollama
+  journalctl -u ollama -n 250 --no-pager
+
+PROVE the effective environment, not just the file contents.
+
+PHASE E — PROVE GPU DISCOVERY
+Use logs and NVIDIA evidence to prove Ollama can see the intended NVIDIA device before model pull.
+
+Unexpected CPU fallback = FAIL.
+
+Do not &quot;continue and see if the model fixes it.&quot;
+
+PHASE F — PULL EXACT MODEL
+Only after prior gates PASS:
+  ollama pull qwen3.5:9b-q4_K_M
+
+Then:
+  ollama list
+  ollama show qwen3.5:9b-q4_K_M
+
+Also query local /api/show and save structured metadata.
+
+Record:
+- resolved digest
+- actual size
+- architecture
+- parameter size
+- quantization
+- published model context
+- capabilities
+- model-store path
+
+PHASE G — 4K TEXT-ONLY RUNTIME
+Text-only first.
+
+Run:
+  ollama run qwen3.5:9b-q4_K_M
+
+Prompt exactly:
+  Respond with exactly:
+  HX QWEN35 OPERATIONAL
+
+Capture immediately:
+  ollama ps
+  nvidia-smi
+  free -h
+  journalctl -u ollama -n 150 --no-pager
+
+Record:
+- allocated context
+- PROCESSOR split
+- VRAM
+- RAM
+- load time
+- prompt eval rate
+- generation rate
+- errors
+
+100% GPU is preferred.
+Partial CPU offload is not hidden; characterize it.
+
+If the model cannot run stably at 4K:
+  BLOCKED — MODEL RUNTIME
+and STOP.
+
+PHASE H — CONTEXT LADDER
+Test one level at a time:
+  4096
+  8192
+  16384
+  32768
+  65536
+
+At each level:
+- explicitly configure context
+- restart/reload as required
+- run a fixed prompt set
+- capture ollama ps
+- capture nvidia-smi
+- capture RAM
+- record TTFT if available
+- record prompt-eval and generation rates
+- record GPU/CPU split
+- record errors/OOM
+
+Stop escalation if the host becomes unstable, model fails to load, severe offload occurs, or evidence indicates the next level is not prudent.
+
+Do not attempt 256K during initial commissioning.
+
+IMPORTANT:
+QWEN LOCAL RUNTIME can be operational below 64K.
+CLAUDE CODE QUALIFICATION requires separate evaluation against current Ollama agent-context guidance.
+
+PHASE I — LOCAL OLLAMA API
+Before network exposure, validate on 127.0.0.1:
+- /api/tags or current equivalent
+- /api/show
+- chat non-stream
+- streaming
+- thinking behavior if supported
+- tool definitions
+- tool call
+- tool result continuation
+- multi-turn history
+- malformed request/error
+- cancellation
+- successful request after error/cancel
+
+Use existing HX engine-neutral tool-fidelity invariants.
+
+PHASE J — HX RUNTIME PROFILE / ACCEPTANCE
+Add or activate:
+  ollama-qwen35-9b
+
+Do not modify engine-neutral contract.
+
+Profile records:
+- runtime
+- exact model tag/digest
+- proven context(s)
+- endpoint from config/environment
+- live capabilities discovered from tests
+- host placement outside the contract
+
+Run:
+L2 live protocol/runtime
+selected L3 behavioral tests
+L4 performance/resource characterization
+
+Never generalize behavior from one context/residency configuration to another without recording it.
+
+PHASE K — CONTROLLED NETWORK EXPOSURE
+Only after local API and HX L2 PASS.
+
+Use current official Ollama configuration and authoritative HX hxs-4 address.
+Verify effective OLLAMA_HOST and listening socket.
+Do not create a second IP inventory.
+Do not perform unrelated firewall redesign.
+
+From approved client/control host, re-run:
+- identity
+- chat
+- streaming
+- tool call
+
+PHASE L — ANTHROPIC MESSAGES COMPATIBILITY
+Before Claude Code itself, test Ollama&#x27;s /v1/messages directly:
+- simple messages
+- system prompt
+- streaming
+- multi-turn
+- tool use / tool result
+- thinking field behavior where applicable
+
+Record current known Ollama/Anthropic differences.
+Do not claim full Anthropic parity.
+
+PHASE M — CLAUDE CODE QUALIFICATION
+Current Ollama documentation recommends at least 64K context for coding/agent tools.
+
+Therefore:
+- if 64K was not proven stable, DO NOT mark Claude Code qualified
+- you may document/optionally perform a limited smoke below 64K only if explicitly allowed, but report it as LIMITED/BELOW-RECOMMENDED-CONTEXT
+- normal/default Claude provider config must remain untouched
+
+If 64K is stable enough to test:
+1 basic prompt
+2 read-only repo navigation
+3 safe tool call
+4 tool continuation
+5 skill activation
+6 specialist/subagent
+7 deliberate deterministic HX hook denial
+8 model recognizes denial
+9 model recovers using approved path
+10 model does not fight/bypass hook
+11 bounded code change
+
+PHASE N — FUTURE VLLM COEXISTENCE RULE
+Do NOT install vLLM in this task.
+
+Document:
+If a future 16 GB GPU is verified on the same physical server, Ollama and vLLM may coexist ONLY if:
+- exact GPU UUIDs are proven
+- Ollama sees ONLY the 8 GB GPU
+- vLLM sees ONLY the 16 GB GPU
+- separate ports
+- separate service/runtime environments
+- separate model stores
+- host RAM/storage supports both
+- each model passes independent capacity gate
+
+CRITICAL:
+Current Ollama behavior may spread a model across all visible GPUs if it cannot fit one.
+Therefore GPU isolation is mandatory before coexistence.
+Do not let Ollama discover the vLLM GPU.
+
+ROLLBACK
+Before every mutation, record inverse action.
+At minimum support:
+- return Ollama to loopback
+- stop/disable Ollama
+- remove systemd overrides
+- remove Ollama using current official uninstall procedure
+- preserve or remove model files intentionally
+- restore prior model-store ownership/config
+- remove HX runtime profile if appropriate
+- prove target GPU and port returned to prior state
+
+FINAL REPORT
+Produce a dark-mode HTML report with:
+- executive summary
+- authoritative hxs-4 identity/role
+- branch/worktree/base/HEAD
+- every A1-A9 foundation gate and evidence
+- OS/kernel/Secure Boot/DKMS
+- GPU model/UUID/PCI/VRAM/topology
+- NVIDIA module/driver/NVRM/Xid status
+- CUDA driver capability
+- nvcc/toolkit status and why it was/was not required
+- RAM/swap/pressure
+- storage/filesystem/model store
+- network/DNS/TLS/time
+- required tools
+- GPU/service/port conflicts
+- Ollama installer hash/version
+- service user/environment
+- proven GPU visibility
+- model tag/digest/size/quant/capabilities
+- 4K runtime result
+- context ladder table
+- Processor split at each context
+- local API/tool results
+- HX L2/L3/L4 results
+- network result
+- Anthropic compatibility result
+- Claude Code qualification result
+- rollback status
+- files changed
+- commands/tests run
+- PASS/FAIL/BLOCKED/SKIP totals
+- final status using one or more:
+    OPERATIONAL — LOCAL RUNTIME
+    OPERATIONAL — HX VALIDATION
+    OPERATIONAL — NETWORK
+    CLAUDE API COMPATIBLE
+    CLAUDE CODE QUALIFIED
+    CLAUDE CODE LIMITED / NOT QUALIFIED
+    BLOCKED
+
+DEFINITION OF DONE
+No foundation layer is inferred.
+Qwen3.5-9B is considered locally operational only after a stable 4K+ model runtime, local API and HX L2 pass.
+Claude Code qualification is a separate gate and must reflect the actual proven context, not the model&#x27;s advertised 256K maximum.
+</pre>
+<footer>Companion artifact: <code>hx-hxs4-qwen35-9b-zero-assumption-commissioning-plan_gpt-5.6-sol_20260813_2359.html</code>. Current official Ollama sources must be re-verified at execution time.</footer>
+</main></body></html>
