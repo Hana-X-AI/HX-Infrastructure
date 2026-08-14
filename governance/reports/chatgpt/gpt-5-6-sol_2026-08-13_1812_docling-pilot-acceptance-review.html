@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HX-Infrastructure — Docling Pilot Acceptance Review</title>
+<style>
+:root{
+ color-scheme:dark;--bg:#080d13;--panel:#101923;--panel2:#15212c;--ink:#e8eef5;--muted:#9baab8;
+ --line:#2a3947;--green:#61d5ae;--blue:#7cb8ff;--amber:#efb25e;--red:#ff7b72;--violet:#c6a8ff;
+ --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+ --sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif
+}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#07111a,#080d13 36rem);color:var(--ink);font:15px/1.62 var(--sans)}
+main{max-width:1280px;margin:auto;padding:40px 24px 78px}
+header{background:linear-gradient(135deg,#142633,#0d161f);border:1px solid var(--line);border-radius:14px;padding:30px;box-shadow:0 18px 42px rgba(0,0,0,.25)}
+.eyebrow{font:800 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:12px}
+h1{font-size:37px;line-height:1.08;letter-spacing:-.027em;margin:0 0 12px}h2{font-size:24px;line-height:1.2;letter-spacing:-.015em;margin:0 0 9px}h3{font-size:17px;margin:0 0 7px}
+.sub,.lede{color:var(--muted);max-width:108ch}.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.pill{font:700 11px/1 var(--mono);padding:7px 9px;border:1px solid var(--line);border-radius:999px;background:#0a131c;color:#cad5df}
+section{margin-top:32px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:14px;margin-top:14px}.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}.metric{font-size:24px;font-weight:800;letter-spacing:-.02em}.small{font-size:12.5px;color:var(--muted)}
+.callout{background:var(--panel);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:16px 18px;margin:14px 0}.warn{border-left-color:var(--amber)}.bad{border-left-color:var(--red)}.blue{border-left-color:var(--blue)}.violet{border-left-color:var(--violet)}
+table{width:100%;border-collapse:separate;border-spacing:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:12px}
+th,td{text-align:left;vertical-align:top;padding:11px 12px;border-bottom:1px solid var(--line)}th{font:800 10.5px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#b8c5cf;background:#0e1720}tr:last-child td{border-bottom:0}
+code,pre{font-family:var(--mono)}code{background:#08121a;border:1px solid #22313f;border-radius:4px;padding:.05em .32em;color:#dce8f2}pre{white-space:pre-wrap;overflow:auto;background:#070c11;border:1px solid var(--line);border-radius:10px;padding:18px;line-height:1.5;color:#dae5ef}
+ul,ol{margin:7px 0 0;padding-left:22px}li{margin:5px 0}.badge{display:inline-block;font:800 9.5px/1 var(--mono);text-transform:uppercase;letter-spacing:.06em;padding:5px 7px;border-radius:999px;white-space:nowrap}
+.pass{color:#c8f7d9;background:rgba(97,213,174,.12);border:1px solid rgba(97,213,174,.35)}.fix{color:#ffe0ad;background:rgba(239,178,94,.12);border:1px solid rgba(239,178,94,.35)}.block{color:#ffc7c2;background:rgba(255,123,114,.12);border:1px solid rgba(255,123,114,.35)}.info{color:#d2e6ff;background:rgba(124,184,255,.12);border:1px solid rgba(124,184,255,.35)}
+.decision{background:linear-gradient(135deg,#10261f,#101a24);border:1px solid #295246;border-radius:12px;padding:20px;margin-top:14px}.decision h3{color:var(--green)}
+.rank{font-weight:800;font-family:var(--mono)}.p0{color:var(--red)}.p1{color:var(--amber)}.p2{color:var(--blue)}
+footer{margin-top:44px;border-top:1px solid var(--line);padding-top:18px;color:#7f8e9b;font-size:12px}
+@media(max-width:760px){main{padding:22px 12px 48px}header{padding:22px 18px}h1{font-size:29px}th,td{padding:9px 8px;font-size:13px}}
+</style>
+</head>
+<body><main>
+<header>
+<div class="eyebrow">HX-Infrastructure · Docling migration pilot · acceptance review</div>
+<h1>Docling Pilot: Deep Acceptance Review</h1>
+<p class="sub">Review of the returned Docling pilot package at three layers: the service-design transformation, the provenance/validation evidence, and the migration mechanism that produced it. The pilot produced a valuable current design draft and, more importantly, exposed defects in the frozen manifest and sanitized-history assumptions before they could be repeated across LangGraph.</p>
+<div class="meta">
+<span class="pill">author: gpt-5.6 sol</span>
+<span class="pill">2026-08-13 18:12 -05:00</span>
+<span class="pill">service transformation: PASS</span>
+<span class="pill">service design: CONDITIONAL PASS</span>
+<span class="pill">manifest v3: HOLD</span>
+<span class="pill">langgraph: DO NOT START YET</span>
+</div>
+</header>
+
+<section>
+<h2>1. Executive verdict</h2>
+<div class="decision">
+<h3>The pilot succeeded by finding where the process still breaks.</h3>
+<p><strong>The Docling distillation method works.</strong> Claude Code compressed a very large historical body into a 4,548-word target-state design without copying the old tree, preserved important failure lessons, distinguished target-state from as-built state, and produced clean file-level accounting.</p>
+<p><strong>The end-to-end migration process does not yet pass.</strong> Two mandatory preflight conditions failed and were waived: the pinned ledger identity was wrong, and the sanitized historical source did not exist. More seriously, the pilot discovered that the frozen v3 ledger still contains structural information that can recreate the shadow-repository behavior it was meant to eliminate.</p>
+<p><strong>Do not throw away the Docling work. Do not start LangGraph yet.</strong> Patch the ledger implementation, establish the sanitized historical lineage, update Docling against current upstream architecture, perform the minimum specialist reviews, then use the corrected process for LangGraph.</p>
+</div>
+
+<div class="grid">
+<div class="card"><div class="small">Docling scope</div><div class="metric">198 rows</div><div class="small">120 content-used · 75 inventory-reviewed · 3 blocked.</div></div>
+<div class="card"><div class="small">Current design size</div><div class="metric">4,548 words</div><div class="small">Good compression; not a recreated historical pseudo-spec.</div></div>
+<div class="card"><div class="small">Output validation</div><div class="metric">6 / 6</div><div class="small">All post-output checks pass, but preflight did not.</div></div>
+<div class="card"><div class="small">SME reviews</div><div class="metric">0 / 3</div><div class="small">Correctly reported, not fabricated.</div></div>
+<div class="card"><div class="small">Sanitized source</div><div class="metric">Missing</div><div class="small">Pilot read the raw org-main source under a waiver.</div></div>
+</div>
+</section>
+
+<section>
+<h2>2. Acceptance scorecard</h2>
+<table>
+<thead><tr><th>Layer</th><th>Status</th><th>Decision</th></tr></thead>
+<tbody>
+<tr><td>Historical → current knowledge transformation</td><td><span class="badge pass">pass</span></td><td>Keep the Docling distillation. It demonstrates the core extract → reconcile → author model.</td></tr>
+<tr><td>No-shadow-tree behavior</td><td><span class="badge pass">pass</span></td><td>No 2025 Docling tree was copied into the current checkout.</td></tr>
+<tr><td>Target-state / as-built authority separation</td><td><span class="badge pass">pass</span></td><td>The design explicitly says TARGET-STATE and does not claim installation or reachability.</td></tr>
+<tr><td>Defect mining</td><td><span class="badge pass">pass</span></td><td>High-value failures were transformed into concise constraints instead of reproduced as logs.</td></tr>
+<tr><td>Secret hygiene of returned files</td><td><span class="badge pass">pass with caveat</span></td><td>Returned outputs show no detected secret literals; full secret remediation is still open.</td></tr>
+<tr><td>Provenance accounting</td><td><span class="badge fix">partial</span></td><td>Ledger-ID accounting is strong; source identity is not independently reproducible yet.</td></tr>
+<tr><td>Sanitized-history workflow</td><td><span class="badge block">fail</span></td><td>The sanitized ref never existed and was waived rather than validated.</td></tr>
+<tr><td>Manifest v3 execution safety</td><td><span class="badge block">hold</span></td><td>Structural fields still encode nonexistent/stale refs and ambiguous 1:1 targets.</td></tr>
+<tr><td>Current upstream correctness</td><td><span class="badge fix">patch required</span></td><td>Docling MCP architecture changed materially since the 2025 source.</td></tr>
+<tr><td>Multi-SME approval</td><td><span class="badge block">not complete</span></td><td>Required current specialist contracts do not exist yet.</td></tr>
+<tr><td>Ready to repeat for LangGraph</td><td><span class="badge block">no</span></td><td>Fix the migration substrate first; then repeat.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>3. What Claude Code did very well</h2>
+<ul>
+<li><strong>It refused to manufacture as-built state.</strong> The authority header is exactly the right pattern for current service planning.</li>
+<li><strong>It kept historical sign-off historical.</strong> No current SME name was invented, and <code>reviewed_by</code> stayed empty.</li>
+<li><strong>It found architectural drift inside the legacy project.</strong> The direct-Qdrant implementation reappeared after an earlier design correction; that is precisely the kind of expensive lesson worth preserving.</li>
+<li><strong>It separated Docling from model serving.</strong> The CPU-only hxs-12 placement is used as a constraint rather than an excuse to drag vLLM into the service.</li>
+<li><strong>It collapsed task/test/defect volume correctly.</strong> 74 task files became architecture/sequence evidence, 57 test files became test disciplines, and defects became a small current gotcha set.</li>
+<li><strong>It declared deviations instead of hiding them.</strong> The failed preflight, scanner substitution and accidental harness persistence were surfaced explicitly.</li>
+</ul>
+</section>
+
+<section>
+<h2>4. P0 — The sanitized-source preflight failed</h2>
+<div class="callout bad">
+<strong>The most important process gate did not pass.</strong> The pilot says <code>legacy/2025-sanitized</code> has never existed and that the 195 readable files were fetched from the live historical org <code>main</code> under an owner-approved waiver.
+</div>
+<p>That makes this a valid <em>transformation experiment</em>, but not a validation of the final migration workflow. The sanitized-history model remains unproven.</p>
+<p><strong>Before LangGraph:</strong></p>
+<ol>
+<li>Acquire the historical Git lineage into an isolated quarantine repository/worktree.</li>
+<li>Complete the secret review and rewrite/sanitize that lineage.</li>
+<li>Publish/establish the intended sanitized historical ref.</li>
+<li>Populate sanitized object/file identities in the ledger.</li>
+<li>Run the next service distillation from that sanitized source only.</li>
+</ol>
+<p>The waiver should not become precedent. Docling was the one pilot in which accepting a controlled exception produced useful evidence; LangGraph should prove the real final path.</p>
+</section>
+
+<section>
+<h2>5. P0 — Manifest v3 is not safe to execute unchanged</h2>
+<p>The pilot found that the ledger does not actually implement several policy corrections previously believed complete:</p>
+<table>
+<thead><tr><th>Finding</th><th>Why it matters</th><th>v3.1 correction</th></tr></thead>
+<tbody>
+<tr><td>416 <code>distill</code> rows carry both <code>target_path</code> and <code>distill_target</code></td><td>An executor can still interpret the row as “copy the historical file 1:1, then also distill it.”</td><td>For historical/distill rows, remove/null current-tree <code>target_path</code>. Keep only the consolidated <code>distill_target</code>/<code>target_section</code>.</td></tr>
+<tr><td>All 522 rows claim <code>source_ref=legacy/2025-sanitized</code></td><td>The ref does not exist; provenance metadata is currently aspirational, not factual.</td><td>Represent raw source and sanitized source separately. Do not fill a sanitized ref/hash until it actually exists.</td></tr>
+<tr><td><code>sanitized_sha256</code> is null throughout</td><td>No row currently proves identity with a sanitized source object.</td><td>Populate after sanitation; preserve raw/source hash separately where safe.</td></tr>
+<tr><td><code>lgc-046</code> points to nonexistent <code>governance/constitution.md</code></td><td>Executor must improvise a destination.</td><td>Resolve to the actual current authority path or classify as covered/retire.</td></tr>
+<tr><td>Seven governance targets moved</td><td>Ledger paths already drifted from the current tree.</td><td>Update destinations to current <code>governance/policy/</code> and <code>governance/logs/</code> locations as appropriate.</td></tr>
+</tbody>
+</table>
+<p>This is a <strong>technical v3.1 patch</strong>, not another policy redesign. Preserve the 522 IDs, decisions and renderer; repair the fields that the pilot proved are false or ambiguous.</p>
+</section>
+
+<section>
+<h2>6. P0 — Current upstream Docling MCP invalidates one inherited architecture assumption</h2>
+<div class="callout bad">
+<strong>The current service document says the processing library runs embedded/in-process and calls that three-layer shape “unchanged” from 2025. That is no longer a safe current target assumption.</strong>
+</div>
+<p>Current official Docling MCP has moved to a remote/local/hybrid conversion architecture. The current line is v3 and uses MCP Python SDK v2. The recommended/default conversion mode is remote: a lightweight Docling MCP process calls a Docling Serve API. Local mode remains available through a local extra, and hybrid mode can fall back from remote to local.</p>
+<p>This creates a real current architecture choice for HX:</p>
+<table>
+<thead><tr><th>Candidate</th><th>Shape on hxs-12</th><th>Advantages</th><th>Costs</th></tr></thead>
+<tbody>
+<tr><td><strong>A. Local embedded</strong></td><td><code>docling-mcp[local]</code> does parsing in-process</td><td>Fewest processes; conceptually simple.</td><td>Heavy MCP runtime; parsing and MCP lifecycle remain coupled; does not mirror upstream recommended topology.</td></tr>
+<tr><td><strong>B. Docling Serve + thin MCP façade</strong></td><td>Docling Serve provides parsing API; Docling MCP remote mode talks over loopback/local network</td><td>Clean Phase-4 parsing / Phase-5 MCP separation; models/cache/native dependencies belong to one parsing service; current upstream default architecture; explicit API health surface.</td><td>Two service units and one local API boundary.</td></tr>
+<tr><td><strong>C. Hybrid</strong></td><td>Remote to Docling Serve with embedded local fallback</td><td>Resilience/fallback.</td><td>Duplicates local conversion dependency footprint and increases state/operational complexity.</td></tr>
+</tbody>
+</table>
+<p><strong>I recommend evaluating B first, not blindly selecting it.</strong> It aligns unusually well with the existing HX roadmap, which already separates base Docling parsing from later Docling MCP capability. For this dev/test/demo environment, the extra service boundary may be worth the cleaner lifecycle; if not, A is still a valid deliberate choice.</p>
+<p>Until this decision is made, the service document should say <strong>conversion topology: VERIFICATION REQUIRED</strong> and scope cache/native/model requirements conditionally to the local parser or Docling Serve layer.</p>
+</section>
+
+<section>
+<h2>7. Current-upstream delta that should be patched into <code>service.md</code></h2>
+<table>
+<thead><tr><th>Current document</th><th>Current upstream reality</th><th>Patch</th></tr></thead>
+<tbody>
+<tr><td>“Docling library runs embedded, in-process”</td><td>Current upstream supports remote/default, local and hybrid conversion.</td><td>Make conversion topology an explicit current decision.</td></tr>
+<tr><td>Native libs/model artifacts/cache described as unconditional MCP concerns</td><td>In remote mode those primarily belong to Docling Serve, not the lightweight MCP façade.</td><td>Move these under the chosen conversion backend responsibility.</td></tr>
+<tr><td>“Python tested to 3.13”</td><td>Current project metadata includes Python 3.14 and requires Python ≥3.10.</td><td>Update current compatibility note; still freeze exact runtime during implementation.</td></tr>
+<tr><td>19-tool historical upstream baseline</td><td>v3 preserves v2 tool/prompt APIs, but v2 itself materially changed architecture and upstream now exposes additional optional RAG toolgroups.</td><td>Re-enumerate the actual current enabled toolgroups before implementation. Do not treat the 2025 inventory as the current baseline.</td></tr>
+<tr><td>“upstream has no health endpoint”</td><td>The MCP façade may not expose the old HX health endpoint, but remote mode explicitly health-checks Docling Serve.</td><td>Define health by topology: MCP discovery/transport + Docling Serve health when remote.</td></tr>
+<tr><td>Docling “is not retrieval”</td><td>Good HX boundary, but upstream can optionally load RAG toolgroups.</td><td>Keep HX separation and explicitly disable/unselect upstream RAG toolgroups unless a current decision says otherwise.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>8. P1 — LightRAG is pipeline-required, not yet proven as a direct Docling integration</h2>
+<p>The design currently classifies LightRAG as <strong>CURRENT REQUIRED</strong> because parsed content must eventually reach graph/retrieval processing. That is directionally correct, but the current roadmap establishes an <em>ingestion pipeline</em>, not necessarily a direct Docling → LightRAG service call.</p>
+<p>Use a more precise classification until the handoff architecture is decided:</p>
+<pre><code>LightRAG:
+  classification: CURRENT PIPELINE REQUIRED
+  direct_service_contract: NOT YET ESTABLISHED
+  handoff_owner: VERIFICATION REQUIRED
+  candidate patterns:
+    - orchestrator calls Docling, then LightRAG
+    - LightRAG pulls/accepts parsed output
+    - queue/event handoff
+    - explicit direct Docling push (only if deliberately selected)
+</code></pre>
+<p>This preserves the architectural requirement without reintroducing the 2025 “Docling owns the whole ingestion pipeline” mistake.</p>
+</section>
+
+<section>
+<h2>9. P1 — Provenance is accountable but not independently reproducible</h2>
+<p>The uploaded provenance file is internally consistent:</p>
+<pre><code>records                   198
+used                      120
+reviewed-not-used          75
+blocked                     3
+used rows missing target    0
+reviewed_by populated       0
+sanitized_sha256 populated  0
+</code></pre>
+<p>That is good file-level accounting. But the provenance records contain only the ID, disposition/location, <code>read_from</code>, distillation state, target section, reviewers, sanitized hash, migration commit and note. They do not independently carry the source path, source commit/ref or source hash.</p>
+<p><strong>Recommendation:</strong> either make the provenance index join formally to the frozen manifest by ledger hash, or add source identity directly:</p>
+<pre><code>manifest_sha256
+legacy_path
+source_repo
+source_ref
+source_commit
+source_sha256
+sanitized_ref
+sanitized_sha256
+distillation_status
+distilled_into
+reviewed_by
+migration_commit
+</code></pre>
+<p>The best design may avoid duplicating every manifest field: add <code>manifest_sha256</code> to the provenance header/records and require the referenced ledger to carry exact source identity. What matters is that a future agent can reproduce the source object without guessing which version of <code>lgc-127</code> was read.</p>
+</section>
+
+<section>
+<h2>10. P1 — Correct the pilot’s coverage language</h2>
+<p>The pilot report headline says it “distilled 195 files.” The provenance file shows a more precise result:</p>
+<ul>
+<li><strong>120</strong> files had content used in the current design.</li>
+<li><strong>75</strong> were reviewed at inventory/shape level and contributed no distinct content.</li>
+<li><strong>3</strong> were blocked and never opened.</li>
+</ul>
+<p>Use <strong>“195 content-eligible files reviewed; 120 contributed distilled content”</strong>. That is stronger evidence, not weaker—it proves the process can explicitly say “reviewed and not useful” instead of pretending every historical file deserves survival.</p>
+</section>
+
+<section>
+<h2>11. P1 — Validation result should be “conditional pass,” not “all green”</h2>
+<p>The six returned checks genuinely pass: secret-pattern scan, no shadow archive, section provenance, verification markers, row accounting and output size. However, they validate the <strong>outputs after authoring</strong>. They do not erase the failed preflight.</p>
+<table>
+<thead><tr><th>Gate family</th><th>Result</th></tr></thead>
+<tbody>
+<tr><td>Output integrity</td><td><span class="badge pass">pass</span> — 6/6 returned checks.</td></tr>
+<tr><td>Source-safety preflight</td><td><span class="badge block">waived</span> — sanitized source did not exist.</td></tr>
+<tr><td>Ledger identity preflight</td><td><span class="badge fix">re-pinned during run</span> — original pin was wrong.</td></tr>
+<tr><td>Current SME review</td><td><span class="badge block">pending</span> — 0/3 mandatory reviews.</td></tr>
+<tr><td>Current upstream validation</td><td><span class="badge fix">new patch required</span>.</td></tr>
+<tr><td>Credential rotation/remediation</td><td><span class="badge block">open</span>.</td></tr>
+</tbody>
+</table>
+<p>Therefore the correct package status is <strong>CONDITIONAL PASS — transformation validated, final migration path not yet validated</strong>.</p>
+</section>
+
+<section>
+<h2>12. P1 — The secret-control substitution was acceptable for the pilot, not sufficient for migration closure</h2>
+<p>Claude Code did the right thing by not inventing an “approved scanner.” It used an upstream control—author from extracted meaning, never copy secret-bearing text—and then ran multiple shape/high-entropy checks. That is a reasonable compensating control for this document-only experiment.</p>
+<p>But it does not prove the historical Git lineage is clean and it does not close credential rotation. Keep these separate:</p>
+<ul>
+<li><strong>Returned pilot artifacts:</strong> clean by the checks run.</li>
+<li><strong>Raw historical source:</strong> still sensitive/quarantined.</li>
+<li><strong>Sanitized historical ref:</strong> not yet created/validated.</li>
+<li><strong>Credential rotation action:</strong> still open.</li>
+</ul>
+<p>The harness-created session copy of legacy charter text should be deleted from the session/result directory if accessible and then noted as cleaned. It is outside Git, but leaving stray raw copies is unnecessary.</p>
+</section>
+
+<section>
+<h2>13. P1 — Add regression evidence to the return package</h2>
+<p>The conversational completion message reports <strong>154 passing, 0 failing</strong>, but the uploaded validation artifact focuses on the six pilot-specific checks and does not itself carry the regression-suite output. Before commit, make the pilot package self-contained:</p>
+<ul>
+<li>suite command/name;</li>
+<li>baseline expected count after gate retirement;</li>
+<li>actual count;</li>
+<li>0 failures;</li>
+<li>timestamp / branch / relevant commit or working-tree identity.</li>
+</ul>
+<p>Do not make a future reviewer rely on chat history for the regression proof.</p>
+</section>
+
+<section>
+<h2>14. P1 — Reconstruct the minimum specialist contracts before final Docling approval</h2>
+<p>The absence of current specialist contracts is useful pilot output. It proves the “many specialists” layer is not yet operational.</p>
+<p>Before declaring Docling target-state design validated, reconstruct at minimum:</p>
+<table>
+<thead><tr><th>Capability</th><th>Why required now</th></tr></thead>
+<tbody>
+<tr><td><code>docling-mcp</code></td><td>Own current upstream topology/tool-surface interpretation and Docling-specific design.</td></tr>
+<tr><td><code>infrastructure-ops</code></td><td>Own systemd/service-user/cache/disk/runtime implications on hxs-12.</td></tr>
+<tr><td><code>testing-qa</code></td><td>Own current validation criteria and ensure inherited test mistakes do not return.</td></tr>
+<tr><td><code>lightrag</code></td><td>Required if LightRAG remains a current pipeline dependency; own handoff boundary from its side.</td></tr>
+</tbody>
+</table>
+<p>Historical persona reviews remain provenance only. Current sign-off should be performed against the current service draft after the upstream delta patch.</p>
+</section>
+
+<section>
+<h2>15. Recommended Docling architecture decision packet</h2>
+<p>Do not open twenty owner questions at once. The next Docling design review can collapse to three decisions:</p>
+<ol>
+<li><strong>Conversion topology:</strong> embedded local vs Docling Serve + remote MCP façade vs hybrid. I would evaluate Serve + thin MCP first because it follows current upstream and mirrors the HX Phase-4/Phase-5 split.</li>
+<li><strong>Ingestion handoff:</strong> who owns Docling → downstream ingestion orchestration? Preserve LightRAG as a pipeline dependency without assuming a direct push contract.</li>
+<li><strong>MCP exposure path:</strong> Docling MCP directly on hxs-12, composed/proxied by hxs-7, or both. Detailed security remains deferred; this decision is only topology/routing.</li>
+</ol>
+<p>Everything else—ports, cache sizes, worker counts, OCR defaults, package pins—can be resolved later through implementation-time verification and measurement.</p>
+</section>
+
+<section>
+<h2>16. Recommended sequence before LangGraph</h2>
+<ol>
+<li><strong>Do not commit the pilot yet.</strong> Preserve the uncommitted branch while corrections are applied.</li>
+<li><strong>Patch manifest v3 → v3.1 technically.</strong> Keep IDs/policies; fix false source refs, ambiguous distill targets and stale current paths.</li>
+<li><strong>Create and validate the sanitized historical lineage.</strong> Populate sanitized source identity.</li>
+<li><strong>Patch <code>service.md</code> against current Docling MCP/Docling Serve architecture.</strong> Make conversion topology explicit/undecided until selected.</li>
+<li><strong>Fix LightRAG wording</strong> from implied direct integration to current pipeline dependency unless a direct contract is deliberately approved.</li>
+<li><strong>Strengthen provenance identity.</strong> Bind every provenance record to the exact manifest and source object.</li>
+<li><strong>Reconstruct the minimum SMEs and run current reviews.</strong></li>
+<li><strong>Add regression-suite evidence and clean the accidental harness artifact.</strong></li>
+<li><strong>Re-run pilot validation.</strong> No preflight waivers this time.</li>
+<li><strong>Commit the Docling pilot only after those gates pass.</strong></li>
+<li><strong>Then run LangGraph using the corrected substrate.</strong></li>
+</ol>
+</section>
+
+<section>
+<h2>17. What should not be reopened</h2>
+<ul>
+<li>One canonical repository / one active current truth.</li>
+<li>Current registry authority.</li>
+<li>No shadow legacy tree in active main.</li>
+<li>Capability-first specialist model.</li>
+<li>Historical defects distilled into current constraints.</li>
+<li>Target-state service docs separated from as-built server records.</li>
+<li>Model-serving separation from core document parsing.</li>
+<li>Deferred detailed MCP hardening.</li>
+</ul>
+<p>The pilot found implementation defects in the migration machinery; it did not invalidate the merge architecture.</p>
+</section>
+
+<section>
+<h2>18. Definition of done for Docling pilot acceptance</h2>
+<ul>
+<li>Manifest v3.1 no longer contains contradictory distill destinations or fictitious sanitized refs.</li>
+<li>A real sanitized legacy source exists and every Docling row can be tied to it reproducibly.</li>
+<li><code>service.md</code> reflects current Docling MCP topology choices rather than assuming the 2025 embedded architecture.</li>
+<li>Current upstream tool/runtime claims are either verified or explicitly marked pending.</li>
+<li>LightRAG dependency wording does not manufacture a direct integration contract.</li>
+<li>Provenance binds ledger ID to an exact historical source identity.</li>
+<li>At least Docling MCP, infrastructure and QA current specialist reviews are complete.</li>
+<li>Secret/output checks still pass; historical credential rotation remains tracked until actually closed.</li>
+<li>Regression evidence is in the package, not only in conversation history.</li>
+<li>No raw legacy file exists under active main.</li>
+<li>No preflight waiver is needed on the final acceptance run.</li>
+</ul>
+</section>
+
+<section>
+<h2>19. Final recommendation</h2>
+<div class="decision">
+<h3>Keep the Docling draft. Hold LangGraph. Fix the substrate once.</h3>
+<p>This pilot did exactly what a good pilot should do: it demonstrated that the expensive historical engineering knowledge can be compressed into useful current design without importing the old repository, and it exposed process assumptions that looked correct on paper but were false in the live repositories.</p>
+<p><strong>The next move is a narrow corrective pass, not another planning cycle.</strong> Patch the ledger to v3.1, establish the sanitized source, currentize Docling’s conversion topology, bind provenance to exact source identities, reconstruct the minimum SMEs, and rerun acceptance. Then the same method is safe to scale to LangGraph.</p>
+</div>
+</section>
+
+<section>
+<h2>20. Evidence reviewed</h2>
+<ul>
+<li><code>services/docling-mcp/service.md</code> — returned target-state design.</li>
+<li><code>governance/reports/claude/provenance-index.jsonl</code> — 198-row pilot provenance ledger.</li>
+<li><code>docling-pilot-report.html</code> — execution report and declared deviations.</li>
+<li><code>docling-pilot-validation.html</code> — six output-validation checks.</li>
+<li>Current official Docling MCP repository README, migration guide and project metadata.</li>
+<li>Current official Docling Serve README and API/deployment documentation.</li>
+<li>HX phased build roadmap v0.1 for current Phase-4/Phase-5 placement context.</li>
+</ul>
+</section>
+
+<footer>
+HX-Infrastructure · Docling pilot acceptance review · gpt-5.6 sol · 2026-08-13 18:12 -05:00 · review/planning only. No repository, Git-history or infrastructure change performed.
+</footer>
+</main></body></html>

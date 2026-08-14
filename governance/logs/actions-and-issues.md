@@ -13,6 +13,24 @@ Use this single log for project action items and issues.
 
 `backlog` marks work that is accepted as needed but deliberately deferred, and which is not blocking current activity.
 
+## severity
+
+Every `issue` opened from 2026-08-13 states its severity in the first sentence of the `item`
+column, in bold. Actions do not carry severity. Rows closed before this date were not
+retrofitted — assigning a severity to a resolved issue after the fact would be inventing
+evidence.
+
+| Severity | Meaning |
+| --- | --- |
+| **critical** | Service down, complete failure, data loss, or credential exposure. |
+| **high** | Major function broken, or significant operational impact with no workaround. |
+| **medium** | Function impaired, workaround available. |
+| **low** | Minor, cosmetic, or an enhancement request. |
+
+Severity describes the problem, not the urgency of the fix. A `critical` issue may be
+deliberately deferred by owner decision, and the record says so in the closeout column rather
+than by lowering the severity.
+
 ## log
 
 | id | type | item | impact / outcome | owner | status | related | resolution / closeout |

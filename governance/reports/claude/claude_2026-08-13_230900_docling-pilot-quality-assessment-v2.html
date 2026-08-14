@@ -1,0 +1,172 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Docling Pilot — Quality Assessment v2 (with acceptance convergence)</title>
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--panel2:#1c2129;--bd:#30363d;--fg:#e6edf3;--dim:#8b949e;--acc:#58a6ff;
+--ok:#3fb950;--warn:#d29922;--stop:#f85149;--purple:#bc8cff;--orange:#f0883e;--green:#7ee787}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.62 -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.wrap{max-width:1060px;margin:0 auto;padding:32px 22px 90px}
+header.hero{border:1px solid var(--bd);border-radius:14px;background:linear-gradient(150deg,#161b22,#0d1117);padding:26px 28px;margin-bottom:22px}
+.hero h1{margin:0 0 6px;font-size:24px}
+.hero .sub{color:var(--dim);font-size:14px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.meta span{background:var(--panel2);border:1px solid var(--bd);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--dim)}
+.meta b{color:var(--fg)}
+h2{font-size:18px;margin:30px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--bd)}
+h2 .k{color:var(--acc);font-weight:700;margin-right:8px}
+h3{font-size:15px;margin:18px 0 6px}
+.lead{color:var(--dim);margin:-2px 0 14px;font-size:14px}
+p{margin:9px 0}
+.callout{border-left:4px solid var(--acc);background:var(--panel2);border-radius:0 10px 10px 0;padding:14px 18px;margin:14px 0}
+.callout.stop{border-left-color:var(--stop)}.callout.ok{border-left-color:var(--ok)}.callout.warn{border-left-color:var(--warn)}
+.callout h3{margin:0 0 6px;font-size:15px}
+.callout p{margin:0 0 6px;color:var(--dim);font-size:13.5px}.callout p:last-child{margin-bottom:0}
+code{background:#0d1117;border:1px solid var(--bd);border-radius:5px;padding:1px 5px;font:12.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:#79c0ff}
+pre{background:#0d1117;border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow:auto;font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;color:#dbe4ee;white-space:pre}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--bd);vertical-align:top}
+th{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.5px;background:var(--panel)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+.dim{color:var(--dim)}
+.verdict{display:flex;gap:16px;align-items:center;background:linear-gradient(135deg,#12261a,#101a24);border:1px solid #2a5a3f;border-radius:12px;padding:18px 22px;margin:14px 0}
+.verdict .big{font-size:26px;font-weight:800;color:var(--ok);white-space:nowrap;line-height:1.1}
+.verdict .txt{color:var(--dim);font-size:13.5px}
+.pass{color:var(--ok);font-weight:700}.fail{color:var(--stop);font-weight:700}.part{color:var(--warn);font-weight:700}.na{color:var(--dim)}
+.grade{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;white-space:nowrap}
+.g-a{background:rgba(63,185,80,.15);color:var(--ok);border:1px solid var(--ok)}
+.g-b{background:rgba(88,166,255,.15);color:var(--acc);border:1px solid var(--acc)}
+.g-c{background:rgba(210,153,34,.15);color:var(--warn);border:1px solid var(--warn)}
+ul.tight{margin:6px 0 0;padding-left:20px;color:var(--dim);font-size:13.5px}
+ul.tight li{margin:5px 0}ul.tight b,ul.tight code{color:var(--fg)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:14px 0}
+.kpi{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:13px}
+.kpi .n{font-size:24px;font-weight:700}.kpi .l{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.foot{color:var(--dim);font-size:12px;margin-top:36px;border-top:1px solid var(--bd);padding-top:16px}
+.tag{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:6px;margin-right:6px}
+.t-p0{background:#3d1418;color:#ff7b72}.t-p1{background:#3a2d10;color:#e3b341}.t-p2{background:#122a3d;color:#7cc7ff}
+.new{background:rgba(188,140,255,.14);color:#d2a8ff;border:1px solid #8957e5;font-size:10px;font-weight:700;padding:1px 6px;border-radius:5px;margin-left:6px}
+.chgbar{background:var(--panel2);border:1px solid var(--bd);border-radius:10px;padding:12px 16px;margin:10px 0;font-size:13px;color:var(--dim)}
+</style></head><body><div class="wrap">
+
+<header class="hero">
+<h1>Docling Distillation Pilot — Quality Assessment <span style="color:var(--acc)">v2</span></h1>
+<div class="sub">My assessment, updated to fold in GPT-5.6's independent acceptance review. The two reviews converge on the verdict; GPT adds a current-upstream architecture finding I independently verified and now confirm.</div>
+<div class="meta">
+<span>Assessor <b>Claude (Opus 4.8)</b></span>
+<span>Rev <b>v2 — merges GPT-5.6 acceptance review + verified upstream check</b></span>
+<span>Date <b>2026-08-13 23:09</b></span>
+<span>Executor <b>Claude Code (Opus 5)</b></span>
+</div></header>
+
+<div class="chgbar"><b style="color:var(--fg)">New in v2:</b> both independent reviews now agree (transformation PASS / pipeline HOLD); a <b>verified</b> current-upstream Docling architecture delta that the pilot's <code>service.md</code> got wrong through no fault of its own; a precise <b>v3.1 ledger patch</b> spec; LightRAG reclassified to <i>pipeline-required, direct contract unestablished</i>; provenance source-identity gap; and a consolidated corrective sequence before LangGraph.</div>
+
+<div class="verdict"><div class="big">CONDITIONAL<br>PASS</div><div class="txt"><b>Transformation validated; final migration path not yet validated.</b> Both reviewers reach this independently. The Docling distillation method is proven — concise, current target-state, honestly caveated, secret-clean, and it caught inherited drift. But the pipeline underneath failed its own preflight (the sanitized source doesn't exist), the frozen ledger still carries executable defects, and the design inherited a now-stale picture of current Docling upstream. Keep the draft. Do not commit it yet. Do not start LangGraph until the substrate is fixed once.</div></div>
+
+<h2><span class="k">1</span>Where the two reviews land — convergence</h2>
+<p class="lead">GPT-5.6's acceptance review and my quality assessment were done independently and agree on every structural point. That agreement is itself a signal: the pilot's strengths and its foundation gaps are real, not one reviewer's read.</p>
+<table>
+<thead><tr><th>Dimension</th><th>My assessment</th><th>GPT-5.6</th><th>Joint call</th></tr></thead>
+<tbody>
+<tr><td>Historical → current transformation</td><td class="pass">PASS</td><td class="pass">PASS</td><td class="pass">PASS</td></tr>
+<tr><td>No shadow tree in main</td><td class="pass">PASS</td><td class="pass">PASS</td><td class="pass">PASS</td></tr>
+<tr><td>Target-state vs as-built</td><td class="pass">PASS</td><td class="pass">PASS</td><td class="pass">PASS</td></tr>
+<tr><td>Defect/lesson distillation</td><td class="pass">PASS</td><td class="pass">PASS</td><td class="pass">PASS</td></tr>
+<tr><td>Returned-file secret hygiene</td><td class="part">PASS (caveat)</td><td class="part">PASS (caveat)</td><td class="part">PASS w/ caveat</td></tr>
+<tr><td>Provenance accounting</td><td class="pass">PASS</td><td class="part">PARTIAL — not reproducible</td><td class="part">PARTIAL</td></tr>
+<tr><td>Sanitized-history process</td><td class="fail">not built / waived</td><td class="fail">FAIL / not tested</td><td class="fail">FAIL</td></tr>
+<tr><td>Manifest v3 execution readiness</td><td class="part">re-anchor needed</td><td class="fail">HOLD</td><td class="fail">HOLD → v3.1</td></tr>
+<tr><td>Current-upstream accuracy</td><td class="na">not checked in v1</td><td class="fail">PATCH REQUIRED</td><td class="fail">PATCH (verified)</td></tr>
+<tr><td>Current SME approval</td><td class="fail">agent layer absent</td><td class="fail">NOT COMPLETE</td><td class="fail">reconstruct 4</td></tr>
+<tr><td>Ready to start LangGraph</td><td class="fail">no — fix foundation</td><td class="fail">NO — not yet</td><td class="fail">NO</td></tr>
+</tbody>
+</table>
+<p>The one row where GPT was stricter than me is <b>provenance</b>: I scored the accounting a pass (it is internally consistent, 120/75/3, every used row has a target). GPT is right that it's only a <i>partial</i> pass — the records prove <i>which</i> ledger ID contributed, but not <i>which exact historical object</i> was read. I concede that; it's the reproducibility gap in §4.</p>
+
+<h2><span class="k">2</span>The genuinely new finding — verified, not relayed</h2>
+<div class="callout stop"><h3>Current Docling MCP upstream has moved to remote/local/hybrid — the design's "embedded, unchanged" is stale <span class="new">NEW · VERIFIED</span></h3>
+<p>GPT flagged that the pilot's <code>service.md</code> describes Docling running "embedded, in-process… unchanged in shape from 2025," and that current upstream no longer works that way. I checked the current <code>docling-project/docling-mcp</code> sources directly rather than take it on trust. <b>Confirmed:</b> since v2.0 the package ships <b>three conversion modes — remote (the recommended default, which calls a Docling Serve API), local (<code>docling-mcp[local]</code>), and hybrid (local fallback)</b> — and advertises "no model downloads required for default remote mode." It also exposes optional <b>RAG toolgroups including Milvus</b> upload/retrieval, and supports toolgroup selection at launch.</p>
+<p>This isn't the pilot's mistake — it faithfully distilled the 2025 material, which predates this change. It's exactly the failure mode the "reconcile against current authority" rule exists to catch, and the one thing neither the pilot nor my v1 assessment checked: <b>current upstream itself.</b> The consequence is real — if HX runs remote mode, then native libraries, model weights, OCR artifacts and cache directories belong to <b>Docling Serve</b>, not to the lightweight MCP façade, which rewrites several sections of the document.</p></div>
+<h3>The conversion-topology decision this opens</h3>
+<table>
+<thead><tr><th>Candidate</th><th>Shape on hxs-12</th><th>Read</th></tr></thead>
+<tbody>
+<tr><td><b>A. Local embedded</b></td><td><code>docling-mcp[local]</code> parses in-process (what the draft assumes)</td><td>Fewest processes, but couples parsing + MCP lifecycle; not the upstream-recommended topology.</td></tr>
+<tr><td><b>B. Docling Serve + thin MCP</b></td><td>Docling Serve parses; lightweight MCP (remote) talks to it</td><td><b>Evaluate first.</b> Mirrors the HX roadmap's Phase-4 parsing / Phase-5 MCP split; models/cache/native deps live in one parsing service; matches current upstream default. Serve installs as a Python package with a CPU-oriented path — no container or GPU implied.</td></tr>
+<tr><td><b>C. Hybrid</b></td><td>Serve primary + local fallback</td><td>Resilience HX's dev/test env probably doesn't need; duplicates the local dependency footprint.</td></tr>
+</tbody>
+</table>
+<p class="lead">Recommendation (mine and GPT's): don't lock B, but evaluate it first, and until decided the document should carry <code>conversion topology: VERIFICATION REQUIRED</code> with cache/native/model requirements scoped conditionally to the chosen backend. Smaller verified deltas to patch alongside: Python support is <code>&ge;3.10</code> (classifiers through 3.14), not "tested to 3.13"; the 19-tool inventory predates the remote/local split and the optional RAG toolgroups; "no health endpoint" becomes topology-dependent (remote mode health-checks Serve).</p>
+
+<h2><span class="k">3</span>Manifest v3 → v3.1 — the substrate patch both reviews demand</h2>
+<p class="lead">This is the most important machinery finding, and it's a narrow technical patch, not a policy redesign. Keep all 522 IDs, dispositions, decisions and the renderer; fix only the fields the pilot proved false or ambiguous.</p>
+<pre>historical + distill rows:
+    target_path    = null              # stop the 1:1-copy ambiguity Claude Code flagged
+    distill_target = &lt;consolidated current artifact&gt;   # keep
+    target_section = &lt;exact section when known&gt;
+
+raw provenance:
+    source_ref     = &lt;actual historical source: Hana-X-AI/HX-Infrastructure@main&gt;
+    source_sha256  = &lt;actual source identity&gt;         # already computed per row in v3
+
+sanitized provenance:
+    sanitized_ref    = null   # until the sanitized lineage actually exists
+    sanitized_sha256 = null   # until sanitation actually occurs
+
+governance destinations:
+    fix stale/nonexistent targets → current governance/policy/ + governance/logs/ layout
+    lgc-046 constitution.md → resolve to real current path or reclassify covered/retire</pre>
+<div class="callout warn"><p><b>Honest note on my v3.</b> I claimed v3 fixed the shadow-tree problem, and it did in the sense that matters — <b>no historical row targets <code>main</code></b> (validation confirmed 0 legacy files under main). But Claude Code is right that historical rows still carry a per-file <code>target_path</code> (pointing into the sanitized ref) <i>alongside</i> <code>distill_target</code>, and that dual field is genuinely ambiguous to an executor. And my <code>source_ref: legacy/2025-sanitized</code> on all 522 rows names a ref that never existed — aspirational metadata, not fact. Both are real defects. v3.1 corrects them.</p></div>
+
+<h2><span class="k">4</span>Provenance — accountable, not yet reproducible</h2>
+<p>GPT's independent parse matches the pilot's: 198 records, 198 unique IDs, all 120 used rows carry a <code>distilled_into</code> target, all 3 blocked rows have <code>read_from=null</code>, every <code>sanitized_sha256</code> and every <code>reviewed_by</code> empty. Internally consistent — good accounting. The gap is forensic: a future agent can say "this came from <code>lgc-127</code>" but cannot prove <i>which exact version</i> of lgc-127 was read, because the record carries no source path / commit / hash.</p>
+<p>Fix: either add source identity to each provenance record, or bind the whole index to a <code>manifest_sha256</code> and require the ledger to hold exact source identity. The minimal record becomes:</p>
+<pre>manifest_sha256 · legacy_path · source_repo · source_ref · source_commit ·
+source_sha256 · sanitized_ref · sanitized_sha256 · distillation_status ·
+distilled_into · reviewed_by · migration_commit</pre>
+
+<h2><span class="k">5</span>What still stands from v1 — the strengths</h2>
+<p class="lead">None of the above walks back the transformation quality. These remain the reasons the method is validated.</p>
+<ul class="tight">
+<li><span class="grade g-a">A</span> <b>Reconciled, not translated.</b> The no-GPU discovery on hxs-12 rewrote the design (CPU accelerator, OCR expensive, vision off, no model-serving dependency) — current authority overriding an inherited assumption.</li>
+<li><span class="grade g-a">A</span> <b>Caught inherited drift.</b> Qdrant → INDIRECT, justified by the 2025 project's own reversed-then-rebuilt direct-client mistake. The classification did real work.</li>
+<li><span class="grade g-a">A</span> <b>Refused to fake authority.</b> Empty <code>reviewed_by</code>, three incompatible tool inventories flagged, <code>legacy-secret-002</code> held inspect-only.</li>
+<li><span class="grade g-b">A−</span> <b>Honest compression &amp; accounting.</b> 4,548 words; 120 used / 75 reviewed-not-used / 3 blocked. GPT's language fix is right and makes it look <i>better</i>: say "195 content-eligible reviewed; 120 contributed distilled content" — proof the process can say "reviewed and not useful" rather than pretend every historical file deserves survival.</li>
+</ul>
+
+<h2><span class="k">6</span>Corrective sequence before LangGraph</h2>
+<p class="lead">Both reviews land on the same path: a narrow corrective pass, not another planning cycle. Ordered, with owners.</p>
+<div class="kpis">
+<div class="kpi"><div class="n">120/75/3</div><div class="l">used / shape / blocked</div></div>
+<div class="kpi"><div class="n">22</div><div class="l">verification required</div></div>
+<div class="kpi"><div class="n">0/4</div><div class="l">SME contracts exist</div></div>
+<div class="kpi"><div class="n">v3.1</div><div class="l">ledger patch, not v4</div></div>
+</div>
+<table>
+<thead><tr><th>#</th><th>Action</th><th>Owner</th></tr></thead>
+<tbody>
+<tr><td><span class="tag t-p0">P0</span></td><td>Keep <code>migration/docling-pilot</code> uncommitted. Rotate the credentials (iss-012) — still open, still gate-zero.</td><td>owner</td></tr>
+<tr><td><span class="tag t-p0">P0</span></td><td>Patch ledger v3 → <b>v3.1</b> (null <code>target_path</code> on historical/distill; honest source/sanitized refs; fix stale governance paths). Deterministic — I can produce it from the existing build script.</td><td>me → you</td></tr>
+<tr><td><span class="tag t-p0">P0</span></td><td>Build &amp; validate the real sanitized legacy lineage; populate sanitized identities. <b>LangGraph must prove this path with no waiver.</b></td><td>owner + CC</td></tr>
+<tr><td><span class="tag t-p1">P1</span></td><td>Patch <code>service.md</code> against verified current upstream: conversion topology becomes an explicit decision (evaluate B first); fix Python/tool-surface/health deltas; keep the HX boundary but explicitly disable upstream RAG toolgroups.</td><td>owner decides topology</td></tr>
+<tr><td><span class="tag t-p1">P1</span></td><td>Reclassify LightRAG → <b>CURRENT PIPELINE REQUIRED / direct service contract NOT ESTABLISHED</b>, handoff owner VERIFICATION REQUIRED. Prevents repeating the 2025 "Docling owns the whole ingest stack" mistake.</td><td>me (wording) + owner (decision)</td></tr>
+<tr><td><span class="tag t-p1">P1</span></td><td>Strengthen provenance to exact source identity (bind to <code>manifest_sha256</code> or add source fields).</td><td>CC on re-run</td></tr>
+<tr><td><span class="tag t-p1">P1</span></td><td>Reconstruct the 4 minimum specialist contracts — <code>docling-mcp</code>, <code>infrastructure-ops</code>, <code>testing-qa</code>, <code>lightrag</code> — and run <i>real</i> reviews against the patched draft.</td><td>this is the next agent-layer build</td></tr>
+<tr><td><span class="tag t-p2">P2</span></td><td>Add the 154/0 regression output into the package itself; delete the harness-persisted raw legacy fetch; re-run acceptance with no preflight waivers, then commit.</td><td>CC</td></tr>
+</tbody>
+</table>
+
+<h2><span class="k">7</span>What must NOT be reopened</h2>
+<p class="lead">The pilot found implementation defects in the machinery; it did not invalidate the merge architecture. These are settled — don't relitigate them in the corrective pass.</p>
+<ul class="tight">
+<li>One canonical repo, one active current truth, registry authority.</li>
+<li>No shadow legacy tree in active main; capability-first specialist model.</li>
+<li>Historical defects distilled into current constraints; target-state docs separate from as-built.</li>
+<li>Model-serving separated from core document parsing; detailed MCP hardening deferred.</li>
+</ul>
+
+<div class="callout ok"><h3>Bottom line</h3>
+<p>The pilot did exactly what a pilot is for: it proved the valuable part of the method on real material, and it exposed four fixable faults in the substrate before we multiplied them across LangGraph's 213 files. <b>Do not redo Docling — the content work is good.</b> Fix the substrate once (v3.1 ledger, real sanitized lineage, current-upstream patch, provenance identity, four SME contracts), re-run acceptance clean, commit, then LangGraph reuses a genuinely proven process instead of an almost-proven one.</p></div>
+
+<div class="foot">Assessment v2 of the Docling distillation pilot · merges my v1 quality assessment with GPT-5.6's acceptance review · current-upstream Docling MCP architecture independently verified against docling-project sources (remote/local/hybrid since v2.0; RAG/Milvus toolgroups) · companion to migration-manifest-v3, pilot brief v2, and the returned pilot package · no repository or infrastructure change performed by this assessment.</div>
+</div></body></html>

@@ -6,6 +6,54 @@ HX-Infrastructure exists to establish an authoritative understanding of the HX l
 
 This is an infrastructure project, not a product-development effort.
 
+## Core Principles
+
+These govern every phase. Merged from the 2025 project constitution on 2026-08-13 (`lgc-046`),
+carrying forward only what current documents do not already cover.
+
+### 1. Document before you change
+
+Every change starts with documentation. Record what a thing is before altering it, and record
+what it became afterwards.
+
+This is why `discovery.md` is written before configuration and never rewritten to reflect it,
+and why `configuration.md` is a separate record rather than an edit to the first.
+
+### 2. Validation gates completion
+
+A server is not finished when it is configured. It is finished when its assigned role is
+demonstrated to work.
+
+Configuration without a passing check is an assertion, not a result. A check that cannot fail
+is not a check.
+
+### 3. Spec before build
+
+Work follows a stated order: what and why, then how, then the steps, then the proof.
+
+Skipping straight to steps produces undocumented outcomes that nobody can audit later. This
+applies to design documents as much as to servers — a target-state design is the "what and
+why" for work that has not started.
+
+### 4. Quality over speed
+
+Accuracy and completeness outrank velocity. There is no deadline that justifies an
+undocumented change or an unverified claim.
+
+Infrastructure mistakes compound. A wrong fact recorded once is repeated by everything that
+reads it afterwards.
+
+### Already covered elsewhere
+
+These principles are in force but live in their proper documents, not here:
+
+| Principle | Where it lives |
+| --- | --- |
+| One server, one assigned role | `SERVER-REGISTRY.md` and the Phase 1 objectives below |
+| Operational status is unambiguous | The phase model below, and the registry's phase column |
+| Defects are tracked transparently in one place | `CLAUDE.md`, which routes all routine tracking to `governance/logs/actions-and-issues.md` |
+| Documentation must be usable by agents | `governance/policy/documentation-standards.md` and the `AGENTS.md` files |
+
 ## Expected Fleet
 
 Expected servers: 15

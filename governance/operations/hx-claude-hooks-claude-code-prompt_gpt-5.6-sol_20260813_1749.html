@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code Prompt — Operationalize HX Hooks</title>
+<style>
+:root{
+  --bg:#071018;--panel:#0d1823;--panel2:#11202d;--text:#e8f0f7;--muted:#9fb1c2;
+  --line:#263a4b;--cyan:#66d9ff;--green:#9bea77;--amber:#ffd166;--red:#ff7f8f;
+  --code:#06131d;--shadow:0 16px 42px rgba(0,0,0,.28)
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;background:
+ radial-gradient(circle at 9% -4%,rgba(102,217,255,.11),transparent 28%),
+ radial-gradient(circle at 91% 2%,rgba(155,234,119,.06),transparent 24%),
+ var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.55}
+main{width:min(1180px,calc(100% - 36px));margin:auto;padding:34px 0 72px}
+.hero{background:linear-gradient(145deg,rgba(17,32,45,.97),rgba(8,20,30,.97));border:1px solid var(--line);border-radius:18px;padding:34px 36px;box-shadow:var(--shadow)}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-weight:800;font-size:12px;color:var(--cyan)}
+h1{font-size:clamp(34px,5vw,56px);line-height:1.03;letter-spacing:-.035em;margin:8px 0 12px}
+h2{font-size:27px;letter-spacing:-.015em;margin:40px 0 14px} h3{font-size:19px;margin:20px 0 8px}
+p{margin:8px 0 14px}.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.pill{border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:999px;padding:7px 11px;color:var(--muted);font-size:12px}
+.good{color:var(--green)}.warn{color:var(--amber)}.bad{color:var(--red)}
+.callout{margin:18px 0;padding:18px 20px;border:1px solid rgba(102,217,255,.25);border-left:4px solid var(--cyan);border-radius:11px;background:rgba(102,217,255,.055)}
+.callout.warn{border-color:rgba(255,209,102,.25);border-left-color:var(--amber);background:rgba(255,209,102,.045)}
+.callout.bad{border-color:rgba(255,127,143,.26);border-left-color:var(--red);background:rgba(255,127,143,.045)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.card{grid-column:span 6;background:linear-gradient(180deg,rgba(17,32,45,.93),rgba(13,24,35,.93));border:1px solid var(--line);border-radius:14px;padding:20px}.card.full{grid-column:1/-1}.card.third{grid-column:span 4}
+table{width:100%;border-collapse:collapse;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:rgba(13,24,35,.92)}
+th,td{padding:12px 13px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left} th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#cfe6f5;background:rgba(255,255,255,.03)} td{font-size:14px} tr:last-child td{border-bottom:0}
+code,pre{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace} code{background:var(--code);border:1px solid rgba(255,255,255,.06);padding:2px 5px;border-radius:5px;color:#d2ecf8}
+pre{white-space:pre-wrap;background:var(--code);border:1px solid var(--line);border-radius:12px;padding:18px;overflow:auto;color:#dceaf3}
+ul,ol{padding-left:22px}li{margin:5px 0}.checks{list-style:none;padding-left:0}.checks li::before{content:"□";color:var(--green);font-weight:800;display:inline-block;width:1.3em}
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin:14px 0}.node{padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);font-size:13px}.arrow{color:var(--cyan);font-weight:800}
+.tag{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--green)}
+.small{font-size:13px;color:var(--muted)} a{color:var(--cyan)}
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+.copybtn{position:sticky;top:10px;float:right;margin:12px 12px -52px 0;z-index:4;cursor:pointer;padding:8px 11px;border-radius:9px;border:1px solid var(--line);background:#142536;color:var(--text);font-weight:700}.copybtn:hover{border-color:var(--cyan)}
+#copyStatus{color:var(--green);font-size:12px;margin-left:8px}
+@media(max-width:800px){main{width:min(100% - 22px,1180px);padding-top:18px}.hero{padding:24px 20px}.card,.card.third{grid-column:1/-1}table{display:block;overflow-x:auto}}
+@media print{:root{--bg:#fff;--panel:#fff;--panel2:#fff;--text:#101820;--muted:#4d5d6d;--line:#ccd7e0;--cyan:#006b8f;--green:#477a16;--amber:#8a6100;--red:#a00022;--code:#f4f6f8}body{background:#fff}.hero,.card{box-shadow:none}}
+</style></head>
+<body><main>
+<section class="hero">
+<div class="eyebrow">HX-Infrastructure · Claude Code Handoff</div>
+<h1>Execution Prompt: Operationalize the HX Hook Layer</h1>
+<p>Self-contained implementation prompt for Claude Code. It preserves the current five-hook package, adds the three agreed permanent controls, extends registry/discovery validation, and requires end-to-end regression evidence.</p>
+<div class="meta">
+<span class="pill good">Implementation authorized</span>
+<span class="pill warn">Bounded hook scope</span>
+<span class="pill">Prepared by GPT-5.6 Sol</span>
+<span class="pill">2026-08-13 17:49 America/Panama</span>
+</div>
+</section>
+
+<div class="callout">
+<strong>Use in the canonical local repository.</strong> The prompt explicitly tells Claude Code to inspect current local files first and treat them as more authoritative than the uploaded package snapshot.
+</div>
+
+<h2>Claude Code execution prompt</h2>
+<div>
+<button class="copybtn" onclick="copyPrompt()">Copy prompt</button><span id="copyStatus"></span>
+<pre id="prompt">You are Claude Code operating inside the canonical local HX-Infrastructure repository.
+
+TASK
+Operationalize the approved HX Claude Code hook architecture. Preserve the existing five approved hook behaviors and add exactly three permanent control behaviors. Extend the existing discovery validator with registry-driven identity consistency. Do not redesign the repository, do not replace the existing hook package, and do not expand this task into unrelated hardening.
+
+AUTHORITATIVE LOCAL INPUTS
+Before editing anything, inspect the current local repository versions of:
+- .claude/settings.json
+- .claude/hooks/hx-common.ps1
+- .claude/hooks/hx-session-state.ps1
+- .claude/hooks/hx-phase1-guard.ps1
+- .claude/hooks/hx-validate-discovery.ps1
+- .claude/hooks/hx-validate-subagent.ps1
+- .claude/hooks/hx-notify.ps1
+- the local hook-package installer/apply-hooks.ps1 if still present/used
+- the local hook-package settings fragment if still present/used
+- the local hook README/documentation
+- current tests for hooks, registry, discovery, settings, or governance
+- current repository authority/routing documents
+- current server-discovery, sync-registry, and related skills/agents
+
+Do not assume the uploaded copies are newer than the repository. The repository state you are running in is authoritative.
+
+CURRENT BEHAVIOR TO PRESERVE
+The local package currently provides:
+1. SessionStart -&gt; hx-session-state.ps1
+   - injects concise current Phase 1 / Phase 2 state and registry counts
+2. PreToolUse -&gt; hx-phase1-guard.ps1
+   - blocks role-specific/persistent configuration while Phase 2 is blocked
+3. PostToolUse -&gt; hx-validate-discovery.ps1
+   - validates discovery.md and SERVER-REGISTRY.md after writes/edits
+4. SubagentStop -&gt; hx-validate-subagent.ps1
+   - requires server-discovery to leave a valid completed discovery record before it exits
+5. Notification -&gt; hx-notify.ps1
+   - asynchronous Windows notification for idle/input-required events, excluding permission_prompt
+
+The existing settings/installer behavior also intentionally:
+- preserves unrelated .claude/settings.json content and unrelated hooks
+- backs up an existing settings file before installer modification
+- is idempotent when reapplied
+- leaves non-hook settings, including the current permissions.deny list, untouched
+
+HX NON-NEGOTIABLES
+- Ansible is permanently out of scope. Do not add or recommend it anywhere.
+- Native Bash/SSH fleet control remains the proven orchestration baseline.
+- Existing Phase 1 / Phase 2 semantics remain binding unless separately changed by explicit owner governance.
+- SERVER-REGISTRY.md and current repository contracts remain authoritative for current state.
+- Do not create a second hardcoded IP/host inventory inside hook code.
+- Do not convert target-state or historical data into as-built/current truth.
+- Keep hooks deterministic and narrow. Hooks are guardrails, not a second workflow engine.
+- Preserve existing destructive-storage permissions.deny rules unless a separate owner-approved change explicitly alters them.
+- Detailed MCP/security hardening is not part of this task.
+
+OFFICIAL CLAUDE CODE SEMANTICS
+Use current official Claude Code hook documentation while implementing. In particular:
+- PreToolUse can allow/deny/ask/defer before a tool runs.
+- SubagentStop can block a subagent from stopping and return a reason.
+- ConfigChange can block applicable project configuration from taking effect in the active session.
+- Project hooks live in .claude/settings.json and are shareable.
+- Do not assume ordering between independent matching hook handlers.
+Verify exact current JSON input/output fields from the official docs before writing the implementation.
+
+TARGET EVENT-HANDLER SET
+KEEP:
+- hx-session-state.ps1
+- hx-phase1-guard.ps1
+- hx-validate-discovery.ps1
+- hx-validate-subagent.ps1
+- hx-notify.ps1
+
+ADD:
+- hx-permanent-policy-guard.ps1
+- hx-authority-edit-guard.ps1
+- hx-config-integrity.ps1
+
+KEEP:
+- hx-common.ps1 as the shared helper
+
+Target: eight event-handler scripts plus hx-common.ps1 = nine files under .claude/hooks, assuming registry/identity validation is implemented directly in hx-validate-discovery.ps1. Do NOT add another lifecycle hook solely for identity/IP validation.
+
+NEW CONTROL 1 — hx-permanent-policy-guard.ps1
+Event:
+- PreToolUse
+- Match shell execution tools actually used by the current local settings/package (currently Bash|PowerShell; verify before editing)
+
+Responsibility:
+- enforce phase-independent architectural prohibitions
+
+Initial mandatory deny rules:
+- ansible
+- ansible-playbook
+- ansible-galaxy
+
+Requirements:
+- deny regardless of Phase 1 or Phase 2 state
+- concise explanation must say Ansible is outside HX and native Bash/SSH is the orchestration baseline
+- do not duplicate phase-specific package/service restrictions
+- do not duplicate destructive-storage permissions.deny rules
+- do not create a generic shell allowlist
+- all commands outside the explicit permanent rule set should defer/no-op unless current governance already defines another permanent deterministic prohibition
+
+NEW CONTROL 2 — hx-authority-edit-guard.ps1
+Event:
+- PreToolUse
+- matcher Write|Edit
+
+Responsibility:
+- protect high-authority project/control files from casual mutation
+- distinguish coordinator/main-session behavior from specialist/subagent behavior using current hook input semantics if available
+
+Before implementing the protected set:
+1. inspect the current authority chain
+2. inspect current discovery/sync-registry workflows
+3. ensure the guard will not break a legitimate existing automated registry update path
+
+Likely protected classes to verify against the current repo:
+- .specify/memory/constitution.md
+- knowledge/instructions.md
+- root AGENTS.md
+- root CLAUDE.md
+- GOALS-AND-OBJECTIVES.md
+- INFRASTRUCTURE-CONTRACT.md
+- .claude/settings.json
+- critical hook/control files
+- SERVER-REGISTRY.md, but only after reconciling the existing approved discovery/sync workflow
+
+Decision model:
+- coordinator/main session editing global governance/control files -&gt; ASK for user approval
+- specialist/subagent attempting arbitrary edits to those files -&gt; DENY
+- ordinary files -&gt; DEFER/no opinion
+- SERVER-REGISTRY.md -&gt; preserve the established approved workflow; do not introduce friction that breaks current discovery/sync behavior. If a special-case allowance is necessary for an existing authorized workflow, make it explicit, narrow, testable, and documented.
+
+The purpose is intentional authority mutation, not broad write restriction.
+
+EXTEND — hx-validate-discovery.ps1
+Keep all existing validation behavior.
+
+Add registry-driven identity consistency:
+- parse current SERVER-REGISTRY.md as the current identity truth source
+- compare relevant current identity fields against servers/*/discovery.md
+- detect duplicate current IPs where uniqueness is required
+- detect duplicate current hostnames/FQDNs where uniqueness is required
+- fail on deterministic discovery-vs-registry identity disagreement with exact host/field/expected/actual evidence
+- respect existing lifecycle/phase semantics for incomplete/missing values
+- only reject legacy address/endpoint values as current when current contracts make that distinction deterministic
+
+CRITICAL:
+- do not hardcode a second copy of the current 192.168.50.x host map
+- do not mechanically translate old 192.168.10.x values into current values
+- registry/current network authority supplies data; the validator checks consistency
+
+Implement the new logic directly in hx-validate-discovery.ps1 initially. Extract a helper only if the current code structure makes that clearly cleaner; do not add another Claude hook event.
+
+NEW CONTROL 3 — hx-config-integrity.ps1
+Event:
+- ConfigChange
+- initially scope matcher to project_settings unless current official semantics or local structure require a more precise safe scope
+
+Responsibility:
+- validate that required HX project hook registrations and critical control configuration remain present and structurally valid
+- reject/block an invalid project settings reload in the active Claude Code session
+- emit a concise audit record/message suitable for troubleshooting
+
+Important defense-in-depth rule:
+- ConfigChange is NOT the only protection for .claude/settings.json
+- hx-authority-edit-guard.ps1 is the pre-edit protection
+- hx-config-integrity.ps1 is the post-change/backstop validation
+- do not claim ConfigChange automatically restores changed file bytes
+- do not interfere with unrelated legitimate project settings changes that leave HX controls intact
+
+SETTINGS INTEGRATION
+Update the current settings configuration by merging, not replacing.
+
+Preserve existing:
+- SessionStart -&gt; hx-session-state.ps1
+- PreToolUse -&gt; hx-phase1-guard.ps1
+- PostToolUse -&gt; hx-validate-discovery.ps1
+- SubagentStop -&gt; hx-validate-subagent.ps1
+- Notification -&gt; hx-notify.ps1
+
+Add:
+- PreToolUse Bash|PowerShell -&gt; hx-permanent-policy-guard.ps1
+- PreToolUse Write|Edit -&gt; hx-authority-edit-guard.ps1
+- ConfigChange project_settings -&gt; hx-config-integrity.ps1
+
+Do not depend on execution ordering between the phase guard, permanent policy guard, and authority guard. Each must be independently correct.
+
+INSTALLER / PACKAGE UPDATES
+If apply-hooks.ps1 and the package/fragment are still part of the canonical workflow:
+- update the installer to copy the three new event-handler scripts
+- update the fragment to register the new hook handlers
+- preserve unrelated hooks
+- preserve all non-hook settings
+- preserve the existing permissions.deny list exactly unless a separate owner instruction says otherwise
+- keep backup behavior
+- keep idempotence: running the installer repeatedly must not duplicate HX registrations
+- update README verification instructions to reflect the expanded hook set
+- retain Windows PowerShell invocation conventions already used by the repo unless current local code has intentionally moved elsewhere
+
+TESTS / ACCEPTANCE
+Use the repository&#x27;s existing test conventions; do not invent a parallel test framework.
+
+At minimum prove:
+
+1. Permanent policy
+- Ansible command is denied while Phase 2 is BLOCKED
+- Ansible command is denied while Phase 2 is READY/IN PROGRESS/COMPLETE
+- benign shell command is not denied by permanent policy guard
+
+2. Existing phase guard regression
+- current Phase-1 prohibited package/service/config mutations are still blocked while Phase 2 is blocked
+- a command that is prohibited only by Phase 1 is no longer blocked by hx-phase1-guard once Phase 2 is legitimately open
+- permanent rules remain blocked after Phase 2 opens
+
+3. Authority guard
+- coordinator/main session editing a protected governance/control file produces ASK/approval behavior
+- specialist/subagent arbitrary edit to protected governance/control file is denied
+- ordinary non-authority edit is not blocked
+- current legitimate registry/discovery workflow remains functional
+
+4. Discovery/registry validation
+- duplicate registry identity is detected
+- discovery-vs-registry identity mismatch is detected with precise evidence
+- valid registry/discovery identity passes
+- validator code contains no second hardcoded fleet mapping
+
+5. Configuration integrity
+- attempted removal/disablement of required HX hook controls is intercepted by pre-edit protection
+- if an invalid project settings change reaches ConfigChange, it is rejected from active application
+- legitimate unrelated project setting change that preserves required HX controls is accepted
+- the integrity hook does not depend on policy_settings being blockable
+
+6. Installer/settings
+- run installer twice: no duplicate HX hook entries
+- unrelated hooks remain
+- unrelated settings remain
+- permissions.deny remains unchanged
+- backup behavior still works
+
+7. Runtime
+- start/resume Claude Code with no hook startup errors
+- /hooks shows the intended project hook events/handlers
+- current SessionStart output remains concise
+- current Notification behavior remains asynchronous and does not include permission_prompt unless the owner separately changes that policy
+
+IMPLEMENTATION DISCIPLINE
+- baseline current behavior before edits
+- make small, coherent, reviewable changes
+- reuse hx-common.ps1 patterns instead of cloning utility logic
+- do not refactor unrelated hook code
+- do not introduce hidden hardcoded infrastructure truth
+- use deterministic command hooks for deterministic rules
+- keep failure messages short, actionable, and specific
+- if current repo state differs from the uploaded package, preserve the current repo and adapt this plan to it; record the difference
+- do not silently remove current hooks because a newer Claude Code event exists
+- do not add WebFetch caching, tool-failure ledgers, broad secret-scanning edit hooks, philosophy hooks, or file-placement hooks as part of this task
+
+FINAL DELIVERABLES
+1. Operational code changes.
+2. Updated .claude/settings.json / installer / fragment / README as applicable.
+3. Tests and test evidence.
+4. Exact list of files created/modified/removed.
+5. Explanation of any divergence from this design caused by current repository reality.
+6. A polished dark-mode HTML completion report under the repository&#x27;s established human-report location.
+
+FINAL COMPLETION REPORT MUST INCLUDE
+- executive summary
+- before/after hook topology
+- exact event -&gt; matcher -&gt; script mapping
+- permanent-policy rules implemented
+- authority-file classes and any explicit workflow exceptions
+- registry-driven validation behavior
+- ConfigChange integrity behavior and its limitation as a backstop rather than byte-level rollback
+- installer/idempotence result
+- permissions.deny preservation evidence
+- regression/new test results
+- /hooks runtime verification result
+- any unresolved issue or deferred enhancement
+- explicit confirmation that Ansible remains unavailable and the native Bash/SSH model remains authoritative
+
+Do the work in the current local repository. Do not produce only a plan. Make the approved hook architecture operational and validate it end-to-end.
+</pre>
+</div>
+
+<footer>
+Companion artifact: <code>hx-claude-hooks-operationalization-plan_gpt-5.6-sol_20260813_1749.html</code>. Current Claude Code hook behavior referenced from the official Hooks Reference and Hooks Guide.
+</footer>
+</main>
+<script>
+async function copyPrompt(){
+ const text=document.getElementById('prompt').innerText;
+ try{await navigator.clipboard.writeText(text);document.getElementById('copyStatus').textContent='Copied.';}
+ catch(e){const r=document.createRange();r.selectNodeContents(document.getElementById('prompt'));const s=window.getSelection();s.removeAllRanges();s.addRange(r);document.getElementById('copyStatus').textContent='Selected — copy manually.';}
+}
+</script>
+</body></html>

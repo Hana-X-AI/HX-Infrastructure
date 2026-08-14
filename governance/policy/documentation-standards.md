@@ -115,7 +115,7 @@ These look inconsistent and are intentional. Do not "fix" them.
 | `.claude/AGENTS.md`, `governance/AGENTS.md`, `servers/AGENTS.md` | Fixed name, resolved by directory |
 | `claude-hooks/claude-hooks/hooks/` | The doubled directory is the real packaged layout. A regression test guards against the single-nested form reappearing, because that stale path was a real defect once |
 | `conversations/SYNC-POLICY.md` | Predates this standard and is referenced in historical reports |
-| `governance/reports/GITHUB-REMEDIATION-INSTRUCTIONS.md` | Referenced by the regression suite |
+| `governance/reports/GitHub-Copilot/GITHUB-REMEDIATION-INSTRUCTIONS.md` | Referenced by the regression suite |
 | Existing report file names | Archival. They are cited across the governance log; renaming them rewrites the provenance trail for no operational gain |
 
 ## What was changed on 2026-08-13
