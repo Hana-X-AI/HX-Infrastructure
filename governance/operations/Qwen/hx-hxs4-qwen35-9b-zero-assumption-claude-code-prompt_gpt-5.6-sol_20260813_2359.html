@@ -164,7 +164,10 @@ Record separately:
 - CUDA toolkit / nvcc present or absent
 - CUDA/NVIDIA runtime libraries
 
-Current Ollama docs require supported NVIDIA GPU, compute capability &gt;= 5.0 and driver &gt;= 531.
+Current Ollama docs require supported NVIDIA GPU. For the selected CUDA runtime:
+compute capability &gt;= 5.0 and driver &gt;= 450 (CUDA 12 supports compute capability 5.0
+with lower documented driver minimums than the general Ollama driver &gt;= 531 guidance;
+verify the actual minimum for the installed CUDA release).
 Verify actual device against current docs.
 
 nvcc absent is NOT automatic failure.
@@ -273,12 +276,19 @@ PHASE C — INSTALL OLLAMA REPRODUCIBLY
 Resolve a current stable Ollama version.
 
 For auditability:
-  curl -fsSL https://ollama.com/install.sh -o /tmp/ollama-install.sh
-  sha256sum /tmp/ollama-install.sh
+  INSTALLER_TMP=$(mktemp -p /tmp --suffix=.sh)
+  chmod 600 "$INSTALLER_TMP"
+  curl -fsSL https://ollama.com/install.sh -o "$INSTALLER_TMP"
 
-Record source/date/hash.
-Inspect enough to confirm it is the expected official installer.
-Then execute under the approved sudo flow.
+Verify the downloaded file matches the expected digest for the pinned Ollama release.
+Obtain the expected SHA-256 from the official Ollama release page for the version being
+installed, then validate before executing:
+  EXPECTED_SHA256="&lt;paste-expected-sha256-from-official-release-page&gt;"
+  echo "$EXPECTED_SHA256  $INSTALLER_TMP" | sha256sum --check
+
+Proceed only if sha256sum reports OK. Then execute only the verified file:
+  sudo bash "$INSTALLER_TMP"
+  rm -f "$INSTALLER_TMP"
 
 After install:
   ollama --version
@@ -299,6 +309,10 @@ If supported by installed Ollama version, configure:
   OLLAMA_NUM_PARALLEL=1
   OLLAMA_MAX_LOADED_MODELS=1
   OLLAMA_DEBUG=1
+
+Note: OLLAMA_DEBUG=1 is appropriate during commissioning. Unset or disable it after
+commissioning is complete unless active debugging is still needed (debug logging is verbose
+and may expose internal state in production use).
 
 Do NOT set OLLAMA_HOST=0.0.0.0 yet.
 
