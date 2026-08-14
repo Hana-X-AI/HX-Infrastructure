@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Docling MCP — Target-State Design</title><style>
+﻿<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Docling MCP — Target-State Design</title><style>
 :root{--bg:#fff;--panel:#f6f8fa;--panel2:#eef1f4;--bd:#d0d7de;--fg:#1f2328;--dim:#59636e;--acc:#0969da}
 :root[data-theme="dark"]{--bg:#0d1117;--panel:#161b22;--panel2:#1c2129;--bd:#30363d;--fg:#e6edf3;--dim:#8b949e;--acc:#58a6ff}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1117;--panel:#161b22;--panel2:#1c2129;--bd:#30363d;--fg:#e6edf3;--dim:#8b949e;--acc:#58a6ff}}
@@ -20,7 +20,7 @@ ul,ol{padding-left:22px}li{margin:5px 0}strong{font-weight:650}
 .banner{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:12px 16px;margin-bottom:18px;font-size:13px;color:var(--dim)}
 #themeToggle{position:fixed;top:14px;right:14px;z-index:99;background:var(--panel);color:var(--fg);border:1px solid var(--bd);border-radius:20px;padding:7px 14px;font-size:12.5px;cursor:pointer;font-family:inherit}
 #themeToggle:hover{border-color:var(--acc);color:var(--acc)}
-</style></head><body><button id="themeToggle" type="button">◐ Theme</button><div class="wrap"><div class="banner">Rendered from <code>services/docling-mcp/service.md</code>, the authoritative copy. Conversion topology ruled 2026-08-13: remote mode, Docling Serve co-located on hxs-12.</div>
+</style></head><body><button id="themeToggle" type="button">◐ Theme</button><div class="wrap"><div class="banner">Rendered from <code>services/docling-mcp/service.md</code>, the authoritative copy. Conversion topology ruled 2026-08-13: remote mode, Docling Serve co-located on hxs-12.</div>
 <pre class="authority">Status: TARGET-STATE DESIGN
 Target placement: hxs-12 (hxs-12.hx.local.arpa) — resolved from SERVER-REGISTRY.md
 As-built status: NOT ASSERTED BY THIS DOCUMENT
@@ -32,7 +32,7 @@ Authority boundary:
 - servers/&lt;host&gt;/configuration.md is the as-built authority AFTER implementation.
 - Legacy 2025 sources are non-authoritative evidence and lessons only.
 </pre>
-
+
 <h2>Purpose</h2>
 <p>Docling MCP is the fleet&#x27;s document-parsing service. It converts PDFs, office documents, web pages and images into a single structured representation, and exposes that capability to AI agents over the Model Context Protocol so that every agent parses documents the same way instead of each one implementing its own extraction.</p>
 <p>It is a parsing service. It is not a retrieval service, not a knowledge-graph service and not a model-serving service. Those capabilities exist elsewhere in the fleet and Docling hands off to them.</p>

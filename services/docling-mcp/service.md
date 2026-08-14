@@ -521,7 +521,8 @@ lgc-110, lgc-180, lgc-181, lgc-182, lgc-183.
 | `conversion_mode` | **Settled** — `remote` |
 | `service_url` | **Settled in shape** — Serve on loopback; port per above |
 | `fallback_to_local` | **Settled** — `false`; no local converter is installed |
-| Bind address | **Settled** — the standing fleet rule is to bind the LAN interface, not `0.0.0.0` |
+| MCP bind address | **UNRESOLVED** — pending the hxs-7 exposure decision; do not apply the LAN-binding rule until resolved |
+| Serve bind address | **Settled** — loopback only; Serve's uvicorn default `0.0.0.0` must be overridden to `127.0.0.1` |
 | Transport | **Settled** — the fleet standardises on Streamable HTTP |
 | Service root path | **VERIFICATION REQUIRED** |
 | Cache path | **VERIFICATION REQUIRED** — see below |

@@ -12,8 +12,10 @@ This task operationalizes two related governance improvements that have already 
 The design and implementation guidance for both are located here:
 
 ```text
-C:\Users\JarvisRichardson\Desktop\HX-Infrastructure\governance\operations
+governance\operations
 ```
+
+Execution must begin from the repository root.
 
 Your job is **not to redesign these systems from scratch**.
 
@@ -36,7 +38,7 @@ The overarching objective is to strengthen HX-Infrastructure's AI-native executi
 Start from the repository root:
 
 ```powershell
-cd C:\Users\JarvisRichardson\Desktop\HX-Infrastructure
+cd <repository-root>
 ```
 
 Then inspect:
@@ -538,7 +540,7 @@ unless a very narrow existing approved workflow proves an exception is required.
 Ordinary files:
 
 ```text
-DEFER / NO OPINION
+Exit 0, no JSON output
 ```
 
 ### Architectural principle
@@ -1774,7 +1776,7 @@ Preserve that separation.
 Inspect the current repository, reconcile the approved material in:
 
 ```text
-C:\Users\JarvisRichardson\Desktop\HX-Infrastructure\governance\operations
+governance\operations
 ```
 
 and then implement, test, validate, and document the complete hooks + skills architecture.

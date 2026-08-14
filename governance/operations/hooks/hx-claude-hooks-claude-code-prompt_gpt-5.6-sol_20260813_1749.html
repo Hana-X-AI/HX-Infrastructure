@@ -158,7 +158,7 @@ Requirements:
 - do not duplicate phase-specific package/service restrictions
 - do not duplicate destructive-storage permissions.deny rules
 - do not create a generic shell allowlist
-- all commands outside the explicit permanent rule set should defer/no-op unless current governance already defines another permanent deterministic prohibition
+- all commands outside the explicit permanent rule set should exit successfully with no JSON output unless current governance already defines another permanent deterministic prohibition
 
 NEW CONTROL 2 — hx-authority-edit-guard.ps1
 Event:

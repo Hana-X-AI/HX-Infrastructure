@@ -1,0 +1,316 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HX OmniRoute Architecture Decision</title><style>
+:root{
+ --bg:#071019;--panel:#0d1823;--panel2:#11212f;--text:#e9f1f7;--muted:#9dafbe;
+ --line:#263b4d;--cyan:#69dbff;--green:#94e77a;--amber:#ffd166;--red:#ff7e8e;
+ --violet:#c4a4ff;--code:#06131c;--shadow:0 18px 48px rgba(0,0,0,.32);
+}
+*{box-sizing:border-box}
+body{margin:0;background:
+ radial-gradient(circle at 10% -5%,rgba(105,219,255,.11),transparent 28%),
+ radial-gradient(circle at 90% 0%,rgba(196,164,255,.08),transparent 24%),var(--bg);
+ color:var(--text);font:15px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{width:min(1180px,calc(100% - 34px));margin:auto;padding:34px 0 80px}
+.hero{background:linear-gradient(145deg,rgba(17,33,47,.98),rgba(8,20,30,.98));
+ border:1px solid var(--line);border-radius:18px;padding:34px 36px;box-shadow:var(--shadow)}
+.eyebrow{color:var(--cyan);font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.15em}
+h1{font-size:clamp(36px,5.2vw,58px);line-height:1.02;letter-spacing:-.04em;margin:8px 0 12px}
+h2{font-size:27px;letter-spacing:-.02em;margin:40px 0 14px}
+h3{font-size:19px;margin:20px 0 8px}
+p{margin:8px 0 14px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.pill{border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:999px;padding:6px 11px;color:var(--muted);font-size:12px}
+.callout{margin:18px 0;padding:18px 20px;border:1px solid rgba(105,219,255,.25);border-left:4px solid var(--cyan);border-radius:11px;background:rgba(105,219,255,.05)}
+.callout.ok{border-left-color:var(--green);background:rgba(148,231,122,.045)}
+.callout.warn{border-left-color:var(--amber);background:rgba(255,209,102,.045)}
+.callout.bad{border-left-color:var(--red);background:rgba(255,126,142,.045)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.card{grid-column:span 6;border:1px solid var(--line);border-radius:14px;padding:20px;background:linear-gradient(180deg,rgba(17,33,47,.94),rgba(13,24,35,.94))}
+.card.third{grid-column:span 4}.card.full{grid-column:1/-1}
+.metric{font-size:30px;font-weight:850;letter-spacing:-.03em}.label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+table{width:100%;border-collapse:collapse;border:1px solid var(--line);background:rgba(13,24,35,.93)}
+th,td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+th{background:rgba(255,255,255,.03);color:#cfe4f2;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+tr:last-child td{border-bottom:0}
+code,pre{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+code{background:var(--code);border:1px solid rgba(255,255,255,.06);padding:2px 5px;border-radius:5px;color:#d7edf8}
+pre{white-space:pre-wrap;background:var(--code);border:1px solid var(--line);border-radius:12px;padding:17px;overflow:auto;color:#dbeaf3}
+.keep{color:var(--green);font-weight:800}.later{color:var(--amber);font-weight:800}.no{color:var(--red);font-weight:800}.replace{color:var(--violet);font-weight:800}
+ul,ol{padding-left:22px}li{margin:5px 0}
+.small{color:var(--muted);font-size:13px}
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+.copybtn{position:sticky;top:10px;float:right;margin:12px 12px -52px 0;z-index:4;cursor:pointer;padding:8px 11px;border-radius:9px;border:1px solid var(--line);background:#142536;color:var(--text);font-weight:700}
+@media(max-width:820px){main{width:min(100% - 22px,1180px)}.hero{padding:25px 21px}.card,.card.third{grid-column:1/-1}table{display:block;overflow:auto}}
+</style></head><body><main>
+<section class="hero">
+<div class="eyebrow">HX-Infrastructure · Architecture Decision</div>
+<h1>OmniRoute as the HX AI Traffic Plane</h1>
+<p>Formalizes the decision to adopt OmniRoute as the preferred AI gateway/router for HX, replacing the planned LiteLLM gateway role while preserving HX governance, runtime authority and validation boundaries.</p>
+<div class="meta">
+<span class="pill">Decision: ADOPT — NARROW SCOPE</span>
+<span class="pill">Replaces: LiteLLM gateway role</span>
+<span class="pill">OmniRoute version reviewed: v3.8.50</span>
+<span class="pill">Source archive SHA-256: 2b04f4cba777b40ccc2af52ce23e2ffac27f2d8b5bcbd6cef6776b91c96c06e3</span>
+<span class="pill">Owner exception: SSRF protection globally disabled</span>
+<span class="pill">Prepared by GPT-5.6 Sol</span>
+<span class="pill">2026-08-14 00:31 America/Panama</span>
+</div>
+</section>
+
+<div class="callout ok">
+<strong>Decision.</strong> HX will use OmniRoute as the AI traffic plane / model gateway. OmniRoute replaces LiteLLM in that role. It does not replace sdd-core, SERVER-REGISTRY, HX runtime profiles, HX acceptance, hooks, skills, specialist agents, infrastructure orchestration or governance.
+</div>
+
+<h2>1. Why OmniRoute fits HX</h2>
+<div class="grid">
+<div class="card third"><div class="label">Protocol fit</div><div class="metric">Strong</div><p>OpenAI- and Anthropic-compatible surfaces allow clients to use stable protocols while backends vary.</p></div>
+<div class="card third"><div class="label">Local runtime fit</div><div class="metric">Strong</div><p>Ollama and vLLM are first-class provider types in the reviewed source, matching HX's local-first runtime strategy.</p></div>
+<div class="card third"><div class="label">Governance fit</div><div class="metric">Conditional</div><p>Excellent if OmniRoute remains the traffic plane; poor if its own agent/memory/skills/control systems are allowed to compete with HX.</p></div>
+</div>
+
+<p>The practical HX problem is not "which single model server should own everything?" It is that HX will have multiple runtimes, model sizes, GPU classes, context limits and API dialects. OmniRoute gives clients one stable gateway while HX retains authority over where workloads live and how they are validated.</p>
+
+<h2>2. Target architecture</h2>
+<pre>                    HX GOVERNANCE / CONTROL PLANE
+┌──────────────────────────────────────────────────────────────┐
+│ sdd-core                                                     │
+│ .specify/memory/constitution.md                              │
+│ knowledge/instructions.md                                   │
+│ SERVER-REGISTRY.md                                          │
+│ HX hooks / skills / specialist agents                       │
+│ HX AI Runtime Acceptance Contract                           │
+│ capacity / commissioning gates                              │
+│ Bash/SSH fleet control                                      │
+└──────────────────────────────┬───────────────────────────────┘
+                               │
+                               │ approved runtime/profile config
+                               ▼
+                      HX AI TRAFFIC PLANE
+                    ┌────────────────────┐
+                    │     OmniRoute      │
+                    │ protocol gateway   │
+                    │ routing/fallback   │
+                    │ traffic telemetry  │
+                    └─────────┬──────────┘
+                              │
+               ┌──────────────┼───────────────┐
+               │              │               │
+               ▼              ▼               ▼
+            Ollama          vLLM          future runtime
+           Qwen3.5         Qwen/...            ...
+            hxs-4            hxs-X
+
+SERVER-REGISTRY owns WHERE.
+Runtime profiles own WHAT.
+HX acceptance proves BEHAVIOR.
+OmniRoute decides HOW approved traffic reaches an approved runtime.</pre>
+
+<h2>3. LiteLLM replacement decision</h2>
+<div class="callout">
+<strong>Yes: OmniRoute replaces LiteLLM in the HX target architecture.</strong> This is an architectural replacement of the gateway/proxy role, not a claim that every LiteLLM SDK, managed-enterprise or provider-specific feature maps 1:1.
+</div>
+
+<table>
+<tr><th>Capability</th><th>LiteLLM planned role</th><th>OmniRoute disposition</th></tr>
+<tr><td>Unified model endpoint</td><td>Gateway</td><td class="replace">REPLACE WITH OMNIROUTE</td></tr>
+<tr><td>OpenAI-compatible API</td><td>Required</td><td class="keep">KEEP VIA OMNIROUTE</td></tr>
+<tr><td>Anthropic-compatible API</td><td>Desired</td><td class="keep">KEEP VIA OMNIROUTE</td></tr>
+<tr><td>Ollama routing</td><td>Expected</td><td class="keep">FIRST-CLASS FIT</td></tr>
+<tr><td>vLLM routing</td><td>Expected</td><td class="keep">FIRST-CLASS FIT</td></tr>
+<tr><td>Fallback / circuit breaker</td><td>Useful</td><td class="later">ENABLE AFTER BASELINE</td></tr>
+<tr><td>Automatic intelligent routing</td><td>Optional</td><td class="later">LATER EXPERIMENT</td></tr>
+<tr><td>Gateway telemetry</td><td>Useful</td><td class="keep">USE</td></tr>
+<tr><td>Infrastructure authority</td><td>Never</td><td class="no">NOT OMNIROUTE</td></tr>
+</table>
+
+<h2>4. What HX adopts from OmniRoute</h2>
+<table>
+<tr><th>Capability</th><th>Disposition</th><th>Reason</th></tr>
+<tr><td>OpenAI / Anthropic protocol gateway</td><td class="keep">ADOPT</td><td>Decouples clients from runtime-specific API surfaces.</td></tr>
+<tr><td>Ollama provider</td><td class="keep">ADOPT</td><td>Direct match for hxs-4 and future Ollama workloads.</td></tr>
+<tr><td>vLLM provider</td><td class="keep">ADOPT</td><td>Direct match for HX primary high-performance runtime lane.</td></tr>
+<tr><td>Static explicit model routing</td><td class="keep">ADOPT FIRST</td><td>Deterministic and easy to compare against direct-runtime baselines.</td></tr>
+<tr><td>Provider health / circuit breaker</td><td class="later">PHASE 2</td><td>Valuable once single-route fidelity is proven.</td></tr>
+<tr><td>Simple fallback</td><td class="later">PHASE 2</td><td>Useful after semantic equivalence testing.</td></tr>
+<tr><td>Traffic telemetry</td><td class="keep">ADOPT</td><td>Latency, route decisions and provider health complement HX infrastructure telemetry.</td></tr>
+<tr><td>Claude Code gateway path</td><td class="keep">ADOPT</td><td>Provides stable Anthropic-facing client entry point without binding Claude Code to a specific runtime.</td></tr>
+</table>
+
+<h2>5. What HX explicitly does not adopt</h2>
+<table>
+<tr><th>OmniRoute subsystem</th><th>Disposition</th><th>HX rationale</th></tr>
+<tr><td>OmniRoute skills</td><td class="no">DO NOT ADOPT</td><td>HX already owns the skills layer.</td></tr>
+<tr><td>OmniRoute agent framework / A2A</td><td class="no">DO NOT ADOPT</td><td>HX specialist-agent orchestration remains authoritative.</td></tr>
+<tr><td>OmniRoute memory injection</td><td class="no">DISABLE</td><td>Avoid competing context/memory authority.</td></tr>
+<tr><td>Prompt compression</td><td class="later">DISABLE INITIALLY</td><td>Potentially changes system/tool semantics; requires independent fidelity testing.</td></tr>
+<tr><td>Context relay</td><td class="later">DISABLE INITIALLY</td><td>Not needed to prove transparent gateway behavior.</td></tr>
+<tr><td>MCP write/control tools</td><td class="no">DO NOT EXPOSE INITIALLY</td><td>HX intentionally defers broad MCP control exposure.</td></tr>
+<tr><td>MITM / root CA</td><td class="no">EXCLUDE</td><td>No HX requirement.</td></tr>
+<tr><td>Credential/keychain import</td><td class="no">EXCLUDE</td><td>No HX requirement.</td></tr>
+<tr><td>Cloud sync</td><td class="no">EXCLUDE</td><td>No HX requirement.</td></tr>
+<tr><td>OmniRoute database as host/model authority</td><td class="no">FORBIDDEN</td><td>SERVER-REGISTRY and HX profiles remain authoritative.</td></tr>
+</table>
+
+<h2>6. Owner-approved SSRF decision</h2>
+<div class="callout warn">
+<strong>HX exception: OmniRoute's SSRF protection will be disabled globally.</strong> This is an explicit owner decision, not a default recommendation inherited from upstream.
+</div>
+
+<p>The reason is pragmatic: HX is a trusted lab/dev network whose intended provider endpoints are private-address runtimes. The operator accepts the reduced SSRF boundary in exchange for unrestricted private-network routing behavior.</p>
+
+<p>This exception does <strong>not</strong> give OmniRoute infrastructure authority. Compensating HX boundaries remain:</p>
+<ul>
+<li>OmniRoute is deployed only on the trusted HX network.</li>
+<li>The gateway is not exposed directly to the public Internet.</li>
+<li>API authentication remains enabled for HX clients.</li>
+<li>OmniRoute service credentials are scoped to gateway needs.</li>
+<li>MITM/root-CA, cloud sync, keychain import and unrelated privileged modules remain excluded.</li>
+<li>Runtime endpoints are configured from approved HX runtime profiles/authority, not discovered as infrastructure truth.</li>
+<li>HX network/fleet controls remain outside OmniRoute.</li>
+<li>The SSRF exception must be visible in configuration and documentation so future maintainers do not mistake it for an upstream-safe default.</li>
+</ul>
+
+<h2>7. First pilot boundary</h2>
+<p>The first OmniRoute pilot is deliberately narrow:</p>
+<pre>DIRECT PATH
+HX client → hxs-4 Ollama → Qwen3.5-9B
+
+VERSUS
+
+ROUTED PATH
+HX client → OmniRoute → hxs-4 Ollama → Qwen3.5-9B</pre>
+
+<p>The pilot does not prove "OmniRoute is generally good." It answers whether OmniRoute is sufficiently transparent and useful for HX's traffic-plane role.</p>
+
+<h3>Functions enabled in pilot</h3>
+<ul>
+<li>Ollama provider;</li>
+<li>explicit static model route;</li>
+<li>OpenAI-compatible gateway;</li>
+<li>Anthropic-compatible gateway where required;</li>
+<li>basic health/model discovery;</li>
+<li>traffic telemetry;</li>
+<li>global SSRF protection disabled per owner decision.</li>
+</ul>
+
+<h3>Functions disabled in pilot</h3>
+<ul>
+<li>auto-routing;</li>
+<li>multi-model intelligence/fusion;</li>
+<li>prompt compression;</li>
+<li>memory injection;</li>
+<li>context relay;</li>
+<li>skills;</li>
+<li>A2A/agent orchestration;</li>
+<li>MCP mutation/control;</li>
+<li>MITM/root CA;</li>
+<li>cloud sync;</li>
+<li>tunnels unless separately approved.</li>
+</ul>
+
+<h2>8. Acceptance matrix: direct vs routed</h2>
+<table>
+<tr><th>Dimension</th><th>Direct Ollama</th><th>Via OmniRoute</th><th>Required conclusion</th></tr>
+<tr><td>Model identity</td><td>baseline</td><td>compare</td><td>No unintended remap.</td></tr>
+<tr><td>Non-stream chat</td><td>baseline</td><td>compare</td><td>Equivalent semantics.</td></tr>
+<tr><td>SSE streaming</td><td>baseline</td><td>compare</td><td>Ordering/termination preserved.</td></tr>
+<tr><td>Tool definitions</td><td>baseline</td><td>compare</td><td>Name/schema preserved.</td></tr>
+<tr><td>Tool call ID/name/args</td><td>baseline</td><td>compare</td><td>Fidelity preserved.</td></tr>
+<tr><td>Tool result correlation</td><td>baseline</td><td>compare</td><td>Correct continuation.</td></tr>
+<tr><td>Error behavior</td><td>baseline</td><td>compare</td><td>No masking that breaks HX recovery.</td></tr>
+<tr><td>Cancellation/recovery</td><td>baseline</td><td>compare</td><td>Connection/model recovers.</td></tr>
+<tr><td>Context handling</td><td>baseline</td><td>compare</td><td>No hidden compression/rewrites.</td></tr>
+<tr><td>Latency</td><td>measure</td><td>measure</td><td>Gateway overhead acceptable.</td></tr>
+<tr><td>Throughput</td><td>measure</td><td>measure</td><td>No material regression for dev/test.</td></tr>
+<tr><td>Claude Messages surface</td><td>if runtime supports</td><td>test</td><td>Claude client path behaves correctly.</td></tr>
+</table>
+
+<h2>9. HX acceptance integration</h2>
+<p>OmniRoute must be treated as another runtime path through the existing engine-neutral acceptance framework.</p>
+<pre>L0 repository/static
+L1 offline protocol fixtures
+L2 direct live runtime
+L2 routed live runtime through OmniRoute
+L3 model/agent behavior direct vs routed
+L4 performance/resource overhead
+L5 cross-runtime / cross-route conformance</pre>
+
+<p>Passing the direct runtime does not prove the routed path. Passing OmniRoute does not prove every backend. Each route is evidence-bound.</p>
+
+<h2>10. Configuration authority</h2>
+<table>
+<tr><th>Question</th><th>Authority</th></tr>
+<tr><td>Which physical host owns a runtime?</td><td><code>SERVER-REGISTRY.md</code> + current as-built evidence.</td></tr>
+<tr><td>Which model/runtime is approved?</td><td>HX runtime/workload profile.</td></tr>
+<tr><td>Which endpoint is exposed to clients?</td><td>OmniRoute routing configuration derived from HX-approved profile.</td></tr>
+<tr><td>Which route is active?</td><td>OmniRoute traffic-plane config.</td></tr>
+<tr><td>Did the route behave correctly?</td><td>HX Runtime Acceptance evidence.</td></tr>
+<tr><td>Is the host healthy/capable?</td><td>HX infrastructure evidence/observability, not OmniRoute.</td></tr>
+</table>
+
+<h2>11. Deployment shape</h2>
+<p>Do not adopt the full OmniRoute product topology unless a later need justifies it. Prefer the smallest supported deployment that supplies the gateway core.</p>
+
+<p>Initial implementation preference:</p>
+<ul>
+<li>pin exact OmniRoute version/artifact digest;</li>
+<li>use the minimal build/profile where supported;</li>
+<li>exclude privileged modules not needed by HX;</li>
+<li>start loopback/local-LAN only;</li>
+<li>enable API authentication before shared use;</li>
+<li>store configuration/secrets outside Git;</li>
+<li>use a managed service/container consistent with current HX conventions;</li>
+<li>do not introduce Redis/browser sidecars unless a proven required feature needs them.</li>
+</ul>
+
+<h2>12. Migration from LiteLLM</h2>
+<p>If LiteLLM has only been planned/documented and is not yet a live dependency, migration is primarily a repository architecture update:</p>
+<ol>
+<li>Find all LiteLLM references in current target-state documents/config/templates.</li>
+<li>Classify each reference: gateway role, provider-specific feature, generic OpenAI proxy assumption, or historical note.</li>
+<li>Replace active gateway references with OmniRoute.</li>
+<li>Do not rewrite historical evidence to pretend LiteLLM was never considered.</li>
+<li>Preserve any useful generic gateway requirements rather than copying OmniRoute-specific implementation everywhere.</li>
+<li>Add an OmniRoute traffic-plane profile/specification.</li>
+<li>Add direct-vs-routed HX acceptance paths.</li>
+<li>Add explicit SSRF-owner-exception documentation.</li>
+<li>Run repository invariants and confirm no competing gateway authority remains.</li>
+</ol>
+
+<h2>13. Future phases</h2>
+<table>
+<tr><th>Phase</th><th>Scope</th><th>Excluded</th></tr>
+<tr><td>0 — Repository reconciliation</td><td>LiteLLM replacement docs/config, OmniRoute target-state spec, tests.</td><td>No deployment.</td></tr>
+<tr><td>1 — Single-route pilot</td><td>OmniRoute → hxs-4 Ollama/Qwen.</td><td>No auto-routing/compression/memory.</td></tr>
+<tr><td>2 — Second runtime</td><td>Add vLLM route and static fallback/circuit-breaker testing.</td><td>No agent orchestration.</td></tr>
+<tr><td>3 — Client consolidation</td><td>Claude Code/Codex/other clients point to gateway where beneficial.</td><td>No global provider replacement without acceptance.</td></tr>
+<tr><td>4 — Advanced routing experiments</td><td>Auto-routing, model selection, context-aware policies.</td><td>Only after transparent baseline is established.</td></tr>
+<tr><td>Later</td><td>Read-only MCP telemetry subset if useful.</td><td>Write/control MCP remains separately governed.</td></tr>
+</table>
+
+<h2>14. Success criteria</h2>
+<ul>
+<li>OmniRoute provides a stable OpenAI/Anthropic-facing endpoint across approved HX runtimes.</li>
+<li>Direct-vs-routed HX L2 tests show tool/stream/error semantics remain acceptable.</li>
+<li>Gateway latency/throughput overhead is acceptable for development/test/demo workloads.</li>
+<li>Ollama and vLLM routes can be added without changing client configuration architecture.</li>
+<li>SERVER-REGISTRY and HX runtime profiles remain authoritative.</li>
+<li>No OmniRoute memory/skill/agent subsystem competes with HX.</li>
+<li>No LiteLLM dependency remains in active target-state gateway architecture.</li>
+<li>Global SSRF disablement is explicit, reproducible and documented as an owner-approved HX exception.</li>
+</ul>
+
+<h2>15. Final architecture position</h2>
+<div class="callout ok">
+<strong>ADOPT OmniRoute — narrowly.</strong><br>
+OmniRoute is the HX AI traffic plane and replaces LiteLLM in that role.<br><br>
+<strong>DO NOT adopt OmniRoute as the HX platform.</strong><br>
+HX remains the control plane, source of truth, governance system, agent framework and validation authority.
+</div>
+
+<pre>OmniRoute = HOW AI traffic gets there.
+HX = WHAT is allowed, WHERE it runs, WHO controls it, and WHETHER it is proven.</pre>
+
+<footer>
+Decision based on deep review of OmniRoute v3.8.50 source archive and current upstream project documentation, compared with current HX-Infrastructure architecture and accepted repository/runtime principles. This is a target-state architecture decision, not an assertion that OmniRoute is already installed or that LiteLLM has already been removed from the repository.
+</footer>
+</main></body></html>

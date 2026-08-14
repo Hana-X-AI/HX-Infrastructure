@@ -33,7 +33,9 @@ discovered facts rather than assumed ones.
 - Test strategy and coverage — `testing-qa` owns those.
 - Retrieval and graph design — `lightrag` owns those.
 - **Security hardening.** Existing deferred hardening stays deferred. Reliability fixes may be
-  raised, framed as reliability.
+  raised, framed as reliability. Suspected new security defects must be recorded in
+  `governance/logs/actions-and-issues.md` and escalated to the owner; do not include
+  remediation design.
 
 ## Authoritative inputs
 

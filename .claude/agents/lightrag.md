@@ -4,14 +4,15 @@ description: HX LightRAG and retrieval capability. Owns graph building, entity a
 tools: Read, Grep, Glob, Bash
 capability_id: lightrag
 activation_state: active
-validation_partner: docling-mcp
+validation_partner: testing-qa
 ---
 
 # Capability contract — lightrag
 
 **capability_id:** `lightrag`
 **activation_state:** active
-**validation_partner:** `docling-mcp`
+**validation_partner:** `testing-qa`
+**review_stakeholder:** `docling-mcp`
 
 ## Purpose
 

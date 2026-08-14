@@ -1,7 +1,7 @@
 ---
 name: docling-mcp
 description: Docling MCP capability owner for HX. Reviews and rules on the Docling parsing service design — conversion topology, MCP tool surface, document-processing behaviour, and the parse/retrieve boundary. Read-only reviewer; does not author the design or configure hosts.
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob
 capability_id: docling-mcp
 activation_state: active
 validation_partner: testing-qa

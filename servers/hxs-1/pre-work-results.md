@@ -3,7 +3,7 @@
 **No pre-work record was captured for this server.**
 
 hxs-1 was the pilot. It was discovered on 2026-08-11, before
-`governance/operations/human-pre-discovery-checklist.md` existed, so there was no preparation record to
+`governance/operations/discovery/human-pre-discovery-checklist.md` existed, so there was no preparation record to
 write down at the time. This file exists so the directory carries the same file set as every
 other server, and to state the gap plainly rather than leave it looking like an oversight.
 
@@ -23,7 +23,7 @@ other server, and to state the gap plainly rather than leave it looking like an 
 ## Preparation outcome
 
 Not recorded contemporaneously. What is known about how this server was prepared and
-discovered is in `governance/reports/Claude-Opus-5_2026-08-11_223342_hxs-1-pilot-discovery-retrospective.md`,
+discovered is in `governance/reports/claude-code/Claude-Opus-5_2026-08-11_223342_hxs-1-pilot-discovery-retrospective.md`,
 which was written specifically because this discovery ran without the process that the
 later fourteen followed. That retrospective is the reason the checklist exists.
 

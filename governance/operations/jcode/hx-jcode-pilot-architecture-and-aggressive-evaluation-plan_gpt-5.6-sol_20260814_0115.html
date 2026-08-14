@@ -1,0 +1,409 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HX jcode Pilot Architecture and Evaluation Plan</title><style>
+:root{
+ --bg:#071019;--panel:#0d1823;--panel2:#11212f;--text:#e9f1f7;--muted:#9dafbe;
+ --line:#263b4d;--cyan:#69dbff;--green:#94e77a;--amber:#ffd166;--red:#ff7e8e;
+ --violet:#c4a4ff;--code:#06131c;--shadow:0 18px 48px rgba(0,0,0,.32);
+}
+*{box-sizing:border-box}
+body{margin:0;background:
+ radial-gradient(circle at 9% -4%,rgba(105,219,255,.11),transparent 28%),
+ radial-gradient(circle at 92% 0%,rgba(196,164,255,.08),transparent 24%),var(--bg);
+ color:var(--text);font:15px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{width:min(1200px,calc(100% - 34px));margin:auto;padding:34px 0 82px}
+.hero{background:linear-gradient(145deg,rgba(17,33,47,.98),rgba(8,20,30,.98));
+ border:1px solid var(--line);border-radius:18px;padding:34px 36px;box-shadow:var(--shadow)}
+.eyebrow{color:var(--cyan);font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.15em}
+h1{font-size:clamp(36px,5.2vw,58px);line-height:1.02;letter-spacing:-.04em;margin:8px 0 12px}
+h2{font-size:27px;letter-spacing:-.02em;margin:40px 0 14px}
+h3{font-size:19px;margin:20px 0 8px}
+p{margin:8px 0 14px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.pill{border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:999px;padding:6px 11px;color:var(--muted);font-size:12px}
+.callout{margin:18px 0;padding:18px 20px;border:1px solid rgba(105,219,255,.25);border-left:4px solid var(--cyan);border-radius:11px;background:rgba(105,219,255,.05)}
+.callout.ok{border-left-color:var(--green);background:rgba(148,231,122,.045)}
+.callout.warn{border-left-color:var(--amber);background:rgba(255,209,102,.045)}
+.callout.bad{border-left-color:var(--red);background:rgba(255,126,142,.045)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.card{grid-column:span 6;border:1px solid var(--line);border-radius:14px;padding:20px;background:linear-gradient(180deg,rgba(17,33,47,.94),rgba(13,24,35,.94))}
+.card.third{grid-column:span 4}.card.full{grid-column:1/-1}
+.metric{font-size:30px;font-weight:850;letter-spacing:-.03em}.label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+table{width:100%;border-collapse:collapse;border:1px solid var(--line);background:rgba(13,24,35,.93)}
+th,td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+th{background:rgba(255,255,255,.03);color:#cfe4f2;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+tr:last-child td{border-bottom:0}
+code,pre{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+code{background:var(--code);border:1px solid rgba(255,255,255,.06);padding:2px 5px;border-radius:5px;color:#d7edf8}
+pre{white-space:pre-wrap;background:var(--code);border:1px solid var(--line);border-radius:12px;padding:17px;overflow:auto;color:#dbeaf3}
+.keep{color:var(--green);font-weight:800}.later{color:var(--amber);font-weight:800}.no{color:var(--red);font-weight:800}.strong{color:var(--violet);font-weight:800}
+ul,ol{padding-left:22px}li{margin:5px 0}
+.small{color:var(--muted);font-size:13px}
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+.copybtn{position:sticky;top:10px;float:right;margin:12px 12px -52px 0;z-index:4;cursor:pointer;padding:8px 11px;border-radius:9px;border:1px solid var(--line);background:#142536;color:var(--text);font-weight:700}
+@media(max-width:820px){main{width:min(100% - 22px,1200px)}.hero{padding:25px 21px}.card,.card.third{grid-column:1/-1}table{display:block;overflow:auto}}
+</style></head><body><main>
+<section class="hero">
+<div class="eyebrow">HX-Infrastructure · Candidate Evaluation Decision</div>
+<h1>jcode as the HX Local Agent Execution Harness</h1>
+<p>Defines the bounded-but-aggressive pilot for jcode as a local-model coding-agent harness operating alongside Claude Code, with HX governance remaining authoritative and OmniRoute acting as the shared AI traffic plane.</p>
+<div class="meta">
+<span class="pill">Candidate: jcode 0.75.5 snapshot</span>
+<span class="pill">Archive SHA-256: 9fde63852f1e94f65b55cd2a0e0bc546ad9ea58980d2adc25af2005bc5ef1d49</span>
+<span class="pill">Disposition: PILOT WARRANTED</span>
+<span class="pill">Pilot posture: aggressive after sync</span>
+<span class="pill">Tool profile: full</span>
+<span class="pill">Memory: A/B test OFF vs ON</span>
+<span class="pill">Claude Code + jcode: tandem</span>
+<span class="pill">Prepared by GPT-5.6 Sol</span>
+<span class="pill">2026-08-14 01:15 America/Panama</span>
+</div>
+</section>
+
+<div class="callout ok">
+<strong>Position.</strong> jcode is not being adopted as a replacement for Claude Code. It is being advanced to an aggressive pilot as a complementary local-model execution harness. If the pilot succeeds, HX gains two agent execution lanes: Claude Code for hosted/premium reasoning and jcode for local/private/high-volume execution, both governed by the same HX repository contract.
+</div>
+
+<h2>1. Architectural role</h2>
+<pre>                       HX GOVERNANCE
+       ┌────────────────────────────────────────┐
+       │ sdd-core                               │
+       │ AGENTS.md / DOX                        │
+       │ HX skills                              │
+       │ specialist definitions                │
+       │ deterministic controls                │
+       │ runtime acceptance / evidence          │
+       └──────────────────┬─────────────────────┘
+                          │
+               AGENT EXECUTION PLANE
+          ┌───────────────┴───────────────┐
+          │                               │
+     Claude Code                        jcode
+   hosted/premium                 local/private models
+          │                               │
+          └───────────────┬───────────────┘
+                          │
+                       OmniRoute
+                    AI traffic plane
+                          │
+            ┌─────────────┼─────────────┐
+            ▼             ▼             ▼
+         Ollama          vLLM        approved cloud
+       Qwen3.5-9B       larger Qwen        later</pre>
+
+<p>This is the intended separation of concerns:</p>
+<table>
+<tr><th>Layer</th><th>Authority / responsibility</th></tr>
+<tr><td>HX governance</td><td>What is allowed, which instructions apply, which skills/specialists exist, and what counts as accepted behavior.</td></tr>
+<tr><td>Claude Code</td><td>Hosted/premium coding-agent execution lane.</td></tr>
+<tr><td>jcode</td><td>Local/private/self-hosted coding-agent execution lane.</td></tr>
+<tr><td>OmniRoute</td><td>How approved model traffic reaches approved runtimes.</td></tr>
+<tr><td>Ollama / vLLM</td><td>Inference runtimes.</td></tr>
+</table>
+
+<h2>2. Why jcode deserves a real pilot</h2>
+<div class="grid">
+<div class="card third"><div class="label">Repository dialect fit</div><div class="metric">Excellent</div><p>Consumes root <code>AGENTS.md</code> and project <code>.claude/skills/*/SKILL.md</code>, reducing duplicate governance/skill formats.</p></div>
+<div class="card third"><div class="label">Local model fit</div><div class="metric">Excellent</div><p>Native Ollama and generic OpenAI-compatible/vLLM support matches the HX runtime direction.</p></div>
+<div class="card third"><div class="label">Harness fit</div><div class="metric">Excellent</div><p>Persistent server/session architecture plus a versioned harness API creates a credible automation substrate.</p></div>
+</div>
+
+<ul>
+<li>Rust implementation with a large source/test surface, not a thin wrapper.</li>
+<li>Reads HX-compatible <code>AGENTS.md</code> and Claude-format skills.</li>
+<li>Can consume Claude-style MCP configuration where transports are supported.</li>
+<li>Supports Ollama, vLLM/OpenAI-compatible servers, Anthropic-compatible endpoints and cloud providers.</li>
+<li>Has explicit plan/approval workflows, headless operation, persistent sessions and a stable harness API.</li>
+<li>Includes deterministic destructive-command classification as defense-in-depth.</li>
+<li>Has sophisticated swarm/multi-agent capabilities that may later become useful as an execution substrate for HX specialists.</li>
+</ul>
+
+<h2>3. Tandem model: Claude Code + jcode</h2>
+<div class="callout ok">
+<strong>This is a core design choice, not a transitional compromise.</strong> The pilot evaluates whether Claude Code and jcode are better together than either one alone.
+</div>
+
+<table>
+<tr><th>Work type</th><th>Preferred execution lane</th><th>Reason</th></tr>
+<tr><td>Architecture / difficult reasoning / owner-facing synthesis</td><td><strong>Claude Code</strong></td><td>Use the premium hosted reasoning lane where it adds value.</td></tr>
+<tr><td>Local/private code tasks</td><td><strong>jcode</strong></td><td>Use local HX runtimes without forcing them through Claude-specific semantics.</td></tr>
+<tr><td>High-volume repetitive repo work</td><td><strong>jcode</strong></td><td>Cheap/local execution can absorb volume if tool behavior is reliable.</td></tr>
+<tr><td>Reference behavior / control comparison</td><td><strong>Both</strong></td><td>Run equivalent HX tasks through each harness and compare governance/tool outcomes.</td></tr>
+<tr><td>Potential future specialist execution</td><td><strong>jcode candidate</strong></td><td>Persistent sessions/swarm may provide a useful substrate after baseline approval.</td></tr>
+</table>
+
+<pre>Claude Code does not become "legacy."
+jcode does not become "the new default."
+The pilot asks whether HX benefits from BOTH execution lanes.</pre>
+
+<h2>4. Pilot posture: cautious entry, aggressive execution</h2>
+<p>There is one synchronization checkpoint before pilot start. At that checkpoint, HX confirms:</p>
+<ul>
+<li>pilot scope;</li>
+<li>exact jcode version/artifact;</li>
+<li>runtime/model path;</li>
+<li>control-enforcement method;</li>
+<li>rollback;</li>
+<li>success/failure criteria.</li>
+</ul>
+
+<p>After that checkpoint, execute the approved pilot aggressively. Do not stop for repeated architectural reconfirmation when the next step is already inside the approved pilot envelope. Stop only on:</p>
+<ul>
+<li>hard safety/control failure;</li>
+<li>unexpected repository mutation;</li>
+<li>runtime/tool fidelity failure;</li>
+<li>evidence that the selected policy-enforcement approach is not working;</li>
+<li>owner-defined hard stop.</li>
+</ul>
+
+<h2>5. Tool profile decision: FULL</h2>
+<div class="callout warn">
+<strong>Owner choice: use <code>profile = "full"</code> during the pilot.</strong> The purpose is to test jcode as a real agent harness, not an artificially constrained demo.
+</div>
+
+<p>This changes the testing burden. Because the full profile exposes a broad capability surface, the pilot must inventory and classify every enabled tool before first repo mutation.</p>
+
+<table>
+<tr><th>Tool category</th><th>Pilot posture</th></tr>
+<tr><td>Core coding tools</td><td class="keep">ENABLED</td></tr>
+<tr><td>Repository/navigation tools</td><td class="keep">ENABLED</td></tr>
+<tr><td>Agent/session tools</td><td class="keep">ENABLED, exercised deliberately</td></tr>
+<tr><td>MCP tools</td><td class="later">Only currently configured/runnable transports; no new broad MCP expansion.</td></tr>
+<tr><td>External/service tools included by full profile</td><td class="later">Inventory and permission-check before invoking. Full profile does not equal blanket authorization.</td></tr>
+</table>
+
+<p><strong>Important:</strong> jcode's tool profile controls what the harness exposes. HX policy still controls what is permitted.</p>
+
+<h2>6. Memory decision: test both modes</h2>
+<p>Memory is not rejected. The pilot explicitly compares:</p>
+<pre>MODE A — MEMORY OFF
+baseline harness behavior
+deterministic repository context only
+
+MODE B — MEMORY ON
+jcode semantic memory / recall / extraction enabled
+same task family and model where feasible</pre>
+
+<p>Compare:</p>
+<ul>
+<li>task completion quality;</li>
+<li>instruction retention;</li>
+<li>unexpected stale-context influence;</li>
+<li>cross-session usefulness;</li>
+<li>context/token efficiency;</li>
+<li>privacy and evidence traceability;</li>
+<li>whether jcode memory competes with or complements HX repository authority.</li>
+</ul>
+
+<p>Memory may be retained if it proves useful <strong>and</strong> remains subordinate to current HX instructions/authority. Repository truth always wins over recalled memory.</p>
+
+<h2>7. Policy enforcement: A or C only</h2>
+<div class="callout bad">
+<strong>Critical adoption gate.</strong> jcode's current <code>pre_tool</code> hook is useful but fails open on timeout/spawn/error. HX permanent controls cannot depend solely on that behavior.
+</div>
+
+<p>Approved solution families:</p>
+<table>
+<tr><th>Option</th><th>Disposition</th><th>Description</th></tr>
+<tr><td>A — upstream fail-closed support</td><td class="keep">PREFERRED</td><td>Use/contribute a configurable jcode mode where policy-hook execution failure blocks protected tool actions.</td></tr>
+<tr><td>B — HX maintained fork</td><td class="no">NOT PREFERRED</td><td>Do not begin by carrying a long-term HX fork solely to alter hook semantics.</td></tr>
+<tr><td>C — lower/shared HX enforcement</td><td class="keep">PREFERRED</td><td>Enforce permanent policy outside jcode's optional hook layer so Claude Code, jcode and future harnesses share the same deterministic control boundary.</td></tr>
+</table>
+
+<p>The pilot may use jcode's native hook as additional defense-in-depth, but jcode is not considered an approved HX execution harness until A or C provides deterministic permanent-control semantics.</p>
+
+<h2>8. Candidate shared-control pattern</h2>
+<p>Option C deserves serious investigation because it could simplify the entire HX multi-harness architecture.</p>
+
+<pre>Claude Code ─┐
+             │
+jcode ───────┼── shared HX command/file authority gate ── OS/repository
+             │
+future ──────┘</pre>
+
+<p>A lower/shared boundary could enforce permanent rules such as:</p>
+<ul>
+<li>Ansible prohibition;</li>
+<li>protected authority-file mutation rules;</li>
+<li>dangerous filesystem boundaries;</li>
+<li>approved fleet-control path;</li>
+<li>credential/secret write controls where appropriate.</li>
+</ul>
+
+<p>The exact mechanism is a pilot research task, not a preselected implementation.</p>
+
+<h2>9. Initial pilot stack</h2>
+<pre>HX AGENTS.md / DOX
+HX .claude/skills
+        │
+        ▼
+      jcode
+        │
+        ▼
+    OmniRoute
+        │
+        ▼
+hxs-4 Ollama
+Qwen3.5-9B Q4_K_M</pre>
+
+<p>Direct-runtime jcode → Ollama may also be tested as a control path. OmniRoute-routed and direct paths must remain distinguishable in evidence.</p>
+
+<h2>10. Pilot phases</h2>
+<table>
+<tr><th>Phase</th><th>Scope</th><th>Exit condition</th></tr>
+<tr><td>0 — Source/build verification</td><td>Pin jcode version/hash; build/install reproducibly; telemetry/update behavior verified.</td><td>Known binary, known config, known rollback.</td></tr>
+<tr><td>1 — Repository comprehension</td><td>Read-only HX navigation with <code>AGENTS.md</code>/DOX and skills.</td><td>Correct authority chain observed.</td></tr>
+<tr><td>2 — Tool and plan behavior</td><td><code>/plan</code>, full tool inventory, safe tool execution, approval semantics.</td><td>No unintended mutations.</td></tr>
+<tr><td>3 — Controlled writes</td><td>Bounded edits under HX authority.</td><td>Clean diffs, correct instruction compliance.</td></tr>
+<tr><td>4 — Memory A/B</td><td>Repeat task family memory OFF vs ON.</td><td>Evidence-based memory disposition.</td></tr>
+<tr><td>5 — Claude Code tandem</td><td>Split coordinated work between Claude Code and jcode.</td><td>Shared repo workflow proven without governance drift.</td></tr>
+<tr><td>6 — OmniRoute routed path</td><td>Compare direct vs OmniRoute-routed model/tool behavior.</td><td>Acceptable fidelity/latency.</td></tr>
+<tr><td>7 — Permanent-control gate</td><td>Prove Option A or C.</td><td>Fail-closed permanent policy semantics.</td></tr>
+<tr><td>8 — Persistent sessions</td><td>Use harness server/API across multiple sessions/tasks.</td><td>Stable lifecycle/evidence.</td></tr>
+<tr><td>9 — Swarm research pilot</td><td>Only after baseline harness approval.</td><td>Determine whether swarm complements HX specialists.</td></tr>
+</table>
+
+<h2>11. Full-profile tool inventory gate</h2>
+<p>Before first write, capture the exact tools exposed by jcode 0.75.5 under <code>profile = "full"</code>.</p>
+<p>For each tool classify:</p>
+<pre>CORE / REPO / PROCESS / NETWORK / EXTERNAL-SERVICE / AGENT / MEMORY / MCP / OTHER
+
+and:
+
+ALLOWED
+ALLOWED WITH HX CONTROL
+NOT USED IN PILOT
+PROHIBITED</pre>
+
+<p>No tool is authorized simply because the full profile exposes it.</p>
+
+<h2>12. Repository-governance compatibility tests</h2>
+<ul>
+<li>jcode reads root <code>AGENTS.md</code>.</li>
+<li>jcode follows child DOX/AGENTS authority when entering governed subtrees.</li>
+<li>HX <code>.claude/skills</code> are discovered and activated correctly.</li>
+<li>No new jcode-specific governance copy is created unless a proven gap requires one.</li>
+<li>Any rule currently only in <code>CLAUDE.md</code> is identified and either intentionally Claude-specific or routed into shared authority.</li>
+<li>Repository truth overrides jcode memory.</li>
+</ul>
+
+<h2>13. Claude Code + jcode tandem scenarios</h2>
+<p>The pilot should include real cooperative patterns rather than only side-by-side comparison.</p>
+
+<h3>Scenario A — Claude plans, jcode executes</h3>
+<pre>Claude Code:
+architecture / task decomposition / acceptance criteria
+
+jcode:
+bounded local implementation using Qwen
+
+Claude Code:
+review / synthesis / owner-facing signoff</pre>
+
+<h3>Scenario B — jcode researches locally, Claude decides</h3>
+<pre>jcode:
+repo-wide local analysis / candidate edits / tests
+
+Claude Code:
+high-level reconciliation / difficult judgment / final integration</pre>
+
+<h3>Scenario C — parallel independent tasks</h3>
+<pre>Claude Code ── independent workstream A
+jcode       ── independent workstream B
+
+HX owner/coordinator merges conclusions after both complete.</pre>
+
+<p>Do not use two agents concurrently on the same uncoordinated files during the initial tandem pilot.</p>
+
+<h2>14. Memory A/B experiment design</h2>
+<table>
+<tr><th>Dimension</th><th>Memory OFF</th><th>Memory ON</th></tr>
+<tr><td>Initial task quality</td><td>baseline</td><td>compare</td></tr>
+<tr><td>Second-session continuity</td><td>baseline</td><td>compare</td></tr>
+<tr><td>Authority compliance</td><td>baseline</td><td>must not regress</td></tr>
+<tr><td>Stale-context interference</td><td>none expected</td><td>measure explicitly</td></tr>
+<tr><td>Token/context pressure</td><td>baseline</td><td>compare</td></tr>
+<tr><td>Auditability</td><td>high</td><td>memory recalls must be observable enough to explain effects</td></tr>
+</table>
+
+<h2>15. Runtime/provider paths to test</h2>
+<pre>PATH 1
+jcode → Ollama → Qwen3.5-9B
+
+PATH 2
+jcode → OmniRoute → Ollama → Qwen3.5-9B
+
+later:
+jcode → OmniRoute → vLLM → larger Qwen</pre>
+
+<p>Compare identity, streaming, tool calls, tool results, errors, cancellation, context, latency and completion quality. Do not attribute a routed-path failure to the model until direct-path behavior is known.</p>
+
+<h2>16. jcode settings for the pilot</h2>
+<table>
+<tr><th>Setting</th><th>Pilot value</th></tr>
+<tr><td><code>profile</code></td><td><strong>full</strong></td></tr>
+<tr><td>memory</td><td><strong>A/B: false and true</strong></td></tr>
+<tr><td>swarm</td><td>off for baseline; later explicit research phase</td></tr>
+<tr><td>ambient</td><td>off</td></tr>
+<tr><td>auto-poke</td><td>off for baseline; later optional evaluation</td></tr>
+<tr><td>update checking</td><td>off; exact version pinning</td></tr>
+<tr><td>telemetry</td><td>Nothing / disabled before first HX session</td></tr>
+<tr><td>MCP</td><td>existing runnable/approved definitions only</td></tr>
+</table>
+
+<h2>17. Acceptance tests</h2>
+<ul>
+<li>Authority-chain comprehension.</li>
+<li>Skill discovery and execution.</li>
+<li>Plan-without-edit behavior.</li>
+<li>Full-profile tool inventory and permission boundary.</li>
+<li>Safe read/navigation.</li>
+<li>Bounded write/edit/patch.</li>
+<li>Shell/tool command fidelity.</li>
+<li>Tool result continuation.</li>
+<li>Destructive-command detection.</li>
+<li>Permanent HX control denial and recovery.</li>
+<li>Memory OFF/ON comparison.</li>
+<li>Direct vs OmniRoute-routed runtime behavior.</li>
+<li>Claude Code/jcode tandem workflow.</li>
+<li>Persistent harness API/session lifecycle.</li>
+<li>Rollback/uninstall.</li>
+</ul>
+
+<h2>18. Pilot failure conditions</h2>
+<p>Stop and classify rather than rationalize if:</p>
+<ul>
+<li>jcode cannot reliably follow HX authority.</li>
+<li>existing Claude-format skills behave incompatibly.</li>
+<li>full-profile tools create uncontrollable privilege ambiguity.</li>
+<li>the selected A/C control approach cannot make permanent HX controls deterministic.</li>
+<li>memory materially overrides stale/current authority incorrectly.</li>
+<li>OmniRoute translation breaks tool semantics.</li>
+<li>local model quality is insufficient for the intended task class.</li>
+<li>jcode introduces unacceptable repository/process instability.</li>
+</ul>
+
+<h2>19. Adoption decision after pilot</h2>
+<table>
+<tr><th>Possible result</th><th>Meaning</th></tr>
+<tr><td class="keep">ADOPT — LOCAL EXECUTION HARNESS</td><td>jcode becomes an approved companion to Claude Code for defined HX workloads.</td></tr>
+<tr><td class="later">ADOPT WITH LIMITS</td><td>Useful only for selected models/tasks or memory/tool profiles.</td></tr>
+<tr><td class="later">REFERENCE / RESEARCH</td><td>Useful ideas, but execution/control integration is not mature enough.</td></tr>
+<tr><td class="no">REJECT</td><td>Harness behavior or control fit is incompatible with HX.</td></tr>
+</table>
+
+<h2>20. Current recommendation</h2>
+<div class="callout ok">
+<strong>Proceed to pilot design and execution.</strong> Once the final pilot synchronization checkpoint is complete, run the pilot aggressively through the approved phases. Do not prematurely choose between Claude Code and jcode; the preferred hypothesis is that HX benefits from both.
+</div>
+
+<pre>Claude Code + jcode
+        │
+        ▼
+same HX governance
+same skills where compatible
+same traffic plane
+different execution strengths</pre>
+
+<footer>
+Decision based on deep source review of the uploaded jcode 0.75.5 snapshot and comparison with the supplied current HX-Infrastructure repository snapshot. This document advances jcode to a pilot; it is not yet an adoption or replacement decision.
+</footer>
+</main></body></html>

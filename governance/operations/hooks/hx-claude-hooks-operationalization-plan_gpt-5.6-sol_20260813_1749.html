@@ -127,7 +127,7 @@ footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:v
 <table>
 <tr><th>Pattern/category</th><th>Decision</th><th>Reason</th></tr>
 <tr><td><code>ansible</code>, <code>ansible-playbook</code>, <code>ansible-galaxy</code></td><td><strong>DENY</strong></td><td>Ansible is permanently outside the HX execution model. The validated native Bash/SSH fleet-control pattern remains authoritative.</td></tr>
-<tr><td>Other commands</td><td>DEFER / no opinion</td><td>Do not turn this into a generic shell allowlist or a duplicate of the phase guard.</td></tr>
+<tr><td>Other commands</td><td>Exit 0, no JSON output</td><td>Do not turn this into a generic shell allowlist or a duplicate of the phase guard. Unregulated commands pass through without emitting a permission-decision payload.</td></tr>
 </table>
 <p>The hook must be phase-independent and must not depend on <code>SERVER-REGISTRY.md</code> Phase 2 state. It should not duplicate destructive-storage rules already owned by <code>permissions.deny</code>.</p>
 
@@ -140,7 +140,7 @@ footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:v
 <tr><td>Global/project governance</td><td><code>.specify/memory/constitution.md</code>, <code>knowledge/instructions.md</code>, root <code>AGENTS.md</code>/<code>CLAUDE.md</code>/<code>GOALS-AND-OBJECTIVES.md</code>/<code>INFRASTRUCTURE-CONTRACT.md</code></td><td><strong>ASK</strong></td><td><strong>DENY</strong></td></tr>
 <tr><td>Automation control</td><td><code>.claude/settings.json</code>, critical hook/control scripts</td><td><strong>ASK</strong></td><td><strong>DENY</strong></td></tr>
 <tr><td>Operational authority</td><td><code>SERVER-REGISTRY.md</code></td><td>Preserve current approved workflow; use ASK where it does not break the established discovery/sync contract.</td><td>Do not allow arbitrary specialist edits. Reconcile with the existing <code>server-discovery</code>/<code>sync-registry</code> workflow before enforcing.</td></tr>
-<tr><td>Ordinary project files</td><td>Non-authority docs, plans, source, tests</td><td>DEFER</td><td>DEFER unless another explicit rule applies</td></tr>
+<tr><td>Ordinary project files</td><td>Non-authority docs, plans, source, tests</td><td>Exit 0, no JSON output</td><td>Exit 0, no JSON output unless another explicit rule applies</td></tr>
 </table>
 <div class="callout warn"><strong>Do not guess the protected set.</strong> Claude Code must first inspect current authority/routing documents and current discovery/sync behavior. The guard must protect the current system without breaking an existing legitimate registry-update path.</div>
 
