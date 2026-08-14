@@ -137,14 +137,49 @@
     "_comment": "Deliberately not collapsed.",
     "A_qwen_local_runtime_operational": "REACHED 2026-08-14 - 100% GPU residency on the isolated device, correct output, stable under a 22.8K-token load",
     "B_hx_validation_operational": "REACHED 2026-08-14 - Anthropic, OpenAI and native surfaces verified including full tool round-trip",
-    "C_claude_code_qualified": "NOT REACHED - blocked on network reachability, see network_exposure"
+    "C_claude_code_qualified": "NOT REACHED 2026-08-14 - tested end to end over an SSH tunnel. The protocol works and the agent loop runs, but Claude Code's system prompt alone exceeds the usable window and prompt overflow truncates silently. See claude_code_qualification."
+  },
+
+  "context_overflow_behavior": {
+    "_comment": "MEASURED 2026-08-14. The most operationally dangerous finding in this commissioning.",
+    "configured_window": 65536,
+    "behavior_within_window": "correct - ~54K-token prompt processed in full at 64,880 tokens",
+    "behavior_on_overflow": "SILENT TRUNCATION TO 32,770 TOKENS. Not an error, not a clamp to the window - the runtime discards more than half the prompt and the model answers confidently from the remainder.",
+    "evidence": [
+      { "sent_tokens_approx": 37000, "processed": 43880, "result": "full" },
+      { "sent_tokens_approx": 54000, "processed": 64880, "result": "full" },
+      { "sent_tokens_approx": 74000, "processed": 32770, "result": "collapsed" },
+      { "sent_tokens_approx": 85000, "processed": 32770, "result": "collapsed - a fact placed at the start of the prompt was destroyed and the model reported it absent" }
+    ],
+    "operational_consequence": "A wrong answer indistinguishable from a right one. Any client that can exceed 65,536 tokens must bound its own prompt, because the runtime will not report the loss."
+  },
+
+  "claude_code_qualification": {
+    "_comment": "MEASURED 2026-08-14 against Claude Code 2.1.221 over an SSH tunnel.",
+    "verdict": "NOT QUALIFIED",
+    "protocol": "PROVEN - connects to /v1/messages, runs a 3-turn agent loop, calls its Read tool and receives real file contents",
+    "tests": [
+      { "test": "plain text reply", "result": "PASS", "input_tokens": 28440, "ttft_ms": 36725, "note": "exact requested output" },
+      { "test": "tool use, default workstation profile", "result": "FAIL", "input_tokens": 69386, "note": "zero output then hallucinated unrelated file paths; never read the target file" },
+      { "test": "tool use, clean profile", "result": "PARTIAL", "input_tokens": 73351, "num_turns": 3, "note": "genuinely read the file, then miscounted a 4-line file as 6 lines" }
+    ],
+    "blocking_reasons": [
+      "Claude Code reports contextWindow 200000 and has no mechanism to discover the real 65,536 limit, so it routinely sends 69-73K tokens.",
+      "Its baseline system prompt measured 28,440 tokens before any user request, which also makes a 16,384 context impossible for this client.",
+      "Overflow is silently truncated rather than refused, so the failure is invisible to both client and user."
+    ],
+    "what_would_change_the_verdict": [
+      "real headroom above the ~30K baseline - the reserved 16 GB card would provide it",
+      "overflow becoming an error rather than a silent collapse"
+    ],
+    "thinking_note": "MAX_THINKING_TOKENS=0 is required. Left at default, thinking content surfaced as the reply - the first smoke test returned the single word 'Wait'."
   },
 
   "network_exposure": {
     "state": "LOOPBACK ONLY",
     "listener": "127.0.0.1:11434",
     "note": "Ollama has no authentication. Binding it to 0.0.0.0 publishes an unauthenticated inference endpoint that will emit tool-call payloads to any host that can route to it. Not applied.",
-    "recommended_access": "SSH port-forward, which keeps the service on loopback. Resolve the host address from SERVER-REGISTRY.md: ssh -N -L 11434:127.0.0.1:11434 <user>@<hxs-4>",
+    "access_used": "SSH port-forward, service never left loopback. Resolve the host address from SERVER-REGISTRY.md: ssh -N -L 11434:127.0.0.1:11434 <user>@<hxs-4>",
     "owner_decision_required": true
   },
 

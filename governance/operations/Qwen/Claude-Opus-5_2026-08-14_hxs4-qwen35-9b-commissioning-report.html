@@ -69,9 +69,17 @@
 <div class="card good">
 <strong>Outcome.</strong> Qwen3.5-9B runs on hxs-4's isolated 8&nbsp;GB card, fully on the GPU up to a
 16,384-token context and usable to 65,536 with a CPU/GPU split. Ollama serves the Anthropic
-Messages API directly, so Claude Code needs no translation layer. The service is still on
-loopback — making it reachable from your workstation is a decision left to you, not something
-commissioning should have done on its own.
+Messages API directly, so Claude Code needs no translation layer, and it was tested end to end over
+an SSH tunnel.
+</div>
+
+<div class="card stop">
+<strong>Claude Code is not qualified against this endpoint.</strong> It connects, drives a real tool
+loop and returns real file contents — the protocol side works. It is not reliable, for two measured
+reasons. Claude Code believes the context window is 200,000 tokens and has no way to learn the real
+limit, so it routinely sends 69&ndash;73K tokens; and when a prompt exceeds 65,536 this runtime does
+not clamp or error, it <strong>silently collapses the prompt to 32,770 tokens</strong> and answers
+confidently from the wreckage. Detail in section 6.
 </div>
 
 <h2>1. What was asked, and what actually happened</h2>
@@ -91,8 +99,8 @@ a reasonable estimate would have predicted, and each one would have caused a wro
 <tr><td>G — 4K residency</td><td class="pass">PASS</td><td>100% GPU, exact expected output</td></tr>
 <tr><td>H — context ladder</td><td class="pass">PASS</td><td>Failed on first attempt and wedged the host. See section 5.</td></tr>
 <tr><td>I/J — API surface</td><td class="pass">PASS</td><td>Anthropic, OpenAI and native surfaces, full tool round-trip</td></tr>
-<tr><td>K — network exposure</td><td class="warn">YOUR DECISION</td><td>Deliberately not applied. See section 6.</td></tr>
-<tr><td>M — Claude Code qualified</td><td class="warn">BLOCKED</td><td>Waiting on reachability only; the protocol side is proven</td></tr>
+<tr><td>K — reachability</td><td class="pass">PASS</td><td>SSH tunnel; service never left loopback</td></tr>
+<tr><td>M — Claude Code qualified</td><td class="fail">NOT REACHED</td><td>Connects and drives tools, but overflows the window silently. See section 6.</td></tr>
 </tbody>
 </table>
 
@@ -118,6 +126,14 @@ a reasonable estimate would have predicted, and each one would have caused a wro
 off to system memory to make room for the cache — which is why memory use barely rises while the
 cache triples.</p>
 
+<div class="card flag">
+<p style="margin:0"><strong>Read these as allocation figures, not steady state.</strong> Each row was
+taken with the context allocated but barely used. Under a genuinely large prompt the same 65,536
+configuration was later observed at <strong>8.5&nbsp;GB and a 39%/61% CPU/GPU split</strong> — more
+offload, and correspondingly slower, than the 28%/72% the ladder recorded. The ladder establishes what
+fits; it understates what a loaded session costs.</p>
+</div>
+
 <h3>Bigger is not better below its own limit</h3>
 
 <p>This is the most useful number in the report. The same 8,311-token job, run at two settings:</p>
@@ -135,7 +151,9 @@ cache triples.</p>
 <p>Identical work, same correct answer, but the 16K setting reads the prompt twice as fast and
 writes the answer <strong>2.7&times; faster</strong>. A large context is not free headroom you leave
 switched on — you pay for it on every request, including the small ones. The only thing 64K buys is
-the ability to exceed 16K tokens at all.</p>
+the ability to exceed 16K tokens at all. That caveat matters for anything agent-shaped: Claude Code's
+system prompt alone is 28,440 tokens, so for that client 16K is not a tradeoff, it is a non-starter
+(section 6).</p>
 
 <p>It does deliver when you need it: at 64K the model read a 22,846-token document and correctly
 retrieved a specific fact buried in the middle of it, in 25 seconds, with no instability. Generation
@@ -237,24 +255,81 @@ takes the driver down with it.</p>
 <p>I had earlier read that failure as evidence of a hard capacity cliff at 8K. That was wrong, and the
 corrected ladder disproves it.</p>
 
-<h2>6. Open decisions</h2>
+<h2>6. Claude Code, tested end to end</h2>
 
-<h3>Reachability — needs your call</h3>
-<p>The service listens on <code>127.0.0.1:11434</code>. Claude Code runs on your workstation, so
-something has to bridge that gap. I did not make it network-reachable, for a specific reason: Ollama
-has <strong>no authentication of any kind</strong>. Binding it to all interfaces publishes an
-unauthenticated endpoint that will accept requests — and emit tool-call payloads — for anything that
-can route to the host.</p>
-<p>The tunnel option gets Claude Code working without exposing anything, because the service stays on
-loopback and the connection is authenticated by your SSH key:</p>
+<p>Reachability was solved with an SSH tunnel, so the service never left loopback and the connection is
+authenticated by your key:</p>
 <pre><code>ssh -N -L 11434:127.0.0.1:11434 -i ~/.ssh/hx_fleet_ed25519 hxsa@&lt;hxs-4&gt;</code></pre>
-<p>That is what I would take unless other machines need the endpoint too.</p>
+
+<p>Claude Code 2.1.221 was then pointed at it. Three tests, and they tell a layered story.</p>
+
+<div class="scroll">
+<table>
+<thead><tr><th>Test</th><th>Result</th><th>Input tokens</th><th>What happened</th></tr></thead>
+<tbody>
+<tr><td>Plain text reply</td><td class="pass">PASS</td><td>28,440</td><td>Returned the exact requested string. 36.7&nbsp;s to first token.</td></tr>
+<tr><td>Tool use, default profile</td><td class="fail">FAIL</td><td>69,386</td><td>Zero output, then hallucinated unrelated file paths. Never read the file.</td></tr>
+<tr><td>Tool use, clean profile</td><td class="warn">PARTIAL</td><td>73,351</td><td>Ran a 3-turn agent loop, genuinely read the file — then miscounted 4 lines as 6.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>Claude Code's own prompt does not fit</h3>
+
+<p>Its baseline system prompt measured <strong>28,440 tokens</strong> before any work begins. That
+single number decides the context setting: 16,384 is not a "slower but workable" option for Claude
+Code, it is <strong>impossible</strong> — the model would never see the user's request. With this
+workstation's plugins and skills loaded the prompt reached 69,386 tokens, and even with a stripped
+profile a trivial file-read task reached 73,351.</p>
+
+<div class="card stop">
+<h3 style="margin-top:0">The failure mode that makes this unsafe to rely on</h3>
+<p>Claude Code reports <code>contextWindow: 200000</code>. It has no way to discover that the real
+limit is 65,536, so it will keep sending prompts past it. What happens then is the problem.</p>
+<p>Tested directly: a prompt of roughly 85,000 tokens, with a specific fact placed at the very start,
+was sent to the endpoint. There was <strong>no error</strong>. The runtime processed 32,770 tokens —
+not the 65,536 it was configured for, but half that — and the model answered
+<em>"The provided text does not contain a vault code."</em> It had been truncated away, and nothing in
+the response indicated that more than half the input had been discarded.</p>
+<div class="scroll">
+<table>
+<thead><tr><th>Prompt sent</th><th>Tokens actually processed</th><th>Behaviour</th></tr></thead>
+<tbody>
+<tr><td>~37,000</td><td>43,880</td><td class="pass">fully processed</td></tr>
+<tr><td>~54,000</td><td>64,880</td><td class="pass">fully processed, just under the window</td></tr>
+<tr><td>~74,000</td><td class="fail">32,770</td><td class="fail">collapsed to half, silently</td></tr>
+<tr><td>~85,000</td><td class="fail">32,770</td><td class="fail">collapsed to half, silently</td></tr>
+</tbody>
+</table>
+</div>
+<p>So the endpoint is well behaved right up to about 65,000 tokens and then fails in the worst
+available way: it does not clamp, it does not error, it discards more than half the prompt and answers
+with confidence. A wrong answer that looks like a right answer is worse than a refusal.</p>
+</div>
+
+<h3>Verdict</h3>
+<p>The protocol is proven and the agent loop genuinely functions — in the clean run Claude Code called
+its Read tool, received real file contents, and reasoned over them across three turns. But between a
+system prompt that exceeds the window on its own and an overflow mode that silently destroys the
+request, <strong>this endpoint should not be used as a Claude Code backend</strong>. The miscount of a
+four-line file is a fair illustration of what to expect even when the prompt does fit.</p>
+<p>Two things would have to change for that verdict to move: the window would need real headroom above
+Claude Code's ~30K baseline — which the 16&nbsp;GB card could provide — and the truncation behaviour
+would need to become an error rather than a silent collapse.</p>
+
+<h2>7. Open decisions</h2>
+
+<h3>Network exposure</h3>
+<p>Still on <code>127.0.0.1:11434</code>, and I would leave it there. Ollama has <strong>no
+authentication of any kind</strong>; binding it to all interfaces publishes an unauthenticated endpoint
+that accepts requests and emits tool-call payloads to anything that can route to the host. The tunnel
+above covers workstation use without that exposure.</p>
 
 <h3>Which context to run</h3>
-<p>The default is currently <strong>65,536</strong>, chosen so Claude Code's system prompt and tool
-definitions fit. That costs roughly 2.7&times; generation speed on every request. If this endpoint ends
-up serving shorter interactive work instead, 16,384 is materially faster and stays entirely on the GPU.
-Both are one line in the service override.</p>
+<p>The default is <strong>65,536</strong>. Given the truncation behaviour, that is the right setting
+for anything that might send long prompts — it buys the largest safe margin before the cliff. For
+short interactive work from other clients, 16,384 is roughly 2.7&times; faster on generation and stays
+entirely on the GPU. One line in the service override either way.</p>
 
 <h3>What else is meant to live on hxs-4</h3>
 <p>The registry assigns hxs-4 Qdrant plus a web UI, Qwen2.5-3B, BGE-M3 embeddings and a reranker.
@@ -267,12 +342,12 @@ completely idle at 0&nbsp;MiB</strong>. Worth deciding deliberately rather than 
 full 64K context entirely on the GPU, with none of the CPU offload penalty measured above. That card is
 reserved, so this is an observation for you, not a recommendation to move anything.</p>
 
-<h2>7. State of the acceptance work</h2>
+<h2>8. State of the acceptance work</h2>
 
 <dl class="kv">
   <dt>Local runtime operational</dt><dd class="pass">REACHED — 100% GPU on the isolated card, stable under a 22.8K-token load</dd>
   <dt>HX validation operational</dt><dd class="pass">REACHED — all three API surfaces including a full tool round-trip</dd>
-  <dt>Claude Code qualified</dt><dd class="warn">NOT REACHED — protocol proven; waiting only on reachability</dd>
+  <dt>Claude Code qualified</dt><dd class="fail">NOT REACHED — connects and drives tools, but its system prompt exceeds the window and overflow truncates silently</dd>
   <dt>Runtime invariants</dt><dd class="pass">33 PASS / 0 FAIL</dd>
   <dt>Fit gate failability</dt><dd class="pass">Verified — returns FAIL on the deferred DS4 workload</dd>
   <dt>hxs-4 durable role</dt><dd>Unchanged: Retrieval &amp; AI utility</dd>
@@ -282,7 +357,7 @@ reserved, so this is an observation for you, not a recommendation to move anythi
 the workload definition, which the rules forbid — addresses resolve from the registry. That was my
 error, and the tests failed the build until it was fixed.</p>
 
-<h2>8. Files</h2>
+<h2>9. Files</h2>
 
 <div class="scroll">
 <table>
