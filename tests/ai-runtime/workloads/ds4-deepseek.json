@@ -4,6 +4,9 @@
   "classification_scope": "The EXPERIMENTAL label applies to this workload and runtime profile, not to any physical server.",
   "runtime": "ds4",
   "runtime_profile": "ds4-deepseek",
+  "commissioning_state": "NOT PRESENT",
+  "commissioning_state_evidence": "No DS4 installation is recorded in SERVER-REGISTRY.md or under servers/. No model is installed anywhere in the fleet.",
+
   "purpose": [
     "Anthropic-compatible /v1/messages testing for Claude Code-style clients",
     "OpenAI chat and responses cross-client testing",
@@ -11,17 +14,57 @@
     "long-prefix and KV cache experiments",
     "cross-runtime conformance against the HX acceptance contract"
   ],
+
   "candidate_placement": {
     "host": "hxs-3",
     "basis": "GPU capacity, when this workload is explicitly selected and the capacity gate passes",
     "note": "Candidate placement only. This does not assign hxs-3 to DS4 and does not alter its durable role."
   },
-  "model": {
+
+  "model_selection": {
+    "_comment": "PHASE A. Every field is required before the capacity gate can compute residency. Arbitrary GGUF support is NOT assumed - the model must be one the installed DS4 revision explicitly supports.",
     "identity": null,
     "quantization": null,
-    "selection_required": true,
-    "note": "Exact model and quantization must be selected before the gate can evaluate residency. Until then the gate returns BLOCKED."
+    "supported_by_ds4_revision": null,
+    "source_provenance": null,
+    "expected_file_size_gb": null,
+    "selection_rationale": null,
+    "selected_on": null,
+    "selected_by": null
   },
+
+  "capacity_gate_result": {
+    "_comment": "PHASE B. The gate must be RERUN against the exact selected artifact. verdict_for_model must equal model_selection.identity + quantization, or the result is stale and the gate reopens.",
+    "verdict": "BLOCKED",
+    "verdict_for_model": null,
+    "verdict_for_quantization": null,
+    "evaluated_on": null,
+    "stale_when": "model_selection.identity or .quantization changes"
+  },
+
+  "model_acquisition": {
+    "_comment": "PHASE C. Populated only after the capacity gate returns PASS and acquisition is separately authorized.",
+    "authorized": false,
+    "acquired": false,
+    "filename": null,
+    "actual_file_size_bytes": null,
+    "checksum_sha256": null,
+    "source_url": null,
+    "acquired_on": null,
+    "storage_path": null,
+    "storage_path_status": "PROPOSED - no canonical HX model-storage root exists yet; see governance/operations/hxs3-workload-placement.md",
+    "weights_in_git": false
+  },
+
+  "ds4_runtime": {
+    "revision": null,
+    "commit": null,
+    "install_path": null,
+    "backend_built": null,
+    "cli_help_verified": false,
+    "_comment": "CLI flags must be derived from the installed revision's own --help output, never hardcoded from documentation."
+  },
+
   "requirements": {
     "backend": ["cuda", "rocm", "metal"],
     "documented_reference_target": {
@@ -30,16 +73,33 @@
       "source": "DS4 snapshot README - download_model.sh ds4f-q2 documented for 96/128 GB RAM machines"
     }
   },
+
+  "server": {
+    "_comment": "PHASE F. Localhost first. Network exposure is a separate later gate.",
+    "listen_address": "127.0.0.1",
+    "port": null,
+    "context_target": null,
+    "kv_cache_path": null,
+    "kv_cache_quota_gb": null,
+    "working_directory": null,
+    "log_path": null,
+    "network_exposed": false,
+    "network_exposure_gate": "PHASE K - requires local validation first, then binds the interface resolved from SERVER-REGISTRY.md"
+  },
+
   "concurrency": { "assume_coexistence": false },
+
   "activation": {
     "requires_gate": "hx-capacity-gate",
     "model_download_allowed": false,
     "note": "No model download is authorized by this definition. Installation presence is not activation."
   },
+
   "isolation": {
     "config_separate_from": ["vllm", "qwen"],
     "model_dir_separate": true,
     "env_scoped_to_profile": true,
-    "removable_without_host_rebuild": true
+    "removable_without_host_rebuild": true,
+    "service_represents": "the DS4 workload, never the host role"
   }
 }
