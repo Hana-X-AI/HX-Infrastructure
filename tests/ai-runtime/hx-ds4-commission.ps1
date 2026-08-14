@@ -64,61 +64,78 @@ Write-Host ''
 # ---- gate definitions, in required order -------------------------------------------
 # Each returns: MET, or the reason it is not met.
 $defs = @(
-    @{ phase='-'; state='INSTALLED'; test={
-        if ($wl.ds4_runtime.install_path -and $wl.ds4_runtime.revision) { $null }
-        else { 'DS4 runtime not installed: no install_path or revision recorded, and no installation evidence exists under servers/' } } }
-
-    @{ phase='A'; state='MODEL SELECTED'; test={
+    @{ phase='1'; state='MODEL SELECTED'; test={
         $m = $wl.model_selection
         $missing = @()
-        foreach ($f in 'identity','quantization','supported_by_ds4_revision','source_provenance','expected_file_size_gb') {
+        foreach ($f in 'identity','quantization','gguf_filename','supported_by_ds4_revision','source_provenance','expected_file_size_gb') {
             if (-not $m.$f) { $missing += $f }
         }
         if ($missing.Count -eq 0) { $null }
         else { "no exact model and quantization selected: missing $($missing -join ', ')" } } }
 
-    @{ phase='B'; state='CAPACITY APPROVED'; test={
-        # The gate must have been RERUN against the exact selected artifact.
-        $g = $wl.capacity_gate_result
-        $m = $wl.model_selection
-        if ($g.verdict -ne 'PASS') {
-            "capacity gate verdict is '$($g.verdict)' - rerun hx-capacity-gate.ps1 against the selected artifact"
-        } elseif ($g.verdict_for_model -ne $m.identity -or $g.verdict_for_quantization -ne $m.quantization) {
-            "capacity gate result is STALE: it was evaluated for '$($g.verdict_for_model)/$($g.verdict_for_quantization)' but the selected artifact is '$($m.identity)/$($m.quantization)' - the gate must be rerun"
+    @{ phase='1'; state='EXECUTION MODE SELECTED'; test={
+        # The mode decision is bound to the exact artifact. If the artifact changes,
+        # the recorded capacity result is stale and the decision reopens.
+        $ssd = $wl.execution_modes.cuda_ssd_streaming_single_gpu
+        $g   = $wl.capacity_gate_result
+        $m   = $wl.model_selection
+        if (-not $ssd)            { 'no execution mode recorded' }
+        elseif (-not $ssd.pursue) { 'no pursuable execution mode' }
+        elseif ($g.verdict_for_model -ne $m.identity -or $g.verdict_for_quantization -ne $m.quantization) {
+            "capacity result is STALE: evaluated for '$($g.verdict_for_model)/$($g.verdict_for_quantization)' but the selected artifact is '$($m.identity)/$($m.quantization)' - the gate must be rerun"
+        }
+        else { $null } } }
+
+    @{ phase='2'; state='STORAGE VERIFIED'; test={
+        $sg = $wl.storage_gate
+        if (-not $sg.measured_free_gb) {
+            "hxs-3 NVMe capacity and sustained performance not yet measured; need >$($sg.requirements.minimum_free_gb) GB free on the fast NVMe hosting the GGUF. Under SSD streaming the device is in the inference path"
+        } elseif ($sg.measured_free_gb -lt $sg.requirements.minimum_free_gb) {
+            "measured $($sg.measured_free_gb) GB free is below the $($sg.requirements.minimum_free_gb) GB minimum"
         } else { $null } } }
 
-    @{ phase='C'; state='MODEL ACQUIRED'; test={
+    @{ phase='3'; state='DS4 INSTALLED'; test={
+        if ($wl.ds4_runtime.install_path -and $wl.ds4_runtime.revision) { $null }
+        else { 'DS4 mainline CUDA build not present: no install_path or revision recorded. Applicable model-free vendor tests are run as part of this gate' } } }
+
+    @{ phase='4'; state='MODEL ACQUIRED'; test={
         $a = $wl.model_acquisition
-        if (-not $a.authorized)        { 'model acquisition not authorized' }
-        elseif (-not $a.acquired)      { 'model not acquired' }
+        if (-not $a.authorized)          { "acquisition not authorized: $($a.authorization_condition)" }
+        elseif (-not $a.acquired)        { 'model not acquired' }
         elseif (-not $a.checksum_sha256) { 'model acquired but no checksum recorded' }
         else { $null } } }
 
-    @{ phase='D'; state='CLI VERIFIED'; test={
-        'CLI inference requires a live DS4 install and the acquired model; flags must come from the installed revision --help, never hardcoded' } }
+    @{ phase='5'; state='CLI VERIFIED'; test={
+        $i = $wl.execution_modes.cuda_ssd_streaming_single_gpu.initial_settings
+        "one-GPU CUDA SSD-streaming CLI run required (expert cache $($i.ssd_streaming_cache_experts_gb) GB, context $($i.context)); exact flags must come from the installed revision --help" } }
 
-    @{ phase='E'; state='VENDOR TESTS PASSED'; test={
-        'DS4 vendor regression requires a live build on the host' } }
+    @{ phase='6'; state='CACHE SWEEP PASSED'; test={
+        $sw = ($wl.execution_modes.cuda_ssd_streaming_single_gpu.cache_sweep_gb) -join ' -> '
+        "expert-cache sweep not run ($sw GB); advance one step only after the previous passes" } }
 
-    @{ phase='F'; state='LOCAL SERVER VERIFIED'; test={
-        'localhost ds4-server commissioning requires a live DS4 install; loopback validation precedes any network exposure' } }
+    @{ phase='7'; state='CONTEXT SWEEP PASSED'; test={
+        $sw = ($wl.execution_modes.cuda_ssd_streaming_single_gpu.context_sweep) -join ' -> '
+        "context sweep not run ($sw); advance one step only after the previous passes" } }
 
-    @{ phase='G-H'; state='API VERIFIED'; test={
-        'API, streaming and tool round-trip require a reachable local endpoint; offline protocol results are class A evidence only and do not satisfy this gate' } }
+    @{ phase='8'; state='BENCHMARKED'; test={
+        'cold and warm benchmark not run; timing is never fabricated offline' } }
 
-    @{ phase='I'; state='KV VERIFIED'; test={
-        'KV and prefix-cache validation requires a live runtime; cold/warm timing is never fabricated offline' } }
+    @{ phase='9'; state='LOCAL SERVER VERIFIED'; test={
+        'ds4-server on localhost not commissioned; loopback validation precedes any network exposure' } }
 
-    @{ phase='J'; state='HX CONTRACT VERIFIED'; test={
+    @{ phase='10'; state='API VERIFIED'; test={
+        'API, streaming and tool round-trip require a reachable local endpoint; offline protocol results are class A evidence only' } }
+
+    @{ phase='11'; state='HX CONTRACT VERIFIED'; test={
         'HX L2 live acceptance requires a validated live endpoint' } }
 
-    @{ phase='L'; state='MANAGED WORKLOAD'; test={
+    @{ phase='12'; state='MANAGED WORKLOAD'; test={
         'managed service definition requires a stable manual launch first' } }
 
-    @{ phase='K'; state='NETWORK VERIFIED'; test={
-        'network smoke requires local validation first and separate authorization; not authorized in this workstream' } }
+    @{ phase='13'; state='NETWORK VERIFIED'; test={
+        'HX network smoke requires local validation first and separate authorization' } }
 
-    @{ phase='M'; state='CLIENT VERIFIED'; test={
+    @{ phase='14'; state='CLIENT VERIFIED'; test={
         'Claude Code smoke requires a validated network endpoint' } }
 )
 

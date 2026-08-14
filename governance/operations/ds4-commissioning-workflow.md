@@ -1,8 +1,8 @@
 # DS4 commissioning workflow
 
 **Status:** TARGET-STATE workflow
-**Current state:** `NOT PRESENT` — DS4 is not installed, and no model is installed anywhere in
-the fleet
+**Current state:** `COMMISSIONING` — artifact selected, execution mode selected, next gate is
+STORAGE VERIFIED. DS4 is not installed and no model has been downloaded.
 **As-built status:** NOT ASSERTED BY THIS DOCUMENT
 
 Installed is not operational. A successful build is not proof of model fit, and a working HTTP
@@ -11,52 +11,108 @@ collapsed.
 
 ---
 
+## Deployment host and execution mode
+
+**hxs-3 is the fixed deployment host.** Host selection is not part of this decision. When an
+execution mode fails, the response is to evaluate the other supported modes on hxs-3 — not to
+look for a different machine.
+
+Two CUDA execution modes were evaluated against the selected artifact:
+
+| Mode | Result | Why |
+| --- | --- | --- |
+| Full residency / CUDA tensor-parallel | **FAIL** | ~81 GB artifact against 32622 MiB aggregate. Upstream states two cards do not have enough memory for these Flash models, and CUDA refuses to start if layers would spill to CPU |
+| **CUDA SSD streaming / single GPU** | **COMMISSIONING CANDIDATE — live validation required** | Streaming exists so the routed-expert portion need not stay resident. Mainline supports it on CUDA and QA covers it |
+
+**Single GPU is a hard runtime constraint, not a preference.** The runtime enforces it:
+
+```
+ds4: --ssd-streaming is not compatible with multi-GPU placement
+```
+
+So GPU 0 runs DS4 and GPU 1 stays reserved during commissioning. The open multi-GPU
+SSD-streaming PR is **excluded** — it adds functionality absent from mainline and carries
+significant multi-tier changes, and does not belong underneath an initial operational baseline.
+If approved later it gets its own branch, test plan and acceptance decision.
+
+### The 66 GB RAM finding is scoped, not fatal
+
+`66 GB` is **not** a full-residency pass, and **not** an automatic SSD-streaming fail. The
+96/128 GB figure describes the preferred environment for full-resident Q2. Streaming exists
+precisely so the model need not be cached whole in RAM.
+
+The gate now says:
+
+```
+FULL-RESIDENT MODE        FAIL
+CUDA SSD-STREAMING MODE   TEST REQUIRED
+```
+
+rather than collapsing both into `66 < 96 therefore FAIL`.
+
+### Storage moves into the inference path
+
+Under SSD streaming the NVMe device serves decode traffic; it is not cold storage. Capacity
+**and** sustained performance both matter, and the storage gate now **gates the model
+download**:
+
+```
+model file            ~81 GB
+download headroom
+DS4 build/runtime
+KV/cache/state
+logs/evidence
+free reserve
+                      -> well over 100 GB free on the fast NVMe hosting the GGUF
+```
+
+---
+
 ## State machine
 
 ```
-NOT PRESENT
-  -> INSTALLED                DS4 runtime installed
-  -> MODEL SELECTED           exact model + quantization selected
-  -> CAPACITY APPROVED        capacity gate RERUN with that exact artifact -> PASS
-  -> MODEL ACQUIRED           model acquisition, provenance + checksum recorded
-  -> CLI VERIFIED             CLI inference
-  -> VENDOR TESTS PASSED      DS4 vendor tests
-  -> LOCAL SERVER VERIFIED    localhost ds4-server
-  -> API VERIFIED             API / streaming / tool round-trip
-  -> KV VERIFIED              KV-prefix validation
-  -> HX CONTRACT VERIFIED     HX L2 live acceptance
-  -> MANAGED WORKLOAD         managed service definition
-  -> NETWORK VERIFIED         network smoke
-  -> CLIENT VERIFIED          Claude Code smoke
-  -> OPERATIONAL
+1  MODEL SELECTED             ds4f-q2 exact GGUF                      PASS
+2  EXECUTION MODE SELECTED    CUDA SSD streaming, single GPU          PASS
+3  STORAGE VERIFIED           hxs-3 NVMe capacity + performance       <- next gate
+4  DS4 INSTALLED              build current mainline CUDA
+5  MODEL ACQUIRED             download ds4f-q2
+6  CLI VERIFIED               one-GPU SSD streaming, cache 8 GB, ctx 4096
+7  CACHE SWEEP PASSED         8 -> 10 -> 11 GB
+8  CONTEXT SWEEP PASSED       4096 -> 8192 -> 16384 -> 32768
+9  BENCHMARKED                cold / warm
+10 LOCAL SERVER VERIFIED      ds4-server on localhost
+11 API VERIFIED               API / streaming / tool round-trip
+12 HX CONTRACT VERIFIED       HX L2 live acceptance
+13 MANAGED WORKLOAD           managed service definition
+14 NETWORK VERIFIED           HX network smoke
+15 CLIENT VERIFIED            Claude Code smoke
+   -> OPERATIONAL
 ```
 
-### The capacity gate is bound to the artifact, and the binding is enforced
+Advance one step only after the previous step passes. Do not start by maximising the expert
+cache or the context — start conservatively and measure.
 
-`CAPACITY APPROVED` is not "the gate passed once". The recorded verdict carries the model
-identity and quantization it was evaluated against. If either changes, the prior result is
-**stale** and the gate reopens automatically:
+If step 6 fails because the non-streamed resident footprint plus KV and graph scratch cannot
+fit one 16 GB card, that is the true hxs-3 boundary, learned experimentally. Reduce cache or
+context. The host does not change.
+
+### The mode decision is bound to the artifact
+
+Change the model or the quantization and the recorded capacity result goes stale, reopening the
+decision:
 
 ```
-selected artifact : ds4f / q2
-recorded verdict  : PASS, evaluated for ds4f / q4
-result            : BLOCKED - capacity gate result is STALE, the gate must be rerun
+selected artifact : DeepSeek V4 Flash / ds4f-q2
+recorded verdict  : evaluated for DeepSeek V4 Flash / ds4f-q4
+result            : BLOCKED - capacity result is STALE, the gate must be rerun
 ```
-
-A PASS for one quantization is not a PASS for another. This is enforced in
-`hx-ds4-commission.ps1`, not left to discipline.
 
 Evaluate with:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\ai-runtime\hx-ds4-commission.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .	estsi-runtime\hx-ds4-commission.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .	estsi-runtime\hx-capacity-gate.ps1 -Workload ds4-deepseek -TargetHost hxs-3
 ```
-
-The driver stops at the first unmet gate — a later gate cannot be assessed before an earlier
-one. It contacts no host, downloads nothing, installs nothing, and reports BLOCKED or SKIP with
-a reason rather than inventing a result.
-
-Until every gate passes, the reported state is `NOT PRESENT`, `COMMISSIONING` or `BLOCKED`.
 
 ---
 
@@ -79,16 +135,24 @@ Until every gate passes, the reported state is `NOT PRESENT`, `COMMISSIONING` or
 
 ---
 
-## Phase A — model selection
+## Selected artifact
 
-DS4 does not become useful because the runtime is installed. A supported model artifact is
-still required, and **arbitrary GGUF support is not assumed** — the source states plainly that
-arbitrary GGUFs are unsupported.
+```
+model         DeepSeek V4 Flash
+target        ds4f-q2
+gguf          DeepSeek-V4-Flash-IQ2XXS-w2Q2K-AProjQ8-SExpQ8-OutQ8-chat-v2-imatrix-0731.gguf
+quantization  Q2 / imatrix 0731; routed expert gate/up IQ2_XXS, down Q2_K; attn/shared/out Q8
+size          ~81 GB
+source        antirez/deepseek-v4-gguf
+runtime       DS4 / DwarfStar
+workload      ds4-deepseek   EXPERIMENTAL
+```
 
-Required before the capacity gate can compute residency: exact model identity, exact
-quantization, confirmation the installed DS4 revision supports it, source provenance, and
-expected file size. All five live in `model_selection` in
-`tests/ai-runtime/workloads/ds4-deepseek.json` and are currently `null`.
+Arbitrary GGUF support is **not** assumed — the source states plainly that arbitrary GGUFs are
+unsupported. This exact GGUF is named in the reviewed snapshot's own release smoke-test
+instructions.
+
+`model_download_allowed` stays **false** until the storage gate passes.
 
 ## Phase B — capacity gate
 

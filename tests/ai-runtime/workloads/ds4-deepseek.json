@@ -4,9 +4,8 @@
   "classification_scope": "The EXPERIMENTAL label applies to this workload and runtime profile, not to any physical server.",
   "runtime": "ds4",
   "runtime_profile": "ds4-deepseek",
-  "commissioning_state": "NOT PRESENT",
-  "commissioning_state_evidence": "No DS4 installation is recorded in SERVER-REGISTRY.md or under servers/. No model is installed anywhere in the fleet.",
-
+  "commissioning_state": "MODEL SELECTED",
+  "commissioning_state_evidence": "Exact artifact selected 2026-08-13. DS4 runtime is not installed on any host. Capacity gate FAILs for hxs-3 on the supported CUDA path.",
   "purpose": [
     "Anthropic-compatible /v1/messages testing for Claude Code-style clients",
     "OpenAI chat and responses cross-client testing",
@@ -14,34 +13,45 @@
     "long-prefix and KV cache experiments",
     "cross-runtime conformance against the HX acceptance contract"
   ],
-
   "candidate_placement": {
     "host": "hxs-3",
     "basis": "GPU capacity, when this workload is explicitly selected and the capacity gate passes",
     "note": "Candidate placement only. This does not assign hxs-3 to DS4 and does not alter its durable role."
   },
-
   "model_selection": {
     "_comment": "PHASE A. Every field is required before the capacity gate can compute residency. Arbitrary GGUF support is NOT assumed - the model must be one the installed DS4 revision explicitly supports.",
-    "identity": null,
-    "quantization": null,
-    "supported_by_ds4_revision": null,
-    "source_provenance": null,
-    "expected_file_size_gb": null,
-    "selection_rationale": null,
-    "selected_on": null,
-    "selected_by": null
+    "identity": "DeepSeek V4 Flash",
+    "quantization": "ds4f-q2",
+    "supported_by_ds4_revision": "reviewed DS4 snapshot (ds4-main); this exact GGUF is named in the snapshot's own release smoke-test instructions",
+    "source_provenance": "antirez/deepseek-v4-gguf",
+    "expected_file_size_gb": 81,
+    "selection_rationale": "Lower-memory DeepSeek V4 Flash CUDA model. Canonical DS4 candidate for this workstream.",
+    "selected_on": "2026-08-13",
+    "selected_by": "project owner",
+    "gguf_filename": "DeepSeek-V4-Flash-IQ2XXS-w2Q2K-AProjQ8-SExpQ8-OutQ8-chat-v2-imatrix-0731.gguf",
+    "download_target": "ds4f-q2",
+    "quant_profile": {
+      "family": "Q2 / imatrix",
+      "imatrix_revision": "0731",
+      "routed_expert_gate_up": "IQ2_XXS",
+      "routed_expert_down": "Q2_K",
+      "attn_proj": "Q8",
+      "shared_expert": "Q8",
+      "output": "Q8"
+    }
   },
-
   "capacity_gate_result": {
     "_comment": "PHASE B. The gate must be RERUN against the exact selected artifact. verdict_for_model must equal model_selection.identity + quantization, or the result is stale and the gate reopens.",
-    "verdict": "BLOCKED",
-    "verdict_for_model": null,
-    "verdict_for_quantization": null,
-    "evaluated_on": null,
-    "stale_when": "model_selection.identity or .quantization changes"
+    "verdict": "FAIL",
+    "verdict_for_model": "DeepSeek V4 Flash",
+    "verdict_for_quantization": "ds4f-q2",
+    "evaluated_on": "2026-08-13",
+    "stale_when": "model_selection.identity or .quantization changes",
+    "evaluated_host": "hxs-3",
+    "decisive_dimension": "cuda_model_residency (full-resident mode)",
+    "verdict_scope": "full-resident CUDA TP mode only",
+    "ssd_streaming_verdict": "CANDIDATE - LIVE VALIDATION REQUIRED"
   },
-
   "model_acquisition": {
     "_comment": "PHASE C. Populated only after the capacity gate returns PASS and acquisition is separately authorized.",
     "authorized": false,
@@ -52,10 +62,10 @@
     "source_url": null,
     "acquired_on": null,
     "storage_path": null,
-    "storage_path_status": "PROPOSED - no canonical HX model-storage root exists yet; see governance/operations/hxs3-workload-placement.md",
-    "weights_in_git": false
+    "storage_path_status": "PROPOSED - no canonical HX model-storage root exists yet. No download is authorized: the artifact-bound capacity gate FAILs for hxs-3.",
+    "weights_in_git": false,
+    "authorization_condition": "AUTHORIZED ONLY AFTER the hxs-3 NVMe storage gate passes"
   },
-
   "ds4_runtime": {
     "revision": null,
     "commit": null,
@@ -64,16 +74,18 @@
     "cli_help_verified": false,
     "_comment": "CLI flags must be derived from the installed revision's own --help output, never hardcoded from documentation."
   },
-
   "requirements": {
-    "backend": ["cuda", "rocm", "metal"],
+    "backend": [
+      "cuda",
+      "rocm",
+      "metal"
+    ],
     "documented_reference_target": {
       "model": "ds4f-q2",
       "system_ram_gb": 96,
       "source": "DS4 snapshot README - download_model.sh ds4f-q2 documented for 96/128 GB RAM machines"
     }
   },
-
   "server": {
     "_comment": "PHASE F. Localhost first. Network exposure is a separate later gate.",
     "listen_address": "127.0.0.1",
@@ -86,20 +98,101 @@
     "network_exposed": false,
     "network_exposure_gate": "PHASE K - requires local validation first, then binds the interface resolved from SERVER-REGISTRY.md"
   },
-
-  "concurrency": { "assume_coexistence": false },
-
+  "concurrency": {
+    "assume_coexistence": false
+  },
   "activation": {
     "requires_gate": "hx-capacity-gate",
     "model_download_allowed": false,
     "note": "No model download is authorized by this definition. Installation presence is not activation."
   },
-
   "isolation": {
-    "config_separate_from": ["vllm", "qwen"],
+    "config_separate_from": [
+      "vllm",
+      "qwen"
+    ],
     "model_dir_separate": true,
     "env_scoped_to_profile": true,
     "removable_without_host_rebuild": true,
     "service_represents": "the DS4 workload, never the host role"
+  },
+  "runtime_compatibility_evidence": {
+    "_comment": "Verified verbatim against the local DS4 source tree, not taken from a plan document.",
+    "source": "reviewed DS4 snapshot, governance/operations/Ds4/ds4-main (reference only, never vendored)",
+    "constraints": [
+      "Tensor and routed-expert work is split across an even number of GPUs (--cuda-tensor-parallel).",
+      "Tested Flash CUDA topologies: Q2 on four cards (two pipeline stages), Q4 on eight cards (four stages).",
+      "'Two cards do not have enough memory for these Flash models.'",
+      "CUDA placement reserves memory for graph and KV and 'refuses to start if model layers would spill to the CPU.'"
+    ],
+    "consequence_for_hxs_3": "A 2-GPU CUDA topology cannot host ds4f-q2 on the supported upstream execution path."
+  },
+  "cuda_ssd_streaming": {
+    "mainline_single_gpu": {
+      "status": "SUPPORTED - selected commissioning path",
+      "evidence": "--ssd-streaming, --ssd-streaming-cache-experts, --ssd-streaming-cold, --ssd-streaming-full-layers, --ssd-streaming-preload-experts present in the reviewed snapshot; QA covers CUDA SSD streaming."
+    },
+    "multi_gpu_ssd_streaming": {
+      "status": "EXCLUDED - unmerged",
+      "reason": "Mainline rejects multi-GPU SSD streaming. The open PR adds functionality absent from mainline and carries significant multi-tier changes. Not placed underneath the initial operational baseline.",
+      "if_approved_later": "own branch, own test plan, own acceptance decision"
+    }
+  },
+  "deployment_host": {
+    "host": "hxs-3",
+    "status": "FIXED",
+    "note": "hxs-3 is the fixed deployment host for this workload. Host selection is not open. If a mode fails, evaluate supported execution modes on hxs-3."
+  },
+  "execution_modes": {
+    "full_resident_cuda_tp": {
+      "status": "FAIL",
+      "reason": "2 x 16 GB (32622 MiB aggregate) cannot hold the ~81 GB Flash model. Upstream states two cards do not have enough memory for these Flash models, and CUDA refuses to start if layers would spill to CPU.",
+      "pursue": false
+    },
+    "cuda_ssd_streaming_single_gpu": {
+      "status": "COMMISSIONING CANDIDATE - LIVE VALIDATION REQUIRED",
+      "reason": "SSD streaming avoids requiring the routed-expert portion to stay resident. Mainline supports it on CUDA and QA tests it.",
+      "pursue": true,
+      "gpu_residency": "single GPU",
+      "gpu_count_required": 1,
+      "multi_gpu_supported": false,
+      "multi_gpu_evidence": "Runtime enforces it: ds4 errors with '--ssd-streaming is not compatible with multi-GPU placement'.",
+      "initial_settings": {
+        "cuda_visible_devices": "0",
+        "ssd_streaming_cache_experts_gb": 8,
+        "context": 4096,
+        "rationale": "8 GB is deliberately conservative against a 16 GB card - leaves room for non-streamed tensors, KV, graph scratch, activations, staging buffers and CUDA runtime overhead. The published single-16 GB result used an 11 GB expert cache."
+      },
+      "cache_sweep_gb": [
+        8,
+        10,
+        11
+      ],
+      "context_sweep": [
+        4096,
+        8192,
+        16384,
+        32768
+      ],
+      "sweep_rule": "Advance one step only after the previous step passes. Do not start by maximising."
+    }
+  },
+  "storage_gate": {
+    "status": "MUST VERIFY",
+    "gates": "model download",
+    "note": "Under SSD streaming the storage device is in the inference path, not cold storage. Capacity and sustained performance both matter.",
+    "requirements": {
+      "model_file_gb": 81,
+      "download_headroom": "required",
+      "ds4_build_runtime": "required",
+      "kv_cache_state": "required",
+      "logs_evidence": "required",
+      "free_reserve": "required",
+      "minimum_free_gb": 100,
+      "preferred": "substantially more than 100 GB free on the fast NVMe filesystem hosting the GGUF"
+    },
+    "target_filesystem": null,
+    "measured_free_gb": null,
+    "measured_sequential_read": null
   }
 }

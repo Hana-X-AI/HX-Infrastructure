@@ -99,9 +99,10 @@ Test-Invariant 'model identity and checksum are required before OPERATIONAL' {
 
 Test-Invariant 'commissioning states are not collapsed' {
     $src = Get-Content (Join-Path $here 'hx-ds4-commission.ps1') -Raw
-    $states = 'INSTALLED','MODEL SELECTED','CAPACITY APPROVED','MODEL ACQUIRED','CLI VERIFIED',
-              'VENDOR TESTS PASSED','LOCAL SERVER VERIFIED','API VERIFIED','KV VERIFIED',
-              'HX CONTRACT VERIFIED','MANAGED WORKLOAD','NETWORK VERIFIED','CLIENT VERIFIED'
+    $states = 'MODEL SELECTED','EXECUTION MODE SELECTED','STORAGE VERIFIED','DS4 INSTALLED',
+              'MODEL ACQUIRED','CLI VERIFIED','CACHE SWEEP PASSED','CONTEXT SWEEP PASSED',
+              'BENCHMARKED','LOCAL SERVER VERIFIED','API VERIFIED','HX CONTRACT VERIFIED',
+              'MANAGED WORKLOAD','NETWORK VERIFIED','CLIENT VERIFIED'
     $missing = $states | Where-Object { $src -notmatch [regex]::Escape($_) }
     if (-not $missing) { $true } else { "missing states: $($missing -join ', ')" } }
 
@@ -109,6 +110,43 @@ Test-Invariant 'capacity gate result is bound to the exact artifact' {
     $src = Get-Content (Join-Path $here 'hx-ds4-commission.ps1') -Raw
     $ok = ($src -match 'verdict_for_model') -and ($src -match 'verdict_for_quantization') -and ($src -match 'STALE')
     if ($ok) { $true } else { 'a stale capacity verdict would not reopen the gate' } }
+
+Test-Invariant 'hxs-3 is the fixed deployment host' {
+    if ($wl.deployment_host.host -eq 'hxs-3' -and $wl.deployment_host.status -eq 'FIXED') { $true }
+    else { 'deployment host is not recorded as fixed' } }
+
+Test-Invariant 'full-resident CUDA TP mode is recorded FAIL and not pursued' {
+    $m = $wl.execution_modes.full_resident_cuda_tp
+    if ($m.status -eq 'FAIL' -and $m.pursue -eq $false) { $true }
+    else { "full-resident mode status is '$($m.status)', pursue=$($m.pursue)" } }
+
+Test-Invariant 'CUDA SSD streaming single-GPU is the pursued mode' {
+    $m = $wl.execution_modes.cuda_ssd_streaming_single_gpu
+    if ($m.pursue -eq $true -and $m.gpu_count_required -eq 1 -and $m.multi_gpu_supported -eq $false) { $true }
+    else { 'ssd-streaming mode is not recorded as single-GPU and pursued' } }
+
+Test-Invariant 'multi-GPU SSD streaming stays excluded as unmerged' {
+    if ($wl.cuda_ssd_streaming.multi_gpu_ssd_streaming.status -match 'EXCLUDED') { $true }
+    else { 'unmerged multi-GPU SSD streaming is not excluded' } }
+
+Test-Invariant 'system RAM is not conflated with CUDA device memory' {
+    $src = Get-Content (Join-Path $here 'hx-capacity-gate.ps1') -Raw
+    if ($src -match 'NOT a full-residency pass' -and $src -match 'NOT an automatic SSD-streaming fail') { $true }
+    else { 'gate does not scope the system RAM finding' } }
+
+Test-Invariant 'storage gate gates the model download' {
+    $ok = ($wl.storage_gate.gates -eq 'model download') -and
+          ($wl.model_acquisition.authorization_condition -match 'storage gate')
+    if ($ok) { $true } else { 'model download is not gated on the storage gate' } }
+
+Test-Invariant 'model download remains unauthorized' {
+    if ($wl.activation.model_download_allowed -eq $false -and $wl.model_acquisition.authorized -eq $false) { $true }
+    else { 'model download is authorized' } }
+
+Test-Invariant 'exact GGUF artifact is bound to the selection' {
+    $m = $wl.model_selection
+    if ($m.gguf_filename -match 'IQ2XXS' -and $m.quantization -eq 'ds4f-q2' -and $m.expected_file_size_gb) { $true }
+    else { 'selection is not bound to an exact GGUF artifact' } }
 
 Test-Invariant 'tool fidelity tests stay engine-neutral' {
     $f = Get-Content (Join-Path $here 'fixtures\07-tool-continuation.json') -Raw
