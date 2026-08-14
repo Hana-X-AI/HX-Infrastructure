@@ -1,6 +1,16 @@
 # LangGraph
 
-Status: TARGET-STATE DESIGN — **REVISED / NOT ACCEPTED**
+Status: TARGET-STATE DESIGN — **REVISED / NOT ACCEPTED — PARKED**
+
+Parked 2026-08-14 pending an owner re-rule of decision 3. Five capability reviews returned
+**unanimous FAIL**; two established independently from pinned source that the ruled packaged-server
+mode requires a container runtime, a commercial licence and a closed-source component, on hosts with
+no container runtime and against this document's own "No containers" standard. That cannot be fixed
+by editing this document. See `iss-019` and
+`governance/operations/langgraph/Claude-Opus-5_2026-08-14_langgraph-review-verdicts.md`.
+
+Parked, not abandoned. The distillation, the provenance and the boundary work stand; the deployment
+architecture does not.
 Target placement: hxs-11 — Agent runtime (resolved from `SERVER-REGISTRY.md`)
 As-built status: NOT ASSERTED BY THIS DOCUMENT
 Implementation: **NOT AUTHORIZED**. Deployment on hxs-11 is NO-GO until acceptance.
