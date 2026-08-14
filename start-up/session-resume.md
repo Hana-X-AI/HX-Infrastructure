@@ -1,7 +1,8 @@
 # Session resume — HX-Infrastructure
 
 **Written:** 2026-08-14
-**Repo state at handoff:** `main` @ `5a134cadae922d09e91c33f5f95182ec97bda326`, clean, pushed.
+**Repo state at handoff:** `main` @ `97cfd6c`, clean, pushed.
+**Updated:** 2026-08-14, after the hooks and skills work.
 
 Read this first, then the four documents `CLAUDE.md` names. This file tells you where things
 stand and what not to re-litigate; it does not replace the governing documents.
@@ -83,6 +84,69 @@ Highest-value items in that backlog, so they are not rediscovered from scratch:
   requirement is to make it *unreachable*, not merely unused.
 - Redis is a **hard health-gated run-queue dependency** of that mode, and must point at hxs-9.
 - `STRICT_MSGPACK` **requires an allowlist** or it degrades checkpoints silently on resume.
+
+---
+
+## 4a. Claude Code control plane — hooks, skills, output style
+
+Added 2026-08-14. **All of it loads at start-up**, so it is live from the restart after that date.
+
+### Global (every project) — under the user's `.claude/` directory
+
+| Thing | Path |
+| --- | --- |
+| Output style **ELI5** | `output-styles/ELI5.md` — plain, short, ASD-STE100 |
+| 3 quick skills | `skills/{bro,wait-what,quick}/SKILL.md` |
+| 6 HX discipline skills | `skills/hx-{context-engineering,source-driven-research,adversarial-validation,planning-and-gates,architecture-decisions,legacy-migration}/SKILL.md` |
+
+The six carry MIT provenance to `addyosmani/agent-skills`. No upstream text was copied — they were
+written from the HX integration briefs in `governance/operations/skills/`, and their worked
+examples come from failures recorded in this repository.
+
+**`outputStyle: "ELI5"` is set in all three settings files**, including the global one, so it
+applies to every project. Remove it from the global file if that is not wanted.
+
+### Project hooks — `.claude/hooks/`, mirrored in `claude-hooks/claude-hooks/hooks/`
+
+Eight scripts now: five pre-existing, two added, plus the `hx-common.ps1` helper.
+
+| Hook | Event | State |
+| --- | --- | --- |
+| `hx-session-state.ps1` | SessionStart | pre-existing |
+| `hx-phase1-guard.ps1` | PreToolUse | pre-existing |
+| `hx-validate-discovery.ps1` | PostToolUse | pre-existing — **extension still owed** |
+| `hx-validate-subagent.ps1` | SubagentStop | pre-existing |
+| `hx-notify.ps1` | Notification | pre-existing |
+| **`hx-permanent-policy-guard.ps1`** | PreToolUse Bash/PowerShell | **added** — denies Ansible in every phase |
+| **`hx-authority-edit-guard.ps1`** | PreToolUse Write/Edit | **added** — ASK for coordinator, DENY for subagent |
+| `hx-config-integrity.ps1` | ConfigChange | **NOT BUILT** |
+
+**Two traps this work exposed, both worth remembering:**
+
+- A guard pattern must match a command **in command position**, not the bare word anywhere. The
+  first version denied `grep -r ansible .` — the very command needed to find and remove Ansible
+  references. Test both directions: it must deny real invocations *and* allow mentions.
+- **The packaged mirror must be synced.** Wiring a hook into `.claude/settings.json` alone leaves
+  the installer fragment describing a different set, and the regression suite catches it
+  ("settings and packaged fragment hooks stay in sync"). Scripts go into
+  `claude-hooks/claude-hooks/hooks/` byte-identical, and the wiring into `settings.fragment.json`.
+
+**The protected set was discovered, not assumed.** The plan named `.specify/memory/constitution.md`
+and `knowledge/instructions.md`; neither exists here. Do not reintroduce them — guarding a path
+that does not exist protects nothing.
+
+### Still owed on hooks
+
+Sources: `governance/operations/hooks/` (plan + prompt) and PART A of
+`governance/operations/skills/owner_2026-08-13_hx-hooks-and-skills-implementation-prompt.md`.
+
+1. `hx-config-integrity.ps1` — ConfigChange backstop, scoped to `project_settings`. Build it
+   **after** the hook set is final, since it asserts that set is present.
+2. Registry-driven identity checks inside `hx-validate-discovery.ps1` — duplicate IP, duplicate
+   hostname, discovery/registry disagreement. **Do not hardcode the fleet IP map**; the registry
+   is the data source and the validator only checks consistency.
+3. `apply-hooks.ps1` installer updates, so a re-run is idempotent and preserves unrelated settings.
+4. The hook test cases from section 10 of the operationalization plan.
 
 ---
 
