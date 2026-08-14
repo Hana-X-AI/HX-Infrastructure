@@ -236,13 +236,15 @@ Left at their defaults they invert three of this design's own boundaries:
 - **Redis is a hard, health-gated dependency** of this mode — the run-queue substrate, not a cache.
   The deployment must point at the state-services host's Redis rather than standing up a local
   instance, since the generated compose parameterises Postgres but **not** Redis.
-- **`STRICT_MSGPACK` requires an allowlist.** Without one it does not raise on a blocked type — it
-  returns raw data or nothing, degrading checkpoints **silently on resume**. HX's versioned state
-  schema and structured interrupts are not among the built-in/schema-derived safe types, so the
-  allowlist must name them explicitly and must be propagated to every checkpointer constructed by
-  the service (the same `allowed_msgpack_modules` list applies to the checkpointer factory and to
-  any independently constructed checkpointer used in tests or tooling). A checkpoint round-trip
-  test is required: build the checkpointer through the same factory the service uses; produce a
+- **`STRICT_MSGPACK` requires an allowlist configured in `langgraph.json`.** Without one it does
+  not raise on a blocked type — it returns raw data or nothing, degrading checkpoints **silently
+  on resume**. HX's versioned state schema and structured interrupt payloads are not among the
+  built-in/schema-derived safe types, so the `allowed_msgpack_modules` list in `langgraph.json`
+  must name them explicitly: at minimum, the module(s) defining the versioned state schema class
+  and the structured interrupt type. This list must be propagated to every checkpointer constructed
+  by the service (the same `allowed_msgpack_modules` applies to the checkpointer factory and to any
+  independently constructed checkpointer used in tests or tooling). A checkpoint round-trip test is
+  required: build the checkpointer through the same factory the packaged server uses; produce a
   checkpoint containing versioned state and a structured interrupt payload; read back through both
   an independent-connection checkpointer and a freshly constructed checkpointer; assert
   deserialization succeeds and resumed values are byte-identical to the written values. Prove
@@ -537,7 +539,7 @@ falsifiable:
 | Where | Assertion |
 | --- | --- |
 | Startup | The service **refuses to start** if a store is configured or injected. |
-| Database | No `store`, `store_vectors` or `store_migrations` table exists in the `langgraph` schema. |
+| Database | No `store_vectors` or `store_migrations` table exists in the `langgraph` schema. The plain object-store table is permitted by the owner ruling (present but inert on omission); a `store_vectors` table means semantic indexing was enabled and the boundary is breached. |
 | Tool surface | No store-backed memory tool is admitted. |
 
 The database assertion matters more than it looks. This document elsewhere instructs that the
@@ -818,8 +820,9 @@ LangGraph runs as the packaged server (`langgraph build` / `langgraph up`):
   with `langgraph build` on dependency or configuration changes.
 - **Failure isolation**: the packaged server runs as its own container, independent of other
   services on the host.
-- **One virtual environment per service** for non-containerised co-located services: LangGraph and
-  Mem0 use separate environments pinned to compatible LangChain-family versions.
+- **One virtual environment per non-containerised co-located service.** Mem0 runs in its own
+  virtual environment pinned to compatible LangChain-family versions. LangGraph itself runs as a
+  container — it does not use a host virtual environment.
 - The service unit represents the LangGraph workload, never the host's role.
 - Removable without host rebuild.
 

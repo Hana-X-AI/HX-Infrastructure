@@ -27,7 +27,7 @@
     "quantization": "Q4_K_M",
     "published_artifact_size_gb": 6.6,
     "published_artifact_size_bytes": 6594474236,
-    "size_source": "AS-BUILT: registry.ollama.ai manifest, HTTP 200, verified 2026-08-14",
+    "size_source": "AS-BUILT: registry.ollama.ai manifest, HTTP 200, verified 2026-08-14. 6.6 GB is the download (OCI layer) size in decimal gigabytes (1 GB = 10^9 bytes). Resident weights are 4.61 GB as measured by CUDA0 model buffer on hxs-4 — smaller because the vision encoder is not loaded for text-only inference.",
     "digest": "6488c96fa5fa",
     "verified_upstream_on": "2026-08-14",
     "supported_by_runtime_version": "0.32.9",
@@ -108,7 +108,12 @@
 
     "measurement_vs_published_guidance": {
       "_comment": "Where hxs-4 differs from the general 8 GB-tier guidance.",
-      "weights_q4_k_m": { "guidance": "~5.5 GB", "measured": "5.5 GB per ollama ps", "agreement": "match" },
+      "weights_q4_k_m": {
+        "ollama_ps_reported_gb": 5.5,
+        "ollama_ps_note": "'ollama ps' reports 5.5 GB; this is the in-process allocation as reported by Ollama, which may differ from the raw file and from CUDA-resident bytes",
+        "cuda0_model_buffer_mib": 4717.38,
+        "cuda0_model_buffer_note": "4717.38 MiB (~4.61 GB) measured from 'ollama ps' VRAM column at 4096 context on hxs-4; this is the resident model buffer on the CUDA device, excluding KV, RS buffer, and compute scratch. Vision encoder not resident for text-only work, which accounts for the gap between the 6.6 GB download artifact and the 4.61 GB resident size."
+      },
       "at_8k_context":  { "guidance": "~7 GB, still runs", "measured": "6530 MiB, 100% GPU", "agreement": "match, marginally better" },
       "generation_rate": { "guidance": "~38 tok/s on an 8 GB card", "measured": "119 tok/s at 8192", "agreement": "MEASURED 3x FASTER - guidance predates Blackwell; this card is compute 12.0" },
       "headroom": { "guidance": "~2.5 GB free after weights", "measured": "1.7 GB free at 4K", "agreement": "guidance omits ~1.2 GB CUDA context and allocator overhead - this is why the fit gate reserves overhead explicitly rather than subtracting weights from VRAM" }
@@ -212,7 +217,7 @@
       "Qwen/Qwen3.5-9B (bf16)": 17.98,
       "device_usable_gb": 7.96
     },
-    "why_larger_than_gguf": "GGUF Q4_K_M is 5.29 GB because it quantizes broadly. w4a16 keeps activations at 16-bit and commonly leaves embeddings and lm_head at higher precision, and these repositories ship the full vision tower (pipeline image-text-to-text). Do not assume a 4-bit vLLM artifact matches a 4-bit GGUF in size.",
+    "why_larger_than_gguf": "GGUF Q4_K_M download artifact is 6.6 GB (6,594,474,236 bytes) but the resident model buffer is 4.61 GB because the vision encoder is not loaded for text-only work. vLLM w4a16 artifacts are ~10.65 GB because they keep activations at 16-bit and commonly leave embeddings and lm_head at higher precision, and these repositories ship the full vision tower (pipeline image-text-to-text). Do not assume a 4-bit vLLM artifact matches a 4-bit GGUF in size.",
     "critical_behavioural_difference": "vLLM preallocates a KV block pool against gpu_memory_utilization and does NOT offload layers to CPU. Where Ollama degraded gracefully to a CPU/GPU split, vLLM fails to start. The forgiving behaviour that let a 9B model run at all on this card is an llama.cpp property and does not transfer.",
     "what_vllm_fixes": "iss-015. vLLM returns an explicit error when input exceeds max_model_len rather than silently truncating. That is a material improvement over the silent collapse measured here, and on its own is a good reason to prefer it.",
     "what_is_lost": "The native Anthropic Messages API. vLLM serves an OpenAI-compatible surface only, so any Anthropic-protocol client would need a translation proxy. Acceptable per owner note that Claude Code is unlikely to target this model.",
@@ -326,10 +331,10 @@
     "behavior_within_window": "correct - ~54K-token prompt processed in full at 64,880 tokens",
     "behavior_on_overflow": "SILENT TRUNCATION TO 32,770 TOKENS. Not an error, not a clamp to the window - the runtime discards more than half the prompt and the model answers confidently from the remainder.",
     "evidence": [
-      { "sent_tokens_approx": 37000, "processed": 43880, "result": "full" },
-      { "sent_tokens_approx": 54000, "processed": 64880, "result": "full" },
-      { "sent_tokens_approx": 74000, "processed": 32770, "result": "collapsed" },
-      { "sent_tokens_approx": 85000, "processed": 32770, "result": "collapsed - a fact placed at the start of the prompt was destroyed and the model reported it absent" }
+      { "sent_tokens_approx": 37000, "sent_tokens_note": "client-side estimate before template expansion and system prompt; processed count from Ollama may differ", "processed": 43880, "result": "full" },
+      { "sent_tokens_approx": 54000, "sent_tokens_note": "client-side estimate before template expansion and system prompt; processed count from Ollama may differ", "processed": 64880, "result": "full" },
+      { "sent_tokens_approx": 74000, "sent_tokens_note": "client-side estimate; processed count collapsed to 32,770 - roughly half the window - due to silent truncation", "processed": 32770, "result": "collapsed" },
+      { "sent_tokens_approx": 85000, "sent_tokens_note": "client-side estimate; processed count collapsed to 32,770", "processed": 32770, "result": "collapsed - a fact placed at the start of the prompt was destroyed and the model reported it absent" }
     ],
     "operational_consequence": "A wrong answer indistinguishable from a right one. Any client that can exceed 65,536 tokens must bound its own prompt, because the runtime will not report the loss."
   },

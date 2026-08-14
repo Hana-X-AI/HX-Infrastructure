@@ -71,9 +71,9 @@ function Read-SseStream {
         $n++
         if (-not $line.StartsWith('data: ')) { continue }
         $payload = $line.Substring(6)
-        if ($payload -eq '[DONE]') { $terminal++; continue }
-        try { $obj = $payload | ConvertFrom-Json } catch { $err = 'unparsable event'; continue }
-        if ($obj.PSObject.Properties.Name -contains 'error') { $err = $obj.error.type; continue }
+        if ($payload -eq '[DONE]') { $terminal++; break }
+        try { $obj = $payload | ConvertFrom-Json } catch { $err = 'unparsable event'; break }
+        if ($obj.PSObject.Properties.Name -contains 'error') { $err = $obj.error.type; break }
         foreach ($choice in $obj.choices) {
             $d = $choice.delta
             if ($null -eq $d) { continue }
@@ -219,14 +219,16 @@ Assert-That 'T14' 'RT-04' 'A' ($f.response.content[0].type -eq 'text' -and $f.re
 # RT-07 anthropic tool_use
 $f = Get-Fixture '15-anthropic-tool-use.json'
 $tu = $f.response.content[0]
-Assert-That 'T15' 'RT-07' 'A' ($tu.type -eq 'tool_use' -and $tu.id -eq $f.expect.tool_call_id -and $tu.input.host -eq 'hxs-3') `
+$argKey = $f.expect.argument_key
+$argVal = $f.expect.argument_value
+Assert-That 'T15' 'RT-07' 'A' ($tu.type -eq 'tool_use' -and $tu.id -eq $f.expect.tool_call_id -and $tu.name -eq $f.expect.tool_name -and $tu.input.$argKey -eq $argVal) `
     "anthropic tool_use id/name/input intact ($($tu.id))" 'anthropic tool_use identity lost'
 
 # RT-14 long payload serialization only
 $f = Get-Fixture '16-long-context-serialization.json'
 $payload = ($f.system_repeat.unit * $f.system_repeat.count)
 $rt = (@{ role = 'system'; content = $payload } | ConvertTo-Json -Compress | ConvertFrom-Json)
-Assert-That 'T16' 'RT-14' 'A' ($payload.Length -ge $f.expect.min_chars -and $rt.content.Length -eq $payload.Length) `
+Assert-That 'T16' 'RT-14' 'A' ($payload.Length -ge $f.expect.min_chars -and $rt.content -eq $payload) `
     "$($payload.Length) char system payload serialized intact (serialization only)" 'large payload did not round-trip'
 
 # RT-13 recovery after error and cancellation
@@ -305,4 +307,10 @@ Write-Host ("  evidence    : {0}" -f (Resolve-Path $outFile).Path)
 Write-Host '========================================='
 Write-Host ''
 
-exit $script:fail
+# In live mode, SKIP on L2-L5 is not a pass — return nonzero to signal live checks unexecuted.
+$exitCode = $script:fail
+if ($isLive -and ($script:skip -gt 0)) {
+    Write-Host '  NOTE: live mode with unexecuted L2-L5 checks - returning nonzero' -ForegroundColor Yellow
+    $exitCode = [Math]::Max($exitCode, 1)
+}
+exit $exitCode

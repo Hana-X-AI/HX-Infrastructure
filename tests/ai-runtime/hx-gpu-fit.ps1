@@ -34,7 +34,9 @@ param(
 $ErrorActionPreference = 'Stop'
 $here     = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = Resolve-Path (Join-Path $here '..\..')
-$wl       = Get-Content (Join-Path $here "workloads\$Workload.json") -Raw | ConvertFrom-Json
+$wlPath = Join-Path $here "workloads\$Workload.json"
+if (-not (Test-Path $wlPath)) { Write-Host "Unknown workload '$Workload'." -ForegroundColor Red; exit 2 }
+$wl = Get-Content $wlPath -Raw | ConvertFrom-Json
 $registry = Join-Path $repoRoot 'SERVER-REGISTRY.md'
 $hostDir  = Join-Path $repoRoot "servers\$TargetHost"
 
@@ -89,10 +91,10 @@ else { Write-Gate 'BLOCKED' 'device identity' "UUID not in repository evidence -
 
 # --- weights against VRAM: the hard arithmetic ----------------------------------------
 $headroom = [math]::Round($vramGb - $wGb - $RuntimeOverheadGb, 2)
-if ($wGb -ge $vramGb) {
-    Write-Gate 'FAIL' 'weights vs VRAM' "artifact ~$wGb GB exceeds ~$vramGb GB device memory"
+if (($wGb + $RuntimeOverheadGb) -ge $vramGb) {
+    Write-Gate 'FAIL' 'weights vs VRAM' "artifact ~$wGb GB + $RuntimeOverheadGb GB runtime overhead = ~$([math]::Round($wGb+$RuntimeOverheadGb,2)) GB exceeds ~$vramGb GB device memory"
 } else {
-    Write-Gate 'PASS' 'weights vs VRAM' "~$wGb GB weights fit within ~$vramGb GB"
+    Write-Gate 'PASS' 'weights vs VRAM' "~$wGb GB weights + $RuntimeOverheadGb GB overhead = ~$([math]::Round($wGb+$RuntimeOverheadGb,2)) GB; fits within ~$vramGb GB"
 }
 
 $measEarly = $wl.measured_residency
@@ -167,7 +169,9 @@ if ($wl.gpu_isolation.required) {
 }
 
 # --- coexistence ----------------------------------------------------------------------
+if ($assignedWl) {
     Write-Gate 'BLOCKED' 'coexistence' "host already carries assigned workloads ('$assignedWl'); combined residency measured, never assumed"
+}
 
 # --- authorization --------------------------------------------------------------------
 if (-not $wl.activation.host_mutation_authorized) {
@@ -189,8 +193,9 @@ if ($fail -gt 0) {
     $verdict = 1
 } elseif ($blocked -gt 0 -and $meas) {
     Write-Host '  HARDWARE FIT: PROVEN BY MEASUREMENT' -ForegroundColor Green
+    $ceilingLabel = if ($ladder -and $ladder[-1]) { $ladder[-1] } elseif ($meas.ladder) { ($meas.ladder | Measure-Object -Property context -Maximum).Maximum } else { 'unknown' }
     Write-Host ("  Full GPU residency to {0}; usable to {1} with a CPU/GPU split." -f `
-        $meas.full_gpu_residency_ceiling, ($ladder[-1])) -ForegroundColor DarkGray
+        $meas.full_gpu_residency_ceiling, $ceilingLabel) -ForegroundColor DarkGray
     Write-Host '  Remaining blockers are decisions and unmeasured coexistence, not hardware fit.' -ForegroundColor Yellow
     $verdict = 3
 } elseif ($blocked -gt 0) {

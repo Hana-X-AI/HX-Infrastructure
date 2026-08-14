@@ -53,10 +53,9 @@ A profile becomes live when its endpoint environment variable is set:
 | Profile | Variable | Status |
 | --- | --- | --- |
 | `offline-fixture` | none | always offline |
-| `vllm-qwen` | `HX_VLLM_BASE_URL` | **PRIMARY** |
-| ` also gated by the capacity gate |
+| `vllm-qwen` | `HX_VLLM_BASE_URL` | **PRIMARY** — also requires `HX_VLLM_MODEL` |
 
-Model identity comes from `HX_VLLM_MODEL` / `HX_ Nothing is hardcoded, and no
+Model identity comes from `HX_VLLM_MODEL`. Nothing is hardcoded, and no
 credential belongs in a profile.
 
 Running a live-status profile with no endpoint still executes the L1 contract tests, because

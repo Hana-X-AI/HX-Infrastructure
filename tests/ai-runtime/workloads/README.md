@@ -20,7 +20,7 @@ the driver refuses to evaluate any gate for it.
 
 | Workload | Classification | Candidate placement |
 | --- | --- | --- |
-| `
+| `qwen35-9b-ollama` | local-inference | hxs-4 (RTX 5060, 8 GB) |
 
 ## Deliberately absent
 

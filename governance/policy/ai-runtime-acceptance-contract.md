@@ -97,8 +97,7 @@ failure and must never be reported as a pass.
 
 ## The tool round-trip invariant
 
-Mined from
-exact sampled representation, using canonical re-rendering only as a fallback, because
+Mined from exact sampled representation, using canonical re-rendering only as a fallback, because
 re-serializing a tool call can differ from what the model actually emitted and break
 continuation and cache identity.
 

@@ -8,19 +8,19 @@
     Downloads nothing.
 
     Backend awareness matters. For a CUDA runtime, host RAM is NOT a substitute for device
-    memory in full-resident mode: current
-    to start if model layers would spill to CPU.
+    memory in full-resident mode: current CUDA runtimes refuse to start if model layers would
+    spill to CPU, so the full artifact must fit aggregate device memory across all visible GPUs.
 
     Mode awareness matters just as much. A model too large to hold resident may still run
     under SSD streaming, which exists precisely so the routed-expert portion need not stay
     resident. The gate therefore evaluates each supported execution mode separately rather
     than issuing one verdict for the workload.
 
-    Verdicts: PASS (0), FAIL (1), BLOCKED (3).
+    Verdicts: PASS (0), FAIL (1), BLOCKED (3), deferred workload (4), input error (2).
     A decisive FAIL in one mode does not condemn another mode.
 
 .EXAMPLE
-    powershell -File .\tests\ai-runtime\hx-capacity-gate.ps1 -Workload
+    powershell -File .\tests\ai-runtime\hx-capacity-gate.ps1 -Workload qwen35-9b-ollama -TargetHost hxs-4
 #>
 [CmdletBinding()]
 param(
@@ -104,7 +104,13 @@ if (Test-Path $driverFile) {
 }
 
 Write-Host 'Host evidence:'
-Add-Finding 'GPU topology' 'PASS' "$gpuCount x GPU, $vramEach MiB each (~$vramEachGb GB), $vramTotal MiB aggregate"
+if ($vramTotal -and $vramEach) {
+    Add-Finding 'GPU topology' 'PASS' "$gpuCount x GPU, $vramEach MiB each (~$vramEachGb GB), $vramTotal MiB aggregate"
+} elseif ($gpuCount -gt 0) {
+    Add-Finding 'GPU topology' 'BLOCKED' "$gpuCount GPU(s) detected but VRAM data missing from registry entry: '$regGpu'"
+} else {
+    Add-Finding 'GPU topology' 'BLOCKED' "no GPU evidence in registry entry: '$regGpu'"
+}
 if ($cudaVer) { Add-Finding 'Backend' 'PASS' "CUDA $cudaVer, driver $drvVer (as-built)" }
 else          { Add-Finding 'Backend' 'BLOCKED' 'no as-built CUDA evidence' }
 
@@ -114,9 +120,13 @@ Write-Host 'MODE 1  full residency / CUDA tensor-parallel' -ForegroundColor Cyan
 if (-not $sel.quantization) {
     Add-Finding 'cuda_model_residency' 'BLOCKED' 'no exact artifact selected'
     $mode1 = 'BLOCKED'
+} elseif ($sizeGb -le $vramTotalGb) {
+    Add-Finding 'cuda_model_residency' 'PASS' `
+        "artifact ~$sizeGb GB fits within $vramTotal MiB (~$vramTotalGb GB) aggregate across $gpuCount GPU(s)"
+    $mode1 = 'PASS'
 } else {
     Add-Finding 'cuda_model_residency' 'FAIL' `
-        "artifact ~$sizeGb GB vs $vramTotal MiB (~$vramTotalGb GB) aggregate across $gpuCount GPU(s); upstream states two cards do not have enough memory for these Flash models and CUDA refuses to start if layers would spill to CPU"
+        "artifact ~$sizeGb GB exceeds $vramTotal MiB (~$vramTotalGb GB) aggregate across $gpuCount GPU(s); upstream states two cards do not have enough memory for these Flash models and CUDA refuses to start if layers would spill to CPU"
     $mode1 = 'FAIL'
 }
 
@@ -127,6 +137,9 @@ $ssd = $wl.execution_modes.cuda_ssd_streaming_single_gpu
 if ($gpuCount -lt 1) {
     Add-Finding 'gpu for ssd-streaming' 'FAIL' 'no discrete GPU present'
     $mode2 = 'FAIL'
+} elseif (-not $ssd) {
+    Add-Finding 'cuda_ssd_mode_metadata' 'BLOCKED' 'no cuda_ssd_streaming_single_gpu mode entry in workload record'
+    $mode2 = 'BLOCKED'
 } else {
     Add-Finding 'gpu for ssd-streaming' 'PASS' `
         "single GPU required; host provides $gpuCount x ~$vramEachGb GB - PASS for initial SSD-streaming trial (mainline rejects multi-GPU SSD streaming)"
@@ -177,6 +190,8 @@ Write-Host ("  Durable role unchanged  : {0}" -f $durableRole) -ForegroundColor 
 Write-Host '========================================='
 Write-Host ''
 
-if ($mode2 -eq 'CANDIDATE' -and $storage -eq 'PASS') { exit 0 }
-elseif ($mode2 -eq 'FAIL')                          { exit 1 }
-else                                                { exit 3 }
+$anyBlocked = $findings | Where-Object { $_.status -eq 'BLOCKED' }
+if ($mode2 -eq 'CANDIDATE' -and $storage -eq 'PASS' -and -not $anyBlocked) { exit 0 }
+elseif ($mode1 -eq 'FAIL' -or $mode2 -eq 'FAIL') { exit 1 }
+elseif ($anyBlocked -or $mode2 -ne 'CANDIDATE' -or $storage -ne 'PASS') { exit 3 }
+else { exit 3 }

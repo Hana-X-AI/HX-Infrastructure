@@ -15,13 +15,13 @@
     live host execution report SKIP or BLOCKED with a precise reason. Nothing is fabricated.
 
 .PARAMETER Workload
-    Workload name under workloads/. Default:
+    Workload name under workloads/. Mandatory; no default.
 
 .PARAMETER TargetHost
-    Host the workload is being commissioned on. Default: hxs-3.
+    Host the workload is being commissioned on. Mandatory; no default.
 
 .EXAMPLE
-    powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\ai-runtime\hxps1
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\ai-runtime\hx-workload-commission.ps1 -Workload qwen35-9b-ollama -TargetHost hxs-4
 #>
 [CmdletBinding()]
 param(
@@ -90,7 +90,7 @@ $defs = @(
     @{ phase='1'; state='MODEL SELECTED'; test={
         $m = $wl.model_selection
         $missing = @()
-        foreach ($f in 'identity','quantization','gguf_filename','supported_by_'source_provenance','expected_file_size_gb') {
+        foreach ($f in @('identity','quantization','gguf_filename','supported_by_runtime_version','source_provenance','expected_file_size_gb')) {
             if (-not $m.$f) { $missing += $f }
         }
         if ($missing.Count -eq 0) { $null }
@@ -117,9 +117,9 @@ $defs = @(
             "measured $($sg.measured_free_gb) GB free is below the $($sg.requirements.minimum_free_gb) GB minimum"
         } else { $null } } }
 
-    @{ phase='3'; state=' test={
+    @{ phase='3'; state='RUNTIME INSTALLED'; test={
         if ($wl.install_path -and $wl.revision) { $null }
-        else { ' Applicable model-free vendor tests are run as part of this gate' } } }
+        else { 'Applicable model-free vendor tests are run as part of this gate' } } }
 
     @{ phase='4'; state='MODEL ACQUIRED'; test={
         $a = $wl.model_acquisition
@@ -210,7 +210,7 @@ $ev = [pscustomobject]@{
     reported_state        = $reported
     highest_state_reached = $currentState
     next_gate             = $blockedAt
-revision
+    revision              = $wl.revision
     model_identity        = $wl.model_selection.identity
     quantization          = $wl.model_selection.quantization
     checksum_sha256       = $wl.model_acquisition.checksum_sha256
@@ -222,7 +222,7 @@ revision
     gates                 = $script:gates
     note                  = 'No host was contacted, nothing was downloaded, nothing was installed. Gates requiring live execution report BLOCKED or SKIP with a reason.'
 }
-$out = Join-Path $EvidencePath "_$stamp.json"
+$out = Join-Path $EvidencePath "commission_$($wl.workload)_${TargetHost}_$stamp.json"
 $ev | ConvertTo-Json -Depth 8 | Set-Content -Path $out -Encoding UTF8
 Write-Host ("  evidence: {0}" -f (Resolve-Path $out).Path)
 Write-Host ''

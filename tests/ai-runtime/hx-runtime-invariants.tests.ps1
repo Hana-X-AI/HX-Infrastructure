@@ -35,10 +35,13 @@ Write-Host '=========================================' -ForegroundColor Cyan
 Write-Host ' AI Runtime Workstream Invariants' -ForegroundColor Cyan
 Write-Host '=========================================' -ForegroundColor Cyan
 
-$vq  = Get-Content (Join-Path $here 'profiles\vllm-qwen.json')     -Raw | ConvertFrom-Json
-$qw  = Get-Content (Join-Path $here 'workloads\qwen35-9b-ollama.json') -Raw | ConvertFrom-Json
+$vqPath  = Join-Path $here 'profiles\vllm-qwen.json'
+$qwPath  = Join-Path $here 'workloads\qwen35-9b-ollama.json'
+$cPath   = Join-Path $repoRoot 'governance\policy\ai-runtime-acceptance-contract.md'
+$vq = ''; if (Test-Path $vqPath)  { $vq  = Get-Content $vqPath  -Raw | ConvertFrom-Json }
+$qw = ''; if (Test-Path $qwPath)  { $qw  = Get-Content $qwPath  -Raw | ConvertFrom-Json }
 $reg = Get-Content (Join-Path $repoRoot 'SERVER-REGISTRY.md') -Raw
-$contract = Get-Content (Join-Path $repoRoot 'governance\policy\ai-runtime-acceptance-contract.md') -Raw
+$contract = ''; if (Test-Path $cPath) { $contract = Get-Content $cPath -Raw }
 # Loaded tolerantly on purpose. If this record is deleted the suite must FAIL the invariant
 # that depends on it, not crash before any invariant runs - a crash reads as a broken test.
 $decisionsPath = Join-Path $repoRoot 'governance\policy\runtime-acceptance-decisions.md'
@@ -88,15 +91,16 @@ Test-Invariant 'system RAM is not conflated with CUDA device memory' {
     else { 'gate does not scope the system RAM finding' } }
 
 Test-Invariant 'runtime acceptance layer is preserved' {
-    $keep = @('hx-runtime-acceptance.ps1','hx-capacity-gate.ps1','hx-workload-commission.ps1','README.md')
+    $keep = @('hx-runtime-acceptance.ps1','hx-capacity-gate.ps1','hx-workload-commission.ps1',
+              'hx-gpu-fit.ps1','hx-runtime-invariants.tests.ps1','README.md')
     $missing = $keep | Where-Object { -not (Test-Path (Join-Path $here $_)) }
     if (-not $missing) { $true } else { "missing: $($missing -join ', ')" } }
 
 Test-Invariant 'no Ansible anywhere in the workstream' {
     # exclude this file: it names the tool in order to forbid it
-    $self = $MyInvocation.ScriptName
+    $self = $PSCommandPath
     $hits = Get-ChildItem $here -Recurse -File -Include *.ps1,*.json,*.md |
-            Where-Object { $_.FullName -ne $self -and $_.Name -ne 'hx-runtime-invariants.tests.ps1' } |
+            Where-Object { $_.FullName -ne $self } |
             Select-String -Pattern 'ansible' -SimpleMatch -CaseSensitive:$false |
             Where-Object { $_.Line -notmatch 'never|not |no ansible|prohibit|out of scope' }
     if (-not $hits) { $true } else { "ansible referenced: $($hits[0].Path):$($hits[0].LineNumber)" } }
@@ -118,6 +122,18 @@ Test-Invariant 'endpoints resolve from environment, never hardcoded' {
         if ($j.endpoint.base_url) { $ok = "profile $($j.profile) hardcodes a base_url" }
     }
     $ok }
+
+Test-Invariant 'all workstream scripts parse without syntax errors' {
+    $errors = @()
+    Get-ChildItem $here -Recurse -File -Filter *.ps1 | ForEach-Object {
+        $src = [System.IO.File]::ReadAllText($_.FullName)
+        $parseErrors = $null
+        $null = [System.Management.Automation.Language.Parser]::ParseInput($src, [ref]$null, [ref]$parseErrors)
+        if ($parseErrors.Count -gt 0) {
+            $errors += "$($_.Name): $($parseErrors[0].Message)"
+        }
+    }
+    if (-not $errors) { $true } else { $errors[0] } }
 
 Test-Invariant 'workload switch preserves other runtime configuration' {
     if ($qw.isolation.config_separate_from -contains 'vllm' -and
