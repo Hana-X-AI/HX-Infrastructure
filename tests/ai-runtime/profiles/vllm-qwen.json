@@ -1,0 +1,31 @@
+{
+  "profile": "vllm-qwen",
+  "status": "PRIMARY",
+  "mode": "LIVE",
+  "classification": "primary HX local model runtime",
+  "description": "The intended primary runtime. Configuration contract only until an endpoint is supplied; live tests SKIP until then.",
+  "endpoint": {
+    "source": "environment",
+    "base_url_env": "HX_VLLM_BASE_URL",
+    "base_url": null,
+    "note": "Host placement comes from SERVER-REGISTRY.md and the active workload selection, never from this file."
+  },
+  "api_styles": ["openai-chat"],
+  "model": {
+    "identity_env": "HX_VLLM_MODEL",
+    "identity": null,
+    "quantization": null,
+    "note": "Model identity is supplied at run time. Not asserted here."
+  },
+  "backend": null,
+  "context_setting": null,
+  "timeouts": { "request_seconds": 120 },
+  "capabilities": {
+    "declared": ["RT-01","RT-02","RT-03","RT-04","RT-05","RT-06","RT-07","RT-08","RT-09","RT-10","RT-11","RT-12","RT-13","RT-14","RT-17","RT-19","RT-20","RT-21","RT-22"],
+    "unsupported": ["RT-16"],
+    "note": "RT-16 reasoning/answer separation is PROFILE-SPECIFIC and not declared for this profile."
+  },
+  "evidence_classes_provable": ["A","B","C"],
+  "live": false,
+  "live_enabled_when": "HX_VLLM_BASE_URL is set and reachable"
+}

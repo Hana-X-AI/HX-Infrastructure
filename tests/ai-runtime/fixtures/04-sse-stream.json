@@ -1,0 +1,19 @@
+{
+  "id": "F04",
+  "capability": "RT-05",
+  "evidence_class": "A",
+  "api_style": "openai-chat",
+  "description": "SSE deltas arrive in order and terminate exactly once.",
+  "sse": [
+    "data: {\"choices\":[{\"delta\":{\"role\":\"assistant\"}}]}",
+    "data: {\"choices\":[{\"delta\":{\"content\":\"FIX\"}}]}",
+    "data: {\"choices\":[{\"delta\":{\"content\":\"TURE\"}}]}",
+    "data: {\"choices\":[{\"delta\":{},\"finish_reason\":\"stop\"}]}",
+    "data: [DONE]"
+  ],
+  "expect": {
+    "ordered_content": "FIXTURE",
+    "terminal_event": "[DONE]",
+    "terminal_count": 1
+  }
+}

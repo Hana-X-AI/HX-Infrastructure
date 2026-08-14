@@ -1,5 +1,8 @@
 .env
 
+# AI runtime acceptance run output (evidence is generated, not source)
+tests/ai-runtime/evidence/*.json
+
 # Vendored upstream source drops under governance/operations/ are reference material,
 # not repository content. They are read for source verification (the migration pattern
 # prefers vendor source over vendor prose) and must never enter the tree: they carry

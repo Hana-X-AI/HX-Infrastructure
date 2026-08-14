@@ -1,0 +1,12 @@
+{
+  "id": "F09",
+  "capability": "RT-10",
+  "evidence_class": "A",
+  "api_style": "openai-chat",
+  "description": "Malformed JSON fails predictably rather than crashing or half-parsing.",
+  "raw": "{\"choices\":[{\"message\":{\"role\":\"assistant\",\"content\":",
+  "expect": {
+    "parse_fails": true,
+    "error_is_handled": true
+  }
+}
