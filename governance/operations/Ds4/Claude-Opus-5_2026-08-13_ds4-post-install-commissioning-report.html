@@ -1,0 +1,241 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DS4 Post-Install Commissioning — Implementation Report</title>
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--panel2:#1c2129;--bd:#30363d;--fg:#e6edf3;--dim:#8b949e;
+--acc:#58a6ff;--ok:#3fb950;--warn:#d29922;--stop:#f85149}
+:root[data-theme="light"]{--bg:#fff;--panel:#f6f8fa;--panel2:#eef1f4;--bd:#d0d7de;--fg:#1f2328;
+--dim:#59636e;--acc:#0969da;--ok:#1a7f37;--warn:#9a6700;--stop:#cf222e}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#fff;--panel:#f6f8fa;
+--panel2:#eef1f4;--bd:#d0d7de;--fg:#1f2328;--dim:#59636e;--acc:#0969da;--ok:#1a7f37;--warn:#9a6700;--stop:#cf222e}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.62 -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.wrap{max-width:1060px;margin:0 auto;padding:30px 22px 80px}
+header.hero{border:1px solid var(--bd);border-radius:14px;background:var(--panel);padding:24px 26px;margin-bottom:20px}
+.hero h1{margin:0 0 6px;font-size:23px}.hero .sub{color:var(--dim);font-size:14px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.meta span{background:var(--panel2);border:1px solid var(--bd);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--dim)}
+.meta b{color:var(--fg)}
+h2{font-size:18px;margin:30px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--bd)}
+h2 .k{color:var(--acc);font-weight:700;margin-right:8px}
+h3{font-size:15px;margin:20px 0 6px}
+p{margin:8px 0}
+code{background:var(--panel2);border:1px solid var(--bd);border-radius:5px;padding:1px 5px;font:12.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--acc)}
+pre{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto;font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:8px 0;min-width:560px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--bd);vertical-align:top}
+th{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.5px;background:var(--panel)}
+.callout{border-left:4px solid var(--acc);background:var(--panel);border-radius:0 10px 10px 0;padding:13px 17px;margin:14px 0}
+.callout.stop{border-left-color:var(--stop)}.callout.ok{border-left-color:var(--ok)}.callout.warn{border-left-color:var(--warn)}
+.callout h3{margin:0 0 5px;font-size:14.5px}
+.callout p{margin:0 0 6px;font-size:13.5px;color:var(--dim)}.callout p:last-child{margin-bottom:0}
+.pass{color:var(--ok);font-weight:700}.fail{color:var(--stop);font-weight:700}.warnt{color:var(--warn);font-weight:700}
+ul.tight{margin:6px 0 0;padding-left:20px;font-size:14px}ul.tight li{margin:5px 0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px;margin:14px 0}
+.kpi{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:13px}
+.kpi .n{font-size:20px;font-weight:700}
+.kpi .l{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.foot{color:var(--dim);font-size:12px;margin-top:36px;border-top:1px solid var(--bd);padding-top:16px}
+#themeToggle{position:fixed;top:14px;right:14px;z-index:99;background:var(--panel);color:var(--fg);
+border:1px solid var(--bd);border-radius:20px;padding:7px 14px;font-size:12.5px;cursor:pointer;font-family:inherit}
+#themeToggle:hover{border-color:var(--acc);color:var(--acc)}
+</style></head><body>
+<button id="themeToggle" type="button">◐ Theme</button>
+<div class="wrap">
+
+<header class="hero">
+<h1>DS4 Post-Install Commissioning — Implementation Report</h1>
+<div class="sub">Repository-side machinery to take DS4 from INSTALLED to OPERATIONAL on hxs-3. Nothing installed, nothing downloaded, no host contacted.</div>
+<div class="meta">
+<span>Branch <b>feature/ai-runtime-acceptance</b></span>
+<span>Base <b>bb629f4</b></span>
+<span>HEAD <b>e20cfa7</b></span>
+<span>Date <b>2026-08-13</b></span>
+<span>State <b>NOT PRESENT</b></span>
+</div></header>
+
+<div class="kpis">
+<div class="kpi"><div class="n">NOT PRESENT</div><div class="l">actual DS4 state</div></div>
+<div class="kpi"><div class="n">13</div><div class="l">commissioning gates</div></div>
+<div class="kpi"><div class="n">23 / 0</div><div class="l">invariants pass / fail</div></div>
+<div class="kpi"><div class="n">18 / 0 / 16</div><div class="l">offline pass / fail / skip</div></div>
+<div class="kpi"><div class="n">154 / 0</div><div class="l">existing suite, unchanged</div></div>
+</div>
+
+<h2><span class="k">1</span>Actual current state</h2>
+<div class="callout stop"><h3>DS4 is NOT INSTALLED. No model is installed anywhere in the fleet.</h3>
+<p>This is stated first because everything downstream depends on it. There is no DS4
+installation recorded in <code>SERVER-REGISTRY.md</code> or under <code>servers/</code>, and no
+model artifact exists on any host. The commissioning driver evaluates the real state as
+<b>NOT PRESENT</b>, with the next gate being <b>INSTALLED</b>.</p>
+<p>Nothing in this pass installed, downloaded, started or contacted anything. Every gate that
+needs a live host reports BLOCKED or SKIP with a specific reason.</p></div>
+
+<h2><span class="k">2</span>The state machine</h2>
+<p>Thirteen gates, in the owner-specified order, deliberately not collapsed. A successful build
+is not proof of model fit, and a working HTTP endpoint is not proof that an agent client
+behaves correctly.</p>
+<pre>NOT PRESENT
+  -> INSTALLED              DS4 runtime installed
+  -> MODEL SELECTED         exact model + quantization selected
+  -> CAPACITY APPROVED      capacity gate RERUN with that exact artifact -> PASS
+  -> MODEL ACQUIRED         acquisition, provenance + checksum recorded
+  -> CLI VERIFIED           CLI inference
+  -> VENDOR TESTS PASSED    DS4 vendor tests
+  -> LOCAL SERVER VERIFIED  localhost ds4-server
+  -> API VERIFIED           API / streaming / tool round-trip
+  -> KV VERIFIED            KV-prefix validation
+  -> HX CONTRACT VERIFIED   HX L2 live acceptance
+  -> MANAGED WORKLOAD       managed service definition
+  -> NETWORK VERIFIED       network smoke
+  -> CLIENT VERIFIED        Claude Code smoke
+  -> OPERATIONAL</pre>
+<p>The driver stops at the first unmet gate, because a later gate cannot be meaningfully
+assessed before an earlier one. Current output blocks at <code>INSTALLED</code> and skips the
+remaining twelve with "not evaluated — earlier gate unmet".</p>
+
+<h2><span class="k">3</span>The capacity gate is bound to the artifact — and it is enforced</h2>
+<div class="callout ok"><h3>A PASS for one quantization is not a PASS for another</h3>
+<p><code>CAPACITY APPROVED</code> is not "the gate passed once". The recorded verdict carries
+the model identity and quantization it was evaluated against. Change either, and the prior
+result goes stale and the gate reopens automatically.</p>
+<p>Proven with a simulated workload:</p>
+<pre>selected artifact : ds4f / q2
+recorded verdict  : PASS, evaluated for ds4f / q4
+driver output     : BLOCKED  CAPACITY APPROVED
+                    capacity gate result is STALE: it was evaluated for
+                    'ds4f/q4' but the selected artifact is 'ds4f/q2'
+                    - the gate must be rerun</pre>
+<p>This is mechanism, not discipline. It cannot be satisfied by remembering to rerun the gate.</p></div>
+
+<h3>Current gate result for <code>ds4-deepseek</code> on hxs-3</h3>
+<div class="tw"><table>
+<thead><tr><th>Dimension</th><th>Result</th><th>Evidence</th></tr></thead>
+<tbody>
+<tr><td>GPU / VRAM</td><td class="pass">PASS</td><td>2× RTX 5060 Ti, 32622 MiB aggregate</td></tr>
+<tr><td>Backend</td><td class="pass">PASS</td><td>CUDA 13.0, driver 580.173.02 — as-built record</td></tr>
+<tr><td><b>System RAM</b></td><td class="fail">FAIL</td><td>66 GB present; DS4's smallest documented variant <code>ds4f-q2</code> targets 96/128 GB machines</td></tr>
+<tr><td>Storage, residency, context/KV, overhead, coexistence</td><td class="warnt">BLOCKED</td><td>no exact model or quantization selected; host already carries an assigned workload</td></tr>
+</tbody></table></div>
+<p><b>Verdict: BLOCKED.</b> No model download or runtime activation is authorized.</p>
+
+<h2><span class="k">4</span>What was implemented</h2>
+<div class="tw"><table>
+<thead><tr><th>Phase</th><th>Implemented now</th><th>Needs a live host</th></tr></thead>
+<tbody>
+<tr><td>A model selection</td><td>schema: identity, quantization, revision support, provenance, expected size — all required before residency can be computed</td><td>the selection decision</td></tr>
+<tr><td>B capacity gate</td><td>gate + artifact binding</td><td>—</td></tr>
+<tr><td>C acquisition</td><td>schema: authorization, checksum, out-of-Git storage path</td><td>the download</td></tr>
+<tr><td>D CLI smoke</td><td>gate defined; flags must come from the installed revision's own <code>--help</code></td><td>yes</td></tr>
+<tr><td>E vendor regression</td><td>gate defined</td><td>yes</td></tr>
+<tr><td>F local server</td><td>config schema, defaults to <code>127.0.0.1</code>, exposure gated</td><td>yes</td></tr>
+<tr><td>G–H API / tool</td><td>contract + 17 fixtures already exist; live tests SKIP</td><td>yes</td></tr>
+<tr><td>I KV / prefix</td><td>gate defined; timing never fabricated offline</td><td>yes</td></tr>
+<tr><td>J HX L2</td><td>contract exists; SKIP</td><td>yes</td></tr>
+<tr><td>K network exposure</td><td>gate defined; not authorized in this workstream</td><td>yes</td></tr>
+<tr><td>L managed workload</td><td>systemd template per HX convention</td><td>yes</td></tr>
+<tr><td>M Claude Code</td><td>explicit launcher documented</td><td>yes</td></tr>
+</tbody></table></div>
+
+<h3>Design choices worth flagging</h3>
+<ul class="tight">
+<li><b>Arbitrary GGUF support is not assumed.</b> The DS4 source states plainly that arbitrary
+GGUFs are unsupported, so the schema requires confirmation that the installed revision supports
+the chosen model.</li>
+<li><b>CLI flags are not hardcoded.</b> The gate requires deriving them from the installed
+revision's <code>--help</code>, because flags in any plan may not match the installed build.</li>
+<li><b>Loopback before network.</b> The server profile defaults to <code>127.0.0.1</code> with
+<code>network_exposed: false</code>; exposure is a separate later gate.</li>
+<li><b>The systemd unit represents the workload, never the host role</b>, and carries no hard
+<code>Requires=</code> on remote units — it checks dependencies itself and retries.</li>
+<li><b>Claude Code integration never overwrites the operator's provider config.</b> An explicit
+launcher points at the DS4 endpoint; normal Claude Code is untouched.</li>
+<li>The hook-denial commissioning step passes only if the hook denies, the model <i>recognises</i>
+the denial, recovers via the approved path, and does not fight the hook — not merely if the
+model never attempts it.</li>
+</ul>
+
+<h2><span class="k">5</span>Invariants — 23 passing</h2>
+<p>Repository-side checks that stop the architecture drifting back into the mistakes it was
+built to avoid. All model-free.</p>
+<div class="tw"><table>
+<thead><tr><th>Guarantee</th><th>Result</th></tr></thead>
+<tbody>
+<tr><td>EXPERIMENTAL stays on the workload and profile, never a server</td><td class="pass">PASS</td></tr>
+<tr><td>hxs-3 durable role comes from <code>SERVER-REGISTRY.md</code></td><td class="pass">PASS</td></tr>
+<tr><td>No workload file asserts a host role</td><td class="pass">PASS</td></tr>
+<tr><td>Contract names no host, IP or model</td><td class="pass">PASS</td></tr>
+<tr><td>No model weights tracked in Git</td><td class="pass">PASS</td></tr>
+<tr><td>Gate implements PASS, FAIL and BLOCKED with distinct exit codes</td><td class="pass">PASS</td></tr>
+<tr><td>Live tests SKIP with an explicit reason</td><td class="pass">PASS</td></tr>
+<tr><td>Model identity and checksum required before OPERATIONAL</td><td class="pass">PASS</td></tr>
+<tr><td>Commissioning states not collapsed (all 13 present)</td><td class="pass">PASS</td></tr>
+<tr><td>Capacity verdict bound to the exact artifact</td><td class="pass">PASS</td></tr>
+<tr><td>Tool fidelity stays engine-neutral — no DSML</td><td class="pass">PASS</td></tr>
+<tr><td>No Ansible, no second host inventory, no secrets</td><td class="pass">PASS</td></tr>
+<tr><td>Endpoints from environment, never hardcoded</td><td class="pass">PASS</td></tr>
+<tr><td>Workload switch preserves other runtime configuration</td><td class="pass">PASS</td></tr>
+<tr><td>No Docling or LangGraph contamination; DS4 source not vendored</td><td class="pass">PASS</td></tr>
+</tbody></table></div>
+<div class="callout"><h3>The invariants earned their keep during this pass</h3>
+<p>Adopting the revised state ordering renamed two states. Two invariants went red immediately —
+<code>MODEL PRESENT</code> no longer existed, and the model-selection assertion string had
+changed. That is exactly what they are for: they caught a real inconsistency between the state
+machine and its own tests before it was committed.</p></div>
+
+<h2><span class="k">6</span>Files</h2>
+<pre>tests/ai-runtime/hx-ds4-commission.ps1              13-gate state machine        NEW
+tests/ai-runtime/hx-runtime-invariants.tests.ps1    23 invariants                NEW
+tests/ai-runtime/workloads/ds4-deepseek.json        model selection, acquisition,
+                                                    artifact-bound gate result,
+                                                    server config                MODIFIED
+governance/operations/ds4-commissioning-workflow.md phases A-M, systemd template,
+                                                    Claude Code launcher,
+                                                    rollback                     NEW</pre>
+<p>Model weights and run evidence remain git-ignored. No DS4 source vendored.</p>
+
+<h2><span class="k">7</span>Verification</h2>
+<pre>offline runtime acceptance   18 PASS   0 FAIL   16 SKIP   exit 0
+workstream invariants        23 PASS   0 FAIL             exit 0
+capacity gate                BLOCKED                      exit 3
+commissioning driver         NOT PRESENT                  exit 3
+existing repository suite    154 PASS  0 FAIL             unchanged</pre>
+
+<h2><span class="k">8</span>Confirmations</h2>
+<ul class="tight">
+<li><b>No model downloaded</b> — and none authorized. <code>model_download_allowed: false</code>.</li>
+<li><b>No DS4 installed</b>, no host contacted, no service started, no infrastructure mutated.</li>
+<li><b>hxs-3 durable role unchanged: "Agent intelligence"</b>, from <code>SERVER-REGISTRY.md</code>.
+Zero registry changes.</li>
+<li><b>DS4 remains an EXPERIMENTAL workload</b>, not a server role.</li>
+<li><b>vLLM/Qwen remains PRIMARY</b> and untouched.</li>
+<li>No Ansible. No <code>ds4-agent</code> adoption. No second host inventory. No secrets in Git.</li>
+<li>Not merged to main, not pushed. LangGraph not started.</li>
+</ul>
+
+<h2><span class="k">9</span>Recommended next live action</h2>
+<div class="callout warn"><h3>Settle the RAM question before installing anything</h3>
+<p>The gate's System RAM row is the first thing worth resolving: hxs-3 has 66 GB, and the
+smallest DS4 variant documented in the reviewed snapshot targets 96/128 GB machines. Installing
+DS4 before choosing a model that fits — or choosing a different host — spends effort on a
+workload the evidence already says does not fit.</p>
+<p>The productive order is: pick a supported model and quantization that fits 66 GB, populate
+<code>model_selection</code>, rerun the capacity gate against that exact artifact, and let the
+gate answer. If no supported variant fits, that is the answer, and it cost nothing to find
+out.</p></div>
+<p>The vLLM/Qwen lane is unaffected and remains the primary target. Nothing here blocks it.</p>
+
+<div class="foot">DS4 post-install commissioning · worktree <code>HX-AI-Runtime</code> ·
+base <code>bb629f4</code> · Pass 1 <code>04793ee</code> · Pass 2 <code>584ba93</code> ·
+Pass 3 <code>e20cfa7</code> · no SSH, no installs, no model download, no infrastructure
+mutation, no registry change · not merged, not pushed.</div>
+</div>
+<script>
+(function(){var b=document.getElementById('themeToggle'),r=document.documentElement;
+function cur(){var e=r.getAttribute('data-theme');if(e)return e;
+return window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}
+function set(t){r.setAttribute('data-theme',t);b.textContent=t==='dark'?'☀ Light':'☾ Dark';}
+set(cur());b.addEventListener('click',function(){set(cur()==='dark'?'light':'dark');});})();
+</script>
+</body></html>
