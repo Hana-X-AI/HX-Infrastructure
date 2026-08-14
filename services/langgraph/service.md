@@ -1,8 +1,33 @@
 # LangGraph
 
-Status: TARGET-STATE DESIGN
+Status: TARGET-STATE DESIGN — **REVISED / NOT ACCEPTED**
 Target placement: hxs-11 — Agent runtime (resolved from `SERVER-REGISTRY.md`)
 As-built status: NOT ASSERTED BY THIS DOCUMENT
+Implementation: **NOT AUTHORIZED**. Deployment on hxs-11 is NO-GO until acceptance.
+
+Acceptance path: four owner decisions (below) → update this design to reflect the rulings →
+re-run all four capability reviews in separate contexts → only then ACCEPTED FOR IMPLEMENTATION.
+Decision packet: `governance/operations/langgraph/claude_20260814_0848_langgraphfourdecisions.html`
+
+Every section carries `SME REVIEW REQUIRED`. Four reviews ran on 2026-08-14 —
+`langgraph` FAIL, `mem0` FAIL, `infrastructure-ops` FAIL, `testing-qa` CONDITIONAL PASS. The
+corrected revision has **not** been re-reviewed, and re-reviewing before the decisions land would
+regenerate the same findings, because three of the four decisions change the design under review.
+
+---
+
+## Open owner decisions
+
+These are **decisions, not verification items**. Each changes the design, so all four land before
+the reviews re-run. Recommendations live in the decision packet; the rulings are the owner's and
+none is made here.
+
+| # | Decision | Status | Effect |
+| --- | --- | --- | --- |
+| 1 | **Qwen network-consumability** — promote with an access and auth model, route remote consumption only through the traffic plane, or drop the Qwen dependency for first deployment. | **OPEN — gates everything** | Nothing in the model path is implementable until this clears. Recorded as two acceptance states in `runtime-acceptance-decisions.md`; `accepted-network-consumable` is NOT GRANTED. |
+| 2 | **LiteLLM → OmniRoute reconciliation** | **APPLIED this pass** | Model gateway is now `BLOCKED / PENDING OMNIROUTE RECONCILIATION`. No gateway contract built for either name. Ownership boundary unchanged — only the named plane moved. |
+| 3 | **Deployment mode** — embedded library vs packaged server. | **OPEN** | Silently decides Store enforcement, the Redis classification, and checkpointer construction, plus process lifecycle, failure isolation and networking. Needs a focused comparison against current architecture **including OmniRoute and jcode**, both of which post-date most of the 2025 material. Not a snap call; may warrant its own architecture pass. |
+| 4 | **Is MCP day-one required?** | **OPEN** | The design classifies the MCP tool plane CURRENT REQUIRED, which makes an MCP-plane SME contract mandatory. That may manufacture a blocker inconsistent with HX's deliberately deferred MCP posture. Candidate downgrade to LATER / DEFERRED unless minimum-useful first-deployment orchestration genuinely depends on MCP tools. |
 
 Authority boundary:
 - Authoritative for the current *intended* LangGraph service design.
@@ -50,7 +75,7 @@ boundary is written down and defended.
 | Durable semantic / user / agent memory | Mem0 | Orchestration asks for memory; it does not keep its own. |
 | Retrieved knowledge, graph building | LightRAG | Orchestration sequences retrieval; it does not index or extract. |
 | Vectors, embeddings, collections | LightRAG / embedding plane | Embedding requests route through retrieval, never direct to a model host (`lgc-279` FR-012). |
-| Model routing and endpoint identity | LiteLLM gateway | Orchestration requests a *capability*; it never binds to a named host or model. |
+| Model routing and endpoint identity | the model traffic plane | Orchestration requests a *capability*; it never binds to a named host or model. The named plane is pending OmniRoute reconciliation; the boundary is unchanged. |
 | Runtime qualification of a model | `governance/policy/runtime-acceptance-decisions.md` | Orchestration consumes an accepted capability; it does not decide fitness. |
 | General queue / cache infrastructure | Platform role on the state-services host | Orchestration does not own shared infrastructure. |
 | MCP server registration, gateway policy | MCP plane | Orchestration is an MCP *client* only (`lgc-279` FR-017). |
@@ -83,7 +108,7 @@ Resolved from `SERVER-REGISTRY.md`:
 | --- | --- | --- |
 | LangGraph runtime | hxs-11 | Agent runtime — LangGraph; Mem0, separate virtualenvs |
 | Checkpoint persistence | hxs-9 | State services — PostgreSQL + Redis; **LiteLLM database**; LangGraph checkpoints |
-| Model gateway | hxs-8 | API gateway & control — LiteLLM gateway, PostgreSQL-backed on hxs-9 |
+| Model traffic plane | hxs-8 | API gateway & control. The registry names LiteLLM; **OmniRoute supersedes it in target state**, so the plane is `BLOCKED / PENDING OMNIROUTE RECONCILIATION`. |
 | Retrieval | hxs-3 | Agent intelligence — LightRAG graph & retrieval |
 | MCP tool plane | hxs-7 | MCP services — FastMCP runtime + custom HX MCP servers |
 | Parsing | hxs-12 | Ingestion — parsing — Docling (+ MCP) |
@@ -498,11 +523,11 @@ Classified before any contract is written. Only CURRENT REQUIRED integrations ge
 
 | Integration | Classification | Basis |
 | --- | --- | --- |
-| Model gateway (LiteLLM, hxs-8) | **CURRENT REQUIRED** | An orchestrator must call models; the registry places the gateway. |
+| Model traffic plane (hxs-8) | **BLOCKED / PENDING OMNIROUTE RECONCILIATION** | An orchestrator must call models, so the *boundary* is required. The named component is not settled: the registry records LiteLLM, OmniRoute supersedes it in target state. No contract is built for either — see owner decision 2. |
 | PostgreSQL checkpointer (hxs-9) | **CURRENT REQUIRED** | Orchestration state persistence; registry assigns LangGraph checkpoints to hxs-9. |
 | Mem0 (hxs-11) | **CURRENT REQUIRED (domain)** | Durable memory owner; co-located; own SME. |
 | LightRAG (hxs-3) | **CURRENT PIPELINE REQUIRED — contract not established** | Retrieval is reached through the pipeline; no direct service contract is asserted here. |
-| MCP tool plane (hxs-7) | **CURRENT REQUIRED — shape VERIFICATION REQUIRED** | Registry places a live MCP runtime; the client contract is unverified. |
+| MCP tool plane (hxs-7) | **CLASSIFICATION UNDER REVIEW — owner decision 4** | The registry assigns an MCP runtime to hxs-7; that is an approved workload, not a running service. Classified CURRENT REQUIRED in the first revision, which makes an MCP-plane SME contract mandatory — possibly a manufactured blocker against HX's deferred MCP posture. Candidate downgrade to LATER / DEFERRED. Shape remains `VERIFICATION REQUIRED` either way. |
 | Redis (hxs-9) | **INDIRECT — VERIFICATION REQUIRED** | See below. |
 | n8n (hxs-13) | **NO ORCHESTRATION CONTRACT** | n8n *is* a current registry assignment — hxs-13, Automation. What is retired is the 2025 arrangement in which LangGraph exposed endpoints and webhooks for it (`lgc-262`). No contract in either direction is asserted here. |
 | Crawl4AI (hxs-6) | **NO ORCHESTRATION CONTRACT** | Also a current assignment — hxs-6, Ingestion — crawling. If it is reached at all it is as a tool on the MCP plane, not as a LangGraph integration (`lgc-262`). |
@@ -551,18 +576,29 @@ Per-endpoint limits live in the routing/capability contract, never hardcoded in 
 `VERIFICATION REQUIRED` — the gateway's capability-metadata contract, and whether it can enforce
 overflow fail-closed on LangGraph's behalf or only advertise the limit.
 
-**BLOCKED — that acceptance is not currently consumable, and this design does not work around it.**
-The conditions of acceptance are conditions, not annotations. The policy binds the endpoint to
-`127.0.0.1` on hxs-4 and states that reaching it from elsewhere is an SSH port-forward, not a
-network binding. LangGraph runs on hxs-11; its model path runs through the gateway on hxs-8.
-**Neither host can reach a loopback address on hxs-4.** So the only inference capability HX has
-formally accepted cannot, as accepted, be consumed by the client it names as its intended one.
+**BLOCKED — that acceptance is not network-consumable, and this design does not work around it.**
 
-This is recorded rather than engineered around. Resolving it is an owner decision belonging in
-`governance/policy/runtime-acceptance-decisions.md` — a new binding with its own measurement, a
-different endpoint, or an explicit forwarding mechanism — and until it is resolved, LangGraph has
-**no reachable accepted model capability**. A design that quietly assumed reachability would fail
-at first contact and blame the network.
+Recorded formally under principle P-B. `runtime-acceptance-decisions.md` now carries two distinct
+acceptance states, and Qwen3.5-9B / hxs-4 holds only the first:
+
+| State | Qwen3.5-9B / hxs-4 |
+| --- | --- |
+| `accepted-local-runtime` | **GRANTED** — loopback on hxs-4, local commissioning and utility use |
+| `accepted-network-consumable` | **NOT GRANTED / OPEN** — pending owner decision 1 |
+
+LangGraph runs on hxs-11; its model path runs through the traffic plane on hxs-8. Neither can reach
+a loopback socket on hxs-4. So the only inference capability HX has formally accepted is not
+consumable by the client it names as intended, and **LangGraph currently has no reachable accepted
+model capability.** This is the top downstream blocker; nothing else in the model path is
+implementable until it clears.
+
+Recorded, not resolved. The candidate paths are set out in the owner decision packet and **none is
+chosen here**. Granting the second state will require its own verification — the access path
+measured as configured — because the existing grant was measured against a loopback-bound service
+with no authentication and does not carry.
+
+A design that quietly assumed reachability would have failed at first contact and been diagnosed as
+a network fault. See `iss-017`.
 
 The 2025 design anticipated this in primitive form: it required validating that a model's context
 size met a minimum before use (`lgc-279` FR-013, `lgc-392`). The instinct was right; what was
@@ -901,8 +937,16 @@ therefore carries `SME REVIEW REQUIRED` until a subsequent review records a pass
 including the sections whose `reviewed_by` entries in the provenance index name a capability, since
 those entries record that a review *ran*, not that it passed.
 
-Two integration classifications also lack a reviewer: the model gateway and the MCP tool plane are
-both classified CURRENT REQUIRED, which under the brief makes their integration SMEs mandatory. No
-`litellm` capability contract and no MCP-plane contract exist. Either those contracts are created
-and the reviews run, or the classifications are downgraded with a stated basis. Until then the SME
-acceptance gate does not pass.
+Two integration SME requirements were raised by the first review round. Both are **withdrawn or
+deferred** by owner decisions 2 and 4 rather than satisfied:
+
+- **Model traffic plane** — the `litellm` contract requirement is **withdrawn**. LiteLLM is
+  superseded by OmniRoute in target state, so building it would formalise a dead component. No
+  gateway contract is built for either name. The dependency is OmniRoute reconciliation, not a
+  missing contract.
+- **MCP tool plane** — the contract requirement is **held** pending owner decision 4, which
+  challenges the CURRENT REQUIRED classification against HX's deferred MCP posture. If downgraded
+  to LATER / DEFERRED, the requirement lapses.
+
+Neither blocker is now satisfied by construction, so the SME gate is gated on the decisions rather
+than on contract-writing.

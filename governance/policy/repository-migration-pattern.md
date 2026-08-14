@@ -1,7 +1,34 @@
 # Repository migration pattern
 
-Frozen 2026-08-14 from the Docling MCP distillation pilot. This is the reusable template for
-every subsequent capability migration, LangGraph next.
+Frozen 2026-08-14 from the Docling MCP distillation pilot, and **accepted as the repository's
+standard legacy-mining workflow** on 2026-08-14 after a second validation against LangGraph. See
+`governance/policy/migration-method-decision.md`. This is no longer pilot machinery: future
+services run it directly, with the same gates and no pilot framing.
+
+## The two principles
+
+Both were earned by the pilots and are enforced as part of this pattern.
+
+**P-A — Gate construction.** A validation gate must specify **how** it verifies, not only the
+property it claims to verify. A gate that names the right property but is constructed so it cannot
+fail is worse than no gate: it ships confidence.
+
+*Earned by:* the LangGraph checkpointer gate named the correct property — persistence correctness —
+while the two constructions an implementer reaches for first, a config echo and a same-connection
+read-back, both pass while persistence is broken. The corpus already held the correct construction
+(cross-connection read-back plus fault injection, with the failing run retained). The design cited
+the defect and missed the method.
+
+**P-B — Acceptance scope.** An acceptance must state exactly what it authorizes and how that was
+verified — never more. Where an authorization has materially different scopes, make them
+**distinct acceptance states** rather than one verdict read broadly.
+
+*Earned by:* the Qwen loopback-only acceptance authorized local commissioning use and was later
+read as remote reachability. The verdict was correct; its scope was implicit, so a second
+workstream over-read it. Applies to runtime acceptance and migration acceptance alike.
+
+**A service's method pass is independent of its design acceptance.** The method succeeding by
+producing a failing, corrected design is a success, not a regression.
 
 The pilot's value was not the Docling document. It was proving which controls actually catch
 mistakes and which only look like they do. What follows is the set that caught something real.
@@ -109,6 +136,11 @@ section was in scope. Anything else stays `SME REVIEW REQUIRED`.
 
 Run before any commit. **No waivers.** A gate that cannot fail is not a gate — prove failability
 at least once per suite.
+
+**Per P-A, each gate specifies its construction, not only its property.** Naming what a gate
+asserts is insufficient: state how it observes, over what connection or boundary, and what
+injected fault makes it go red. Retain that failing run as the artefact. A gate whose stated
+requirement is satisfiable by a construction that cannot fail has not been specified.
 
 | Family | Asserts |
 | --- | --- |

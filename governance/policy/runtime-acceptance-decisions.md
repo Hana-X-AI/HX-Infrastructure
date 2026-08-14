@@ -6,6 +6,21 @@ what it is **not accepted for**.
 A workload is never simply "accepted". It is accepted for a stated use, on stated evidence,
 with stated limits. A verdict recorded here without its evidence is not a verdict.
 
+## Acceptance states
+
+Per principle **P-B** (`governance/policy/migration-method-decision.md`): an acceptance states
+exactly what it authorizes and how that was verified, never more. Where an authorization has
+materially different scopes, those scopes are **distinct states** — not one verdict left to be
+read broadly.
+
+| State | Authorizes | Requires |
+| --- | --- | --- |
+| `accepted-local-runtime` | Use on the host itself, over loopback, for commissioning and local utility work. | Measurement on that host. |
+| `accepted-network-consumable` | Consumption by a client on a **different host**. | A verified access path and an access model, measured as configured. Never inherited from a local-runtime acceptance. |
+
+**A local-runtime acceptance never implies network consumability.** The two were conflated once
+already, across two workstreams on the same day, and that conflation is what earned P-B.
+
 Governed by `governance/policy/ai-runtime-acceptance-contract.md`. Machine-enforced by
 `tests/ai-runtime/hx-runtime-invariants.tests.ps1`, which fails if a decision below is widened
 without new measurement.
@@ -22,10 +37,31 @@ without new measurement.
 | Decided | 2026-08-14, on measurement taken on the host |
 | Record | `tests/ai-runtime/workloads/qwen35-9b-ollama.json` |
 
-### ACCEPTED — local utility inference
+### `accepted-local-runtime` — GRANTED
 
-Accepted for local inference, API validation and tool-driven work where **the calling client
-controls its own prompt size**. LangGraph is the intended client.
+Accepted for local inference, API validation and tool-driven work **on hxs-4 itself, over
+loopback**, where the calling client controls its own prompt size.
+
+### `accepted-network-consumable` — NOT GRANTED / OPEN
+
+**Not granted.** No client on another host may consume this endpoint under the current
+acceptance. The measurement behind the grant above was taken against a loopback-bound service
+with no authentication; it does not carry to a networked configuration and must not be read as
+if it did.
+
+This is the live blocker for LangGraph, which is placed on hxs-11 and routes through a gateway on
+hxs-8 — neither can reach a loopback socket on hxs-4 (`iss-017`).
+
+**Open pending owner decision 1**, per
+`governance/operations/langgraph/claude_20260814_0848_langgraphfourdecisions.html`. The candidate
+paths are recorded there — promote with an access and auth model, route remote consumption
+exclusively through the traffic plane, or drop the dependency for first deployment. **No path is
+chosen here.** Whichever is ruled, granting this state requires its own verification: the access
+path measured as configured, not inherited from the local grant.
+
+### Scope of the grant below
+
+Everything in the evidence and conditions that follow supports `accepted-local-runtime` only.
 
 Evidence:
 
