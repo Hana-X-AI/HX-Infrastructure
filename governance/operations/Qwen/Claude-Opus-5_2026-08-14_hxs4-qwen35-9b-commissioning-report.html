@@ -194,9 +194,13 @@ cache is <em>smaller</em> than a textbook estimate, not larger.</p>
 <p>The artifact is 6.6&nbsp;GB. Actual resident weights are <strong>4.61&nbsp;GB</strong>, and
 <code>ollama ps</code> reports 5.5&nbsp;GB. The gap is the vision encoder, which does not load for
 text-only work. The model does advertise vision, tools and thinking.</p>
-<p><strong>Untested, and stated as such:</strong> vision was never exercised. Enabling it would load
-that encoder and consume VRAM I have not measured, on a card already at 86% utilisation. Do not
-assume image input fits here without measuring it first.</p>
+<p><strong>Since measured, and the caution was overdone.</strong> Vision was subsequently tested: a
+generated image containing a red rectangle came back correctly identified as "red". It cost
+<strong>12 MiB</strong> — 6,794 MiB text-only against 6,806 MiB with an image, at the same 16,384
+context, still 100% on the GPU. Image input does not threaten residency on this card.</p>
+<p>The packaging explains the gap: the artifact ships as a <em>single</em> model layer with no separate
+projector file, and the vision tensors simply are not resident on the GPU during text-only work. That
+is genuine native multimodality rather than a bolted-on encoder.</p>
 </div>
 
 <h2>4. Talking to it</h2>
@@ -317,7 +321,48 @@ four-line file is a fair illustration of what to expect even when the prompt doe
 Claude Code's ~30K baseline — which the 16&nbsp;GB card could provide — and the truncation behaviour
 would need to become an error rather than a silent collapse.</p>
 
-<h2>7. Open decisions</h2>
+<h2>7. Where the published 8 GB guidance is wrong</h2>
+
+<p>The standard advice for running this model on an 8 GB card was checked row by row against this
+host. Much of it holds. The parts that do not are wrong in a consistent direction — they are too
+cautious, and one instruction actively costs performance.</p>
+
+<div class="scroll">
+<table>
+<thead><tr><th>Guidance</th><th>Measured here</th><th>Verdict</th></tr></thead>
+<tbody>
+<tr><td>Linear attention keeps memory low</td><td>KV grew 12&times; across a 16&times; context increase</td><td class="pass">confirmed</td></tr>
+<tr><td>Native multimodality, no separate encoder</td><td>one model layer, no projector file, vision costs 12 MiB</td><td class="pass">confirmed</td></tr>
+<tr><td>262,144 native context</td><td>reported by the model itself</td><td class="pass">confirmed</td></tr>
+<tr><td>16-bit needs ~18 GB</td><td>16.68 GB GGUF / 17.98 GB safetensors</td><td class="pass">confirmed</td></tr>
+<tr><td>~4.5 GB of weights at 4-bit</td><td>4.61 GB resident</td><td class="pass">close</td></tr>
+<tr><td><strong>"Keep context under ~8,048 to avoid OOM"</strong></td><td>16,384 runs at 100% GPU; 65,536 runs with a split. Neither OOMs.</td><td class="fail">too cautious by 2&times;</td></tr>
+<tr><td><strong>"Always enable FlashAttention"</strong></td><td>KV fell 1536&rarr;1088 MiB, but the compute buffer rose 248&rarr;543 MiB and ate the saving</td><td class="fail">counterproductive</td></tr>
+<tr><td><strong>"~3.5 GB of headroom remains"</strong></td><td>1.7 GB free at 4K</td><td class="fail">ignores ~1.2 GB of CUDA context and buffers</td></tr>
+<tr><td>3-bit Q3_K_M is ~3.4 GB</td><td>4.35 GB on HuggingFace</td><td class="fail">understated ~1 GB</td></tr>
+<tr><td>"Close background apps"</td><td>headless server, GPU idles at 0 MiB</td><td class="warn">not applicable</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="card flag">
+<p style="margin:0"><strong>Why the pattern is consistent.</strong> This guidance is written for desktops
+where the GPU is also driving a display and a browser, and it is tuned to avoid support requests rather
+than to get the most from a dedicated card. On a headless server with an isolated GPU it is
+systematically pessimistic. The "enable FlashAttention" rule is the one to actually watch — it is
+repeated as universal, and here it cost more in compute buffer than it saved in cache.</p>
+</div>
+
+<div class="card flag">
+<p style="margin:0"><strong>One sizing trap worth carrying forward.</strong> Artifact sizes are not
+comparable across distribution channels. Gemma 4 E4B is 8.94 GB as an Ollama library tag and 4.63 GB as
+a HuggingFace Q4_K_M GGUF — the same model, nearly 2&times; apart. And a 4-bit vLLM artifact is not the
+same size as a 4-bit GGUF: Qwen3.5-9B is 5.29 GB as GGUF Q4_K_M but 10.65 GB as w4a16, because that
+format keeps activations at 16-bit and ships the vision tower. Always resolve the real file size in the
+channel you will actually deploy from.</p>
+</div>
+
+<h2>8. Open decisions</h2>
 
 <h3>Network exposure</h3>
 <p>Still on <code>127.0.0.1:11434</code>, and I would leave it there. Ollama has <strong>no
@@ -342,7 +387,7 @@ completely idle at 0&nbsp;MiB</strong>. Worth deciding deliberately rather than 
 full 64K context entirely on the GPU, with none of the CPU offload penalty measured above. That card is
 reserved, so this is an observation for you, not a recommendation to move anything.</p>
 
-<h2>8. State of the acceptance work</h2>
+<h2>9. State of the acceptance work</h2>
 
 <dl class="kv">
   <dt>Local runtime operational</dt><dd class="pass">REACHED — 100% GPU on the isolated card, stable under a 22.8K-token load</dd>
@@ -357,7 +402,7 @@ reserved, so this is an observation for you, not a recommendation to move anythi
 the workload definition, which the rules forbid — addresses resolve from the registry. That was my
 error, and the tests failed the build until it was fixed.</p>
 
-<h2>9. Files</h2>
+<h2>10. Files</h2>
 
 <div class="scroll">
 <table>

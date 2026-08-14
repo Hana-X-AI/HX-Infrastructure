@@ -36,7 +36,19 @@
     "native_context_length": 262144,
     "embedding_length": 4096,
     "capabilities": ["completion", "vision", "tools", "thinking"],
-    "architecture_note": "AS-BUILT: hybrid attention. The runtime allocates BOTH a KV cache and a separate recurrent-state (RS) buffer. Only the full-attention layers scale with context, so KV grows sublinearly - 12x from 4K to 64K, not 16x. Do not size this model with a standard transformer KV formula."
+    "architecture_note": "AS-BUILT: hybrid attention. The runtime allocates BOTH a KV cache and a separate recurrent-state (RS) buffer. Only the full-attention layers scale with context, so KV grows sublinearly - 12x from 4K to 64K, not 16x. Do not size this model with a standard transformer KV formula.",
+    "architecture_name": "Gated DeltaNet - linear attention combined with sparse mixtures, per the model's published description. The RS buffer and the runtime's 'KV cache shifting is not supported for this context' message were observed on the host BEFORE that description was consulted, and are consistent with it.",
+
+    "vision_as_built": {
+      "_comment": "MEASURED 2026-08-14. Supersedes the earlier 'untested, would add unmeasured VRAM' caveat, which was too conservative.",
+      "status": "TESTED AND WORKING",
+      "test": "a generated PNG containing a red rectangle was submitted via the images[] field; the model answered 'red' correctly",
+      "vram_cost_mib": 12,
+      "measurement": "text-only at 16384 = 6794 MiB, 100% GPU. Same runner, same context, with an image = 6806 MiB, still 100% GPU.",
+      "conclusion": "Vision does NOT break full-GPU residency and does not meaningfully consume headroom on this card.",
+      "packaging": "Native multimodality confirmed structurally: the Ollama manifest carries ONE model layer of 6288.9 MiB with no separate mmproj/projector file, and clip/vision tensors are present inside it.",
+      "artifact_vs_resident": "The 6.14 GB artifact against a 4.61 GB CUDA0 model buffer is explained by vision tensors not being resident on GPU for text-only work - not by a separate encoder file."
+    }
   },
 
   "gpu_isolation": {
@@ -129,6 +141,48 @@
     },
 
     "naming_hazard": "Model names no longer describe model sizes. 'Mistral Small 4' is 119B total parameters and ~238 GB at full precision; 'Gemma 4 E4B' is 8.94 GB despite the 4B in its name. Always resolve the actual manifest size before evaluating fit - never infer it from the name."
+  },
+
+  "published_guidance_verified_against_measurement": {
+    "_comment": "Owner-supplied guidance for running this model on 8 GB, checked row by row against hxs-4 on 2026-08-14. Recorded because several widely-repeated figures are wrong for this hardware in the CONSERVATIVE direction, and one tuning instruction is actively counterproductive.",
+
+    "confirmed": {
+      "gated_deltanet_linear_attention": "CONFIRMED independently. RS buffer allocated alongside KV, KV scaling 12x across a 16x context increase, and 'KV cache shifting is not supported'. Observed before the architecture description was seen.",
+      "constant_memory_scales_linearly": "CONFIRMED. 128 MiB KV at 4096 to 1536 MiB at 65536 - sublinear, not quadratic.",
+      "native_multimodality_no_separate_encoder": "CONFIRMED. One model layer, no mmproj file, vision costs 12 MiB and holds 100% GPU residency.",
+      "context_262144_native": "CONFIRMED via ollama show.",
+      "unquantized_16bit_needs_about_18gb": "CONFIRMED. HuggingFace BF16 GGUF 16.68 GB; official safetensors 17.98 GB.",
+      "weights_about_4_5gb_at_4bit": "CLOSE. Measured 4.61 GB resident for text-only work."
+    },
+
+    "contradicted_by_measurement": {
+      "limit_context_under_8048_to_avoid_oom": {
+        "claim": "keep context under ~8,048 tokens to avoid out-of-memory",
+        "measured": "16,384 runs at 100% GPU with 6794 MiB of 8151. 65,536 runs with a CPU/GPU split. Neither OOMs.",
+        "verdict": "TOO CONSERVATIVE by at least 2x. The real constraint on this card is the full-GPU residency ceiling at 16,384, not an OOM at 8K."
+      },
+      "always_enable_flash_attention": {
+        "claim": "always enable FlashAttention to keep the KV cache footprint small",
+        "measured": "KV did fall, 1536 to 1088 MiB. But the compute buffer rose from 248 to 543 MiB and consumed most of the saving.",
+        "verdict": "COUNTERPRODUCTIVE HERE - tested and reverted. Do not apply this as a blanket rule on this host."
+      },
+      "about_3_5gb_of_headroom_remains": {
+        "claim": "~4.5 GB of weights leaves about 3.5 GB free on an 8 GB card",
+        "measured": "1.7 GB free at 4096 context - 6394 MiB used of 8151.",
+        "verdict": "WRONG. The arithmetic subtracts weights from VRAM and ignores roughly 1.2 GB of CUDA context, allocator and compute buffers. This is exactly why the fit gate reserves overhead explicitly."
+      },
+      "q3_k_m_is_about_3_4gb": {
+        "claim": "3-bit Q3_K_M requires ~3.4 GB",
+        "measured": "HuggingFace unsloth/Qwen3.5-9B-GGUF Q3_K_M is 4.35 GB.",
+        "verdict": "UNDERSTATED by ~1 GB."
+      },
+      "close_background_apps": {
+        "claim": "close browsers and hardware-accelerated apps to free VRAM",
+        "verdict": "NOT APPLICABLE. hxs-4 is a headless server; the target GPU idles at 0 MiB with no processes."
+      }
+    },
+
+    "lesson": "Consumer 8 GB-tier guidance is written for desktops sharing a GPU with a display and browser, and is tuned to avoid support requests rather than to maximise a dedicated card. On a headless server with an isolated GPU it is systematically pessimistic. Measure the host; do not inherit the desktop assumptions."
   },
 
   "runtime_tuning_levers_tested": {
