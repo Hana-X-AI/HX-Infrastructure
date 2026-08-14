@@ -1,121 +1,155 @@
 ﻿{
-    "outputStyle": "ELI5",
-    "permissions":  {
-        "deny":  [
-            "Bash(mkfs *)",
-            "Bash(mkfs.*)",
-            "Bash(sudo mkfs *)",
-            "Bash(sudo mkfs.*)",
-            "Bash(wipefs *)",
-            "Bash(sudo wipefs *)",
-            "Bash(sgdisk *)",
-            "Bash(sudo sgdisk *)",
-            "Bash(pvcreate *)",
-            "Bash(sudo pvcreate *)",
-            "Bash(vgcreate *)",
-            "Bash(sudo vgcreate *)",
-            "Bash(lvcreate *)",
-            "Bash(sudo lvcreate *)",
-            "Bash(mdadm --create *)",
-            "Bash(sudo mdadm --create *)"
+  "outputStyle": "ELI5",
+  "permissions": {
+    "deny": [
+      "Bash(mkfs *)",
+      "Bash(mkfs.*)",
+      "Bash(sudo mkfs *)",
+      "Bash(sudo mkfs.*)",
+      "Bash(wipefs *)",
+      "Bash(sudo wipefs *)",
+      "Bash(sgdisk *)",
+      "Bash(sudo sgdisk *)",
+      "Bash(pvcreate *)",
+      "Bash(sudo pvcreate *)",
+      "Bash(vgcreate *)",
+      "Bash(sudo vgcreate *)",
+      "Bash(lvcreate *)",
+      "Bash(sudo lvcreate *)",
+      "Bash(mdadm --create *)",
+      "Bash(sudo mdadm --create *)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe",
+            "args": [
+              "-NoProfile",
+              "-ExecutionPolicy",
+              "Bypass",
+              "-File",
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/hx-session-state.ps1"
+            ],
+            "timeout": 15
+          }
         ]
-    },
-    "hooks":  {
-                  "SessionStart":  [
-                                       {
-                                           "matcher":  "",
-                                           "hooks":  [
-                                                         {
-                                                             "type":  "command",
-                                                             "command":  "powershell.exe",
-                                                             "args":  [
-                                                                          "-NoProfile",
-                                                                          "-ExecutionPolicy",
-                                                                          "Bypass",
-                                                                          "-File",
-                                                                          "${CLAUDE_PROJECT_DIR}/.claude/hooks/hx-session-state.ps1"
-                                                                      ],
-                                                             "timeout":  15
-                                                         }
-                                                     ]
-                                       }
-                                   ],
-                  "PreToolUse":  [
-                                     {
-                                         "matcher":  "Bash|PowerShell|Write|Edit",
-                                         "hooks":  [
-                                                       {
-                                                           "type":  "command",
-                                                           "command":  "powershell.exe",
-                                                           "args":  [
-                                                                        "-NoProfile",
-                                                                        "-ExecutionPolicy",
-                                                                        "Bypass",
-                                                                        "-File",
-                                                                        "${CLAUDE_PROJECT_DIR}/.claude/hooks/hx-phase1-guard.ps1"
-                                                                    ],
-                                                           "timeout":  15
-                                                       }
-                                                   ]
-                                     }
-                                 ],
-                  "PostToolUse":  [
-                                      {
-                                          "matcher":  "Write|Edit",
-                                          "hooks":  [
-                                                        {
-                                                            "type":  "command",
-                                                            "command":  "powershell.exe",
-                                                            "args":  [
-                                                                         "-NoProfile",
-                                                                         "-ExecutionPolicy",
-                                                                         "Bypass",
-                                                                         "-File",
-                                                                         "${CLAUDE_PROJECT_DIR}/.claude/hooks/hx-validate-discovery.ps1"
-                                                                     ],
-                                                            "timeout":  15
-                                                        }
-                                                    ]
-                                      }
-                                  ],
-                  "SubagentStop":  [
-                                       {
-                                           "matcher":  "^server-discovery$",
-                                           "hooks":  [
-                                                         {
-                                                             "type":  "command",
-                                                             "command":  "powershell.exe",
-                                                             "args":  [
-                                                                          "-NoProfile",
-                                                                          "-ExecutionPolicy",
-                                                                          "Bypass",
-                                                                          "-File",
-                                                                          "${CLAUDE_PROJECT_DIR}/.claude/hooks/hx-validate-subagent.ps1"
-                                                                      ],
-                                                             "timeout":  20
-                                                         }
-                                                     ]
-                                       }
-                                   ],
-                  "Notification":  [
-                                       {
-                                           "matcher":  "idle_prompt|agent_needs_input",
-                                           "hooks":  [
-                                                         {
-                                                             "type":  "command",
-                                                             "command":  "powershell.exe",
-                                                             "args":  [
-                                                                          "-NoProfile",
-                                                                          "-ExecutionPolicy",
-                                                                          "Bypass",
-                                                                          "-File",
-                                                                          "${CLAUDE_PROJECT_DIR}/.claude/hooks/hx-notify.ps1"
-                                                                      ],
-                                                             "async":  true,
-                                                             "timeout":  300
-                                                         }
-                                                     ]
-                                       }
-                                   ]
-              }
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell|Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe",
+            "args": [
+              "-NoProfile",
+              "-ExecutionPolicy",
+              "Bypass",
+              "-File",
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/hx-phase1-guard.ps1"
+            ],
+            "timeout": 15
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe",
+            "args": [
+              "-NoProfile",
+              "-ExecutionPolicy",
+              "Bypass",
+              "-File",
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/hx-permanent-policy-guard.ps1"
+            ],
+            "timeout": 15
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe",
+            "args": [
+              "-NoProfile",
+              "-ExecutionPolicy",
+              "Bypass",
+              "-File",
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/hx-authority-edit-guard.ps1"
+            ],
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe",
+            "args": [
+              "-NoProfile",
+              "-ExecutionPolicy",
+              "Bypass",
+              "-File",
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/hx-validate-discovery.ps1"
+            ],
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "^server-discovery$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe",
+            "args": [
+              "-NoProfile",
+              "-ExecutionPolicy",
+              "Bypass",
+              "-File",
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/hx-validate-subagent.ps1"
+            ],
+            "timeout": 20
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "idle_prompt|agent_needs_input",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe",
+            "args": [
+              "-NoProfile",
+              "-ExecutionPolicy",
+              "Bypass",
+              "-File",
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/hx-notify.ps1"
+            ],
+            "async": true,
+            "timeout": 300
+          }
+        ]
+      }
+    ]
+  }
 }
