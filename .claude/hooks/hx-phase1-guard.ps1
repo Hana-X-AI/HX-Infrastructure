@@ -3,9 +3,10 @@
 $inputObject = Read-HxHookInput
 $root = Get-HxProjectRoot $inputObject
 
-if (Test-HxPhase2Open $root) {
-    exit 0
-}
+# Phase 3 (Regroup) hard-lock. Server mutation is denied regardless of the
+# registry Phase 2 status; no lifecycle value releases this guard. The
+# authorization record that replaces the hard lock is designed in the
+# Transition Stage (P-F1), not here. (Previously released on Phase 2 = READY.)
 
 $tool = [string]$inputObject.tool_name
 $denyReason = $null
@@ -17,7 +18,7 @@ if ($tool -eq "Write" -or $tool -eq "Edit") {
     }
 
     if ($filePath -match '(?:^|/)servers/[^/]+/configuration\.md$') {
-        $denyReason = "Phase 2 is blocked. configuration.md must not be created or edited during Phase 1."
+        $denyReason = "Phase 3 (Regroup) hard-lock: configuration.md is created only in the later owner-authorized implementation phase, not now."
     }
 }
 elseif ($tool -eq "Bash" -or $tool -eq "PowerShell") {
@@ -47,7 +48,7 @@ elseif ($tool -eq "Bash" -or $tool -eq "PowerShell") {
 
     foreach ($pattern in $blockedPatterns) {
         if ($command -match $pattern) {
-            $denyReason = "Phase 1 is discovery/documentation only. This command appears to perform role-specific or persistent server configuration. Complete the fleet discovery and manual role-assignment gate before Phase 2."
+            $denyReason = "Phase 3 (Regroup) hard-lock: this command performs role-specific or persistent server configuration, which is denied until the owner authorizes the implementation phase."
             break
         }
     }

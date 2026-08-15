@@ -750,14 +750,18 @@ $noAgentTypeIncomplete = Invoke-Hook $subagentHook @{
 $noAgentTypeIncompleteJson = $noAgentTypeIncomplete.StdOut | ConvertFrom-Json
 Assert-True "F2: absent agent_type still blocks an incomplete record" ($noAgentTypeIncompleteJson.decision -eq "block")
 
-# ---------- F1: Phase 2 unblock vocabulary ----------
-# The guard releases only on the canonical SERVER-REGISTRY.md lifecycle values.
+# ---------- F1: Phase 3 hard-lock matrix ----------
+# The guard denies protected mutations for EVERY registry state. No Phase 2
+# status value releases it. (READY/IN PROGRESS/COMPLETE flipped from release
+# to deny in the same change as the guard code.)
 
 $phase2States = @(
-    @{ Value = "BLOCKED";     GuardActive = $true  },
-    @{ Value = "READY";       GuardActive = $false },
-    @{ Value = "IN PROGRESS"; GuardActive = $false },
-    @{ Value = "COMPLETE";    GuardActive = $false }
+    @{ Value = "BLOCKED";     GuardActive = $true },
+    @{ Value = "READY";       GuardActive = $true },
+    @{ Value = "IN PROGRESS"; GuardActive = $true },
+    @{ Value = "COMPLETE";    GuardActive = $true },
+    @{ Value = "BANANA";      GuardActive = $true },   # unknown value
+    @{ Value = "";            GuardActive = $true }     # malformed / empty
 )
 
 foreach ($phase2State in $phase2States) {
@@ -803,8 +807,8 @@ Assert-True "F1: missing registry keeps the guard active" (
 Assert-True "F1: OPEN is not reintroduced into the registry" (
     (Get-Content "$root\SERVER-REGISTRY.md" -Raw) -notmatch '(?im)^\s*\*\*Phase 2 Status:\*\*\s*OPEN\s*$'
 )
-Assert-True "F1: hook no longer gates on OPEN" (
-    (Get-Content "$root\.claude\hooks\hx-common.ps1" -Raw) -match 'READY\|IN PROGRESS\|COMPLETE'
+Assert-True "F1: guard is hard-locked (Phase 2 release removed)" (
+    (Get-Content "$root\.claude\hooks\hx-phase1-guard.ps1" -Raw) -notmatch 'if\s*\(\s*Test-HxPhase2Open'
 )
 
 # ---------- Items 5 and 7: notification scope, deny rules, settings parity ----------

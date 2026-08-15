@@ -33,8 +33,8 @@ $WorktreeDir = "../hx-remediation"
 
 $ExpectHash = @{
   "governance/Phase -3-Regroup/remediation/claude_20260815_0150_phase3remediationplandeepv2.html" = "ed860d3fb9b352f52458b0eef7d117cf36d315bfd7981cfa4c0c0aed64e39078"
-  "governance/Phase -3-Regroup/remediation/claude_20260815_0234_phase3remediationplandeepv3.html" = "81d9ac470d67225dcc19492bf975c313a9f82ffb7337832001793e138033d3da"
-  "governance/Phase -3-Regroup/repo review/GitHub-Copilot_2026-08-15_phase3-remediation-plan-v2-review.md" = "48c48e5457320eecb6b8ce72ee82fa80f169bcdc360ee03044749d8142d32894"
+  "governance/Phase -3-Regroup/remediation/claude_20260815_0234_phase3remediationplandeepv3.html" = "6317299dfd591e0eabfd1b9184110a5d8c52ba9578b3492879758f55cd998e45"
+  "governance/Phase -3-Regroup/repo review/GitHub-Copilot_2026-08-15_phase3-remediation-plan-v2-review.md" = "11d4b863db4e713d7b211c3fcdc97e587fb79a0a249592f86bc0df611e587d1a"
 }
 $JointBrief        = "governance/Phase -3-Regroup/repo review/claudecodex_20260815_0051_jointreconciliationbrief.html"
 $JointOnDiskExpect = "f58b1a4a8852a5593dd39c5ed9420243e391861fa9ffe734b9980b7ac745f307"

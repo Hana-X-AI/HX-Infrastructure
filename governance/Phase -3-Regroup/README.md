@@ -58,18 +58,22 @@ storage, or role-specific mutation.
 | `repo review/claude_20260815_0130_phase3remediationplandeep.html` | Superseded Phase 3 remediation plan v1 | Historical planning artifact |
 | `repo review/chatgpt_20260815_0227_phase3remediationplanfinalreview.html` | ChatGPT/Codex review of remediation plan v1 | Supporting review artifact |
 | `repo review/GitHub-Copilot_2026-08-15_phase3-remediation-plan-v2-review.md` | Independent verification of remediation plan v2 | Revise before execution |
-| `remediation/` | Verified Phase 3 remediation records and supporting artifacts | Plan reviewed (v2 immutable, v2.1 markup-corrected derivative); remediation not started |
-| `remediation/claude_20260815_0150_phase3remediationplandeepv2.html` | Current Phase 3 remediation plan v2 | Reviewed; revision required before execution |
+| `remediation/` | Verified Phase 3 remediation records and supporting artifacts | v3 current; v2 superseded; v2.1 markup derivative; P1-00 incomplete pending provenance gate |
+| `remediation/claude_20260815_0150_phase3remediationplandeepv2.html` | Superseded Phase 3 remediation plan v2 | Superseded by v3 |
 | `remediation/claude_20260815_0150_phase3remediationplandeepv2.1.html` | Markup-only corrected derivative of v2 (P1-06 closing tag) | Derived from immutable v2 |
+| `remediation/claude_20260815_0234_phase3remediationplandeepv3.html` | Phase 3 remediation plan v3 | Current remediation plan |
+| `remediation/claudecodex_20260815_0051_jointreconciliationbrief.html` | External corrected-final joint brief comparison copy | Reconciliation evidence |
+| `remediation/README.md` | Living index of remediation artifacts and provenance | Active |
 
 ## Current review state
 
 The joint reconciliation brief remains the primary reconnaissance artifact for the Phase 3
 regroup. It combines the two independent reconnaissance reports and summarizes the phase model
-recorded in `GOALS-AND-OBJECTIVES.md`. Remediation plan v2 is the current planning artifact. Its
-independent GitHub Copilot review returned **REVISE BEFORE EXECUTION** because its provenance and
-branch-baseline gates cannot currently pass and several scope and ordering details remain
-ambiguous. No remediation has started.
+recorded in `GOALS-AND-OBJECTIVES.md`. Remediation plan v3 is the current planning artifact,
+incorporating the independent GitHub Copilot review of v2 (verdict: REVISE BEFORE EXECUTION).
+v3 resolves provenance, lifecycle, and scoping issues raised in that review. P1-00 remains
+incomplete pending its provenance gate. P1-02 and the bundled P1-04 count correction were
+executed and validated in the dedicated worktree; P1-01 remains open pending P1-00.
 
 The brief and its source reports are review evidence, not canonical project authority. Their
 checkable findings must be verified against the authoritative checkout before they are used to
@@ -122,3 +126,5 @@ The regroup is complete when:
 | 2026-08-15 | Indexed remediation plan v1, its ChatGPT/Codex review, and remediation plan v2. |
 | 2026-08-15 | Added the independent GitHub Copilot review of plan v2; verdict `REVISE BEFORE EXECUTION`, with remediation still not started. |
 | 2026-08-15 | Indexed v2.1 markup-only corrected derivative; v2 remains immutable reviewed artifact; repo review count unchanged at six. |
+| 2026-08-15 | Indexed v3 plan, joint brief, and remediation README; marked v3 current and v2 superseded. |
+| 2026-08-15 | Executed the P1-02 Phase 3 guard hard-lock and bundled P1-04 count correction; the v2 scan is green and the 160-check regression suite passes. P1-01 remains open pending P1-00. |

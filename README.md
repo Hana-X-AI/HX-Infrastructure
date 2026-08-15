@@ -14,7 +14,12 @@ Phase 1: Discovery & Documentation
 
 PHASE 1 GATE
 
-Phase 2: Role Configuration
+Phase 2: Repository Consolidation & Alignment  (COMPLETE)
+
+Phase 3: Regroup & Reconciliation  (current)
+  -> reconcile authority, controls, lessons, and architecture decisions
+
+Future Server Implementation Phase  (number TBD, owner-authorized)
   -> configure each server for its approved role
   -> create configuration.md
   -> preserve discovery.md unchanged
@@ -26,7 +31,7 @@ Phase 2: Role Configuration
 - `servers/<server>/discovery.md` records the server as found.
 - Roles are assigned manually after fleet review.
 - Agents may summarize capabilities but may not assign roles.
-- `servers/<server>/configuration.md` is created only in Phase 2.
+- `servers/<server>/configuration.md` is created only in the future server implementation phase.
 
 ## Project Tracking
 

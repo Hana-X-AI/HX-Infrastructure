@@ -93,7 +93,7 @@ footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);color:v
 <thead><tr><th>Class</th><th>Artifact</th><th>SHA-256</th><th>Where it lives</th></tr></thead>
 <tbody>
 <tr><td><span class="ok">Reproducible</span></td><td>Current joint brief on disk<br><span class="small">(renamed <code>claudecodex_20260815_0051_jointreconciliationbrief.html</code>)</span></td><td class="small">f58b1a4a…f307</td><td>In the checkout. Recompute and record as the <b>current governing version</b>.</td></tr>
-<tr><td><span class="ok">Reproducible</span></td><td>Copilot review v2</td><td class="small">48c48e5457…d32894 <b>(re-verified: match)</b></td><td>In the checkout. Byte-identical to the copy Jarvis cited — confirmed.</td></tr>
+  <tr><td><span class="ok">Reproducible</span></td><td>Copilot review v2</td><td class="small">11d4b863db4e713d7b211c3fcdc97e587fb79a0a249592f86bc0df611e587d1a <b>(re-verified: match)</b></td><td>In the checkout. Current repository bytes confirmed.</td></tr>
 <tr><td><span class="ok">Reproducible</span></td><td>This plan (v2, reviewed)</td><td class="small">ed860d3f…39078</td><td>In the checkout.</td></tr>
 <tr><td>Externally held</td><td>Corrected-final joint brief</td><td class="small">a788e800…31a8</td><td>Delivered via Cowork; not present in the checkout. Recorded as provenance, <b>not</b> required to recompute.</td></tr>
 <tr><td>Unavailable</td><td>Pre-correction joint brief draft</td><td class="small">38f403e4…f9c9d</td><td>Superseded; no artifact present. Historical record only.</td></tr>
@@ -143,7 +143,7 @@ footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);color:v
     <dl class="kv">
       <dt>Baseline (B2)</dt><dd>The checkout is <code>main @ efb1a3a2…</code> with a dirty worktree (16 porcelain entries of owner/regroup work). <b>OWNER approves those changes as a baseline commit</b> (or annotated tag) so nothing is discarded, stashed, or hidden. AGENT then creates a dedicated <code>git worktree</code> / remediation branch from that baseline.</dd>
       <dt>"Protected" (B2)</dt><dd>Means a <b>local workflow rule</b>: no direct commits to <code>main</code>; all work on the remediation branch; verified locally by asserting the current branch is not <code>main</code> and the worktree is clean against the baseline. Remote GitHub branch protection, if wanted, is a separate OWNER/WS prerequisite done <em>outside</em> this no-remote run.</dd>
-      <dt>Provenance (B1)</dt><dd>Recompute the hash of every artifact <em>present</em> (the four "reproducible" rows above). Record externally-held and unavailable artifacts without recomputation. Perform the on-disk-vs-external brief reconciliation.</dd>
+      <dt>Provenance (B1)</dt><dd>Recompute the hash of every artifact <em>present</em> (the three "reproducible" rows above). Record externally-held and unavailable artifacts without recomputation. Perform the on-disk-vs-external brief reconciliation.</dd>
     </dl>
     <div class="entry"><b>Entry gate:</b> the authoritative checkout is available; the 16 dirty entries are enumerated and shown to the owner.</div>
     <div class="gate"><b>Exit gate (failable, reproducible):</b> the baseline commit/tag exists and contains the 16 entries; the remediation worktree is clean against it; the current branch ≠ <code>main</code>; each present artifact re-computes to its recorded hash; the current joint brief is recorded as <code>f58b1a4a…</code> with the reconciliation result noted. No remote endpoint is contacted.</div>
@@ -158,7 +158,7 @@ footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);color:v
       <dt>Verified stale text</dt><dd>Confirmed in the snapshot: <code>README.md</code> ("Phase 2: Role Configuration"), <code>servers/AGENTS.md</code>, root <code>AGENTS.md</code>, <code>start-up/session-resume.md</code>, and — critically — <code>claude-hooks/README.md</code> (lines 8, 59–67, 75 describe "READY releases the guard") and <code>.claude/AGENTS.md:35</code> ("Phase 2 release state"). These couple lifecycle to guard release and must be repaired with P1-02.</dd>
       <dt>Change</dt><dd>State Phase 3 = Regroup; refer to implementation as the <b>"Future Server Implementation Phase (number TBD, owner-authorized)."</b> No number is invented here (M1).</dd>
     </dl>
-    <div class="entry"><b>Entry gate:</b> P1-00 exit passed; the allowlist is fixed and the historical/lessons exclusion recorded.</div>
+    <div class="entry"><b>Entry gate:</b> P1-00 exit gate passes; the allowlist is fixed and the historical/lessons exclusion recorded.</div>
     <div class="gate"><b>Exit gate (failable):</b> a scan over exactly the allowlist finds zero descriptions of Phase 2 as server configuration, Phase 3 as server implementation, or any Phase-2-status-releases-the-guard claim. Red on today's tree, green after edits; both scan outputs retained. Historical paths untouched.</div>
   </div>
 </div>
@@ -387,7 +387,7 @@ WAVE 4  Decision prep (planning) P2-03 charter · P-F1 DESIGN SPEC (doc only) ·
 
 <footer>
 <p><strong>Prepared by:</strong> Claude (Opus 4.8), incorporating the GitHub Copilot review · <strong>Date:</strong> 2026-08-15 · <strong>Owner:</strong> Jarvis Richardson, Hana-X AI.</p>
-<p><strong>Review chain:</strong> Claude v1 → ChatGPT/Codex → Claude v2 → GitHub Copilot (verdict: revise) → Claude v3. <strong>Reviewed plan:</strong> v2 SHA-256 <code>ed860d3f…39078</code>. <strong>Review:</strong> Copilot SHA-256 <code>48c48e54…d32894</code> (re-verified: match). <strong>Scope:</strong> Phase 3 is planning, decision, and tightening-only control work; no task contacts a live system, and no remediation or server activity was performed to produce this document.</p>
+  <p><strong>Review chain:</strong> Claude v1 → ChatGPT/Codex → Claude v2 → GitHub Copilot (verdict: revise) → Claude v3. <strong>Reviewed plan:</strong> v2 SHA-256 <code>ed860d3f…39078</code>. <strong>Review:</strong> Copilot SHA-256 <code>11d4b863db4e713d7b211c3fcdc97e587fb79a0a249592f86bc0df611e587d1a</code> (re-verified: match). <strong>Scope:</strong> Phase 3 is planning, decision, and tightening-only control work; no task contacts a live system, and no remediation or server activity was performed to produce this document.</p>
 </footer>
 
 </main></body></html>

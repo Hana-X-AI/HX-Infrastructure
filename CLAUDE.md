@@ -27,11 +27,13 @@ The canonical Phase 1 gate and independently approved expected-fleet baseline ar
 
 Evaluate that gate by comparing the expected fleet count with the registry count and completed discovery count. Do not begin Phase 2 until every canonical gate condition is complete.
 
-## Phase 2
+## Phase 2 — Repository Consolidation & Alignment (COMPLETE)
 
-Do not begin until every server is discovered, documented, reviewed, and manually assigned a role.
+Phase 2 consolidated the project into one repository and one authority. It is complete. Phase 3 (Regroup & Reconciliation) is the current phase.
 
-When Phase 2 begins for a server:
+## Future Server Implementation Phase (number TBD, owner-authorized)
+
+Server role configuration is deferred to a later, owner-authorized phase. When it is authorized, for each server:
 
 - preserve `discovery.md`;
 - configure only the approved role;
@@ -63,7 +65,7 @@ Use Context7 for version-sensitive technical guidance, especially for:
 - storage tooling;
 - NVIDIA drivers and CUDA compatibility;
 - vLLM;
-- Hugging Face tooling and libraries when those become part of an approved Phase 2 role.
+- Hugging Face tooling and libraries when those become part of an approved server role in the implementation phase.
 
 Context7 is a retrieval mechanism, not the source of truth for the HX environment.
 
