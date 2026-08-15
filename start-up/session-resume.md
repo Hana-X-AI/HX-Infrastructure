@@ -73,7 +73,7 @@ see. The design not reaching acceptance is a **separate outcome** from the metho
 
 The five FAIL findings are the **implementation-correction backlog** (`iss-019`), to be worked when
 LangGraph implementation is scheduled. **Do not re-derive or re-review them now.** Verdicts and
-findings: `governance/operations/langgraph/Claude-Opus-5_2026-08-14_langgraph-review-verdicts.md`.
+findings: `governance/operations/langgraph/phase Phase -2/Claude-Opus-5_2026-08-14_langgraph-review-verdicts.md`.
 
 Highest-value items in that backlog, so they are not rediscovered from scratch:
 

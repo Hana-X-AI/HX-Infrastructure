@@ -11,3 +11,6 @@ tests/ai-runtime/evidence/*.json
 governance/operations/langgraph/langgraph-main/
 governance/operations/ollama/ollama-main/
 governance/operations/vllm/
+
+# Temporarily exclude operational working material.
+/governance/operations/

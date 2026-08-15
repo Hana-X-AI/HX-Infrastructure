@@ -60,7 +60,7 @@ Expected servers: 15
 
 ## Phase 1 — Discovery & Documentation
 
-### Goal
+### Phase 1 Goal
 
 Discover and document the actual state and capabilities of every server before role-specific configuration begins.
 
@@ -80,6 +80,7 @@ Discover and document the actual state and capabilities of every server before r
 Role assignment is a manual project decision.
 
 Agents may report and compare factual capabilities, but may not:
+
 - assign roles;
 - select workloads;
 - select models;
@@ -110,26 +111,69 @@ Phase 2 is blocked until every item is complete.
 
 ## Phase 2 — Repository Consolidation & Alignment
 
-### Goal
+**Status:** COMPLETE — closed by owner ruling on 2026-08-15.
+
+### Phase 2 Goal
 
 Consolidate the 2025 pre-relocation project and the current repository into one repository,
 one authority and one operating model. Redefined 2026-08-13; Phase 2 previously meant role
-configuration, which is now Phase 3.
+configuration, which is now deferred to a later owner-authorized phase.
 
-### Rules
+### Phase 2 Rules
 
 - `SERVER-REGISTRY.md` stays authoritative; `discovery.md` records stay immutable.
 - Legacy material is migrated selectively, fact-transformed, and secret-scanned.
 - No credential value enters the repository.
 - Ansible is excluded.
 
-## Phase 3 — Server Implementation
+## Phase 3 — Regroup & Reconciliation
 
-### Goal
+**Status:** CURRENT — opened by owner ruling on 2026-08-15.
+
+### Authority and Scope
+
+The project owner defines Phase 3 as the regroup: reconciliation, lessons learned,
+foundational architecture decisions, and true-north planning. This is the canonical lifecycle
+decision. It governs project intent but does not assert that any server is installed,
+configured, reachable, or validated.
+
+### Phase 3 Goal
+
+Reconcile project truth and controls, review the completed work, make the foundational
+decisions required for the next phase, and define the gate for later server implementation.
+
+### Entry Conditions
+
+- Phase 1 discovery and documentation is complete.
+- Phase 2 repository consolidation and alignment is closed by owner ruling.
+- The owner has opened the regroup and recorded its scope in this canonical document.
+
+### Phase 3 Rules
+
+- Planning, review, documentation, decisions, and control correction are authorized.
+- Server installation, service startup, and network, storage, or role-specific mutation are
+  not authorized by Phase 3.
+- Review findings remain claims until verified against current authoritative sources.
+- Decisions are recorded in the canonical document that owns the affected subject.
+
+### Exit Gate
+
+- The completed phase has been reviewed candidly.
+- Action, issue, risk, and lessons-learned records reflect current evidence and owner rulings.
+- Foundational architecture decisions and the project's true north are recorded.
+- The scope, sequence, entry criteria, and validation expectations for server implementation
+  are approved.
+- The owner explicitly authorizes the implementation phase.
+
+## Later Phase — Server Implementation
+
+**Status:** DEFERRED — not authorized by Phase 3.
+
+### Implementation Goal
 
 Configure each server for its approved role.
 
-### Rules
+### Implementation Rules
 
 - Use the Phase 1 discovery record as the starting point.
 - Preserve `discovery.md` unchanged.

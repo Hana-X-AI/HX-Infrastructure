@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HX-Infrastructure — Phase 3 Remediation Plan Final Review</title>
+<style>
+:root{--bg:#0b1020;--panel:#121a2c;--panel2:#182239;--text:#e8edf7;--muted:#a8b3c8;--line:#2a3856;--blue:#63b3ff;--green:#56d69b;--amber:#f4c96b;--red:#ff7b86;--purple:#bd9cff}*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#080c17,#10182b);color:var(--text);font:15px/1.6 Inter,Segoe UI,Arial,sans-serif}.wrap{max-width:1180px;margin:auto;padding:38px 24px 70px}h1{font-size:38px;line-height:1.1;margin:.2em 0}.eyebrow{color:var(--blue);letter-spacing:.11em;text-transform:uppercase;font-weight:700;font-size:12px}h2{margin-top:36px;border-bottom:1px solid var(--line);padding-bottom:8px}h3{color:#dce7ff;margin-top:24px}.lede{font-size:18px;color:#c9d3e6;max-width:950px}.meta,.card,.verdict{background:rgba(18,26,44,.95);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:18px 0}.verdict{border-left:5px solid var(--amber)}.good{border-left-color:var(--green)}.bad{border-left-color:var(--red)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.metric{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px}.metric b{display:block;font-size:25px;color:var(--blue)}table{width:100%;border-collapse:collapse;margin:16px 0;background:var(--panel)}th,td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}th{background:#1b2842;color:#dfe9ff}.sev{font-weight:800;white-space:nowrap}.blocker{color:var(--red)}.major{color:var(--amber)}.minor{color:var(--blue)}code{background:#08101e;border:1px solid #263552;border-radius:5px;padding:1px 5px;color:#b8d9ff}ul,ol{padding-left:24px}li{margin:6px 0}.tag{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 8px;font-size:12px;margin-right:5px}.pass{color:var(--green);border-color:#267a58}.revise{color:var(--amber);border-color:#8c6b23}.stop{color:var(--red);border-color:#8d3540}.small{color:var(--muted);font-size:13px}.callout{border-left:4px solid var(--purple);background:#17182d;padding:12px 16px;margin:16px 0}.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.nowrap{white-space:nowrap}@media(max-width:760px){table{display:block;overflow:auto}h1{font-size:30px}}
+</style></head><body><main class="wrap">
+<div class="eyebrow">Hana-X AI · HX-Infrastructure · Evidence-first plan review</div>
+<h1>Phase 3 Remediation Plan — Final Deep Review</h1>
+<p class="lede">The Claude plan is disciplined, actionable, and substantially aligned with the joint reconnaissance. It should be used as the working skeleton—but it is not execution-ready yet. Five corrections are required before any remediation branch begins, principally because the plan invents a Phase 4 decision, crosses the planning boundary in two work packages, and cites the wrong source hash.</p>
+
+<div class="meta"><b>Reviewed artifact:</b> <code>claude_20260815_0130_phase3remediationplandeep.html</code><br>
+<b>Artifact SHA-256:</b> <code>2bb4ff1b43f38d80c7f4d3c0262562184ed184326d3ef091d1d1d1492ab57a92</code><br>
+<b>Evidence baseline:</b> uploaded HX-Infrastructure archive, 234 files / 304 ZIP entries, SHA-256 <code>db09e94f8ef19539f00e6fc26b2e91c9d1f968cc413d5cba9efe0040e1bf7919</code>; final joint brief SHA-256 <code>38f403e45fba934d417bca995cf427b64325ce5a102d0f85f8b3abc26bff9c9d</code>.<br>
+<b>Review date:</b> 2026-08-15 · <b>Reviewer:</b> ChatGPT / Codex (GPT-5.6)</div>
+
+<div class="verdict"><strong>Verdict: CONDITIONAL ACCEPT — revise before execution.</strong> Grade: <b>B+</b>. Architecture of the plan: strong. Evidence traceability: mostly strong. Authority control: incomplete. Phase-boundary compliance: materially flawed in P1-06 and P2-03. The right response is targeted correction, not a rewrite.</div>
+
+<div class="grid">
+<div class="metric"><b>5</b>required corrections</div><div class="metric"><b>7</b>major improvements</div><div class="metric"><b>0</b>server changes authorized</div><div class="metric"><b>1</b>approved planning skeleton</div>
+</div>
+
+<h2>What the plan gets right</h2>
+<ul>
+<li><b>It converts findings into bounded work.</b> File locations, executor, dependency, acceptance gate, and rollback intent are present for the critical repairs.</li>
+<li><b>P1-01 and P1-02 are correctly paired.</b> Lifecycle truth and the guard keyed to that truth must land atomically. This remains the top safety priority.</li>
+<li><b>It uses falsifiable tests.</b> Red-before/green-after is the right discipline for guard behavior, installer idempotency, schema mismatch, and HTML/Markdown parity.</li>
+<li><b>It protects existing strengths.</b> C-01 explicitly preserves immutable discovery records, the resolved ledger, runtime invariants, and capability boundaries.</li>
+<li><b>It separates owner rulings from agent transcription.</b> That is the correct authority model for hxs-4, risks, tracker adjudication, and maturity posture.</li>
+<li><b>It avoids rebuilding the repository.</b> The plan repairs the existing control system instead of discarding proven work.</li>
+</ul>
+
+<h2>Required corrections before execution</h2>
+<table><thead><tr><th>ID</th><th>Severity</th><th>Finding</th><th>Why it matters</th><th>Required change</th></tr></thead><tbody>
+<tr><td>R-01</td><td class="sev blocker">BLOCKER</td><td><b>Wrong joint-brief provenance.</b> The plan cites <code>a788e800…31a8</code>. The attached final joint brief hashes to <code>38f403e4…f9c9d</code>.</td><td>The plan’s source-baseline assertion cannot be reproduced. An execution plan with an incorrect governing hash can be applied to the wrong decision record.</td><td>Replace the shortened citation with the full verified SHA-256 and record the joint brief filename. Make provenance verification part of P1-00.</td></tr>
+<tr><td>R-02</td><td class="sev blocker">BLOCKER</td><td><b>“Phase 4 = Server Implementation” is assumed, not ruled.</b> The owner ruled that Phase 3 is regroup/planning. The supplied record says implementation is later and owner-authorized; it does not establish its phase number.</td><td>P1-01 is supposed to repair authority, but would create new authority without an owner ruling. That repeats the lifecycle drift it is meant to fix.</td><td>Use “Future Server Implementation Phase — number TBD, owner-authorized” everywhere, or add a discrete owner decision that explicitly assigns Phase 4. Do not bury that ruling inside an agent task.</td></tr>
+<tr><td>R-03</td><td class="sev blocker">BLOCKER</td><td><b>P2-03 crosses the planning boundary.</b> It recommends an OmniRoute topology and requires the reach mechanism to be “measured.” Measurement normally requires deployment or network activity.</td><td>The owner has not settled full-stack architecture or deployment order. A co-located edge on hxs-4 is a plausible hypothesis, not an approved target. Measuring it in Phase 3 would contradict “no server change.”</td><td>Split the task: Phase 3 produces a <code>PROPOSED</code>/<code>PARKED</code> service charter, alternatives, decision criteria, and test plan only. Actual topology selection, deployment, and measurement move to the future implementation phase after full-stack recon and owner authorization.</td></tr>
+<tr><td>R-04</td><td class="sev blocker">BLOCKER</td><td><b>P1-06 prematurely builds and runs a commission path.</b> The gate says the named commission command “runs against the Qwen file.”</td><td>A commission command may mutate or contact a live system, and a new Ollama commission path commits architecture before implementation order is settled.</td><td>In Phase 3, quarantine/archive the incompatible DS4 path, remove false applicability, add static schema/fixture validation, and require a non-networked <code>-WhatIf</code> or fixture mode. Defer the new operational commission path until the relevant runtime is selected for implementation.</td></tr>
+<tr><td>R-05</td><td class="sev blocker">BLOCKER</td><td><b>The replacement guard authorization is under-specified.</b> A global <code>Implementation Status: ON</code> could release all protected mutations; the plan does not define authority source, scope, expiry, duplicate handling, or fail-closed behavior.</td><td>This is the most safety-sensitive code in the repository. Replacing one ambiguous switch with another is not sufficient.</td><td>For Phase 3, hard-lock mutation denial. Separately design a future authorization record with exact owner identity, target scope, permitted action class, phase, time/change window, single canonical occurrence, and default-deny parsing. Test missing, malformed, duplicate, stale, wrong-target, OFF, and valid scoped authorization cases.</td></tr>
+</tbody></table>
+
+<h2>Major improvements</h2>
+<table><thead><tr><th>ID</th><th>Plan area</th><th>Feedback</th></tr></thead><tbody>
+<tr><td>M-01</td><td>P1-04</td><td>The plan says “pin to the eight known hooks,” but the packaged fragment contains <b>seven</b> hook commands: session state, phase guard, permanent-policy guard, authority-edit guard, discovery validator, subagent validator, and notify. Correct the count. Prefer structural reconciliation by stable command identity over a manually maintained allow-list.</td></tr>
+<tr><td>M-02</td><td>P1-03</td><td>“Unmatched backticks” and “empty table cells” are weak Markdown tests and may flag valid content or miss semantic corruption. Add targeted assertions for required profile names, provenance fields, non-adoption language, and expected table keys; parse Markdown structurally where practical. Separate-context review is useful corroboration, not the sole acceptance gate.</td></tr>
+<tr><td>M-03</td><td>P1-05</td><td>Do not require every historical document mentioning LiteLLM to carry a supersession note. Scope the scan to current normative/authority documents. Preserve historical evidence. Model hxs-4 with separate fields for <i>approved durable role</i> and <i>observed/commissioned exception</i>; do not force one to overwrite the other.</td></tr>
+<tr><td>M-04</td><td>P2-02</td><td>The parity test should compare dynamically extracted ID sets, not hard-code <code>18/19</code>. Counts will change as remediation opens and closes items. Require exact set equality, uniqueness, ordering rules if applicable, and successful case-sensitive link resolution.</td></tr>
+<tr><td>M-05</td><td>P2-04</td><td>The recommended lightweight <code>configuration.md</code> conflicts with the repaired lifecycle if that filename is reserved for implementation. Prefer a clearly named <code>runtime-experiment-record.md</code> or an exception section in the accepted runtime evidence, unless the owner explicitly broadens the meaning of <code>configuration.md</code>.</td></tr>
+<tr><td>M-06</td><td>C-01 / rollback</td><td>Compare preservation assets against the verified baseline commit/hash, not merely the current working-tree diff. A clean diff cannot detect a prior accidental change. Also, “rollback to the over-permissive guard” is not an acceptable operational contingency: land P1-01/P1-02 atomically and fix forward if post-merge validation fails.</td></tr>
+<tr><td>M-07</td><td>Definition of done</td><td>The plan says all seven owner rulings are required, while also saying open P2/P3 items are non-blocking. Those statements conflict because several rulings live in P2/P3. Define two gates: <b>remediation baseline complete</b> and <b>future implementation authorization ready</b>. The latter can require architecture decisions that the former does not.</td></tr>
+</tbody></table>
+
+<h2>Corrected task disposition</h2>
+<table><thead><tr><th>Task</th><th>Disposition</th><th>Review note</th></tr></thead><tbody>
+<tr><td>P1-00</td><td><span class="tag revise">REVISE</span></td><td>Verify current Git facts rather than treating <code>97cfd6c</code>/<code>a98846d</code> as acceptance requirements. Add exact artifact hashes and clean working-branch creation.</td></tr>
+<tr><td>P1-01</td><td><span class="tag revise">REVISE</span></td><td>Proceed, but do not invent Phase 4. Use an owner-approved phase label. Scan semantic authority surfaces, with explicit exclusions for historical records.</td></tr>
+<tr><td>P1-02</td><td><span class="tag revise">REVISE</span></td><td>Immediately restore fail-closed behavior. Do not introduce an unrestricted global release switch.</td></tr>
+<tr><td>P1-03</td><td><span class="tag pass">PROCEED</span></td><td>Prefer Git restoration; strengthen semantic validation.</td></tr>
+<tr><td>P1-04</td><td><span class="tag pass">PROCEED</span></td><td>Correct seven/eight count and test both packaged fragment and installed settings.</td></tr>
+<tr><td>P1-05</td><td><span class="tag revise">OWNER RULE</span></td><td>Separate intended placement, current observed state, and accepted exception.</td></tr>
+<tr><td>P1-06</td><td><span class="tag stop">SPLIT/DEFER</span></td><td>Phase 3: quarantine and schema truth only. Future phase: build/run the operational path.</td></tr>
+<tr><td>P2-01</td><td><span class="tag pass">PROCEED</span></td><td>Use exact risk-register vocabulary and record scope, rationale, date, owner, and next trigger.</td></tr>
+<tr><td>P2-02</td><td><span class="tag pass">PROCEED</span></td><td>Use dynamic ID parity and regenerate from canonical Markdown.</td></tr>
+<tr><td>P2-03</td><td><span class="tag stop">SPLIT/DEFER</span></td><td>Phase 3 charter/test plan only; topology selection and measurement later.</td></tr>
+<tr><td>P2-04</td><td><span class="tag revise">OWNER RULE</span></td><td>Document the as-built exception without prematurely creating the implementation record.</td></tr>
+<tr><td>P2-05</td><td><span class="tag pass">PROCEED</span></td><td>Preserve the parked design; align review narrative to five FAIL verdicts.</td></tr>
+<tr><td>P2-06</td><td><span class="tag revise">REVALIDATE</span></td><td>Confirm the lock still exists before prescribing a reboot. Use the least disruptive release method available, then canonicalize and test.</td></tr>
+<tr><td>P3-01</td><td><span class="tag revise">NARROW</span></td><td>Version-stamp current normative baselines, not every historical count in the repository.</td></tr>
+<tr><td>P3-02</td><td><span class="tag pass">PROCEED</span></td><td>Correctly classify user-level assets as external/unverified from the snapshot.</td></tr>
+<tr><td>P3-03</td><td><span class="tag pass">OWNER RULE</span></td><td>Good decision packet; ensure public visibility and licensing intent are not conflated.</td></tr>
+<tr><td>C-01</td><td><span class="tag revise">STRENGTHEN</span></td><td>Pin full hashes and compare against baseline objects.</td></tr>
+<tr><td>C-02</td><td><span class="tag revise">RENAME</span></td><td>Close Phase 3 by approving the reconciled baseline and next decision sequence—not automatically by selecting a first implementation target.</td></tr>
+</tbody></table>
+
+<h2>Recommended sequence</h2>
+<ol>
+<li><b>Wave 0 — establish evidence:</b> authoritative checkout, exact Git state, exact source hashes, protected remediation branch, clean baseline, and preserved test outputs.</li>
+<li><b>Wave 1 — close the live safety gap atomically:</b> lifecycle truth repair plus fail-closed guard repair. Merge only when both are green together.</li>
+<li><b>Wave 2 — repair deterministic defects:</b> runtime contract, installer idempotency, tracker generator/parity, LangGraph status, canonical test path, and risk review preparation.</li>
+<li><b>Wave 3 — reconcile records:</b> hxs-4 intended role vs observed runtime, current authority labels, expired risks, external-asset notes, and versioned current baselines.</li>
+<li><b>Wave 4 — architecture decision preparation:</b> full-stack recon synthesis, true-north principles, OmniRoute alternatives, deployment-order dependencies, decision criteria, and non-mutating test plans.</li>
+<li><b>Close Phase 3:</b> owner approves the reconciled truth baseline and the decision roadmap. A separate future authorization determines whether/when implementation begins and what that phase is called.</li>
+</ol>
+
+<h2>Minimum corrected acceptance gates</h2>
+<div class="card">
+<ol>
+<li>The final joint brief filename and full SHA-256 match the supplied artifact.</li>
+<li>No current authority document claims Phase 2 is server configuration or Phase 3 is server implementation; historical records remain intact and clearly labeled.</li>
+<li>During Phase 3, protected mutation commands deny by default for READY, COMPLETE, missing, malformed, duplicate, and unrecognized authorization states.</li>
+<li>No acceptance test invokes a live server, remote endpoint, package manager, service manager, storage command, network reconfiguration, or operational commissioning path.</li>
+<li>The installer produces structurally identical hook configuration after one and two runs, with exactly the packaged set of seven hook commands.</li>
+<li>Runtime contract recovery is traceable to a known-good Git object or separately evidenced reconstruction; semantic required fields pass.</li>
+<li>Markdown and generated HTML tracker ID sets are equal and unique without hard-coded totals.</li>
+<li>All 15 discovery records and the resolved ledger match the verified baseline objects, not just the current working tree.</li>
+<li>OmniRoute artifacts remain proposed/parked until full-stack architecture, deployment order, and owner authorization are complete; no network-consumable grant is issued in Phase 3.</li>
+<li>Phase 3 closure authorizes only the next approved decision or planning activity unless the owner separately and explicitly authorizes implementation.</li>
+</ol></div>
+
+<h2>Final assessment</h2>
+<div class="verdict good"><strong>Keep the plan; correct its authority edges.</strong> Claude did the hard part well: it transformed reconnaissance into testable work. The remaining weaknesses are concentrated where plans become policy—phase numbering, mutation authorization, architecture selection, and execution gates. Once R-01 through R-05 are incorporated, this becomes a strong Phase 3 remediation plan suitable for controlled execution on an authoritative checkout.</div>
+<p class="small">Review method: complete artifact read; claim-by-claim comparison against the supplied final joint brief metadata and repository snapshot; authority-boundary analysis; dependency and acceptance-gate review; failure-mode and rollback analysis. No repository or server changes were made.</p>
+</main></body></html>

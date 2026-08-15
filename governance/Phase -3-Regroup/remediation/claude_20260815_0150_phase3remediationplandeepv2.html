@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HX-Infrastructure — Phase 3 Remediation Plan (Deep · v2)</title>
+<style>
+:root{color-scheme:dark;
+  --bg:#0b1015;--panel:#121a22;--panel2:#17212b;--line:#2a3948;--text:#e8eef4;--muted:#9eb0bf;--faint:#6b7a88;
+  --blue:#6fc6ff;--cyan:#63e6d2;--green:#71d99a;--amber:#f5c46b;--red:#ff7d87;--violet:#c6a7ff;--code:#0a0f14;
+  --p1:#ff7d87;--p2:#f5c46b;--p3:#6fc6ff;--mono:ui-monospace,SFMono-Regular,Consolas,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 85% 0,#172b3d 0,transparent 34%),var(--bg);color:var(--text);
+  font:14.5px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1200px;margin:auto;padding:44px 30px 80px}
+.eyebrow{color:var(--cyan);font-weight:750;text-transform:uppercase;letter-spacing:.13em;font-size:.74rem}
+h1{font-size:clamp(1.9rem,4.2vw,3.1rem);line-height:1.05;letter-spacing:-.04em;margin:.4rem 0 1rem}
+h2{font-size:1.42rem;margin:2.8rem 0 .8rem;padding:8px 14px;border-radius:9px}
+h2.band1{background:linear-gradient(90deg,#3a1418,transparent);border-left:5px solid var(--p1)}
+h2.band2{background:linear-gradient(90deg,#3a2e12,transparent);border-left:5px solid var(--p2)}
+h2.band3{background:linear-gradient(90deg,#122a3a,transparent);border-left:5px solid var(--p3)}
+h2.plain{border-bottom:1px solid var(--line);border-left:0;background:none;border-radius:0;padding:0 0 .5rem}
+.lede{font-size:1.06rem;color:#cbd7e0;max-width:94ch}
+.meta{font-family:var(--mono);font-size:12px;color:var(--faint);margin-top:16px;display:flex;flex-wrap:wrap;gap:8px 22px}
+.legend{display:flex;flex-wrap:wrap;gap:10px 20px;margin:18px 0;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-size:12.5px;color:var(--muted)}
+.legend b{color:var(--text)}
+.chglog{border:1px solid #3a2e12;background:#1c1810;border-radius:11px;padding:16px 18px;margin:20px 0}
+.chglog h3{margin:0 0 8px;color:var(--amber);font-size:1.02rem}
+.chglog li{margin:4px 0;font-size:13.5px}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:20px 0}
+.sc{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:12px;padding:15px}
+.sc .n{font-size:1.8rem;font-weight:800;font-family:var(--mono)}
+.sc .k{color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;margin-top:5px}
+.verdict{border-left:5px solid var(--amber);background:#241d12;padding:14px 18px;border-radius:8px;margin:20px 0}
+.verdict.info{border-left-color:var(--blue);background:#10202d}
+.verdict.good{border-left-color:var(--green);background:#102319}
+.verdict.stop{border-left-color:var(--red);background:#28151a}
+.task{border:1px solid var(--line);border-radius:12px;background:var(--panel);margin:14px 0;overflow:hidden}
+.task .head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 16px;background:#141d26;border-bottom:1px solid var(--line)}
+.task .id{font-family:var(--mono);font-weight:800;font-size:.9rem}
+.id1{color:var(--p1)}.id2{color:var(--p2)}.id3{color:var(--p3)}.idc{color:var(--green)}.idf{color:var(--violet)}
+.task .title{font-weight:700;font-size:1.01rem;color:#fff;flex:1;min-width:220px}
+.task .body{padding:12px 16px}
+.tag{font-family:var(--mono);font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.03em;padding:2px 7px;border-radius:5px;border:1px solid currentColor;white-space:nowrap}
+.t-truth{color:var(--cyan)}.t-control{color:var(--violet)}.t-decision{color:var(--amber)}.t-design{color:var(--green)}.t-verify{color:var(--blue)}.t-preserve{color:var(--green)}.t-defer{color:var(--red)}
+.owner{color:var(--amber);border-color:var(--amber)}
+.eff{color:var(--faint);border-color:var(--line)}
+.kv{display:grid;grid-template-columns:120px 1fr;gap:5px 14px;margin:3px 0;font-size:13.6px}
+.kv dt{color:var(--faint);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;padding-top:3px}
+.kv dd{margin:0}
+.gate{border-left:3px solid var(--green);background:#0f1c15;padding:8px 12px;border-radius:0 7px 7px 0;margin-top:9px;font-size:13.2px}
+.gate b{color:var(--green)}
+.risk{border-left:3px solid var(--amber);background:#211a10;padding:8px 12px;border-radius:0 7px 7px 0;margin-top:7px;font-size:13.2px}
+.risk b{color:var(--amber)}
+.packet{border:1px dashed var(--line);border-radius:9px;padding:10px 14px;margin-top:9px;background:#0f1720;font-size:13.3px}
+.packet .opt{margin:5px 0}
+.packet .rec{color:var(--green);font-weight:700}
+.fix{border-left:3px solid var(--violet);background:#171226;padding:6px 12px;border-radius:0 7px 7px 0;margin-top:7px;font-size:12.8px;color:#cbb8ff}
+code{font-family:var(--mono);background:var(--code);border:1px solid #23313d;border-radius:5px;padding:.08rem .32rem;color:#bce8ff;font-size:.85em}
+.small{font-size:.84rem;color:var(--muted)}
+a{color:var(--blue)}
+ul{padding-left:1.2rem;margin:6px 0}li{margin:.28rem 0}
+table{width:100%;border-collapse:separate;border-spacing:0;margin:12px 0 20px;border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:13.2px}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{background:#1a2631;color:#fff;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em}
+tr:last-child td{border-bottom:0}
+.dep{font-family:var(--mono);font-size:12.5px;white-space:pre;overflow-x:auto;background:var(--code);border:1px solid var(--line);border-radius:10px;padding:16px;color:#cae6f5}
+footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:12.4px}
+@media(max-width:720px){main{padding:24px 14px 55px}.kv{grid-template-columns:1fr}}
+</style>
+</head>
+<body><main>
+
+<div class="eyebrow">HX-Infrastructure · Phase 3 Regroup · Implementation-grade remediation plan · v2</div>
+<h1>Phase 3 Remediation Plan — Deep · v2</h1>
+<p class="lede">Version 2 folds in ChatGPT/Codex's deep review of v1: five required corrections and seven improvements. The core is unchanged — findings become bounded, testable tasks with failable gates — but the authority edges are tightened. The three biggest changes: no invented phase number, the guard is <em>hard-locked closed</em> in Phase 3 instead of getting a new release switch, and two work packages (OmniRoute, the runtime-gate commission path) are split so nothing operational runs during a planning-only phase.</p>
+
+<div class="meta">
+  <span>SOURCE · Joint Brief (final) — see provenance below</span>
+  <span>DATE · 2026-08-15 · supersedes v1</span>
+  <span>PHASE · 3 (regroup) — document, decision &amp; control work only</span>
+  <span>REVIEWED BY · Claude (Opus 4.8) + ChatGPT/Codex (GPT-5.6)</span>
+</div>
+
+<div class="chglog">
+  <h3>What changed from v1 — reviewer corrections applied</h3>
+  <ul>
+    <li><b>R-01 · provenance.</b> The governing brief is recorded with its full hash and filename, plus its version lineage. <span class="small">Note: v1 cited <code>a788e800…31a8</code>, which is the <em>corrected final</em> brief (owner's required correction applied). The review compared against <code>38f403e4…f9c9d</code>, the <em>pre-correction draft</em>. The full hash is now recorded so both parties reconcile to one artifact. Provenance verification is folded into P1-00.</span></li>
+    <li><b>R-02 · no invented phase.</b> "Phase 4 = Server Implementation" is removed everywhere; the owner ruled it a later, owner-authorized phase and did not number it. The label is now "Future Server Implementation Phase (number TBD)." Assigning the number is itself an owner ruling.</li>
+    <li><b>R-03 · OmniRoute split.</b> P2-03 becomes charter-only (proposed/parked, alternatives, criteria, test plan). Topology selection and any measurement move to the future phase.</li>
+    <li><b>R-04 · runtime gate split.</b> P1-06 does schema-truth, quarantine, and static/fixture validation only. The operational commission path is deferred.</li>
+    <li><b>R-05 · guard hard-lock.</b> P1-02 no longer builds a global release switch. Phase 3 hard-locks mutation denial. Designing the future authorization record is a separate, deferred task (P-F1) with a full spec and failure-mode test matrix.</li>
+    <li><b>M-01…M-07 applied:</b> seven hook commands (not eight); stronger contract semantics gate; scoped LiteLLM scan + separate hxs-4 fields; dynamic ID-parity (no hard-coded 18/19); <code>runtime-experiment-record.md</code> instead of <code>configuration.md</code>; baseline-object comparison + atomic fix-forward (no rollback to an over-permissive guard); and a two-gate definition of done.</li>
+  </ul>
+</div>
+
+<div class="verdict"><strong>Provenance.</strong> Governing source: <code>claude-codex_2026-08-15_0051_joint-reconciliation-brief.html</code>, SHA-256 <code>a788e80067553604ad0009bb4979f076b88bcb05cff990839b4db31fe69531a8</code> (corrected final). Superseded draft: <code>38f403e45fba934d417bca995cf427b64325ce5a102d0f85f8b3abc26bff9c9d</code>. Repository archive: SHA-256 <code>db09e94f8ef19539f00e6fc26b2e91c9d1f968cc413d5cba9efe0040e1bf7919</code>. All three are re-verified as the first act of P1-00.</div>
+
+<div class="legend">
+  <span><b>Type:</b> <span class="tag t-truth">truth-repair</span> <span class="tag t-control">control-repair</span> <span class="tag t-decision">decision</span> <span class="tag t-design">design</span> <span class="tag t-verify">verify</span> <span class="tag t-preserve">preserve</span> <span class="tag t-defer">deferred</span></span>
+  <span><b>Executor:</b> OWNER = Jarvis · AGENT = Claude/Codex on an authoritative checkout · WS = human at the workstation</span>
+  <span><b>Effort:</b> S ≤ 1h · M ½–1 day · L multi-day</span>
+</div>
+
+<div class="summary">
+  <div class="sc"><div class="n" style="color:var(--p1)">7</div><div class="k">P1 · highest</div></div>
+  <div class="sc"><div class="n" style="color:var(--p2)">6</div><div class="k">P2 · medium</div></div>
+  <div class="sc"><div class="n" style="color:var(--p3)">3</div><div class="k">P3 · low</div></div>
+  <div class="sc"><div class="n" style="color:var(--violet)">1</div><div class="k">deferred design</div></div>
+  <div class="sc"><div class="n" style="color:var(--amber)">7+1</div><div class="k">owner rulings (+phase number)</div></div>
+</div>
+
+<div class="verdict stop"><strong>Phase-boundary rule (hard).</strong> No task in this plan may invoke a live server, remote endpoint, package manager, service manager, storage command, network reconfiguration, or operational commissioning path. Every test runs static, on fixtures, or with a non-networked <code>-WhatIf</code>. Server implementation is a separate, later, owner-authorized phase.</div>
+
+<!-- ============ P1 ============ -->
+<h2 class="band1">P1 — Highest · the safety-critical pair and the blocking repairs</h2>
+
+<div class="task">
+  <div class="head"><span class="id id1">P1-00</span><span class="title">Establish the evidence baseline: authoritative checkout, exact hashes, protected branch</span><span class="tag t-verify">verify</span><span class="tag eff">S</span><span class="tag">AGENT+WS</span></div>
+  <div class="body">
+    <dl class="kv">
+      <dt>Action</dt><dd>Check out the authoritative repo. Record exact Git facts as observations, not acceptance requirements. Re-verify the three governing hashes above. Locate the last intact commit of the runtime contract. Create a clean, protected remediation branch. Preserve all baseline test outputs.</dd>
+    </dl>
+    <div class="fix"><b>v2 (R-01, P1-00 REVISE):</b> Git commit/branch/clean-tree are <em>verified and recorded</em>, not treated as pass/fail gates. Provenance verification of the joint brief is done here.</div>
+    <div class="gate"><b>Gate:</b> the three hashes re-compute to the recorded values; Git state is recorded; the known-good contract commit is identified; the remediation branch exists and is clean.</div>
+  </div>
+</div>
+
+<div class="task">
+  <div class="head"><span class="id id1">P1-01</span><span class="title">Propagate the final Phase 3 lifecycle across every authority</span><span class="tag t-truth">truth-repair</span><span class="tag eff">M</span><span class="tag">AGENT</span></div>
+  <div class="body">
+    <dl class="kv">
+      <dt>Verified locations</dt><dd><code>README.md:17,29</code>; <code>CLAUDE.md:30–34</code>; <code>GOALS-AND-OBJECTIVES.md</code>; <code>servers/AGENTS.md</code>; <code>start-up/session-resume.md</code>; the <code>configuration.md</code> template ("the Phase 2 configuration"); the registry Phase-2 vocabulary.</dd>
+      <dt>Concrete change</dt><dd>Set the ruled model in <code>GOALS-AND-OBJECTIVES.md</code>: Phase 3 = Regroup. Refer to implementation as the <strong>"Future Server Implementation Phase (number TBD, owner-authorized)"</strong> — do not assign a number. Rewrite every current authority surface so "Phase 2 = configure servers" and "Phase 3 = server implementation" no longer appear.</dd>
+    </dl>
+    <div class="fix"><b>v2 (R-02, M-06):</b> no invented "Phase 4." Numbering is an owner ruling (P-D0 below). The scan explicitly excludes historical/lessons records so evidence is preserved.</div>
+    <div class="gate"><b>Gate (failable):</b> a scan over <em>current authority surfaces only</em> (constitution, README, CLAUDE, servers/AGENTS, registry vocabulary, templates — historical/lessons paths excluded) finds zero descriptions of Phase 2 as server configuration or Phase 3 as server implementation. Red on today's tree, green after edits; both runs retained.</div>
+  </div>
+</div>
+
+<div class="task">
+  <div class="head"><span class="id id1">P1-02</span><span class="title">Hard-lock server-mutation denial for Phase 3</span><span class="tag t-control">control-repair</span><span class="tag eff">M</span><span class="tag">AGENT</span></div>
+  <div class="body">
+    <dl class="kv">
+      <dt>Verified locations</dt><dd><code>hx-common.ps1:60</code> (<code>Test-HxPhase2Open</code> matches <code>Phase 2 Status: READY|IN PROGRESS|COMPLETE</code>); <code>hx-phase1-guard.ps1:6</code> (<code>if (Test-HxPhase2Open) { exit 0 }</code>); the <code>rem-008</code> regression assertions that bless "READY = open = released."</dd>
+      <dt>Concrete change</dt><dd>Remove the coupling between Phase 2 status and the mutation release. During Phase 3 the guard <strong>denies all protected mutations, full stop</strong> — no status value opens it. Do <em>not</em> introduce a global <code>Implementation Status: ON</code> switch now. Update <code>rem-008</code> so consolidation state no longer implies release.</dd>
+    </dl>
+    <div class="fix"><b>v2 (R-05, P1-02 REVISE, M-06):</b> replaces v1's under-specified global switch with a hard lock. The authorization mechanism is designed later under <span class="idf">P-F1</span>, not built here. Rollback is fix-forward, never "revert to the over-permissive guard."</div>
+    <div class="gate"><b>Gate (failable, default-deny matrix):</b> with any of Phase 2 = <code>READY</code>/<code>COMPLETE</code>/<code>IN PROGRESS</code>, missing registry, or malformed status, assert <code>apt install</code>, <code>systemctl enable</code>, <code>netplan apply</code>, and <code>mkfs</code> are all <em>denied</em>. Prove the READY case red against today's guard (it releases today — the bug), green after. Read-only discovery commands still pass.</div>
+    <div class="risk"><b>Risk / rollback:</b> other hooks read the helper; keep a shim and the byte-parity test. Land P1-01 + P1-02 <strong>atomically</strong>; if post-merge validation fails, fix forward — do not revert to a releasing guard.</div>
+  </div>
+</div>
+
+<div class="task">
+  <div class="head"><span class="id id1">P1-03</span><span class="title">Restore the corrupted AI-runtime acceptance contract</span><span class="tag t-truth">truth-repair</span><span class="tag eff">M</span><span class="tag">AGENT</span></div>
+  <div class="body">
+    <dl class="kv">
+      <dt>Verified corruption</dt><dd><code>ai-runtime-acceptance-contract.md</code> ~line 126 nameless profile row (<code>| ` live later |</code>); ~128 "applies to the <code>`</code> not to any server"; ~164 "It does not adopt <code>`</code>"; provenance block ≈170–184 broken. Related damage in <code>tests/ai-runtime/README.md</code>.</dd>
+      <dt>Concrete change</dt><dd>Recover from the known-good commit (preferred). If reconstructing, rebuild the third profile name, provenance fields, and non-adoption language from <code>runtime-acceptance-decisions.md</code> with a separate-context review. Never invent the missing runtime name.</dd>
+    </dl>
+    <div class="fix"><b>v2 (M-02):</b> the gate is semantic, not just "unmatched backticks." It asserts the specific required content is present.</div>
+    <div class="gate"><b>Gate (failable, semantic):</b> targeted assertions — all three profile names present, every provenance field present (snapshot, SHA-256, upstream, license, authors), the non-adoption bullet complete, and the expected profile-table keys present; Markdown parsed structurally where practical. Separate-context review is corroboration, not the sole gate. Red now, green after; diff vs known-good retained.</div>
+  </div>
+</div>
+
+<div class="task">
+  <div class="head"><span class="id id1">P1-04</span><span class="title">Fix and regression-test hook-installer idempotency</span><span class="tag t-control">control-repair</span><span class="tag eff">S</span><span class="tag">AGENT</span></div>
+  <div class="body">
+    <dl class="kv">
+      <dt>Verified count</dt><dd>The registry has <strong>seven</strong> hook commands: <code>hx-session-state</code>, <code>hx-phase1-guard</code>, <code>hx-permanent-policy-guard</code>, <code>hx-authority-edit-guard</code>, <code>hx-validate-discovery</code>, <code>hx-validate-subagent</code>, <code>hx-notify</code>. <code>hx-common.ps1</code> is a dot-sourced helper (registered zero times), not a hook command.</dd>
+      <dt>Concrete change</dt><dd>Reconcile the installer by <em>stable command identity</em> derived from the packaged fragment (not a hand-kept allow-list, which is what drifted). Open a new <code>iss-0xx</code>. Fix <code>claude-hooks/README.md</code> (still says "five hooks").</dd>
+    </dl>
+    <div class="fix"><b>v2 (M-01):</b> seven hook commands, not eight (v1 wrongly counted the helper). Test both the packaged fragment and the installed settings.</div>
+    <div class="gate"><b>Gate (failable):</b> running the installer once and twice yields structurally identical hook configuration, containing exactly the seven packaged commands. Red against today's installer (duplicates the two newer guards), green after.</div>
+  </div>
+</div>
+
+<div class="task">
+  <div class="head"><span class="id id1">P1-06</span><span class="title">Runtime-gate schema truth — quarantine and static validation only</span><span class="tag t-control">control-repair</span><span class="tag t-defer">split</span><span class="tag eff">M</span><span class="tag">AGENT</span></div>
+  <div class="body">
+    <dl class="kv">
+      <dt>Verified mismatch</dt><dd><code>hx-capacity-gate.ps1</code> reads <code>expected_file_size_gb</code>, <code>execution_modes.cuda_ssd_streaming_single_gpu</code>, <code>storage_gate</code>; <code>hx-workload-commission.ps1</code> reads <code>model_acquisition</code>, <code>capacity_gate_result</code>, and hardcodes <strong>"hxs-3"</strong> at :115. <code>qwen35-9b-ollama.json</code> has none of these (it has <code>model_selection</code>, <code>measured_residency</code>, <code>gpu_isolation</code>, <code>context_overflow_behavior</code>, <code>target_host</code>).</dd>
+      <dt>Phase 3 scope</dt><dd>Quarantine/archive the DS4/SSD-streaming gate family under an explicit name; remove its false applicability to the Ollama workload; add <strong>static schema/fixture validation</strong>; require any commission logic to expose a non-networked <code>-WhatIf</code>/fixture mode. Remove the hardcoded <code>hxs-3</code> string.</dd>
+    </dl>
+    <div class="fix"><b>v2 (R-04, P1-06 SPLIT/DEFER):</b> building and running the operational Ollama commission path is deferred to the future implementation phase, when the runtime is selected. Phase 3 asserts truth, it does not commission.</div>
+    <div class="gate"><b>Gate (failable, static only):</b> a schema-compatibility test loads every <code>workloads/*.json</code> and asserts which gate each is valid for — red now (Qwen file falsely appears DS4-gateable), green after quarantine. No test executes a commission against a live target; a fixture/<code>-WhatIf</code> run is the only exercised path. No "hxs-3" string remains in the scripts' output.</dd>
+  </div>
+</div>
+
+<div class="task">
+  <div class="head"><span class="id id1">P1-05</span><span class="title">Reconcile hxs-4 and LiteLLM/OmniRoute authority in the registry</span><span class="tag t-decision">decision</span><span class="tag owner">OWNER</span><span class="tag eff">M</span></div>
+  <div class="body">
+    <dl class="kv">
+      <dt>Locations</dt><dd><code>SERVER-REGISTRY.md:41</code> (hxs-4); hxs-8/hxs-9 rows (LiteLLM); <code>runtime-acceptance-decisions.md</code> (Qwen3.5-9B on hxs-4); <code>iss-017</code>.</dd>
+      <dt>Owner rules</dt><dd>hxs-4's durable role, and how LiteLLM rows are treated. AGENT then transcribes.</dd>
+    </dl>
+    <div class="fix"><b>v2 (M-03):</b> model hxs-4 with <em>separate fields</em> — <code>approved durable role</code> and <code>observed/commissioned exception</code> — do not force one to overwrite the other. Scope the LiteLLM-supersession scan to current authority docs only; preserve historical mentions.</div>
+    <div class="packet"><b>Decision packet — what owns hxs-4?</b>
+      <div class="opt">1. <span class="rec">Registry stays the placement authority; add a distinct field recording Qwen3.5-9B as an observed commissioned exception (Recommended).</span> One authority, no overwrite, live runtime captured as evidence. Pairs with P2-04.</div>
+      <div class="opt">2. Rewrite the assigned hxs-4 workload to Qwen3.5-9B. Matches what runs, but overwrites the approved retrieval-plane design and needs a fresh home + capacity ruling for that plane.</div>
+    </div>
+    <div class="gate"><b>Gate:</b> registry and <code>runtime-acceptance-decisions.md</code> no longer disagree about hxs-4; a scan of <em>current authority docs</em> finds no LiteLLM reference lacking an OmniRoute-supersession note; <code>iss-017</code> carries the ruling. Historical docs are untouched.</div>
+  </div>
+</div>
+
+<!-- ============ P2 ============ -->
+<h2 class="band2">P2 — Medium · governance integrity and architecture preparation</h2>
+
+<div class="task">
+  <div class="head"><span class="id id2">P2-01</span><span class="title">Review and rule the expired risks</span><span class="tag t-decision">decision</span><span class="tag owner">OWNER</span><span class="tag eff">S</span></div>
+  <div class="body">
+    <dl class="kv">
+      <dt>Location</dt><dd><code>risk-acceptances.md</code> — <code>risk-001</code>, <code>risk-002</code> still <code>accepted</code> past their trigger.</dd>
+      <dt>Ruling</dt><dd>Register vocabulary: re-affirm as <code>accepted</code> with new scope + date + next trigger, or mark <code>expired</code>, <code>withdrawn</code>, <code>remediated</code>. Record scope, rationale, date, owner, and next trigger.</dd>
+    </dl>
+    <div class="packet"><b>Starting position:</b> <span class="rec">re-affirm both as <code>accepted</code> with a fresh scope and a new trigger ("before the future implementation phase").</span> Bootstrap-credential decisions still hold for a dev/test environment; mark <code>remediated</code> instead only if already rotated.</div>
+    <div class="gate"><b>Gate:</b> neither risk sits past its trigger without a dated ruling carrying all five fields.</div>
+  </div>
+</div>
+
+<div class="task">
+  <div class="head"><span class="id id2">P2-02</span><span class="title">Reconcile the tracker and regenerate the human-facing pages</span><span class="tag t-truth">truth-repair</span><span class="tag t-decision">decision</span><span class="tag eff">M</span><span class="tag">OWNER+AGENT</span></div>
+  <div class="body">
+    <dl class="kv">
+      <dt>Locations</dt><dd><code>governance/actions-and-issues.html</code> lags the Markdown; <code>governance/AGENTS.md</code> routes to non-existent paths; README points to a root tracker; DS4 "zero references" false; <code>act-015</code> open though complete; <code>iss-016</code> a refusal.</dd>
+      <dt>Action</dt><dd>OWNER rules <code>act-015</code>/<code>iss-016</code>. AGENT fixes routing + README, scopes the DS4 claim to historical, regenerates the HTML from the canonical Markdown via <code>tools/build-governance-html.js</code> + <code>make-standalone.js</code>.</dd>
+    </dl>
+    <div class="fix"><b>v2 (M-04):</b> the parity test uses <em>dynamically extracted</em> ID sets — no hard-coded 18/19, since counts change as items open and close.</div>
+    <div class="gate"><b>Gate (failable):</b> extract the action/issue ID sets from Markdown and HTML at run time; assert exact set equality and uniqueness; assert every routing/link path resolves on a case-sensitive filesystem. Red now, green after regen.</div>
+  </div>
+</div>
+
+<div class="task">
+  <div class="head"><span class="id id2">P2-03</span><span class="title">OmniRoute service charter — proposed / parked only</span><span class="tag t-design">design</span><span class="tag t-defer">split</span><span class="tag owner">OWNER</span><span class="tag eff">M</span></div>
+  <div class="body">
+    <dl class="kv">
+      <dt>Gap</dt><dd>F-13 + the mechanism half of <code>iss-017</code>: OmniRoute is "final" in policy but ungoverned as a service.</dd>
+      <dt>Phase 3 scope</dt><dd>Produce a <code>PROPOSED</code>/<code>PARKED</code> service charter: the narrow role, candidate reach mechanisms as <em>alternatives</em>, decision criteria, and a non-mutating test plan. No topology is selected; nothing is measured.</dd>
+    </dl>
+    <div class="fix"><b>v2 (R-03, P2-03 SPLIT/DEFER):</b> topology selection, deployment, and measurement move to the future implementation phase after full-stack recon and owner authorization.</div>
+    <div class="packet"><b>Candidate reach mechanisms (alternatives, not a selection):</b>
+      <div class="opt">A. OmniRoute edge/agent co-located on hxs-4, fronting the loopback socket.</div>
+      <div class="opt">B. An explicit authenticated forward/proxy from hxs-8 to hxs-4 loopback.</div>
+      <div class="opt small">Selection criteria and measurement are defined in the charter and executed later; neither is chosen now.</div>
+    </div>
+    <div class="gate"><b>Gate:</b> a charter exists marked <code>PROPOSED/PARKED</code> with alternatives, criteria, and a non-mutating test plan; <code>accepted-network-consumable</code> remains NOT GRANTED; no measurement or deployment occurs in Phase 3.</div>
+  </div>
+</div>
+
+<div class="task">
+  <div class="head"><span class="id id2">P2-04</span><span class="title">Adjudicate the hxs-4 as-built record</span><span class="tag t-decision">decision</span><span class="tag owner">OWNER</span><span class="tag eff">S</span></div>
+  <div class="body">
+    <dl class="kv">
+      <dt>Finding</dt><dd>F-06 (conditional): hxs-4 has a commissioned runtime but no as-built record.</dd>
+    </dl>
+    <div class="fix"><b>v2 (M-05):</b> do <em>not</em> use <code>configuration.md</code> — that filename is reserved for the future implementation phase. Record the exception in a clearly named file instead.</div>
+    <div class="packet"><b>Decision packet:</b>
+      <div class="opt">1. <span class="rec">Classify as an exceptional runtime experiment; record it in <code>servers/hxs-4/runtime-experiment-record.md</code> (or an exception section of the accepted-runtime evidence), linking the workload JSON and report (Recommended).</span> Honours the discovery-vs-implementation invariant without pretending role config began or consuming the reserved filename.</div>
+      <div class="opt">2. Rule no as-built record is owed until the implementation phase. Cleaner phase logic, but the first live runtime keeps no as-built trace.</div>
+    </div>
+    <div class="gate"><b>Gate:</b> a recorded ruling exists; if a record is owed it uses a non-reserved filename, and a diff proves <code>servers/hxs-4/discovery.md</code> is unchanged.</div>
+  </div>
+</div>
+
+<div class="task">
+  <div class="head"><span class="id id2">P2-05</span><span class="title">Reconcile the LangGraph service design to its final outcome</span><span class="tag t-truth">truth-repair</span><span class="tag eff">S</span><span class="tag">AGENT</span></div>
+  <div class="body">
+    <dl class="kv">
+      <dt>Location</dt><dd><code>services/langgraph/service.md</code> retains the four-review / CONDITIONAL-PASS account after its own five-FAIL result.</dd>
+      <dt>Action</dt><dd>Align to <code>langgraph-review-verdicts.md</code> (five FAIL). Keep the design PARKED.</dd>
+    </dl>
+    <div class="gate"><b>Gate:</b> a grep asserts no residual four-review or CONDITIONAL-PASS text; the doc matches the verdicts file.</div>
+  </div>
+</div>
+
+<div class="task">
+  <div class="head"><span class="id id2">P2-06</span><span class="title">Restore the canonical regression-suite path</span><span class="tag t-control">control-repair</span><span class="tag eff">S</span><span class="tag">WS+AGENT</span></div>
+  <div class="body">
+    <dl class="kv">
+      <dt>Location</dt><dd><code>tests/remediation-tests-restored.ps1</code> vs required <code>tests/remediation-tests.ps1</code>; <code>iss-010</code> (Norton delete-pending lock).</dd>
+      <dt>Action</dt><dd><strong>First confirm the lock still exists.</strong> If it does, use the least-disruptive release available; if it does not, skip straight to canonicalize. Then rename, re-run, update <code>iss-010</code> with a version stamp.</dd>
+    </dl>
+    <div class="fix"><b>v2 (P2-06 REVALIDATE):</b> do not prescribe a reboot before confirming the lock is still held.</div>
+    <div class="gate"><b>Gate:</b> the suite runs under the canonical name; the <code>.claude/AGENTS.md</code> path resolves; the pass count is recorded with the suite version.</div>
+  </div>
+</div>
+
+<!-- ============ P3 ============ -->
+<h2 class="band3">P3 — Low · hygiene and deliberate posture</h2>
+
+<div class="task">
+  <div class="head"><span class="id id3">P3-01</span><span class="title">Version-stamp the current normative baselines</span><span class="tag t-truth">truth-repair</span><span class="tag eff">S</span><span class="tag">AGENT</span></div>
+  <div class="body">
+    <dl class="kv"><dt>Addresses</dt><dd>D-5 — 153 vs 154 read as disagreement (latest baseline 154/0).</dd>
+    <dt>Action</dt><dd>Stamp the suite version/commit on the <em>current normative</em> counts. Leave historical counts as dated history.</dd></dl>
+    <div class="fix"><b>v2 (P3-01 NARROW):</b> do not rewrite every historical count in the repo — only the current baseline.</div>
+    <div class="gate"><b>Gate:</b> every current normative count carries a version/commit tag; historical counts remain labelled as history.</div>
+  </div>
+</div>
+
+<div class="task">
+  <div class="head"><span class="id id3">P3-02</span><span class="title">Correct the externally-located-assets note</span><span class="tag t-truth">truth-repair</span><span class="tag eff">S</span><span class="tag">AGENT</span></div>
+  <div class="body">
+    <dl class="kv"><dt>Addresses</dt><dd>D-3 (softened) — global skills and the <code>ELI5</code> style are user-level assets, not repo files.</dd>
+    <dt>Action</dt><dd>Mark them "externally located, not verifiable from this snapshot"; document that the <code>outputStyle</code> lives outside the repo.</dd></dl>
+    <div class="gate"><b>Gate:</b> no doc asserts the assets exist as repo files, and none calls them phantom.</div>
+  </div>
+</div>
+
+<div class="task">
+  <div class="head"><span class="id id3">P3-03</span><span class="title">Decide the repository maturity posture</span><span class="tag t-decision">decision</span><span class="tag owner">OWNER</span><span class="tag eff">S</span></div>
+  <div class="body">
+    <dl class="kv"><dt>Addresses</dt><dd>F-15 — no LICENSE / SECURITY, while <code>risk-003</code> accepts public visibility.</dd></dl>
+    <div class="fix"><b>v2 (M-nudge):</b> do not conflate public visibility with a reuse licence — they are separate decisions.</div>
+    <div class="packet"><b>Starting position:</b> <span class="rec">add a SECURITY note and an explicit "all rights reserved / no licence granted" statement.</span> Public visibility is accepted; reuse is not implied.</div>
+    <div class="gate"><b>Gate:</b> a recorded decision exists; visibility and licensing are stated as distinct choices.</div>
+  </div>
+</div>
+
+<!-- ============ DEFERRED DESIGN ============ -->
+<h2 class="plain">Deferred design — carried out of Phase 3, before implementation</h2>
+
+<div class="task">
+  <div class="head"><span class="id idf">P-F1</span><span class="title">Design the future server-mutation authorization record</span><span class="tag t-design">design</span><span class="tag t-defer">deferred</span><span class="tag owner">OWNER</span><span class="tag eff">M</span></div>
+  <div class="body">
+    <dl class="kv">
+      <dt>Why deferred</dt><dd>P1-02 hard-locks Phase 3. Before implementation, a precise authorization record must replace the hard lock — designed, not improvised.</dd>
+      <dt>Required spec</dt><dd>Exact owner identity; target scope (which hosts); permitted action class; the phase it applies to; a time/change window; a single canonical occurrence (no duplicates); and default-deny parsing.</dd>
+    </dl>
+    <div class="fix"><b>v2 (R-05):</b> this is the "future authorization record" the review asked for — kept out of Phase 3 execution.</div>
+    <div class="gate"><b>Gate (failable matrix):</b> the parser denies by default and is tested against missing, malformed, duplicate, stale, wrong-target, OFF, and one valid scoped authorization — deny in the first six, release only in the last.</div>
+  </div>
+</div>
+
+<!-- ============ CROSS-CUTTING ============ -->
+<h2 class="plain">Cross-cutting — remediating "the good" by protecting it</h2>
+
+<div class="task">
+  <div class="head"><span class="id idc">C-01</span><span class="title">Do-no-harm constraint + closing preservation gate</span><span class="tag t-preserve">preserve</span><span class="tag eff">S</span><span class="tag">AGENT</span></div>
+  <div class="body">
+    <dl class="kv"><dt>Protects</dt><dd>Evidence-first culture; immutable <code>discovery.md</code> records; pinned ledger hash <code>64eb356f…cd59</code>; P-A / P-B; the four capability boundaries.</dd></dl>
+    <div class="fix"><b>v2 (M-06):</b> compare against the <em>verified baseline objects/hashes</em>, not merely the working-tree diff — a clean diff cannot detect a prior accidental change.</div>
+    <div class="gate"><b>Closing gate:</b> all 15 <code>discovery.md</code> files and the resolved ledger match the verified baseline objects (by hash, not just diff); the resolved-ledger hash equals <code>64eb356f…cd59</code>; the runtime-invariant suite is green; the four boundaries are stated intact.</div>
+  </div>
+</div>
+
+<div class="task">
+  <div class="head"><span class="id idc">C-02</span><span class="title">Close Phase 3 by approving the reconciled baseline and decision roadmap</span><span class="tag t-verify">verify</span><span class="tag owner">OWNER</span><span class="tag eff">S</span></div>
+  <div class="body">
+    <dl class="kv"><dt>Action</dt><dd>OWNER approves the reconciled truth baseline and the next decision sequence. This does <em>not</em> automatically select a first implementation target.</dd></dl>
+    <div class="fix"><b>v2 (C-02 RENAME):</b> closing Phase 3 authorizes only the next approved decision or planning activity. Whether/when implementation begins — and what that phase is called — is a separate explicit owner authorization.</div>
+    <div class="gate"><b>Gate:</b> a recorded owner approval of the reconciled baseline + roadmap exists; no implementation is authorized by this step.</div>
+  </div>
+</div>
+
+<!-- ============ OWNER RULINGS ============ -->
+<h2 class="plain">Owner rulings required (8)</h2>
+<table>
+<thead><tr><th>Ruling</th><th>Task</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td><strong>P-D0 · Name the future implementation phase</strong></td><td>enables P1-01</td><td>Assign a number (e.g. Phase 4) or keep it "number TBD." An agent must not invent it (R-02).</td></tr>
+<tr><td>What owns hxs-4?</td><td>P1-05</td><td>Approved role vs observed exception, as separate fields.</td></tr>
+<tr><td>Expired-risk disposition</td><td>P2-01</td><td>Register vocabulary + five fields.</td></tr>
+<tr><td>act-015 / iss-016 status</td><td>P2-02</td><td>Close/reclassify.</td></tr>
+<tr><td>OmniRoute — scope only (not topology)</td><td>P2-03</td><td>Charter approval; selection deferred.</td></tr>
+<tr><td>hxs-4 as-built requirement</td><td>P2-04</td><td>Experiment record vs none.</td></tr>
+<tr><td>Maturity/licence posture</td><td>P3-03</td><td>Visibility ≠ licence.</td></tr>
+<tr><td>Baseline + roadmap approval</td><td>C-02</td><td>Closes Phase 3; does not authorize implementation.</td></tr>
+</tbody>
+</table>
+
+<!-- ============ SEQUENCE ============ -->
+<h2 class="plain">Sequence</h2>
+<div class="dep">WAVE 0  Establish evidence        P1-00                       (checkout · hashes · protected branch · baseline outputs)
+WAVE 1  Close the safety gap      P1-01 + P1-02               (lifecycle truth + hard-lock guard — merge only when both green together)
+WAVE 2  Deterministic repairs     P1-03 · P1-04 · P1-06 · P2-05 · P2-06 · (prep P2-01)
+WAVE 3  Reconcile records         P1-05 · P2-01 · P2-02 · P2-04 · P3-01 · P3-02 · P3-03
+WAVE 4  Architecture decision prep  P2-03 charter · P-F1 auth-record design · full-stack recon synthesis · true-north principles
+CLOSE   C-01 preservation gate ─▶ C-02 approve baseline + roadmap ─▶ (separate) future implementation authorization</div>
+
+<!-- ============ DoD ============ -->
+<h2 class="plain">Definition of done — two gates</h2>
+<div class="verdict info"><strong>Gate A — Remediation baseline complete.</strong> All P1 truth/control repairs pass their failable gates (P1-00…P1-06); P2-02, P2-05, P2-06 done; the expired-risk, tracker, and hxs-4 rulings recorded; C-01 preservation gate green. This is the reconciled-truth baseline.</div>
+<div class="verdict info"><strong>Gate B — Future-implementation authorization ready.</strong> The OmniRoute charter, the P-F1 authorization-record design, the hxs-4 authority ruling, the named implementation phase (P-D0), and full-stack recon are complete, and C-02 is signed. Only Gate B can precede an implementation authorization — and even then that authorization is a separate, explicit owner act.</div>
+<p class="small">These two gates resolve the v1 contradiction (M-07): several owner rulings live in P2/P3, so "all rulings required" and "P2/P3 non-blocking" cannot both gate the same thing. Gate A is the truth baseline; Gate B is the decision readiness. P2/P3 hygiene items not named in Gate A are tracked, not blocking.</p>
+
+<!-- ============ MIN GATES ============ -->
+<h2 class="plain">Minimum corrected acceptance gates (from the review)</h2>
+<div class="card" style="background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 18px">
+<ol>
+<li>The joint-brief filename and full SHA-256 match the governing artifact; the superseded draft is labelled.</li>
+<li>No current authority document claims Phase 2 = server configuration or Phase 3 = server implementation; history stays intact and labelled.</li>
+<li>Protected mutation commands deny by default for READY, COMPLETE, missing, malformed, duplicate, and unrecognized states.</li>
+<li>No acceptance test invokes a live server, remote endpoint, package/service/storage/network command, or operational commissioning path.</li>
+<li>The installer yields structurally identical config after one and two runs, with exactly the seven packaged hook commands.</li>
+<li>Runtime-contract recovery traces to a known-good Git object or separately evidenced reconstruction; semantic required fields pass.</li>
+<li>Markdown and HTML tracker ID sets are equal and unique, with no hard-coded totals.</li>
+<li>All 15 discovery records and the resolved ledger match the verified baseline objects, not just the working tree.</li>
+<li>OmniRoute stays proposed/parked; no network-consumable grant in Phase 3.</li>
+<li>Phase 3 closure authorizes only the next decision/planning activity unless the owner separately, explicitly authorizes implementation.</li>
+</ol>
+</div>
+
+<footer>
+<p><strong>Prepared by:</strong> Claude (Opus 4.8), incorporating ChatGPT/Codex review · <strong>Date:</strong> 2026-08-15 · <strong>Owner:</strong> Jarvis Richardson, Hana-X AI.</p>
+<p><strong>Governing source:</strong> Joint Reconnaissance &amp; Reconciliation Brief (final), SHA-256 <code>a788e800…31a8</code>; superseded draft <code>38f403e4…f9c9d</code>. Edit targets verified against the repository source. <strong>Scope:</strong> Phase 3 is document, decision, and control-correction work only; no task authorizes a server change, and no test contacts a live system.</p>
+</footer>
+
+</main></body></html>
