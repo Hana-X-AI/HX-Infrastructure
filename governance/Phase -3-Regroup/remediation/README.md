@@ -60,7 +60,7 @@ This index records the reconnaissance-and-remediation artifacts for the Phase 3 
 - `P3-03` — repository maturity / licence posture.
 - `C-02` — approve reconciled baseline + roadmap (closes Phase 3).
 
-> Placement note: the v3 SHA-256 (`ce206cb2…a6886`) is recorded in the tables above. It includes the verified correction from four reproducible evidence rows to three.
+> Placement note: the v3 SHA-256 (`6317299d…d998e45`) is recorded in the tables above. It includes the verified correction from four reproducible evidence rows to three.
 
 ## Reconciliation notes
 
