@@ -10,7 +10,7 @@ Fleet-level source of truth for discovery status, manual role assignment, and Ph
 - Roles and workloads/models are entered only after manual review and approval.
 - `configuration.md` copies approved role and workload/model values from this registry; it does not assign them.
 - Agents must not assign roles automatically.
-- Phase 2 means repository consolidation and alignment. Server implementation is Phase 3.
+- Phase 2 means repository consolidation and alignment. Server implementation is a later owner-authorized phase; Phase 3 is Regroup & Reconciliation.
 
 ## Discovery Status Values
 
@@ -83,11 +83,7 @@ output rather than by re-contacting the hosts.
 make it. `hxs-cp` is the control plane, deliberately outside the fifteen-server fleet, and
 holds no row here.
 
-**Retired as a control on 2026-08-13, kept as a record.** All seven conditions are complete and `act-012` is closed. **Phase 2 is open** — Phase 2 now means repository consolidation and alignment; server implementation is Phase 3. The Phase 1
-command guard is released as a direct consequence: package installation, service management,
-network, storage and driver commands are no longer denied fleet-wide. Phase 2 work is bounded
-by the approved role for each server rather than by the guard, and `configuration.md` copies
-the role and workload values from this table without reinterpreting them.
+**Retired as a control on 2026-08-13, kept as a record.** All seven conditions are complete and `act-012` is closed. **Phase 2 consolidation opened** and server implementation remains deferred to a later owner-authorized phase (Phase 3 is Regroup & Reconciliation). The Phase 3 mutation guard is hard-locked for every registry status; the Phase 2 status is retained for the session dashboard only.
 
 **Phase 1 Status:** COMPLETE
 **Phase 2 Status:** READY

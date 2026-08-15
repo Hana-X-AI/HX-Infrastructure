@@ -32,7 +32,7 @@ Automation must preserve these boundaries:
 
 - Phase 1 automation may discover and document but may not assign roles, workloads, or models.
 - Phase 1 automation may not perform persistent role-specific configuration.
-- Phase 2 release state must follow the lifecycle vocabulary defined by `SERVER-REGISTRY.md`.
+- The mutation guard is hard-locked in Phase 3 (Regroup); no `SERVER-REGISTRY.md` Phase 2 status value releases it. The registry vocabulary is retained for the session dashboard only.
 - hooks are deterministic guardrails, not a substitute for authoritative project state.
 - skills implement repeatable workflows; hooks should not contain complex knowledge workflows.
 - missing or malformed hook input must not silently create a fail-open path for a protected operation.

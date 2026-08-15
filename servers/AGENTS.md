@@ -51,11 +51,11 @@ Automation must not populate or infer:
 - `Workload / Model`;
 - manual approval decisions.
 
-### phase 2 — configuration
+### future server implementation phase — configuration
 
-Do not create or modify a server's `configuration.md` while Phase 2 is blocked.
+Do not create or modify a server's `configuration.md` until the owner authorizes the future server implementation phase.
 
-When Phase 2 is legitimately open:
+When that phase is legitimately authorized:
 
 - copy the approved role/workload from `SERVER-REGISTRY.md`;
 - configure only the approved role;

@@ -1,11 +1,11 @@
 # HX-Infrastructure Claude Code Hooks
 
-This package installs the five approved project hooks without replacing the rest of `.claude/settings.json`.
+This package installs the seven approved project hook commands without replacing the rest of `.claude/settings.json`.
 
 ## Hooks
 
 1. `SessionStart` — injects current Phase 1 / Phase 2 and registry counts.
-2. `PreToolUse` — blocks obvious role-specific or persistent configuration while Phase 2 is blocked.
+2. `PreToolUse` — hard-locks obvious role-specific or persistent server configuration during Phase 3 (Regroup); no registry status releases it.
 3. `PostToolUse` — validates `discovery.md` and `SERVER-REGISTRY.md` after Claude writes/edits them.
 4. `SubagentStop` — requires the `server-discovery` subagent to leave a valid completed discovery record before it exits.
 5. `Notification` — displays a Windows alert when Claude Code is idle or a background agent needs input.
@@ -54,17 +54,13 @@ SubagentStop
 Notification
 ```
 
-## Phase Gate
+## Phase Gate — Phase 3 hard-lock
 
-`PreToolUse` considers Phase 2 open only when the authoritative `SERVER-REGISTRY.md` lifecycle value is `READY`, `IN PROGRESS`, or `COMPLETE`:
+During Phase 3 (Regroup) the `PreToolUse` guard denies server mutation for **every** registry state. No `Phase 2 Status` value — `READY`, `IN PROGRESS`, `COMPLETE`, `BLOCKED`, missing, or unrecognized — releases it. The registry `Phase 2 Status` column is retained for the session dashboard, but it no longer gates the guard.
 
-```text
-**Phase 2 Status:** READY
-```
+The guard blocks obvious package installation/upgrades, service mutations, Netplan apply/try, firewall mutation, storage formatting/partitioning, NVIDIA driver installation, model downloads, vLLM serving/install commands, Ollama mutations, and creation/editing of per-server `configuration.md`.
 
-`BLOCKED` keeps the guard active, as does a missing registry file. `READY` is set only after the fleet-wide Phase 1 gate is complete.
-
-Until then, the guard blocks obvious package installation/upgrades, service mutations, Netplan apply/try, firewall mutation, storage formatting/partitioning, NVIDIA driver installation, model downloads, vLLM serving/install commands, Ollama mutations, and creation/editing of per-server `configuration.md`.
+The authorization record that replaces this hard lock — allowing scoped, owner-authorized mutation in the later implementation phase — is designed in the Transition Stage (P-F1), not here.
 
 The hook is a defense-in-depth guardrail, not a complete sandbox or the source of truth. Claude permission deny rules provide stronger deterministic enforcement where an applicable rule can be defined. `GOALS-AND-OBJECTIVES.md`, `CLAUDE.md`, and the server registry remain authoritative.
 
@@ -72,7 +68,7 @@ The hook is a defense-in-depth guardrail, not a complete sandbox or the source o
 
 `.claude/settings.json` also carries a `permissions.deny` list covering the irreversible storage operations that `INFRASTRUCTURE-CONTRACT.md` section 10.5 requires explicit approval for in **any** phase: `mkfs`, `wipefs`, `sgdisk`, `pvcreate`, `vgcreate`, `lvcreate`, and `mdadm --create`.
 
-These rules are deliberately phase-independent. Unlike the hook, they are not released when the registry reaches `READY`, because the contract prohibits those operations without approval in Phase 2 as well.
+These rules are deliberately phase-independent. Like the Phase 3 hard-locked hook, they are never released by a registry status value, because the contract prohibits those operations without explicit approval in any phase.
 
 Permission rules match on a command prefix, so they cannot cover every invocation form. The `PreToolUse` hook remains the broader, registry-aware layer; the deny list is the deterministic backstop for the highest-impact commands. This installer does not write permission rules — `apply-hooks.ps1` merges only the `hooks` section and leaves the rest of `settings.json` untouched.
 
