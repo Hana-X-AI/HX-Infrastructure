@@ -1,0 +1,57 @@
+GitHub Copilot Phase 3 remediation validation results
+Date: 2026-08-15
+Worktree: <remediation-worktree>
+Branch: remediation/phase3
+Baseline: 52b76f9185d4f38a8585a8a0eded2ce83a20f040
+
+PASS: _s2.py compiles.
+PASS: _s2.py missing-body and missing-eyebrow fixtures exit nonzero without changing target bytes.
+PASS: _s2.py existing-banner fixture exits nonzero without changing target bytes.
+PASS: _s2.py valid fixture inserts one banner; a second run cannot change or duplicate it.
+PASS: diffbrief.ps1 parses.
+PASS: p100runbook.ps1 parses.
+PASS: p100runbookrev.ps1 parses.
+PASS: p101scan.ps1 parses.
+PASS: diffbrief.ps1 reports a case-only difference as one ADD and one DEL.
+PASS: diffbrief.ps1 reports numeric single-item totals under Windows PowerShell 5.1.
+PASS: p101scan.ps1 red fixture preserves its report and exits 1.
+PASS: p101scan.ps1 green fixture preserves its report and exits 0.
+PASS: p101scan.ps1 missing-path, main-branch, other-branch, and detached-HEAD fixtures exit 1 before report generation.
+PASS: p101scan.ps1 valid future-phase wording fixture exits 0 with zero stale hits.
+PASS: operational and packaged p101scan.ps1 copies are byte-identical.
+PASS: legacy p101scan.ps1 excludes the exact READY dashboard value, writes p1-01-scan-v1-* evidence, and does not overwrite scanner-v2 output.
+PASS: both P100 helpers report MATCH for all three present artifacts and no DIFF results.
+PASS: five changed HTML files have balanced structural tags.
+PASS: all local links in the changed HTML files resolve.
+PASS: original line-ending style was preserved for checked changed files.
+PASS: git diff --check completed without whitespace errors.
+PASS: regenerated worktree patch reverse-checks against the current remediation worktree.
+PASS: no VS Code diagnostics were reported for changed Python, PowerShell, or P1-01 Markdown files.
+PASS: current diff contains no private-key, GitHub-token, AWS-key, or quoted credential-assignment shape.
+PASS: package summary and validation record contain no local account or workstation path.
+PASS: on-disk joint brief SHA-256 is f58b1a4a8852a5593dd39c5ed9420243e391861fa9ffe734b9980b7ac745f307.
+PASS: corrected-final joint brief comparison copy SHA-256 is a788e80067553604ad0009bb4979f076b88bcb05cff990839b4db31fe69531a8.
+PASS: current v3 remediation plan SHA-256 is 6317299dfd591e0eabfd1b9184110a5d8c52ba9578b3492879758f55cd998e45.
+PASS: current Copilot review SHA-256 is 11d4b863db4e713d7b211c3fcdc97e587fb79a0a249592f86bc0df611e587d1a and matches the remediation index and both P100 helpers.
+PASS: current Phase 3 records contain no obsolete Copilot/v3 digest or completed P1-00 claim.
+PASS: P1-01 requested authority-text assertions passed.
+PASS: P1-01 before scan recorded 11 matches.
+PASS: P1-01 intermediate scan recorded 7 matches: 6 P1-02 and 1 P1-04.
+PASS: p101scanv2.ps1 parses and references its actual delivered filename.
+PASS: p101scanv2.ps1 missing-path, non-repository, main-branch, other-branch, and detached-HEAD fixtures fail closed; the remediation branch fixture runs.
+PASS: p101scanv2.ps1 fixture counts stale "Phase 2 is open" and "command guard is released" assertions while excluding the exact dashboard status value.
+PASS: p101scanv2.ps1 scans both guard implementations and its fixture detects a Test-HxPhase2Open invocation as one P1-02 hit.
+PASS: P1-01/P1-02/P1-04 green scan recorded all three subtotals at 0 and TOTAL STALE HITS: 0.
+PASS: the retired Phase 1 gate record no longer claims the command guard is released and states the Phase 3 hard-lock explicitly.
+PASS: the Phase 3 index marks v2 superseded, indexes the actual v3 artifact as current, and identifies v3 as the sole current planning artifact.
+PASS: the Claude instruction record defers server implementation to a later owner-authorized phase without an obsolete Phase 2 gate instruction.
+PASS: the execution spec describes only protected mutations matched by bounded Write, Edit, Bash, and PowerShell rules.
+PASS: the v3 placement note matches the verified artifact digest 6317299dfd591e0eabfd1b9184110a5d8c52ba9578b3492879758f55cd998e45.
+PASS: active and packaged hx-phase1-guard.ps1 files are byte-identical.
+PASS: full remediation regression suite completed with 160 passes and 0 failures.
+
+OPEN: P1-00 remains incomplete pending its owner-attested provenance exit gate; current present-artifact hash checks pass.
+OPEN: P1-01 cannot pass until its P1-00 entry gate passes; its seven scan findings are resolved.
+OPEN: Final cold verifier review is recorded separately in this package after completion.
+
+Remediation tip d1ad55de was pushed to origin/remediation/phase3 after validation. No server mutation was performed.
