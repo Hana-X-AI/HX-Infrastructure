@@ -1,0 +1,300 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LangGraph Distillation — Execution Brief for Claude Code</title>
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--panel2:#1c2129;--bd:#30363d;--fg:#e6edf3;--dim:#8b949e;--acc:#58a6ff;
+--ok:#3fb950;--warn:#d29922;--stop:#f85149;--purple:#bc8cff;--orange:#f0883e;--green:#7ee787}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.62 -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.wrap{max-width:1060px;margin:0 auto;padding:32px 22px 90px}
+header.hero{border:1px solid var(--bd);border-radius:14px;background:linear-gradient(150deg,#161b22,#0d1117);padding:26px 28px;margin-bottom:22px}
+.hero h1{margin:0 0 6px;font-size:24px}
+.hero .sub{color:var(--dim);font-size:14px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.meta span{background:var(--panel2);border:1px solid var(--bd);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--dim)}
+.meta b{color:var(--fg)}
+h2{font-size:18px;margin:30px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--bd)}
+h2 .k{color:var(--acc);font-weight:700;margin-right:8px}
+h3{font-size:15px;margin:18px 0 6px}
+.lead{color:var(--dim);margin:-2px 0 14px;font-size:14px}
+p{margin:8px 0}
+.callout{border-left:4px solid var(--acc);background:var(--panel2);border-radius:0 10px 10px 0;padding:14px 18px;margin:14px 0}
+.callout.stop{border-left-color:var(--stop)}.callout.ok{border-left-color:var(--ok)}.callout.warn{border-left-color:var(--warn)}
+.callout h3{margin:0 0 6px;font-size:15px}
+.callout p{margin:0 0 6px;color:var(--dim);font-size:13.5px}.callout p:last-child{margin-bottom:0}
+code{background:#0d1117;border:1px solid var(--bd);border-radius:5px;padding:1px 5px;font:12.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:#79c0ff}
+pre{background:#0d1117;border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow:auto;font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;color:#dbe4ee;white-space:pre}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--bd);vertical-align:top}
+th{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.5px;background:var(--panel)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+.req{display:flex;gap:13px;background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:13px 15px;margin:9px 0}
+.rnum{flex:none;width:28px;height:28px;border-radius:50%;background:var(--panel2);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--acc);font-size:13px}
+.req h4{margin:0 0 3px;font-size:14px}
+.req p{margin:0;color:var(--dim);font-size:13px}
+ul.tight{margin:6px 0 0;padding-left:20px;color:var(--dim);font-size:13.5px}
+ul.tight li{margin:4px 0}ul.tight b,ul.tight code{color:var(--fg)}
+.tree{background:#0d1117;border:1px solid var(--bd);border-radius:10px;padding:14px 16px;font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--fg);overflow:auto;white-space:pre}
+.pill{display:inline-block;font-size:11px;font-weight:600;border-radius:20px;padding:1px 9px;border:1px solid}
+.p-dont{color:var(--stop);border-color:var(--stop)}
+.sme{display:inline-block;background:var(--panel2);border:1px solid var(--bd);border-radius:6px;padding:3px 9px;margin:3px 4px 3px 0;font-size:12px;font-family:ui-monospace,Menlo,monospace;color:var(--green)}
+.sme.rq{background:rgba(63,185,80,.12);border-color:var(--ok);display:inline-flex}
+.foot{color:var(--dim);font-size:12px;margin-top:36px;border-top:1px solid var(--bd);padding-top:16px}
+.chk{color:var(--ok);font-weight:700}.x{color:var(--stop);font-weight:700}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:720px){.grid2{grid-template-columns:1fr}}
+.box{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px}
+.box.do{border-left:4px solid var(--ok)}.box.dont{border-left:4px solid var(--stop)}
+</style></head><body><div class="wrap">
+
+<header class="hero">
+<h1>LangGraph — Distillation Pilot · Execution Brief</h1>
+<div class="sub">For Claude Code, repository-document migration mode. Second run of the frozen migration pattern: distil 213 historical lang-server files into one target-state <code>services/langgraph/service.md</code>. No waiver this time — real archive ref, four SME contracts, proven substrate.</div>
+<div class="meta">
+<span>Prepared by <b>Claude (Opus 4.8)</b></span>
+<span>Date <b>2026-08-14 07:30</b></span>
+<span>Mode <b>REPOSITORY-DOCUMENT MIGRATION — no infra</b></span>
+<span>Deliverable <b>services/langgraph/service.md</b></span>
+</div></header>
+
+<div class="callout ok"><h3>This reuses the frozen pattern unchanged</h3>
+<p>The Docling pilot proved the method and it was accepted. LangGraph inherits it verbatim: the ledger schema and invariants, the single-source-of-record archive, the capability-contract + real-review workflow, and the acceptance gate families (<code>governance/policy/repository-migration-pattern.md</code>). What changes is the <b>domain</b> — agent orchestration instead of document parsing — and the domain SME pair. Everything the Docling pass learned is carried, especially: re-verify current upstream from source, and never let coverage numbers be asserted rather than counted.</p>
+<p style="margin-top:8px">This is the <b>second and final method pilot</b>. Docling validated the basic distillation mechanics; LangGraph validates the method against a <i>stateful orchestration service with several external contracts</i>. If it lands, the migration method stops being a "pilot" and becomes the repository's standard legacy-mining workflow.</p></div>
+
+<h2><span class="k">0</span>Operating mode, branch &amp; hard boundaries</h2>
+<div class="callout warn"><h3>Branch from the current tip of <code>migration/docling-pilot</code>, not from <code>main</code></h3>
+<p>The frozen pattern, the resolved ledger, and the four SME contracts live on <code>migration/docling-pilot</code> &mdash; <code>main</code> is still the 2025 lineage and does not have them. Create <code>migration/langgraph-pilot</code> <b>from the current tip of <code>migration/docling-pilot</code></b>. The accepted baseline commit <code>59cc73b</code> must be an ancestor of that tip; verify this before proceeding. (<code>legacy/2025</code> is a repository-wide ref that exists independently &mdash; the branch doesn&rsquo;t &ldquo;inherit&rdquo; it, it just resolves it.) Do not branch from <code>main</code>. Do not merge to <code>main</code> (that is the deferred consolidation decision).</p></div>
+<div class="callout stop"><h3>Boundaries</h3>
+<p><b>Document/ledger writes only.</b> No SSH, package installs, server/service config, deployment, model download, or infrastructure mutation. This is a distillation, not a commissioning — unlike the hxs-4 runtime work, nothing here touches a host.</p>
+<p><b>GO for distillation, NO-GO for deployment.</b> Do NOT begin any LangGraph implementation or deployment on hxs-11 during this pass. The persistence boundaries, model-routing contract, Mem0 relationship and Docling→LightRAG handoff all touch LangGraph — the target-state design must be settled before a running service starts creating facts we then have to reconcile.</p>
+<p><b>Frozen pattern &amp; ledger.</b> Do not re-open the migration design or re-classify ledger rows. If a row looks wrong, note it in the return package.</p>
+<p><b>Secret-clean.</b> Credentials are dead per owner decision (risk-003 / iss-012) and gate nothing, but still never write a literal — reference by ID only. Never open the retired row for content (§2).</p>
+<p><b>No shadow archive.</b> The 213 historical files stay in <code>legacy/2025</code>; none may be copied under active <code>main</code>/branch tree.</p></div>
+
+<h2><span class="k">1</span>Pre-flight — STOP on failure</h2>
+<pre>PRE-FLIGHT — STOP ON FAILURE
+
+1. Parent baseline (record the exact parent commit; verify the accepted baseline is in it):
+   parent branch     : migration/docling-pilot   (current tip; 02666a9 at last report)
+   accepted baseline : 59cc73b  (accepted Docling pilot) — MUST be an ancestor
+   Create migration/langgraph-pilot FROM the current migration/docling-pilot tip, and record
+   that tip SHA as the parent. Verify 59cc73b is an ANCESTOR (accepted Docling present); if it
+   is not, STOP and report the divergence. Branching from the tip (not 59cc73b directly) is
+   deliberate — it carries governance added since, including the hxs-4 runtime-acceptance
+   policy cited in §7. legacy/2025 is a repository-wide ref that exists independently. NOT
+   from main.
+
+2. Frozen ledger identity (pin, do not trust the phrase "v3.1"):
+   path  : governance/reports/claude/manifestv3.1resolved.jsonl
+   sha256: 64eb356f5b22d39c4705e2babb48a16fe6a20e3fa4d5747cba6ed7516c64cd59
+   record it as manifest_resolved_sha256; if the hash does not match, STOP.
+   base manifest path  : governance/reports/claude/manifestv3.jsonl
+   base manifest sha256: &lt;record exact sha256sum of manifestv3.jsonl here before execution&gt;
+   record it as manifest_base_sha256; verify before reading provenance.
+
+3. Source of record (the intentional protected RAW archive — see risk-003):
+   ref    : legacy/2025
+   commit : a98846d6930f7b0097e7ac237c93b60280f99e44
+   Read historical content ONLY from legacy/2025 @ a98846d6. No alternate historical
+   source, working-tree copy, prior export, session dump, or other ref may be substituted.
+
+4. LangGraph ledger scope:
+   total rows            : 213  (lgc-262..lgc-474, owner_capability=langgraph)
+   never-open content    :   1  (lgc-302, retired ansible-vault task)
+   content-review eligible: 212
+
+5. Required assets present on the branch:
+   - governance/policy/repository-migration-pattern.md   (frozen pattern)
+   - governance/policy/runtime-acceptance-decisions.md   (hxs-4 model authority, cited §7)
+   - .claude/agents/{infrastructure-ops,testing-qa,lightrag}.md   (existing SME contracts)
+   If runtime-acceptance-decisions.md is absent (it may live only on
+   feature/ai-runtime-acceptance), STOP and report — it must be reconciled onto the
+   migration line before the design can cite it as authority.</pre>
+
+<h2><span class="k">2</span>Ledger-driven source selection</h2>
+<p class="lead">Select from the frozen ledger, not a tree walk. Working set: the 213 rows where <code>owner_capability = "langgraph"</code>, <code>lgc-262</code>…<code>lgc-474</code>, all carrying <code>distill_target: services/langgraph/service.md</code>. Note the lang-server tree has <b>no defects/ subtree</b> — mining shifts to tasks (implementation lessons) and tests (validation discipline).</p>
+<table>
+<thead><tr><th>Subtree</th><th>Rows</th><th>ID range</th><th>Primary value to extract</th></tr></thead>
+<tbody>
+<tr><td class="mono">charter/</td><td>14</td><td class="mono">lgc-262–275</td><td>Original intent, scope boundaries, team/agent ownership evidence.</td></tr>
+<tr><td class="mono">db validation / state</td><td>2</td><td class="mono">lgc-276–277</td><td>The Postgres checkpointer reality — schema, tables, connection. High-value for state/checkpointing.</td></tr>
+<tr><td class="mono">planning / work-stream summary</td><td>2</td><td class="mono">lgc-278, lgc-474</td><td>Deployment/architecture planning + execution summary — what was actually built.</td></tr>
+<tr><td class="mono">specification/</td><td>19</td><td class="mono">lgc-279–297</td><td>Node-spec, agent/graph design, SME contributions, action items.</td></tr>
+<tr><td class="mono">tasks/</td><td>96</td><td class="mono">lgc-298–393</td><td>Implementation lessons — orchestration graph, checkpointer, Redis, model routing, MCP, API. Mine invariants, not step logs. (lgc-302 never-open.)</td></tr>
+<tr><td class="mono">tests/</td><td>80</td><td class="mono">lgc-394–473</td><td>Validation strategy &amp; coverage intent (re-baseline; no old counts).</td></tr>
+<tr><td style="border-top:2px solid var(--bd)"><b>TOTAL (unique)</b></td><td style="border-top:2px solid var(--bd)"><b>213</b></td><td class="mono" style="border-top:2px solid var(--bd)">lgc-262–474</td><td style="border-top:2px solid var(--bd)">sums to the ledger scope.</td></tr>
+</tbody>
+</table>
+
+<h2><span class="k">3</span>Never-open &amp; secret discipline</h2>
+<div class="callout stop"><p>One row is never opened for content; reference by ID only:</p>
+<ul class="tight"><li><code>lgc-302</code> — <span class="pill p-dont">retire</span> <code>tasks/hx-lang-server-task-004-create-ansible-vault-structure.md</code> (ansible-vault; mechanism retired by owner).</li></ul>
+<p>6 rows are <code>secret_risk: confirmed</code> and 5 are <code>inspect</code> — all reference the dead credential classes (legacy-secret-001/002). You may extract their engineering content (that auth/DB connection was expected) but never a literal value. Credentials are dead per owner decision and gate nothing; still, ID-only.</p></div>
+
+<h2><span class="k">4</span>Authority model (target-state, not as-built)</h2>
+<p class="lead">Use the same header the Docling pass used. LangGraph's partner services (LiteLLM, LightRAG, Mem0, Qdrant, Postgres, Redis) are role assignments in the registry, <b>not running services</b> — none is built. Assert design, never as-built.</p>
+<pre># LangGraph
+
+Status: TARGET-STATE DESIGN
+Target placement: &lt;resolve from SERVER-REGISTRY.md&gt;   # v0.3 assigned hxs-11 (LangGraph + Mem0)
+As-built status: NOT ASSERTED BY THIS DOCUMENT
+
+Authority boundary:
+- Authoritative for the current *intended* LangGraph service design.
+- Does NOT assert the service is installed, configured, reachable, or validated.
+- SERVER-REGISTRY.md is authoritative for host/role placement.
+- servers/&lt;host&gt;/configuration.md is the as-built authority AFTER implementation.
+- Legacy 2025 sources are non-authoritative evidence and lessons only.</pre>
+<p>Current-fact authority precedence: (1) SERVER-REGISTRY.md / current infra contracts; (2) current server records + governance; (3) architecture v0.3; (4) this design; (5) legacy 2025 = evidence only. <b>Resolve, never translate</b> hosts/addresses/ports from current authority; unfixed values read <code>VERIFICATION REQUIRED</code>.</p>
+
+<h2><span class="k">5</span>The ten requirements (frozen pattern)</h2>
+<div class="req"><div class="rnum">1</div><div><h4>Ledger-driven source selection</h4><p>Use the exact 213 rows; the IDs you drew on are part of the return package.</p></div></div>
+<div class="req"><div class="rnum">2</div><div><h4>Extract → reconcile → author, never translate</h4><p>Extract invariant knowledge (supervisor/worker graph shape, state/checkpointing, memory, model routing, tool integration, failure modes, validation strategy). Reconcile every current fact against the §4 authority order.</p></div></div>
+<div class="req"><div class="rnum">3</div><div><h4>Current target-state document only</h4><p>Describe LangGraph as intended now. Historical config belongs in provenance.</p></div></div>
+<div class="req"><div class="rnum">4</div><div><h4>Strong provenance</h4><p>Every substantive section traces to ledger IDs. "Why is this here?" answerable without opening 213 files.</p></div></div>
+<div class="req"><div class="rnum">5</div><div><h4>Multi-SME review (real gate — §8)</h4><p>Domain SME owns synthesis; relevant portions route through specialists. 2025 reviews are evidence, never current sign-off.</p></div></div>
+<div class="req"><div class="rnum">6</div><div><h4>Verification markers</h4><p>Versions, ports, APIs, model endpoints, checkpointer DSN, context limits — authority-cited or <code>VERIFICATION REQUIRED</code>. Never silently inherit 2025 values.</p></div></div>
+<div class="req"><div class="rnum">7</div><div><h4>Legacy lesson mining</h4><p>No defects/ subtree here — mine tasks + tests into concise current constraints and validation disciplines (§7).</p></div></div>
+<div class="req"><div class="rnum">8</div><div><h4>Secret-clean output</h4><p>No literals; dead-credential references by ID only.</p></div></div>
+<div class="req"><div class="rnum">9</div><div><h4>No shadow archive</h4><p>213 files stay in <code>legacy/2025</code>; none under the active tree.</p></div></div>
+<div class="req"><div class="rnum">10</div><div><h4>Ledger closure &amp; provenance</h4><p>Per-row provenance bound to <code>manifest_resolved_sha256</code>; <code>distillation_status</code> used / reviewed-not-used / blocked; <code>migration_status</code> stays pending; <code>reviewed_by</code> only where a real review ran.</p></div></div>
+
+<h2><span class="k">6</span>Re-verify current LangGraph upstream (the Docling lesson)</h2>
+<div class="callout warn"><p>Docling taught this the hard way: the 2025 material said "FastMCP" and the current package had moved to MCP SDK v2. <b>Do the same check here.</b> Before authoring, re-verify current LangGraph from source and pin a release + tag/commit + date checked.</p>
+<p style="margin-top:8px"><b>Pin each independently-versioned package independently.</b> <code>langgraph</code>, <code>langchain-core</code>, <code>langgraph-checkpoint</code>, <code>langgraph-checkpoint-postgres</code>, and any agent/supervisor package do NOT move together &mdash; the current release lines are separate. Specifically: the <b><code>langgraph-supervisor</code> package</b> is superseded or unmaintained (the supervisor <i>architecture</i> itself may still be valid &mdash; verify the current orchestration pattern independently). Current upstream guidance points toward <code>create_agent</code> + tool-wrapped subagents as the preferred alternative; treat the orchestration pattern as <code>VERIFICATION REQUIRED</code>, not a given &mdash; see &sect;9.</p>
+<p style="margin-top:8px">Do NOT carry 2025 version pins or API shapes forward as current. Note also the 2025 material assumes Ollama-served models; the current fleet plan is vLLM/Qwen primary — reconcile the model-backend assumption, don't inherit it.</p></div>
+
+<h2><span class="k">7</span>The organizing question: what does LangGraph own?</h2>
+<div class="callout stop"><h3>Concentrate the first pass on one question</h3>
+<p>Docling's risk was package mechanics. LangGraph's danger is different and worse: <b>authority and state-ownership drift</b>. A stateful orchestrator naturally tends to absorb everything it touches. So the distillation must interrogate boundaries aggressively and converge on an explicit answer to: <b>what is LangGraph allowed to own in HX?</b></p>
+<p>Expected convergence — <b>verify, do not assume</b>:</p>
+<pre style="margin:8px 0 0">LangGraph OWNS:
+- graph execution state
+- thread / checkpoint state
+- orchestration control flow
+- interrupt / resume state
+- orchestration-owned metadata
+
+LangGraph does NOT automatically own:
+- durable semantic / user / agent memory   -> Mem0
+- retrieved knowledge                       -> LightRAG
+- vectors / embeddings                      -> Qdrant + embedding plane
+- model routing                             -> LiteLLM
+- general queue infrastructure              -> Redis / platform role
+- MCP server authority                      -> MCP plane
+- infrastructure configuration              -> infrastructure controls</pre></div>
+<h3>Boundary interrogations — resolve each, don't inherit</h3>
+<ul class="tight">
+<li><b>LangGraph Store ↔ Mem0:</b> current LangGraph exposes a <code>Store</code> abstraction for durable cross-thread data — so it can now compete with Mem0 for the exact boundary we're protecting. Decide explicitly: (A) Store unused in HX; (B) Store restricted to orchestration-owned application metadata; or (C) a deliberately defined non-overlapping use. It must NOT silently become a second durable semantic-memory authority just because upstream supports it.</li>
+<li><b>LangGraph ↔ Mem0:</b> checkpoint/workflow state vs durable agent/user memory. Different owners.</li>
+<li><b>LangGraph ↔ PostgreSQL:</b> authoritative persistence + checkpoint storage — who owns what.</li>
+<li><b>LangGraph ↔ Redis:</b> ephemeral coordination/cache/queue vs durable graph state.</li>
+<li><b>LangGraph ↔ LiteLLM:</b> model routing belongs to the gateway. LangGraph <b>requests capabilities/models</b>, never binds directly to Qwen/Ollama/vLLM or "the box that happens to be there."</li>
+<li><b>LangGraph ↔ MCP tool plane:</b> consumes MCP-exposed tools through a current MCP client/adapter contract; does NOT own MCP server registration or gateway policy; must NOT depend on FastMCP-specific server details; must NOT become a second MCP control plane. Transport, discovery, allowed tool surface and failure semantics: <code>VERIFICATION REQUIRED</code>.</li>
+<li><b>LangGraph ↔ LightRAG:</b> retrieval/knowledge belongs to LightRAG; LangGraph sequences its use.</li>
+<li><b>LangGraph ↔ Docling:</b> orchestration may be a <em>candidate</em> owner of the Docling→LightRAG handoff (the open item from the Docling pass) — investigate, do not assume. Whatever this pass finds should feed back to that open Docling decision.</li>
+<li><b>LangGraph ↔ agents:</b> preserve the specialist-agent governance model. The orchestration pattern must NOT become a new source of authority over the specialists.</li>
+</ul>
+<p class="lead">The service.md must then state ownership <b>explicitly</b> (a dedicated "what it owns / does not own" section), not leave it implicit in prose.</p>
+
+<h3>Integration classification</h3>
+<p class="lead">Classify each integration before writing a contract (CURRENT REQUIRED / INDIRECT / LEGACY CANDIDATE / RETIRED). LangGraph is the orchestrator, so it has more live integrations than Docling did.</p>
+<table>
+<thead><tr><th>Integration</th><th>Starting read (verify)</th></tr></thead>
+<tbody>
+<tr><td>Model gateway (LiteLLM, hxs-8) / model endpoints</td><td>Likely <b>CURRENT REQUIRED</b> — the orchestrator must call models. Route through the current gateway contract; do not hardcode an endpoint.</td></tr>
+<tr><td>Postgres checkpointer (hxs-9)</td><td>Likely <b>CURRENT REQUIRED</b> — LangGraph state persistence. The 2025 DB files (lgc-276/277) are the evidence; reconcile schema to current.</td></tr>
+<tr><td>Mem0 (co-located, hxs-11)</td><td><b>CURRENT REQUIRED (domain)</b> — long-term memory; own SME. Note Mem0 has its own Qdrant collection distinct from RAG.</td></tr>
+<tr><td>Redis (hxs-9)</td><td>Verify — session/cache; 2025 used it. CURRENT REQUIRED vs LEGACY CANDIDATE per current design.</td></tr>
+<tr><td>LightRAG (hxs-3)</td><td><b>CURRENT PIPELINE REQUIRED / contract not established</b> — the RAG worker reaches retrieval; mirror the Docling handoff wording. Do not invent a direct contract.</td></tr>
+<tr><td>MCP tool plane / hxs-7 exposure</td><td>Verify — LangGraph consumes MCP tools via a current client/adapter contract (e.g. multi-server MCP client); it does not own MCP server registration and must not depend on FastMCP-specific details. SDK-v2 caveat from Docling applies.</td></tr>
+</tbody>
+</table>
+<div class="callout"><h3>Model-routing boundary — authority: <code>runtime-acceptance-decisions.md</code></h3>
+<p><b>Cite the governed policy, not the commissioning report.</b> The hxs-4 model boundary is now a governance authority — <code>governance/policy/runtime-acceptance-decisions.md</code>, backed by executable invariants (37 PASS / 0 FAIL that fail-closed if the verdict is flipped or the record deleted). The commissioning report is <em>evidence</em>; the policy doc is <em>authority</em>. In service.md, cite the policy:</p>
+<pre>Qwen3.5-9B / hxs-4
+  Authority : governance/policy/runtime-acceptance-decisions.md
+  Status    : ACCEPTED for bounded local utility inference
+  Intended client : LangGraph
+  Constraints : client bounds prompt below the verified 65,536 envelope · thinking
+    disabled unless deliberately required · endpoint loopback-only · OLLAMA_VULKAN=0 kept
+  Exclusion : NOT ACCEPTED as a Claude Code backend</pre>
+<p style="margin-top:8px">The design implication <em>is</em> the ownership boundary: LangGraph <b>consumes</b> an accepted inference capability and enforces its verified envelope before dispatch — it does <b>not</b> own the runtime-qualification decision or rewrite the model's operating envelope. Turn the underlying discovery (an endpoint that <b>silently truncates over-limit prompts and answers confidently from the wreckage</b>) into a clean routing boundary, not a table LangGraph maintains:</p>
+<pre style="margin:8px 0 0">The model-routing plane (LiteLLM) OWNS:
+  endpoint identity · model capability metadata · the VERIFIED context envelope ·
+  routing/fallback policy · ideally fail-closed overflow enforcement
+
+LangGraph OWNS:
+  computing the request it is about to send · honoring the verified envelope the
+  routing plane supplies · refusing / compacting / splitting work before it exceeds
+  that envelope · treating a missing/unverified limit as UNSAFE, never as "probably 200K"</pre>
+<p style="margin-top:8px">So: LangGraph must consume a verified model-capability envelope from the routing plane and never infer safety from provider-advertised context alone. If the gateway can't guarantee fail-closed overflow, LangGraph rejects or reduces an over-budget request before dispatch. Model-specific limits live in the routing/capability contract, not hardcoded in graph logic. Exact per-endpoint limits: <code>VERIFICATION REQUIRED</code>.</p></div>
+
+<h2><span class="k">8</span>SME roster &amp; sign-off gate</h2>
+<p class="lead">Mandatory final reviewers: the domain pair + infra + QA. Integration SMEs mandatory only when their integration is CURRENT REQUIRED. 2025 personas are evidence only; populate <code>reviewed_by</code> only where the contract exists and the review actually ran, else <code>SME REVIEW REQUIRED</code>.</p>
+<p>
+Reconstruct (do not exist yet): <span class="sme rq">langgraph</span><span class="sme rq">mem0</span><br>
+Reuse (exist on the branch): <span class="sme rq">infrastructure-ops</span><span class="sme rq">testing-qa</span><span class="sme">lightrag</span><br>
+Integration SMEs if CURRENT REQUIRED: <span class="sme">litellm</span>
+</p>
+<p class="lead">Build the two new contracts (<code>langgraph</code>, <code>mem0</code>) capability-first per policy <code>P-AGENTS</code> at <code>.claude/agents/&lt;capability&gt;.md</code>, from current authority + current upstream — not from 2025 personas. Then run each specialist's review in a separate context against the draft.</p>
+
+<h2><span class="k">9</span>Target shape of <code>service.md</code></h2>
+<p><strong>Historical / superseded runtime assumption.</strong> This pilot execution brief assumed
+a bare-metal virtual environment managed by systemd. Final owner Decision 3 instead selected a
+packaged server with its own service lifecycle. The final record is
+<code>governance/operations/langgraph/phase-2/Claude-Opus-5_2026-08-14_langgraph-review-verdicts.md</code>,
+“Decision 3 — FINAL: packaged server.” The outline below is retained as pilot history and is
+not current deployment guidance.</p>
+<div class="tree">LangGraph
+├── Status and authority        # TARGET-STATE; as-built NOT asserted (§4 header)
+├── Purpose
+├── Current placement           # resolve from SERVER-REGISTRY (v0.3: hxs-11 + Mem0)
+├── What LangGraph owns / does NOT own   # the boundary decision, explicit (§7)
+├── Owning SME(s)
+├── Architecture                # current orchestration primitives; state graph; compilation
+│                               #   — do NOT assume the 2025 supervisor package survives
+├── Orchestration topology      # VERIFICATION REQUIRED vs current upstream — evaluate:
+│                               #   custom StateGraph · create_agent + tool-wrapped subagents ·
+│                               #   router / handoff · orchestrator-worker Send API
+├── Specialist execution        # HX specialists stay governed capabilities; the orchestration
+│                               #   pattern must NOT become a new authority
+├── State &amp; checkpointing        # Postgres checkpointer (lgc-276/277); no hardcoded DSN
+├── LangGraph Store vs Mem0     # explicit boundary — Store must not become semantic memory
+├── Memory                      # Mem0 integration; its own Qdrant collection
+├── Integration contracts       # each classified §7; only CURRENT REQUIRED gets a contract
+│   ├── Model gateway (LiteLLM)  # + context-window discipline (§7 current-fact input)
+│   ├── LightRAG                 # pipeline-required, contract NOT established
+│   ├── Postgres / Redis
+│   └── MCP tools (provider-neutral MCP gateway)
+├── Runtime and service model   # HISTORICAL / SUPERSEDED: bare-metal venv, systemd; no containers
+├── Configuration model         # no hardcoded endpoints/paths; resolve from registry
+├── Validation requirements     # re-baselined; no 2025 counts
+├── Failure handling            # retries, graceful degradation, human-in-loop
+├── Operational checks
+├── Known gotchas / legacy lessons   # mined from tasks + tests
+├── Current verification required
+└── Provenance                  # section → ledger IDs, reviewers, hashes</div>
+
+<h2><span class="k">10</span>Coverage, closure &amp; validation</h2>
+<ul class="tight">
+<li><b>Coverage language:</b> report exactly — "212 content-eligible reviewed; N contributed distilled content; M reviewed-not-used; 1 blocked." Count per row from the provenance index; never force a number (the Docling 120→115 lesson).</li>
+<li><b>Provenance:</b> bind each record to <code>manifest_base_sha256</code> + <code>manifest_resolved_sha256</code>, ledger_id, legacy_path, source_repo/ref/commit/sha256; <code>distillation_status</code>, <code>distilled_into</code>, <code>reviewed_by</code>, <code>migration_status</code> (stays pending).</li>
+<li><b>Validation before returning:</b> secret-clean (0 literals; the 1 never-open row untouched); no shadow archive (only <code>services/langgraph/service.md</code> + provenance new in tree); provenance completeness (every section → ≥1 ledger ID); verification markers present; coverage accounting = 213 (used + reviewed-not-used + 1 blocked); regression evidence captured in the package, not chat.</li>
+</ul>
+
+<h2><span class="k">11</span>Return package (implement nothing)</h2>
+<ol style="color:var(--dim);font-size:13.5px">
+<li><code>services/langgraph/service.md</code> — the pilot deliverable (target-state).</li>
+<li>New <code>provenance-index</code> entries for the 213 rows (bound to the resolved hash).</li>
+<li>The two new SME contracts (<code>langgraph</code>, <code>mem0</code>) + the four review outputs (PASS / CONDITIONAL / FAIL), reviewed_by honest.</li>
+<li>Pilot report: pinned-hash confirmation; pinned LangGraph upstream release + date; ledger IDs used; integration classifications; VERIFICATION REQUIRED list; coverage recount + any delta; regression evidence.</li>
+<li>Validation output (§10).</li>
+</ol>
+<p class="lead">Commit on <code>migration/langgraph-pilot</code>; report HEAD. Do NOT merge to <code>main</code>; do NOT start any further tree. Return for acceptance review.</p>
+
+<div class="callout ok"><h3>One-line mandate</h3>
+<p>On <code>migration/langgraph-pilot</code> (off <code>migration/docling-pilot</code>), verify the resolved ledger hash and the <code>legacy/2025</code> source, execute one document-only distillation of the 213 lang-server rows into a target-state <code>services/langgraph/service.md</code> — re-verifying current LangGraph upstream, classifying integrations, reconstructing the langgraph + mem0 SME contracts and running four real reviews, recording distillation provenance, and returning the package. No infrastructure, no waiver.</p></div>
+
+<div class="foot">Execution brief for Claude Code · repository-document migration mode · second application of the frozen migration pattern (Docling was first) · ledger pinned resolved sha256 64eb356f…cd59 (LangGraph working set lgc-262–lgc-474, 213 rows, 212 content-eligible) · source of record legacy/2025 @ a98846d · companion to the frozen repository-migration-pattern and the Docling pilot.</div>
+</div></body></html>

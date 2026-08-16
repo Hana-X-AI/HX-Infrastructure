@@ -8,9 +8,17 @@ tests/ai-runtime/evidence/*.json
 # prefers vendor source over vendor prose) and must never enter the tree: they carry
 # their own licences, LF line endings that collide with this repository's CRLF objects
 # under core.safecrlf, and tens of thousands of files.
-governance/operations/langgraph/langgraph-main/
-governance/operations/ollama/ollama-main/
-governance/operations/vllm/
-
-# Temporarily exclude operational working material.
-/governance/operations/
+#
+# Matched by shape rather than enumerated, so a new drop is excluded on arrival:
+#   <topic>/<name>-main/       langgraph/langgraph-main/, vllm/vllm-main/, loopx/loopx-main/
+#   <topic>/<name>-master/     jcode/jcode-master/
+#   <topic>/<name>-release-*/  OmniRoute/OmniRoute-release-v3.8.50/
+#
+# HX-authored governance documents sit directly in <topic>/ and are deliberately NOT
+# excluded. A blanket /governance/operations/ rule was in force 2026-08-15 and removed
+# the same day under owner ruling 9: it silently dropped eleven governance artifacts
+# out of version control, including the five-FAIL LangGraph review verdicts that four
+# rows of governance/logs/actions-and-issues.md cite as their durable evidence.
+governance/operations/*/*-main/
+governance/operations/*/*-master/
+governance/operations/*/*-release-*/
