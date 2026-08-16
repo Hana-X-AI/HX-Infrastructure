@@ -7,7 +7,7 @@ migration method against a stateful orchestrator with six live integration bound
 The design itself did not reach acceptance — five capability reviews returned FAIL — and their
 findings are carried as the **implementation-correction backlog** for whenever LangGraph
 implementation is scheduled. Not re-derived, not re-reviewed. See `iss-019` and
-`governance/operations/langgraph/phase Phase -2/Claude-Opus-5_2026-08-14_langgraph-review-verdicts.md`.
+`governance/operations/langgraph/phase-2/Claude-Opus-5_2026-08-14_langgraph-review-verdicts.md`.
 
 Parked, not abandoned. The distillation, the provenance and the boundary work stand.
 
@@ -18,7 +18,7 @@ Implementation: **NOT AUTHORIZED**. Deployment on hxs-11 is NO-GO until acceptan
 Acceptance path: ~~four owner decisions~~ **all ruled 2026-08-14** → re-derive the sections the
 packaged-server ruling affects, at a pinned release → write the MCP-plane contract → re-run all
 four capability reviews in separate contexts → only then ACCEPTED FOR IMPLEMENTATION.
-Decision packet: `governance/operations/langgraph/phase Phase -2/claude_20260814_0848_langgraphfourdecisions.html`
+Decision packet: `governance/operations/langgraph/phase-2/claude_20260814_0848_langgraphfourdecisions.html`
 
 Every section carries `SME REVIEW REQUIRED`. Four reviews ran on 2026-08-14 —
 `langgraph` FAIL, `mem0` FAIL, `infrastructure-ops` FAIL, `testing-qa` CONDITIONAL PASS. The
