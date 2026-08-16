@@ -265,7 +265,9 @@ If managed settings are available, evaluate `allowManagedHooksOnly`, `allowManag
 
 ### 13. Result envelope
 
-Every delegated task must return an envelope that validates against `governance/schemas/agent-result-envelope.schema.json`, version `hx-agent-result/v1`. This schema is the only contract for `scope_observed`, validation commands and results, independent review, and the `error.class` taxonomy. Producers and validators must consume the canonical schema instead of maintaining inline variants.
+Every delegated task must return an envelope that validates against `governance/schemas/agent-result-envelope.schema.json`, version `hx-agent-result/v1`. This schema is the only structural contract for `scope_observed`, validation commands and results, independent review, `retry_reason`, and the `error.class` taxonomy. Producers and validators must consume the canonical schema instead of maintaining inline variants.
+
+Runtime validation must also reject `validation.independent_reviewer` when it equals `agent` and must corroborate `scope_observed` against external evidence. JSON Schema cannot compare sibling values or prove observed scope; the schema's `$comment` records these mandatory validator rules.
 
 An output with status `completed` is invalid unless required evidence and independent review are present.
 
@@ -274,8 +276,8 @@ An output with status `completed` is invalid unless required evidence and indepe
 - Maximum one retry for a demonstrated transient failure, output-format failure or narrowly bounded syntax defect.
 - Zero automatic retries for knowledge, permission, security, authority, scope or evidence failures.
 - Zero retry when a native concurrency error explicitly instructs Claude not to retry.
-- Every retry gets a new `run_id`, preserves the original evidence and includes the classified failure.
-- After the permitted retry fails, Max stops and escalates through Claude to Agent Zero.
+- Every retry gets a new `run_id`, preserves the original evidence and records the classified recoverable failure in `retry_reason`; `error` describes only the terminal error for the current run.
+- After the permitted retry fails, the terminal `error` records `retryable: false`; Max stops and escalates through Claude to Agent Zero.
 - Never guess missing data to make a failed task appear complete.
 
 ### 15. State registry
@@ -323,9 +325,9 @@ Build deterministic tests proving at least:
 10. Malformed hook input causes an explicit deny when the hook executes; its static permission backstop still blocks the action when the hook cannot execute.
 11. Missing hook, invalid output, ordinary failure and timeout cannot bypass a critical control because a static/managed boundary blocks the action; if an SDK callback is used, confirm its documented timeout denial.
 12. `completed` without required validation is rejected.
-13. An implementer cannot self-certify independent review.
+13. Runtime validation rejects an implementer that self-certifies independent review.
 14. Permission, security, authority, scope, knowledge and evidence failures are not retried.
-15. A transient/format retry occurs at most once with a new run ID.
+15. A transient/format retry occurs at most once with a new run ID. A successful retry validates with `status: completed`, `error: null`, `retry_count: 1` and a classified `retry_reason`; a failed final retry validates only with `error.retryable: false`.
 16. Concurrency and depth limits behave as configured.
 17. Worktree isolation protects the main checkout.
 18. Configuration changes are audited and unauthorized changes are blocked.

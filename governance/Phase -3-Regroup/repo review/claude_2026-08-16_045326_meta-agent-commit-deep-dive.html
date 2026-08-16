@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deep dive — commit 0669c231 · Meta-Agent controls and canonical schemas</title>
+<style>
+:root{--bg:#0d1117;--bg2:#131a23;--panel:#161d27;--line:#26303d;--ink:#e6edf3;--ink2:#aab8c6;--ink3:#7d8b9a;
+--accent:#6ea8fe;--ok:#4ec9a0;--warn:#e3b341;--bad:#f26d6d;--info:#b085f5;
+--mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:48px 28px 96px}
+header{border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:36px}
+.eyebrow{font:600 11px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+h1{font-size:30px;line-height:1.22;margin:0 0 14px;font-weight:650;letter-spacing:-.015em}
+.sub{color:var(--ink2);font-size:15px;margin:0}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-top:26px}
+.meta div{background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:11px 13px}
+.meta .k{font:600 10px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px}
+.meta .v{font-size:13.5px;word-break:break-word}
+h2{font-size:22px;margin:52px 0 8px;font-weight:640;letter-spacing:-.01em;border-bottom:1px solid var(--line);padding-bottom:10px}
+h3{font-size:17px;margin:30px 0 10px;font-weight:640}
+p{margin:12px 0}ul,ol{margin:12px 0;padding-left:22px}li{margin:6px 0}
+code{font-family:var(--mono);font-size:.875em;background:#1c2531;border:1px solid var(--line);border-radius:4px;padding:1.5px 5px;color:#c9d6e4}
+pre{background:var(--bg2);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.6;color:#c9d6e4}
+pre code{background:none;border:0;padding:0;white-space:pre}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px}
+th{text-align:left;background:var(--bg2);color:var(--ink2);font-weight:640;font-size:11px;letter-spacing:.07em;text-transform:uppercase;padding:9px 11px;border:1px solid var(--line)}
+td{padding:9px 11px;border:1px solid var(--line);vertical-align:top}
+tbody tr:nth-child(even){background:#111823}
+.tag{display:inline-block;font:650 10px/1.5 var(--mono);letter-spacing:.06em;padding:3px 8px;border-radius:999px;border:1px solid;white-space:nowrap}
+.t-ok{color:var(--ok);border-color:#215c4a;background:#12271f}
+.t-warn{color:var(--warn);border-color:#5c4a1a;background:#241f10}
+.t-bad{color:var(--bad);border-color:#5f2b2b;background:#251414}
+.t-info{color:var(--info);border-color:#453163;background:#1c1728}
+.t-mute{color:var(--ink3);border-color:var(--line);background:#151c26}
+.callout{border:1px solid var(--line);border-left:3px solid var(--accent);background:var(--panel);border-radius:8px;padding:16px 18px;margin:20px 0}
+.callout.bad{border-left-color:var(--bad)}.callout.warn{border-left-color:var(--warn)}.callout.ok{border-left-color:var(--ok)}
+.callout .ct{font:650 11px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;margin-bottom:9px;color:var(--ink3)}
+.callout.bad .ct{color:var(--bad)}.callout.warn .ct{color:var(--warn)}.callout.ok .ct{color:var(--ok)}
+.callout p:first-of-type{margin-top:0}.callout p:last-child{margin-bottom:0}
+.finding{border:1px solid var(--line);border-radius:9px;background:var(--panel);margin:20px 0;overflow:hidden}
+.finding .fh{display:flex;gap:12px;align-items:flex-start;padding:14px 18px;background:var(--bg2);border-bottom:1px solid var(--line)}
+.finding .fid{font:650 11px/1.5 var(--mono);color:var(--ink3);padding-top:2px}
+.finding .ft{font-weight:640;font-size:15.5px;flex:1;line-height:1.4}
+.finding .fb{padding:4px 18px 16px}
+.sev{margin-left:auto}
+hr{border:0;border-top:1px solid var(--line);margin:40px 0}
+.small{font-size:13px;color:var(--ink2)}
+footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--line);color:var(--ink3);font-size:12.5px}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:22px 0}
+.kpi div{background:var(--bg2);border:1px solid var(--line);border-radius:9px;padding:15px}
+.kpi .n{font:650 25px/1 var(--mono);letter-spacing:-.02em}
+.kpi .l{font-size:11.5px;color:var(--ink3);margin-top:7px;line-height:1.45}
+.n-ok{color:var(--ok)}.n-bad{color:var(--bad)}.n-warn{color:var(--warn)}.n-info{color:var(--info)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Deep dive · evidence-first · read-only</div>
+  <h1>Commit <code>0669c231</code> — Meta-Agent controls, canonical schemas, and the OmniRoute reconciliation</h1>
+  <p class="sub">Independent review of the commit, its two canonical schemas as executable contracts, the implementation charter, the Mermaid/SVG diagram appendix, and the OmniRoute changes — plus verification of every validation claim in the GitHub Copilot handoff.</p>
+  <div class="meta">
+    <div><div class="k">Prepared by</div><div class="v">Claude (claude-opus-5)</div></div>
+    <div><div class="k">Date</div><div class="v">2026-08-16 · 04:53 CDT</div></div>
+    <div><div class="k">Commit</div><div class="v"><code>0669c2318f1c9761b4c64bd388ef0434ae02a33c</code></div></div>
+    <div><div class="k">Branch</div><div class="v"><code>docs/phase3-remediation-evidence</code> (parent <code>8e83f73</code>)</div></div>
+    <div><div class="k">Scope</div><div class="v">13 files · +2,300 / −44</div></div>
+    <div><div class="k">Method</div><div class="v">Fresh clone; schemas executed against a JSON Schema 2020-12 validator; device-state read-only</div></div>
+  </div>
+</header>
+
+<div class="callout bad">
+  <div class="ct">Verdict</div>
+  <p><strong>The architecture work is strong and the schemas are well-built — but the canonical result envelope contains a blocking logical defect that makes the charter's own retry happy-path unrepresentable.</strong></p>
+  <p>A task that fails transiently, retries once, and <em>succeeds</em> cannot be expressed in <code>agent-result-envelope.schema.json</code>. This is proven by execution, not inspection, and it contradicts three independent sources inside this same commit: charter §14, Mermaid diagram E, and the rendered SVG of diagram E. Because the instruction is to treat the canonical schemas as the sole contracts, this is a contract-level blocker, not a documentation nit.</p>
+  <p>Separately: <strong>this commit landed on the branch that still carries F-01's root cause</strong>, while the F-01 fix sits uncommitted on a different branch. Neither branch currently holds both.</p>
+</div>
+
+<div class="kpi">
+  <div><div class="n n-bad">1</div><div class="l">Blocking contract defect (executable proof)</div></div>
+  <div><div class="n n-warn">3</div><div class="l">Charter guarantees the schema cannot express</div></div>
+  <div><div class="n n-ok">7/8</div><div class="l">Diagrams faithful to their Mermaid source</div></div>
+  <div><div class="n n-bad">0</div><div class="l">Hooks or tests referencing the canonical schemas</div></div>
+  <div><div class="n n-warn">4</div><div class="l">Live as-built assertions surviving in OmniRoute docs</div></div>
+  <div><div class="n n-info">2</div><div class="l">Of my own candidate findings refuted on checking</div></div>
+</div>
+
+<h2>1 · What this commit is, and where it landed</h2>
+
+<p>Commit <code>0669c231</code> adds an owner-approved Meta-Agent enforcement architecture: a three-tier authority model (Claude → Max → Tier-3 cells), an implementation charter, a diagram appendix in Mermaid and rendered SVG, a proposed agent roster, a Gemini reconnaissance record, and — the substantive artifacts — <strong>two canonical JSON Schemas</strong>. It also reconciles the two OmniRoute documents.</p>
+
+<p>It also carries my three response documents from the F-01 exchange into version control.</p>
+
+<h3>The branch picture — read this first</h3>
+
+<table>
+  <thead><tr><th>Branch</th><th>Tip</th><th>Has the F-01 fix?</th><th>Has the schemas?</th></tr></thead>
+  <tbody>
+    <tr><td><code>docs/phase3-remediation-evidence</code></td><td><code>0669c231</code></td><td><span class="tag t-bad">no — blanket rule still live</span></td><td><span class="tag t-ok">yes</span></td></tr>
+    <tr><td><code>remediation/phase3</code></td><td><code>d1ad55de</code> + 14 uncommitted</td><td><span class="tag t-warn">yes, uncommitted</span></td><td><span class="tag t-bad">no</span></td></tr>
+    <tr><td><code>main</code></td><td><code>efb1a3a2</code></td><td><span class="tag t-bad">no</span></td><td><span class="tag t-bad">no</span></td></tr>
+  </tbody>
+</table>
+
+<pre><code>$ git show 0669c23:.gitignore | tail -2
+# Temporarily exclude operational working material.
+/governance/operations/          &lt;-- F-01's root cause, still in force on this branch</code></pre>
+
+<p>The Meta-Agent workstream is being built on top of the defect the last two days were spent diagnosing. That is survivable — the two workstreams are disjoint in content — but it means the evidence branch will need the F-01 fix merged into it, or it will keep silently dropping any new artifact placed under <code>governance/operations/</code>. Given the charter's operations-root design, that tree is exactly where Meta-Agent working material will accumulate.</p>
+
+<h2>2 · Findings</h2>
+
+<div class="finding">
+  <div class="fh">
+    <div class="fid">M-01</div>
+    <div class="ft">A successful retry is unrepresentable in the canonical result envelope</div>
+    <div class="sev"><span class="tag t-bad">BLOCKER</span></div>
+  </div>
+  <div class="fb">
+    <p>Two rules in the schema's <code>allOf</code> are jointly unsatisfiable for the most common retry outcome:</p>
+    <pre><code>rule 1:  if status == "completed"   then error must be null
+rule 4:  if retry_count == 1        then error must be an object</code></pre>
+    <p>An envelope with <code>status: "completed"</code> and <code>retry_count: 1</code> therefore has <strong>no valid form</strong>. Executed against <code>jsonschema</code> 4.26 (Draft 2020-12), full matrix:</p>
+    <pre><code>status      retry   error=null   error=object
+completed     0         VALID          .
+completed     1           .            .      &lt;-- no valid representation
+partial       0         VALID        VALID
+partial       1           .          VALID
+blocked       0           .          VALID
+blocked       1           .          VALID
+failed        0           .          VALID
+failed        1           .          VALID</code></pre>
+    <p><strong>Three sources in this same commit require exactly that combination:</strong></p>
+    <ul>
+      <li><strong>Charter §14:</strong> <em>"Every retry gets a new <code>run_id</code>, preserves the original evidence and <strong>includes the classified failure</strong>."</em> On a successful retry, status is <code>completed</code> and rule 1 forces <code>error: null</code> — so the classified failure cannot be included.</li>
+      <li><strong>Mermaid diagram E:</strong> <code>alt Retry succeeds → Max->>Claude: Integrated evidence</code>. An explicitly diagrammed success path.</li>
+      <li><strong>Rendered SVG E:</strong> preserves it — <code>Retry succeeds?</code> → <code>Evidence</code>.</li>
+    </ul>
+    <p>There is no reading of §14 that escapes this. If the retry envelope resets <code>retry_count</code> to 0, the counter becomes meaningless and the classified failure still cannot be carried on a completed envelope.</p>
+    <p><strong>Consequence.</strong> Charter §17 test 15 — <em>"A transient/format retry occurs at most once with a new run ID"</em> — can only ever be written against a <em>failed</em> retry. The implementation will either emit an envelope that fails canonical validation on its most common success path, or silently drop the retry provenance to stay valid.</p>
+    <p><strong>Recommended fix (preferred).</strong> Separate <em>the failure that caused the retry</em> from <em>the current terminal error</em>. Add a nullable <code>retry_reason</code> object carrying <code>class</code> and <code>native_message</code>, keep <code>error</code> meaning "why this envelope is not completed", and rewrite rule 4 to constrain <code>retry_reason</code> instead of <code>error</code>. This satisfies §14's "includes the classified failure" without breaking rule 1's clean invariant.</p>
+    <p><strong>Minimal fix.</strong> Scope rule 4 to non-completed statuses: <code>if retry_count == 1 AND status != "completed"</code>. Cheaper, but loses the retry provenance on success — which is the evidence §14 asks for.</p>
+  </div>
+</div>
+
+<div class="finding">
+  <div class="fh">
+    <div class="fid">M-02</div>
+    <div class="ft">The schema cannot prevent self-certified independent review</div>
+    <div class="sev"><span class="tag t-warn">HIGH</span></div>
+  </div>
+  <div class="fb">
+    <p>Charter §13 names the schema <em>"the only contract for … independent review"</em>, and §17 test 13 requires that <em>"An implementer cannot self-certify independent review."</em> Executed:</p>
+    <pre><code>agent = "max", validation.independent_reviewer = "max", status = "completed"
+  -> VALID</code></pre>
+    <p>JSON Schema 2020-12 cannot compare two sibling property values, so this constraint is <strong>not expressible</strong> in the canonical contract and must live in the validator. That is fine — but the schema says nothing about it, so a reader who takes §13 literally will believe the contract covers a guarantee it cannot.</p>
+    <p><strong>Recommendation.</strong> Follow the pattern the receipt schema already uses well: add a <code>$comment</code> naming the out-of-band rules (<code>independent_reviewer != agent</code>, and <code>scope_observed</code> being self-reported and therefore requiring external corroboration), and amend §13 to say the schema is the only contract <em>for structure</em>, with named runtime rules layered on top.</p>
+  </div>
+</div>
+
+<div class="finding">
+  <div class="fh">
+    <div class="fid">M-03</div>
+    <div class="ft">Four live as-built assertions survive the OmniRoute reconciliation</div>
+    <div class="sev"><span class="tag t-warn">HIGH</span></div>
+  </div>
+  <div class="fb">
+    <p>Present tense, unmodified by this commit, in <code>hx-omniroute-architecture-decision-litellm-replacement…html</code>:</p>
+    <pre><code>OmniRoute is deployed only on the trusted HX network.
+… is not exposed directly to the public Internet.
+API authentication remains enabled for HX clients.
+OmniRoute service credentials are scoped to gateway needs.</code></pre>
+    <p>These contradict the commit message — <em>"No server contacted or deployment performed"</em> — and the document's own footer, which states it is <em>"not an assertion that OmniRoute is installed."</em></p>
+    <p>This is the same defect class as P1-01: a document asserting as-built state that no evidence supports, inside a phase whose rule is that nothing is deployed. The reconciliation pass correctly fixed adjacent language (<code>HX client</code> → <code>HX conformance harness</code>; the version pill downgraded to <code>Source snapshot … exact commit unproven from ZIP</code>) but left these four. Recommend converting to conditional form — <em>"when deployed, OmniRoute must be reachable only on the trusted HX network"</em> — which preserves the security requirement without asserting state.</p>
+  </div>
+</div>
+
+<div class="finding">
+  <div class="fh">
+    <div class="fid">M-04</div>
+    <div class="ft">Max's authority is silently broadened, and Agent Zero disappears, in both OmniRoute documents</div>
+    <div class="sev"><span class="tag t-warn">MEDIUM</span></div>
+  </div>
+  <div class="fb">
+    <p>Charter §2 and the roster both scope Max narrowly: <em>"sole task dispatcher and sole integration coordinator <strong>for OmniRoute</strong>"</em>; roster scope column <em>"OmniRoute repository ecosystem"</em>. Both OmniRoute documents drop the qualifier — integration prompt line 62 and architecture decision line 155 read <em>"Max is the sole dispatcher and integrator"</em>, unqualified, inside a document that opens <em>"You are Claude Code operating in the canonical HX-Infrastructure repository."</em></p>
+    <p>Additionally, <strong>"Agent Zero" and "Jarvis" appear zero times in either OmniRoute document</strong>, while charter §1 places Agent Zero at authority rank 1 and §6 requires <code>CLAUDE.md</code> to <em>"identify … Agent Zero as final human authority."</em> The OmniRoute docs instead assert <em>"CLAUDE CODE OWNS USER INTENT."</em></p>
+    <p>Charter §1 also states <em>"No agent may approve its own architectural authority."</em> A dispatch document that broadens its own dispatcher's scope and omits the human authority is the shape that rule exists to prevent. Recommend restoring the OmniRoute qualifier and the Agent Zero authority line in both.</p>
+  </div>
+</div>
+
+<div class="finding">
+  <div class="fh">
+    <div class="fid">M-05</div>
+    <div class="ft">The knowledge-review receipt is absent from the dispatch gate it was designed for</div>
+    <div class="sev"><span class="tag t-warn">MEDIUM</span></div>
+  </div>
+  <div class="fb">
+    <p>The charter's canonical receipt example is OmniRoute-scoped (<code>"task_id": "OMNI-YYYYMMDD-NNN"</code>), and §17 test 5 requires that <em>"A missing, stale, forged, cross-task or empty knowledge receipt blocks execution."</em> The integration prompt is the OmniRoute dispatch document. Its TASK PACKET enumerates 18 mandatory pre-dispatch fields — including <code>knowledge output</code> and <code>return schema</code> — and <strong>does not include a knowledge-review receipt</strong>. Neither OmniRoute document references either schema; <code>grep -ci "receipt"</code> returns 0 for both.</p>
+    <p>Charter §3: <em>"This is both an instruction and an enforced gate. An agent assertion is not proof of review."</em> The prompt currently encodes the assertion and omits the proof.</p>
+    <p><strong>On the skip.</strong> Copilot reported: <em>"The OmniRoute architecture-decision receipt finding was skipped. Direct inspection confirmed that the named document contains no receipt contract."</em> The literal statement is <strong>true and independently verified</strong> — zero occurrences, in both documents, not just the named one. But confirming that a control is absent does not dispose of a finding that the control is missing; it substantiates it. I could not read the original finding text, so I cannot rule on its intent — if the finding asked "should this document carry a receipt contract?", the answer from §3 and §17-5 is yes, and it remains open.</p>
+  </div>
+</div>
+
+<div class="finding">
+  <div class="fh">
+    <div class="fid">M-06</div>
+    <div class="ft">Diagram H deviates from its Mermaid source in two ways</div>
+    <div class="sev"><span class="tag t-info">LOW–MEDIUM</span></div>
+  </div>
+  <div class="fb">
+    <p>Copilot's claim that <em>"the rendered SVG appendix now matches the Mermaid control flows"</em> is <strong>substantially correct</strong> — I compared all 8 diagrams and 7 are faithful, including diagram E, whose exact fidelity matters most for M-01. Diagram H is the exception:</p>
+    <ol>
+      <li><strong>Two nodes merged.</strong> Mermaid has <code>P7["8. Read-only pilot"] --> P8["9. Bounded worktree pilot"]</code>; the SVG renders one box, <code>8–9. Bounded pilots</code>. These are distinct governance gates — one performs no mutation, the other mutates a worktree — and charter §18 keeps them separate as items 9 and 10.</li>
+      <li><strong>Branch labels dropped.</strong> Mermaid has <code>Q -->|"No"| P1</code> and <code>Q -->|"Yes"| P7</code>. SVG H contains neither label, so the reader cannot tell that a failed negative test loops back to stage 2. Diagrams B and D <em>do</em> carry their Yes/No labels, so this is an inconsistency, not a rendering convention.</li>
+    </ol>
+    <p>There is also a three-way count drift worth reconciling once: <strong>charter §18 has 11 stages, Mermaid H has 10, SVG H shows 9.</strong> Mermaid merges charter items 5 and 6; the SVG then merges Mermaid items 8 and 9.</p>
+  </div>
+</div>
+
+<div class="finding">
+  <div class="fh">
+    <div class="fid">M-07</div>
+    <div class="ft">Contract declared canonical, enforced nowhere — and correctly so, for now</div>
+    <div class="sev"><span class="tag t-info">INFORMATIONAL</span></div>
+  </div>
+  <div class="fb">
+    <p>No hook, test, or agent definition references either schema. The only referencing files are the three governance documents in this commit plus the schemas themselves. Nothing validates against them.</p>
+    <p><strong>This is not a defect</strong> — charter §18 puts canonical schemas at rollout gate 2 and enforcement hooks at gate 7, so the ordering is exactly right, and Copilot's decision to stop at charter level pending Phase 0 preflight is the correct call. It is recorded here only so that "the canonical schemas are the sole contracts" is read as a <em>design commitment</em> rather than a live control. Today an agent can emit any shape at all and nothing objects.</p>
+    <p>Two further points worth noting while the schemas are still cheap to change: <code>"format": "date-time"</code> is annotation-only in Draft 2020-12, so <code>"review_completed_at": "banana"</code> and a year-2099 timestamp both validate. The receipt schema's <code>$comment</code> discloses this correctly and names the runtime rule — <strong>that is the right pattern, and M-02 recommends copying it into the envelope schema.</strong></p>
+  </div>
+</div>
+
+<h2>3 · Verification of the handoff claims</h2>
+
+<table>
+  <thead><tr><th>Claim</th><th>Verdict</th><th>Evidence</th></tr></thead>
+  <tbody>
+    <tr><td>14-file manifest and SHA-256 gate: PASS</td><td><span class="tag t-ok">consistent</span></td><td>F-01 set remains uncommitted on <code>remediation/phase3</code>; <code>phase-2/…review-verdicts.md</code> is not in tree at <code>d1ad55de</code>, matching "no staged files"</td></tr>
+    <tr><td>remediation suite 160 PASS / 0 FAIL; scanner total 0; <code>git diff --check</code> PASS</td><td><span class="tag t-mute">not independently verifiable</span></td><td>No PowerShell runtime in this session. Consistent with F-01 touching no asserted code path</td></tr>
+    <tr><td>No server action</td><td><span class="tag t-mute">attestation</span></td><td>No contradictory evidence in the tree. See M-03 — four <em>documents</em> still assert deployed state, which is a truth defect, not evidence of server contact</td></tr>
+    <tr><td>Base and remediation worktree HEAD values unchanged</td><td><span class="tag t-warn">imprecise</span></td><td>Remediation worktree unchanged at <code>d1ad55de</code> ✓. But the base checkout is on <code>docs/phase3-remediation-evidence</code>, and that ref moved <code>8e83f73 → 0669c231</code> — the commit under review. Almost certainly a validate-then-commit sequencing artifact; flagged only because the claim as written does not scope to a time</td></tr>
+    <tr><td>Tier-1 corrected at charter level only; no agent definitions, hooks or tests</td><td><span class="tag t-ok">confirmed</span></td><td>Commit touches nothing under <code>.claude/</code>, <code>tests/</code> or <code>hooks/</code>. <code>.claude/agents/</code> unchanged at 8 capability-named definitions</td></tr>
+    <tr><td>OmniRoute receipt finding skipped — named document contains no receipt contract</td><td><span class="tag t-warn">true but non-disposing</span></td><td>Verified: 0 occurrences in <em>both</em> OmniRoute documents. See M-05</td></tr>
+    <tr><td>Rendered SVG appendix matches the Mermaid control flows</td><td><span class="tag t-warn">7 of 8</span></td><td>See M-06. Diagram E — the one that matters for M-01 — is faithful</td></tr>
+    <tr><td>Canonical schemas enforce the required object and retry policies</td><td><span class="tag t-bad">refuted for retry</span></td><td>Required-object enforcement is genuinely strong (closed objects, all top-level fields required, sha256 patterns, enum taxonomies). The <em>retry</em> policy is over-constrained to the point of being unsatisfiable — M-01</td></tr>
+  </tbody>
+</table>
+
+<h2>4 · What I checked and refuted</h2>
+
+<p>Recording these so the negative work is visible and not repeated.</p>
+
+<table>
+  <thead><tr><th>Hypothesis</th><th>Outcome</th></tr></thead>
+  <tbody>
+    <tr><td>The charter's mandatory operations knowledge base is unavailable, making a conformant receipt impossible (raised by my own sub-review from <code>git ls-tree</code>, which shows only two HTML files under <code>governance/operations/OmniRoute/</code>)</td><td><span class="tag t-bad">REFUTED</span> — <code>OmniRoute-release-v3.8.50/</code> exists on disk with the full upstream tree (<code>package.json</code>, <code>src/</code>, <code>tests/</code>, <code>LICENSE</code>, ~90 entries). It is untracked <em>by design</em> as vendored source, and the receipt hashes filesystem paths under <code>operations_root</code>, not git-tracked files. The precondition is satisfiable</td></tr>
+    <tr><td>The persona-named roster (Max, Will, Craig, Atlas…) violates policy <code>P-AGENTS</code>, which requires capability-first agents "not from 2025 personas"</td><td><span class="tag t-bad">REFUTED</span> — the roster explicitly describes itself as <em>"capability-first, human-named"</em>, and <code>craig-ollama-specialist.md</code> carries <code>capability_id: model-serving-ollama</code> with Craig as a declared alias. Capability remains the identity. Residual nit only: existing definitions set front-matter <code>name:</code> to the capability, Craig's sets it to the persona</td></tr>
+    <tr><td>OmniRoute is being made a governance plane rather than a traffic plane</td><td><span class="tag t-bad">REFUTED</span> — both documents hold the line consistently: <em>"HX remains the control plane, source of truth, governance system, agent framework and validation authority."</em> The routing/governance boundary is clean</td></tr>
+  </tbody>
+</table>
+
+<h2>5 · Recommendations, in order</h2>
+
+<ol>
+  <li><strong>Fix M-01 before anything consumes the envelope schema.</strong> Preferred: add nullable <code>retry_reason</code> and re-scope rule 4 to it. Add three schema fixtures to the eventual test suite — completed+retry 0, completed+retry 1, failed+retry 1 — so the matrix is asserted rather than assumed. This is cheap now and expensive after producers exist.</li>
+  <li><strong>Add the <code>$comment</code> block to the envelope schema (M-02)</strong> naming the constraints that must live in the validator: <code>independent_reviewer != agent</code>, and <code>scope_observed</code> corroboration. Amend charter §13 to say "only contract for structure."</li>
+  <li><strong>Convert the four as-built assertions to conditional form (M-03).</strong> Smallest edit with the highest truth value in this commit, and it closes a Phase 3 rule violation.</li>
+  <li><strong>Restore the OmniRoute scope qualifier on Max and the Agent Zero authority line (M-04)</strong> in both OmniRoute documents.</li>
+  <li><strong>Rule on M-05</strong> — whether the OmniRoute dispatch path owes a knowledge-review receipt in its TASK PACKET. §3 and §17-5 imply yes; the owner should confirm rather than an agent inferring it.</li>
+  <li><strong>Re-render diagram H (M-06)</strong> with 8 and 9 separate and the Yes/No labels restored, and reconcile the 11/10/9 stage count once across charter and appendix.</li>
+  <li><strong>Merge the F-01 fix into the evidence branch</strong>, or rebase it, so the Meta-Agent workstream stops building on the blanket ignore rule. This is the structural item; it does not block the schema fixes.</li>
+</ol>
+
+<h3>What I deliberately do not recommend</h3>
+<ul>
+  <li><strong>Do not build hooks or tests yet.</strong> Copilot's decision to stop at charter level pending Phase 0 preflight and installed-feature verification is correct and should stand. The charter assumes specific Claude Code capabilities (a dedicated Tier-1 entry point without <code>Agent</code>/<code>Task</code>, PreToolUse denial semantics, SDK callback timeouts); §4 and §17-11 already require verifying those against the installed version rather than assuming them.</li>
+  <li><strong>Do not switch the ignore rule to <code>**/</code>.</strong> Unchanged from the earlier ruling — the one-level form is documented and sufficient.</li>
+  <li><strong>Do not treat the schemas as live controls.</strong> Nothing enforces them yet, and the rollout order makes that correct.</li>
+</ul>
+
+<h2>6 · What I could not verify</h2>
+<ul>
+  <li><strong>The 10 incoming findings themselves.</strong> I never saw their text. I can verify what the commit does; I cannot confirm that 8 were valid, or that the Tier-1 finding is fully addressed at charter level, because I do not have the findings to check against.</li>
+  <li><strong>The executable gates</strong> — suite, scanner, <code>git diff --check</code>. No PowerShell in this session; these remain Copilot's to own.</li>
+  <li><strong>"No server contacted"</strong> remains an attestation on both sides. Nothing in the tree contradicts it; nothing in the tree can confirm it. State-based CI is still the only durable answer.</li>
+  <li><strong>Claude Code feature availability</strong> assumed by the charter — correctly deferred to Phase 0 preflight.</li>
+</ul>
+
+<hr>
+
+<h2>Appendix · Provenance</h2>
+<table>
+  <thead><tr><th>Artifact</th><th>SHA-256</th></tr></thead>
+  <tbody>
+    <tr><td><code>governance/schemas/agent-result-envelope.schema.json</code></td><td><code>5e583cb1f765486ae17e10ed7556408d0aca94303a35782d6f4a29ddc7becbea</code></td></tr>
+    <tr><td><code>governance/schemas/knowledge-review-receipt.schema.json</code></td><td><code>58d6fc016ee086e93bd48aef942b5716c8acb48a2c601bd6494a2fa5780b8453</code></td></tr>
+    <tr><td><code>…enforcement-implementation-prompt_…2236.md</code></td><td><code>13804cdd7bc6f974a8c1c25e282892999e91e89b7f11afd558b5a2309bc05dd6</code></td></tr>
+    <tr><td><code>…diagram-appendix_…2243.md</code> (Mermaid source)</td><td><code>1f32e91df0c72b05c99f863314b52ff7e5291388eba1dc5ebb66038b456a56b4</code></td></tr>
+    <tr><td><code>…diagram-appendix_…2250.html</code> (rendered SVG)</td><td><code>82beca4acdb78977c636dc3d5aa1b2fbf0a85765b9e2e75810fe1e911f0683a8</code></td></tr>
+  </tbody>
+</table>
+
+<p class="small"><strong>Method.</strong> Anonymous clone of the public repository, fetched after the commit; linked worktree at <code>0669c231</code>. Both schemas executed against <code>jsonschema</code> 4.26 as a Draft 2020-12 validator with hand-built conformant and adversarial fixtures — the M-01 matrix is reproducible from the schema file alone. Diagram fidelity established by extracting every text-bearing node from all 8 SVGs and comparing against the 8 Mermaid blocks; an initial automated label diff over-reported mismatches because SVG splits labels across elements, so the comparison was redone per diagram on whole-diagram text. Branch and HEAD state read directly from <code>.git/HEAD</code> and the ref files rather than inferred. Device access read-only throughout; no file in any HX checkout was modified to produce this review.</p>
+
+<p class="small"><strong>Authority.</strong> This is a review record. It asserts no as-built change, authorizes no server work, and treats review artifacts as evidence rather than authority. Phase 3 remains planning, decisions, and control-correction that only tightens.</p>
+
+<footer>
+claude_2026-08-16_045326_meta-agent-commit-deep-dive · Claude (claude-opus-5) · read-only deep dive · no server contacted, no HX file modified
+</footer>
+
+</div>
+</body>
+</html>

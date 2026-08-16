@@ -144,17 +144,18 @@ The actual approved Tier-3 names must come from the validated repository roster.
 
 ```mermaid
 flowchart TD
-    P0["1. Read-only preflight"] --> P1["2. Canonical policy and schemas"]
-    P1 --> P2["3. Audit-only controls"]
-    P2 --> P3["4. Knowledge receipt gate"]
-    P3 --> P4["5. Max and Tier-3 constraints"]
-    P4 --> P5["6. Static backstops and dynamic gates"]
-    P5 --> P6["7. Adversarial tests"]
-    P6 --> Q{"Critical negative tests pass?"}
+    P0["1. Baseline and contradiction report"] --> P1["2. Canonical policy and schemas"]
+    P1 --> P2["3. Read-only audit logging"]
+    P2 --> P3["4. Knowledge receipt validator"]
+    P3 --> P4["5. Max launch and allowed child types"]
+    P4 --> P5["6. Non-recursive Tier-3 definitions"]
+    P5 --> P6["7. Tool and result gates with backstops"]
+    P6 --> P7["8. Adversarial test suite"]
+    P7 --> Q{"Critical negative tests pass?"}
     Q -->|"No"| P1
-    Q -->|"Yes"| P7["8. Read-only pilot"]
-    P7 --> P8["9. Bounded worktree pilot"]
-    P8 --> P9["10. Owner acceptance gate"]
+    Q -->|"Yes"| P8["9. Bounded dry-run pilot"]
+    P8 --> P9["10. Bounded worktree mutation pilot"]
+    P9 --> P10["11. Owner review and acceptance"]
 ```
 
 No global activation follows automatically from a successful pilot. Agent Zero retains the acceptance and rollout decision.

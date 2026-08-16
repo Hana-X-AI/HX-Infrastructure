@@ -51,13 +51,14 @@ storage, or role-specific mutation.
 | Path | Purpose | Status |
 | --- | --- | --- |
 | `README.md` | Phase charter, workspace index, and progress summary | Active |
-| `repo review/` | Repository review workspace and supporting records | Six artifacts indexed |
+| `repo review/` | Repository review workspace and supporting records | Seven artifacts indexed |
 | `repo review/claudecodex_20260815_0051_jointreconciliationbrief.html` | Joint Claude and Codex reconciliation brief | Primary reconciled review artifact |
 | `repo review/claude_20260815_0025_reporeconalignment.html` | Claude repository reconnaissance and alignment review | Supporting source review |
 | `repo review/hx-infrastructure-reconnaissance-report_codex-gpt-5.6-sol_20260815_0130.html` | Codex repository reconnaissance review | Supporting source review |
 | `repo review/claude_20260815_0130_phase3remediationplandeep.html` | Superseded Phase 3 remediation plan v1 | Historical planning artifact |
 | `repo review/chatgpt_20260815_0227_phase3remediationplanfinalreview.html` | ChatGPT/Codex review of remediation plan v1 | Supporting review artifact |
 | `repo review/GitHub-Copilot_2026-08-15_phase3-remediation-plan-v2-review.md` | Independent verification of remediation plan v2 | Revise before execution |
+| `repo review/claude_2026-08-16_045326_meta-agent-commit-deep-dive.html` | Independent review of Meta-Agent commit `0669c231` | M-01 through M-06 corrected; M-07 retained as rollout status |
 | `remediation/` | Verified Phase 3 remediation records and supporting artifacts | P1-02 hard-lock and bundled P1-04 count correction executed in the dedicated worktree; P1-01 open pending P1-00 |
 | `remediation/claude_20260815_0150_phase3remediationplandeepv2.html` | Superseded Phase 3 remediation plan v2 | Superseded by v3 |
 | `remediation/claude_20260815_0150_phase3remediationplandeepv2.1.html` | Markup-only corrected derivative of v2 (P1-06 closing tag) | Derived from immutable v2 |
@@ -72,6 +73,18 @@ regroup. It combines the two independent reconnaissance reports and summarizes t
 recorded in `GOALS-AND-OBJECTIVES.md`. Remediation plan v3 is the current planning artifact.
 P1-02 and the bundled P1-04 count correction were executed and validated in the dedicated
 worktree. P1-00 remains pending, so P1-01 remains open.
+
+Claude's deep-dive review of Meta-Agent commit `0669c231` is retained as historical review
+evidence. The follow-up correction pass separates successful-retry provenance from terminal
+errors, names runtime-only reviewer and scope checks, aligns all 11 rollout gates in the
+Mermaid and static SVG appendices, restores Agent Zero and OmniRoute-scoped Max authority,
+adds the canonical receipt to the task packet, and converts unsupported OmniRoute as-built
+claims to deployment conditions. M-07 remains accurate: these are canonical design contracts,
+not live hooks or runtime enforcement. F-01 was isolated and published on
+`remediation/phase3` as commit `bfac142`. Commit `1902e0b9` then repaired eight citations
+across four tracked files so all three referenced LangGraph records resolve under `phase-2/`.
+The three excluded review records remain untracked, and the open remediation gates remain
+unchanged.
 
 The brief and its source reports are review evidence, not canonical project authority. Their
 checkable findings must be verified against the authoritative checkout before they are used to
@@ -126,3 +139,5 @@ The regroup is complete when:
 | 2026-08-15 | Indexed v2.1 markup-only corrected derivative; v2 remains immutable reviewed artifact; repo review count unchanged at six. |
 | 2026-08-15 | Indexed the GitHub Copilot and Claude execution packages; recorded the validated P1-02 hard-lock and bundled P1-04 count correction without closing P1-01. |
 | 2026-08-15 | Extended scanner v2 to inspect both guard implementations, isolated legacy v1 output, bounded the hard-lock description, and corrected the v3 placement digest. |
+| 2026-08-16 | Indexed Claude's Meta-Agent deep-dive, recorded the M-01 through M-06 correction pass, retained M-07 as an unimplemented-rollout disclosure, and recorded the isolated F-01 commit without closing P1-00, P1-01, or Gate A. |
+| 2026-08-16 | Recorded citation-repair commit `1902e0b9`: eight malformed LangGraph citations now resolve to three restored records; three review records remain untracked and no remediation gate was closed. |

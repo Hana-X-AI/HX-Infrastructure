@@ -58,7 +58,7 @@ footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:v
 </section>
 
 <div class="callout ok">
-<strong>Decision.</strong> HX will use OmniRoute as the AI traffic plane / model gateway. OmniRoute replaces LiteLLM in that role. It does not replace sdd-core, SERVER-REGISTRY, HX runtime profiles, HX acceptance, hooks, skills, the owner-approved Claude Code → Max repository-management hierarchy, infrastructure orchestration or governance.
+<strong>Decision.</strong> HX will use OmniRoute as the AI traffic plane / model gateway. OmniRoute replaces LiteLLM in that role. It does not replace sdd-core, SERVER-REGISTRY, HX runtime profiles, HX acceptance, hooks, skills, the owner-approved Agent Zero → Claude Code → Max repository-management hierarchy, infrastructure orchestration or governance.
 </div>
 
 <h2>1. Why OmniRoute fits HX</h2>
@@ -152,7 +152,7 @@ OmniRoute decides HOW approved traffic reaches an approved runtime.</pre>
 </table>
 
 <div class="callout">
-<strong>Agent-plane clarification.</strong> HX has approved an external repository-management model: Claude Code is the Meta-Agent; Max is the sole dispatcher and integrator within a council of Maya, Carson, Riley, Lena, Aisha, Nolan, Sofia, Frank and Vera; Sam, Ruth, Will, Brooke, Paul and Sue are ephemeral task agents. This management architecture does not enable OmniRoute's embedded skills, A2A, memory injection or agent-control subsystems in the HX traffic plane.
+<strong>Agent-plane clarification.</strong> Agent Zero / Jarvis Richardson is the final human authority. Claude Code is the Meta-Agent; Max is the sole OmniRoute dispatcher and integration coordinator within a council of Maya, Carson, Riley, Lena, Aisha, Nolan, Sofia, Frank and Vera; Sam, Ruth, Will, Brooke, Paul and Sue are ephemeral task agents. Before dispatch, Max requires a current receipt that conforms to <code>governance/schemas/knowledge-review-receipt.schema.json</code>. Delegated results conform to <code>governance/schemas/agent-result-envelope.schema.json</code>. This management architecture does not enable OmniRoute's embedded skills, A2A, memory injection or agent-control subsystems in the HX traffic plane.
 </div>
 
 <h2>6. Owner-approved SSRF decision</h2>
@@ -164,10 +164,10 @@ OmniRoute decides HOW approved traffic reaches an approved runtime.</pre>
 
 <p>This exception does <strong>not</strong> give OmniRoute infrastructure authority. Compensating HX boundaries remain:</p>
 <ul>
-<li>OmniRoute is deployed only on the trusted HX network.</li>
-<li>The gateway is not exposed directly to the public Internet.</li>
-<li>API authentication remains enabled for HX clients.</li>
-<li>OmniRoute service credentials are scoped to gateway needs.</li>
+<li>When deployed, OmniRoute must be reachable only on the trusted HX network.</li>
+<li>The gateway must not be exposed directly to the public Internet.</li>
+<li>API authentication must be enabled for HX clients.</li>
+<li>OmniRoute service credentials must be scoped to gateway needs.</li>
 <li>MITM/root-CA, cloud sync, keychain import and unrelated privileged modules remain excluded.</li>
 <li>Runtime endpoints are configured from approved HX runtime profiles/authority, not discovered as infrastructure truth.</li>
 <li>HX network/fleet controls remain outside OmniRoute.</li>

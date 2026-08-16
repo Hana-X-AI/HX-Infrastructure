@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hx-infrastructure.local/schemas/agent-result-envelope.schema.json",
   "title": "HX Agent Result Envelope",
+  "$comment": "Runtime validation must reject validation.independent_reviewer when it equals agent and must externally corroborate scope_observed. JSON Schema cannot compare sibling values or prove observed scope.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -17,6 +18,7 @@
     "validation",
     "error",
     "retry_count",
+    "retry_reason",
     "next_authority"
   ],
   "properties": {
@@ -183,6 +185,27 @@
         }
       ]
     },
+    "retry_reason": {
+      "description": "The classified recoverable failure that caused a retry. This is distinct from the terminal error for the current run.",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["class", "native_message"],
+          "properties": {
+            "class": {
+              "enum": ["transient", "format", "syntax"]
+            },
+            "native_message": {
+              "type": ["string", "null"]
+            }
+          }
+        }
+      ]
+    },
     "retry_count": {
       "type": "integer",
       "minimum": 0,
@@ -276,13 +299,41 @@
       },
       "then": {
         "properties": {
+          "retry_reason": {
+            "type": "object"
+          },
           "error": {
-            "type": "object",
-            "properties": {
-              "class": {
-                "enum": ["transient", "format", "syntax"]
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "retryable": {
+                    "const": false
+                  }
+                },
+                "required": ["retryable"]
               }
-            }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "retry_count": {
+            "const": 0
+          }
+        },
+        "required": ["retry_count"]
+      },
+      "then": {
+        "properties": {
+          "retry_reason": {
+            "type": "null"
           }
         }
       }
