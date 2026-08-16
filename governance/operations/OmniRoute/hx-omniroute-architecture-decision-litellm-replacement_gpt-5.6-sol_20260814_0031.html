@@ -48,16 +48,17 @@ footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:v
 <div class="meta">
 <span class="pill">Decision: ADOPT — NARROW SCOPE</span>
 <span class="pill">Replaces: LiteLLM gateway role</span>
-<span class="pill">OmniRoute version reviewed: v3.8.50</span>
+<span class="pill">Source snapshot: release/v3.8.50 · exact commit unproven from ZIP</span>
 <span class="pill">Source archive SHA-256: 2b04f4cba777b40ccc2af52ce23e2ffac27f2d8b5bcbd6cef6776b91c96c06e3</span>
 <span class="pill">Owner exception: SSRF protection globally disabled</span>
 <span class="pill">Prepared by GPT-5.6 Sol</span>
 <span class="pill">2026-08-14 00:31 America/Panama</span>
+<span class="pill">Reconciled: 2026-08-15 · HX Phase 3</span>
 </div>
 </section>
 
 <div class="callout ok">
-<strong>Decision.</strong> HX will use OmniRoute as the AI traffic plane / model gateway. OmniRoute replaces LiteLLM in that role. It does not replace sdd-core, SERVER-REGISTRY, HX runtime profiles, HX acceptance, hooks, skills, specialist agents, infrastructure orchestration or governance.
+<strong>Decision.</strong> HX will use OmniRoute as the AI traffic plane / model gateway. OmniRoute replaces LiteLLM in that role. It does not replace sdd-core, SERVER-REGISTRY, HX runtime profiles, HX acceptance, hooks, skills, the owner-approved Claude Code → Max repository-management hierarchy, infrastructure orchestration or governance.
 </div>
 
 <h2>1. Why OmniRoute fits HX</h2>
@@ -76,7 +77,7 @@ footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:v
 │ .specify/memory/constitution.md                              │
 │ knowledge/instructions.md                                   │
 │ SERVER-REGISTRY.md                                          │
-│ HX hooks / skills / specialist agents                       │
+│ HX hooks / skills / Claude Code → Max agent hierarchy       │
 │ HX AI Runtime Acceptance Contract                           │
 │ capacity / commissioning gates                              │
 │ Bash/SSH fleet control                                      │
@@ -129,17 +130,17 @@ OmniRoute decides HOW approved traffic reaches an approved runtime.</pre>
 <tr><td>Ollama provider</td><td class="keep">ADOPT</td><td>Direct match for hxs-4 and future Ollama workloads.</td></tr>
 <tr><td>vLLM provider</td><td class="keep">ADOPT</td><td>Direct match for HX primary high-performance runtime lane.</td></tr>
 <tr><td>Static explicit model routing</td><td class="keep">ADOPT FIRST</td><td>Deterministic and easy to compare against direct-runtime baselines.</td></tr>
-<tr><td>Provider health / circuit breaker</td><td class="later">PHASE 2</td><td>Valuable once single-route fidelity is proven.</td></tr>
-<tr><td>Simple fallback</td><td class="later">PHASE 2</td><td>Useful after semantic equivalence testing.</td></tr>
+<tr><td>Provider health / circuit breaker</td><td class="later">OR-W2</td><td>Valuable once single-route fidelity is proven.</td></tr>
+<tr><td>Simple fallback</td><td class="later">OR-W2</td><td>Useful after semantic equivalence testing.</td></tr>
 <tr><td>Traffic telemetry</td><td class="keep">ADOPT</td><td>Latency, route decisions and provider health complement HX infrastructure telemetry.</td></tr>
-<tr><td>Claude Code gateway path</td><td class="keep">ADOPT</td><td>Provides stable Anthropic-facing client entry point without binding Claude Code to a specific runtime.</td></tr>
+<tr><td>Claude Code gateway path</td><td class="later">CONDITIONAL — PROTOCOL PILOT ONLY</td><td>An Anthropic-compatible endpoint may be tested, but protocol compatibility does not make a model/runtime an accepted Claude Code backend. Qwen3.5-9B on hxs-4 remains <strong>NOT ACCEPTED</strong> for that workload.</td></tr>
 </table>
 
 <h2>5. What HX explicitly does not adopt</h2>
 <table>
 <tr><th>OmniRoute subsystem</th><th>Disposition</th><th>HX rationale</th></tr>
 <tr><td>OmniRoute skills</td><td class="no">DO NOT ADOPT</td><td>HX already owns the skills layer.</td></tr>
-<tr><td>OmniRoute agent framework / A2A</td><td class="no">DO NOT ADOPT</td><td>HX specialist-agent orchestration remains authoritative.</td></tr>
+<tr><td>OmniRoute agent framework / A2A</td><td class="no">DO NOT ADOPT</td><td>The external Claude Code → Max repository-management hierarchy remains authoritative; this exclusion applies to OmniRoute's embedded product agent features.</td></tr>
 <tr><td>OmniRoute memory injection</td><td class="no">DISABLE</td><td>Avoid competing context/memory authority.</td></tr>
 <tr><td>Prompt compression</td><td class="later">DISABLE INITIALLY</td><td>Potentially changes system/tool semantics; requires independent fidelity testing.</td></tr>
 <tr><td>Context relay</td><td class="later">DISABLE INITIALLY</td><td>Not needed to prove transparent gateway behavior.</td></tr>
@@ -149,6 +150,10 @@ OmniRoute decides HOW approved traffic reaches an approved runtime.</pre>
 <tr><td>Cloud sync</td><td class="no">EXCLUDE</td><td>No HX requirement.</td></tr>
 <tr><td>OmniRoute database as host/model authority</td><td class="no">FORBIDDEN</td><td>SERVER-REGISTRY and HX profiles remain authoritative.</td></tr>
 </table>
+
+<div class="callout">
+<strong>Agent-plane clarification.</strong> HX has approved an external repository-management model: Claude Code is the Meta-Agent; Max is the sole dispatcher and integrator within a council of Maya, Carson, Riley, Lena, Aisha, Nolan, Sofia, Frank and Vera; Sam, Ruth, Will, Brooke, Paul and Sue are ephemeral task agents. This management architecture does not enable OmniRoute's embedded skills, A2A, memory injection or agent-control subsystems in the HX traffic plane.
+</div>
 
 <h2>6. Owner-approved SSRF decision</h2>
 <div class="callout warn">
@@ -172,14 +177,15 @@ OmniRoute decides HOW approved traffic reaches an approved runtime.</pre>
 <h2>7. First pilot boundary</h2>
 <p>The first OmniRoute pilot is deliberately narrow:</p>
 <pre>DIRECT PATH
-HX client → hxs-4 Ollama → Qwen3.5-9B
+HX conformance harness → hxs-4 Ollama → Qwen3.5-9B
 
 VERSUS
 
 ROUTED PATH
-HX client → OmniRoute → hxs-4 Ollama → Qwen3.5-9B</pre>
+HX conformance harness → OmniRoute → hxs-4 Ollama → Qwen3.5-9B</pre>
 
 <p>The pilot does not prove "OmniRoute is generally good." It answers whether OmniRoute is sufficiently transparent and useful for HX's traffic-plane role.</p>
+<p><strong>Claude Code boundary:</strong> the pilot may test Anthropic Messages protocol fidelity, but it does not use Claude Code as the workload client and cannot override workload-specific runtime acceptance. Qwen3.5-9B remains accepted only for bounded local utility inference, not as a Claude Code backend.</p>
 
 <h3>Functions enabled in pilot</h3>
 <ul>
@@ -221,7 +227,7 @@ HX client → OmniRoute → hxs-4 Ollama → Qwen3.5-9B</pre>
 <tr><td>Context handling</td><td>baseline</td><td>compare</td><td>No hidden compression/rewrites.</td></tr>
 <tr><td>Latency</td><td>measure</td><td>measure</td><td>Gateway overhead acceptable.</td></tr>
 <tr><td>Throughput</td><td>measure</td><td>measure</td><td>No material regression for dev/test.</td></tr>
-<tr><td>Claude Messages surface</td><td>if runtime supports</td><td>test</td><td>Claude client path behaves correctly.</td></tr>
+<tr><td>Anthropic Messages surface</td><td>if runtime supports</td><td>test</td><td>Protocol fidelity is characterized; this is not Claude Code backend acceptance.</td></tr>
 </table>
 
 <h2>9. HX acceptance integration</h2>
@@ -261,6 +267,7 @@ L5 cross-runtime / cross-route conformance</pre>
 <li>use a managed service/container consistent with current HX conventions;</li>
 <li>do not introduce Redis/browser sidecars unless a proven required feature needs them.</li>
 </ul>
+<p>Any installer, process-execution, exposure, secret-handling or packaging decision requires Aisha, Frank and Vera review. A deployable artifact requires a verified tag or commit and exact artifact/container digest; the reviewed ZIP is source evidence, not by itself a deployment pin.</p>
 
 <h2>12. Migration from LiteLLM</h2>
 <p>If LiteLLM has only been planned/documented and is not yet a live dependency, migration is primarily a repository architecture update:</p>
@@ -276,14 +283,15 @@ L5 cross-runtime / cross-route conformance</pre>
 <li>Run repository invariants and confirm no competing gateway authority remains.</li>
 </ol>
 
-<h2>13. Future phases</h2>
+<h2>13. OmniRoute workstream stages</h2>
+<p>These identifiers are local OmniRoute workstream stages, not HX project phases. HX is currently in Phase 3 regroup.</p>
 <table>
-<tr><th>Phase</th><th>Scope</th><th>Excluded</th></tr>
-<tr><td>0 — Repository reconciliation</td><td>LiteLLM replacement docs/config, OmniRoute target-state spec, tests.</td><td>No deployment.</td></tr>
-<tr><td>1 — Single-route pilot</td><td>OmniRoute → hxs-4 Ollama/Qwen.</td><td>No auto-routing/compression/memory.</td></tr>
-<tr><td>2 — Second runtime</td><td>Add vLLM route and static fallback/circuit-breaker testing.</td><td>No agent orchestration.</td></tr>
-<tr><td>3 — Client consolidation</td><td>Claude Code/Codex/other clients point to gateway where beneficial.</td><td>No global provider replacement without acceptance.</td></tr>
-<tr><td>4 — Advanced routing experiments</td><td>Auto-routing, model selection, context-aware policies.</td><td>Only after transparent baseline is established.</td></tr>
+<tr><th>Workstream</th><th>Scope</th><th>Excluded</th></tr>
+<tr><td>OR-W0 — Repository reconciliation</td><td>LiteLLM replacement docs/config, OmniRoute target-state spec, tests.</td><td>No deployment.</td></tr>
+<tr><td>OR-W1 — Single-route pilot</td><td>OmniRoute → hxs-4 Ollama/Qwen using the HX conformance harness.</td><td>No auto-routing/compression/memory; no Claude Code backend claim.</td></tr>
+<tr><td>OR-W2 — Second runtime</td><td>Add vLLM route and static fallback/circuit-breaker testing.</td><td>No embedded agent orchestration.</td></tr>
+<tr><td>OR-W3 — Client consolidation</td><td>Approved clients point to the gateway where separately accepted.</td><td>No client/model/runtime path without workload-specific acceptance.</td></tr>
+<tr><td>OR-W4 — Advanced routing experiments</td><td>Auto-routing, model selection, context-aware policies.</td><td>Only after transparent baseline is established.</td></tr>
 <tr><td>Later</td><td>Read-only MCP telemetry subset if useful.</td><td>Write/control MCP remains separately governed.</td></tr>
 </table>
 
@@ -297,6 +305,8 @@ L5 cross-runtime / cross-route conformance</pre>
 <li>No OmniRoute memory/skill/agent subsystem competes with HX.</li>
 <li>No LiteLLM dependency remains in active target-state gateway architecture.</li>
 <li>Global SSRF disablement is explicit, reproducible and documented as an owner-approved HX exception.</li>
+<li>Protocol compatibility never overrides workload-specific runtime acceptance; Qwen3.5-9B is not represented as a Claude Code backend.</li>
+<li>Repository changes follow the external Claude Code → Max council model and do not enable OmniRoute's embedded agent plane.</li>
 </ul>
 
 <h2>15. Final architecture position</h2>
@@ -311,6 +321,6 @@ HX remains the control plane, source of truth, governance system, agent framewor
 HX = WHAT is allowed, WHERE it runs, WHO controls it, and WHETHER it is proven.</pre>
 
 <footer>
-Decision based on deep review of OmniRoute v3.8.50 source archive and current upstream project documentation, compared with current HX-Infrastructure architecture and accepted repository/runtime principles. This is a target-state architecture decision, not an assertion that OmniRoute is already installed or that LiteLLM has already been removed from the repository.
+Decision based on deep review of the OmniRoute release/v3.8.50 source snapshot (archive SHA-256 above; exact Git commit not established from the ZIP) and current upstream project documentation, compared with current HX-Infrastructure architecture and accepted repository/runtime principles. Reconciled during HX Phase 3 on 2026-08-15. This is a target-state architecture decision, not an assertion that OmniRoute is installed, that LiteLLM has already been removed, or that any local runtime is accepted for Claude Code.
 </footer>
 </main></body></html>

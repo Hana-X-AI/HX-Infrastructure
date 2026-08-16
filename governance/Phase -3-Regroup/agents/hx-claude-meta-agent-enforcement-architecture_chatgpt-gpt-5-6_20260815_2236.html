@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HX Claude Meta-Agent Enforcement Architecture</title>
+<style>
+:root{--bg:#071019;--panel:#101d2a;--panel2:#142536;--ink:#edf5fb;--muted:#a7bacb;--cyan:#48d7e8;--gold:#f3c763;--green:#66dfa2;--red:#ff7a86;--line:#294157;--code:#07131d}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0,#153148 0,transparent 35%),var(--bg);color:var(--ink);font:16px/1.58 Inter,Segoe UI,Arial,sans-serif}main{max-width:1180px;margin:auto;padding:42px 26px 80px}header{padding:34px;border:1px solid var(--line);background:linear-gradient(135deg,#102334,#0c1722);border-radius:20px;box-shadow:0 20px 60px #0008}h1{font-size:2.35rem;line-height:1.12;margin:0 0 12px}h2{margin-top:38px;color:var(--cyan);border-bottom:1px solid var(--line);padding-bottom:8px}h3{color:var(--gold);margin-top:25px}.sub,.muted{color:var(--muted)}.verdict{margin-top:22px;padding:18px;border-left:5px solid var(--green);background:#10281f;border-radius:9px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:18px}.card strong{color:var(--gold)}table{width:100%;border-collapse:collapse;margin:16px 0;background:var(--panel)}th,td{text-align:left;vertical-align:top;padding:11px 12px;border:1px solid var(--line)}th{background:#172c3f;color:var(--cyan)}code,pre{font-family:Consolas,ui-monospace,monospace}code{color:#b9eff5}pre{background:var(--code);border:1px solid var(--line);padding:16px;border-radius:10px;overflow:auto;white-space:pre-wrap}.yes{color:var(--green);font-weight:700}.warn{color:var(--gold);font-weight:700}.no{color:var(--red);font-weight:700}.tag{display:inline-block;border:1px solid currentColor;border-radius:999px;padding:2px 9px;font-size:.78rem;letter-spacing:.04em}.callout{padding:17px 19px;border:1px solid var(--line);background:var(--panel2);border-radius:11px;margin:18px 0}.danger{border-left:5px solid var(--red)}.good{border-left:5px solid var(--green)}ol li,ul li{margin:7px 0}a{color:var(--cyan)}footer{margin-top:48px;color:var(--muted);font-size:.9rem}.flow{display:grid;gap:8px;max-width:720px;margin:20px auto}.node{text-align:center;border:1px solid var(--line);background:var(--panel2);padding:12px;border-radius:9px}.arrow{text-align:center;color:var(--cyan);font-size:1.3rem}@media(max-width:700px){main{padding:20px 12px}header{padding:22px}h1{font-size:1.8rem}table{font-size:.88rem}}
+</style></head><body><main>
+<header><div class="tag yes">FINAL ARCHITECTURE RECOMMENDATION</div><h1>HX Claude Meta-Agent Enforcement Architecture</h1><p class="sub">How to make the three-tier Claude → Max → ephemeral task-cell model dependable through structural constraints, deterministic gates, evidence contracts and adversarial proof.</p><p class="muted">Prepared for Agent Zero · HX-Infrastructure · 15 August 2026 · ChatGPT GPT-5.6</p><div class="verdict"><strong>Verdict — adopt policy-as-code with a protected control plane.</strong> <code>CLAUDE.md</code> should explain the constitution, but it cannot guarantee obedience. The dependable design combines a dedicated Max main-agent session, native child-agent allowlisting, tool deprivation for Tier-3 cells, protected permissions, task-bound knowledge-review receipts, schema-validated results and negative-control tests. Dynamic hooks strengthen those controls; an ordinary command hook must never be the sole critical boundary because hook launch failure and timeout are non-blocking.</div></header>
+
+<h2>1. The real question</h2>
+<p>The objective is not to make Claude “try harder” to follow a complicated prompt. It is to ensure that each participant can perform its authorized job while prohibited paths are unavailable or deterministically denied. A model instruction influences behavior; a runtime boundary controls capability. HX needs both.</p>
+<div class="grid"><div class="card"><strong>Meaning layer</strong><br><code>CLAUDE.md</code>, governance and agent prompts preserve intent, roles and decision semantics.</div><div class="card"><strong>Capability layer</strong><br>Tool allowlists, deny rules, permissions, depth limits and worktrees constrain available actions.</div><div class="card"><strong>Decision layer</strong><br>Hooks evaluate identity, receipt, scope, path, tool and task state before execution.</div><div class="card"><strong>Proof layer</strong><br>Schemas, evidence hashes and adversarial tests prove the controls actually work.</div></div>
+
+<h2>2. Owner-approved target architecture</h2>
+<div class="flow"><div class="node"><strong>Agent Zero</strong><br>Final human authority</div><div class="arrow">↓ explicit intent and decisions</div><div class="node"><strong>Claude Code — Meta-Agent</strong><br>Intent, authority, routing, synchronization</div><div class="arrow">↓ governed handoff</div><div class="node"><strong>Max — dedicated Primary Agent</strong><br>Sole OmniRoute dispatcher and integration coordinator</div><div class="arrow">↓ exact allowlisted Agent types</div><div class="node"><strong>Tier-3 task cells</strong><br>Reconnaissance · reproduction · implementation · review · proof · knowledge capture<br><span class="no">No recursive spawning</span></div></div>
+<p>The nine persistent domain stewards remain part of Max's council. They contribute domain authority and review, but they do not become nine independent dispatchers. This prevents conflicting writers, competing task queues and a second integration authority.</p>
+
+<h2>3. Evidence-backed platform facts</h2>
+<table><thead><tr><th>Verified current behavior</th><th>HX implication</th></tr></thead><tbody>
+<tr><td>Subagents are Markdown definitions with YAML frontmatter and independent contexts, tools and permissions.</td><td>Use project-scoped definitions as capability contracts, not merely personas.</td></tr>
+<tr><td><code>tools</code> is an allowlist; omitting it inherits the available subagent tool pool.</td><td>Every HX agent must declare an explicit tool list. Inheritance is too broad for governed agents.</td></tr>
+<tr><td><code>Agent(type-a,type-b)</code> restricts child types only when the agent runs as the main thread with <code>claude --agent</code>. Parenthesized types are ignored inside an ordinary subagent definition.</td><td>Run Max as a dedicated main-session agent if exact native child-type allowlisting is required.</td></tr>
+<tr><td>Nested subagents are allowed by default up to a configurable depth. Omitting <code>Agent</code> from a definition prevents that agent from spawning.</td><td>Set Max's session depth to one and omit/deny <code>Agent</code> and legacy <code>Task</code> in every Tier-3 definition.</td></tr>
+<tr><td>The default concurrent subagent ceiling is 20 and there is no total-session spawn limit.</td><td>Choose a smaller HX ceiling and use task/state controls; do not mistake concurrency control for a total budget.</td></tr>
+<tr><td><code>PreToolUse</code> can allow, deny, ask, defer or rewrite tool input. <code>SubagentStart</code> can inject context but cannot block creation.</td><td>Perform blocking checks before the <code>Agent</code> tool call and other privileged tools. Use SubagentStart only for audit/context.</td></tr>
+<tr><td>An ordinary command, HTTP or MCP-tool PreToolUse hook that cannot start, returns invalid/non-blocking output, loses its connection or times out does not block the tool. An Agent SDK callback hook does block on timeout.</td><td>Back every critical dynamic check with static permissions, tool deprivation or managed policy, or use a verified SDK callback boundary. Never call an ordinary command hook fail-closed by itself.</td></tr>
+<tr><td>Permission deny rules are enforced by Claude Code and precede ask and allow rules.</td><td>Use deny-by-default and protected scopes. Prompts cannot override a denied capability.</td></tr>
+<tr><td>Managed settings can be non-overridable and can restrict hooks, permission rules, sideloading and customization sources.</td><td>Managed policy is the strongest local control boundary when available.</td></tr>
+<tr><td><code>maxTurns</code>, model/effort selection, isolation and Agent SDK whole-query budgets exist; Gemini's proposed per-agent token field is not a native Claude Code frontmatter control.</td><td>Use supported levers and do not promise an unenforceable per-agent token ceiling.</td></tr>
+</tbody></table>
+
+<h2>4. Why <code>CLAUDE.md</code> alone is insufficient</h2>
+<div class="callout danger"><strong>The control paradox:</strong> if the same agent can edit the instruction, hook or settings file that constrains it, the rule is useful governance but not a non-bypassable enforcement boundary.</div>
+<p><code>CLAUDE.md</code> remains essential because it tells Claude what the system means: who owns decisions, how modes differ, when to stop and where canonical policy lives. It should not carry thousands of lines of duplicated control logic. Enforcement belongs in protected settings, permissions, hooks, schemas and launch validation.</p>
+<table><thead><tr><th>Layer</th><th>Purpose</th><th>Failure if used alone</th></tr></thead><tbody>
+<tr><td><code>CLAUDE.md</code></td><td>Constitutional routing and semantics</td><td>Probabilistic compliance; susceptible to ambiguity and context pressure</td></tr>
+<tr><td>Agent definitions</td><td>Identity, tools, model, permissions, turns, isolation</td><td>Can drift or be bypassed if definitions remain writable</td></tr>
+<tr><td>Permissions</td><td>Remove or block tools and target patterns</td><td>Static rules cannot express every task-state predicate</td></tr>
+<tr><td>Hooks</td><td>Dynamic identity, receipt, scope and evidence decisions</td><td>Ordinary startup failure, invalid output and timeout are non-blocking; critical rules need static backstops or an SDK callback</td></tr>
+<tr><td>Tests</td><td>Prove both allowed and prohibited behavior</td><td>A test suite does not enforce production behavior unless bound to rollout gates</td></tr>
+</tbody></table>
+
+<h2>5. Strongest practical runtime pattern</h2>
+<h3>Recommended: governed Max main-agent session</h3>
+<p>Claude performs owner interaction and creates a signed/bounded task charter. A launch wrapper validates the repository, control files, task packet and required knowledge base, then starts a dedicated <code>claude --agent max</code> session. Max's definition contains <code>Agent(&lt;approved-tier3-types&gt;)</code>. That is the only pattern currently documented to enforce an exact native child-type allowlist from an agent definition.</p>
+<div class="callout good"><strong>Why this wins:</strong> it preserves the conceptual three tiers while using native structural controls. Max is the sole dispatcher; Tier-3 definitions lack spawning capability; Claude cannot quietly impersonate Max's integration role.</div>
+<h3>Alternative: Max as a nested subagent</h3>
+<p>This looks simpler but weakens exact child-type enforcement because the list inside <code>Agent(...)</code> is ignored in subagent definitions. It can be compensated with a <code>PreToolUse</code> gate on Agent calls, but that creates more custom logic and a more delicate identity chain. Use only if the dedicated-session handoff proves operationally infeasible and Agent Zero explicitly accepts the additional enforcement burden.</p>
+
+<h2>6. Mandatory Knowledge Base Review as an enforceable gate</h2>
+<p>The pinned rule applies to Claude, Max, all stewards and every task cell. The review must produce a task-specific receipt that conforms to <code>governance/schemas/knowledge-review-receipt.schema.json</code>, version <code>hx-knowledge-review-receipt/v1</code>. A hook validates the receipt before privileged tools execute.</p>
+<pre>{
+  "schema_version": "hx-knowledge-review-receipt/v1",
+  "task_id": "OMNI-20260815-001",
+  "run_id": "uuid",
+  "agent": "max",
+  "operations_root": "C:\\...\\governance\\operations\\OmniRoute",
+  "repository_identity": {"path": "C:\\...\\HX-Infrastructure", "release_or_commit": "verified-value"},
+  "sources_reviewed": [
+    {"path": "README.md", "sha256": "hex", "purpose": "architecture baseline"}
+  ],
+  "external_sources_reviewed": [],
+  "review_completed_at": "2026-08-15T20:00:00-05:00",
+  "max_age_seconds": 3600,
+  "review_completed": true
+}</pre>
+<p>The validator must parse <code>review_completed_at</code> as an ISO-8601 timestamp with an offset, compare it with current UTC time and reject an unparseable or future timestamp. A receipt is stale and must be rejected when its age exceeds the canonical 3600-second maximum; the receipt cannot select another maximum. The validator must also reject empty, forged, cross-task, cross-agent or hash-mismatched receipts; path traversal; symlink/junction escape; missing sources; and ambiguous release roots. The receipt belongs in a task evidence directory—not in the unzipped source knowledge repository.</p>
+
+<h2>7. Enforcement control matrix</h2>
+<table><thead><tr><th>Required invariant</th><th>Primary control</th><th>Defense in depth</th><th>Proof</th></tr></thead><tbody>
+<tr><td>Only Max dispatches OmniRoute task cells</td><td>Dedicated Max main agent with native child allowlist</td><td>PreToolUse Agent gate and protected launcher</td><td>Claude direct-spawn negative test</td></tr>
+<tr><td>Tier-3 cannot recurse</td><td>No Agent/Task tools; spawn depth 1</td><td>Explicit disallowed tools</td><td>Attempted Tier-4 spawn denied</td></tr>
+<tr><td>No work before knowledge review</td><td>Receipt validator before privileged tools</td><td>Static privilege boundary until a governed launcher/session exposes permitted execution</td><td>Missing/stale/forged receipt and hook-failure tests</td></tr>
+<tr><td>Writers stay isolated</td><td><code>isolation: worktree</code> and path policy</td><td>PreToolUse path canonicalization</td><td>Main-checkout escape tests</td></tr>
+<tr><td>No self-certification</td><td>Result schema requires different reviewer</td><td>Max integration gate</td><td>Implementer-as-reviewer rejection</td></tr>
+<tr><td>No silent authority expansion</td><td>Task charter mode/scope and owner gates</td><td>Protected governance paths</td><td>Unauthorized adoption/deployment test</td></tr>
+<tr><td>No control-plane tampering</td><td>Managed settings or OS-protected controls</td><td>Hashes and ConfigChange hook</td><td>Attempted policy/hook edit denied</td></tr>
+</tbody></table>
+
+<h2>8. Failure, retry and result discipline</h2>
+<p>Retries are classified, not reflexive. Permit one new-run retry only for demonstrated transient, output-format or narrowly bounded syntax failures. Permit zero automatic retries for knowledge, permission, security, authority, scope or evidence failures, and honor native “do not retry” concurrency errors. After the allowed retry fails, Max stops and escalates through Claude.</p>
+<p>Every result uses a versioned envelope with task/run identity, reviewed sources, observed scope, artifact hashes, validation commands/results, independent reviewer, classified error, retry count and next authority. <code>COMPLETED</code> is invalid without the evidence required by the task contract.</p>
+
+<h2>9. State without a second truth system</h2>
+<p>The SubAgent State Registry is an append-only transition index, not a new governance database. It retains task/run IDs, agent, source identities, timestamps, evidence references, hashes, validation, retry, reviewer and next authority. Raw evidence remains governed separately. Max compacts context by retaining references—not by destroying evidence.</p>
+<p>It must not replace the actions/issues log, architecture decisions, Mem0, LoopX, LangGraph checkpoints, source repositories or the owner decision record.</p>
+
+<h2>10. Protection tiers</h2>
+<table><thead><tr><th>Tier</th><th>Boundary</th><th>Permitted claim</th></tr></thead><tbody>
+<tr><td>A</td><td>Organization-managed hooks/settings, non-overridable permissions, customization restrictions</td><td><span class="yes">ENFORCED</span> after negative tests pass</td></tr>
+<tr><td>B</td><td>OS-protected user-level controls plus verified dedicated launcher</td><td><span class="yes">LOCALLY ENFORCED</span> after access-control and bypass tests</td></tr>
+<tr><td>C</td><td>Repository hooks/settings with protected-path rules and hash validation</td><td><span class="warn">PILOT-ENFORCED</span>; residual self-modification risk disclosed</td></tr>
+<tr><td>D</td><td>Prompts and <code>CLAUDE.md</code> only</td><td><span class="no">ADVISORY ONLY</span></td></tr>
+</tbody></table>
+
+<h2>11. Minimum adversarial proof suite</h2>
+<ol><li>Claude attempts direct Tier-3 dispatch and is denied.</li><li>Max dispatches each approved type and cannot dispatch an unknown or built-in catch-all type.</li><li>Every Tier-3 cell attempts recursion and receives no usable Agent/Task capability.</li><li>Missing, stale, forged, empty and cross-task knowledge receipts are denied.</li><li>Traversal, case, symlink and junction escape attempts fail.</li><li>Read-only agents attempt writes through every available tool path and fail.</li><li>Implementation cells attempt main-checkout and out-of-scope writes and fail.</li><li>Agents attempt to alter policies, hooks, settings and definitions and fail.</li><li>Missing hook, invalid JSON, exit 1, exit 2, connection failure and timeout are tested; static or managed backstops still block critical actions, or the SDK callback demonstrates timeout denial.</li><li>Incomplete results and implementer self-review cannot become completed work.</li><li>Non-retryable failures receive zero retry; eligible failures receive at most one new-run retry.</li><li>Depth, concurrency and worktree behaviors match configuration.</li></ol>
+<p>A successful test must attempt the prohibited action and observe deterministic denial. An agent promise is not a negative test.</p>
+
+<h2>12. Implementation sequence and gates</h2>
+<ol><li><strong>Read-only preflight:</strong> inspect current governance, roster, operations repositories, installed Claude Code version, settings precedence and dirty worktree.</li><li><strong>Normalize authority:</strong> one canonical Meta-Agent policy, delegation policy and schemas; concise pointers from <code>CLAUDE.md</code>.</li><li><strong>Observe first:</strong> audit hooks and receipts before enforcement.</li><li><strong>Constrain Max:</strong> dedicated launch, exact child allowlist, bounded turns/depth/concurrency.</li><li><strong>Constrain task cells:</strong> minimum tools, non-recursive definitions and worktree isolation.</li><li><strong>Enforce with backstops:</strong> activate receipt, scope, protected-path and result gates only after static or managed controls, or an SDK callback, cover hook failure modes.</li><li><strong>Attack the controls:</strong> run the negative suite and preserve evidence.</li><li><strong>Pilot read-only, then one bounded mutation:</strong> prove legitimate work still succeeds.</li><li><strong>Owner synchronization:</strong> report residual bypass paths and request acceptance. No global rollout without approval.</li></ol>
+
+<h2>13. What not to do</h2>
+<ul><li>Do not create a custom <code>spawn_sub_agent</code> tool until a verified native gap requires one.</li><li>Do not run Max as a nested agent while claiming native exact child-type allowlisting.</li><li>Do not let every steward become a dispatcher.</li><li>Do not use <code>bypassPermissions</code>.</li><li>Do not treat <code>SubagentStart</code> as a blocking hook.</li><li>Do not rely on a fictional per-agent token-budget frontmatter field.</li><li>Do not create another task log, memory plane or architecture authority.</li><li>Do not declare enforcement while the governed agent can rewrite its controls.</li><li>Do not deploy or broaden scope as part of this control-plane implementation.</li></ul>
+
+<h2>14. Final recommendation</h2>
+<div class="callout good"><strong>Adopt the dedicated Max main-agent pattern and implement the controls through a staged, evidence-bearing pilot.</strong> Put the constitutional role in <code>CLAUDE.md</code>; put critical prohibition in permissions, managed policy and agent tool lists; use hooks for dynamic task-state decisions only with static backstops or an SDK callback boundary; put truth in canonical governance and evidence artifacts; and put confidence in adversarial tests.</div>
+<p>The attached implementation prompt converts this architecture into a Claude Code work charter. Its critical instruction is deliberate: Claude must first inspect the real repository and installed runtime, then implement only what current authority and verified behavior support.</p>
+
+<h2>15. Source basis</h2>
+<ul><li>Agent Zero's approved three-tier federated-control decision and pinned Knowledge Base Review directive.</li><li>Current HX Meta-Agent first draft and Gemini-input reconnaissance report.</li><li><a href="https://code.claude.com/docs/en/sub-agents">Official Claude Code custom subagents documentation</a>.</li><li><a href="https://code.claude.com/docs/en/hooks">Official Claude Code hooks reference</a>.</li><li><a href="https://code.claude.com/docs/en/permissions">Official Claude Code permissions documentation</a>.</li><li><a href="https://code.claude.com/docs/en/agent-sdk/subagents">Official Claude Agent SDK subagents documentation</a>.</li></ul>
+<footer>Truth state: architecture recommendation and implementation charter; not an as-built claim. No HX repository or runtime control was modified by this analysis.</footer>
+</main></body></html>

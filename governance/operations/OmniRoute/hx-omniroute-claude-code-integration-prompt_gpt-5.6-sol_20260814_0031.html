@@ -44,19 +44,64 @@ footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:v
 <section class="hero">
 <div class="eyebrow">HX-Infrastructure · Claude Code Handoff</div>
 <h1>OmniRoute Integration: Replace LiteLLM, Preserve HX Authority</h1>
-<p>Repository-first execution prompt for adopting OmniRoute narrowly as the HX AI traffic plane without importing its agent/memory/control subsystems or deploying ahead of evidence.</p>
-<div class="meta"><span class="pill">OmniRoute: ADOPT — TRAFFIC PLANE</span><span class="pill">LiteLLM: REPLACE</span><span class="pill">SSRF: OWNER-APPROVED OFF</span><span class="pill">No live deployment without authorization</span><span class="pill">Prepared by GPT-5.6 Sol</span></div>
+<p>Federated repository-execution prompt for adopting OmniRoute narrowly as the HX AI traffic plane without importing its embedded agent/memory/control subsystems or deploying ahead of evidence.</p>
+<div class="meta"><span class="pill">OmniRoute: ADOPT — TRAFFIC PLANE</span><span class="pill">LiteLLM: REPLACE</span><span class="pill">Claude Code → Max council</span><span class="pill">SSRF: OWNER-APPROVED OFF</span><span class="pill">HX Phase 3</span><span class="pill">No live deployment without authorization</span><span class="pill">Prepared by GPT-5.6 Sol · reconciled 2026-08-15</span></div>
 </section>
 <div class="callout"><strong>Synchronization gate:</strong> complete repository reconciliation and pilot design first. Stop before live OmniRoute deployment unless explicitly authorized.</div>
 <h2>Claude Code execution prompt</h2>
 <button class="copybtn" onclick="copyPrompt()">Copy prompt</button> <span id="copyStatus" style="font-size:0.85em;margin-left:8px"></span>
 <pre id="prompt">You are Claude Code operating in the canonical HX-Infrastructure repository.
 
+ROLE
+You are the Tier-1 Meta-Agent. You own user intent, priority, approvals, synchronization and final reporting.
+You do not act as the lone repository implementer or integration bottleneck.
+
+APPROVED THREE-TIER OPERATING MODEL
+Tier 1 — Claude Code: user intent and authority.
+Tier 2 — Max-led Primary Agent Council:
+- Max — Chief Repository Steward; sole dispatcher and integrator
+- Maya — protocol, translation and streaming
+- Carson — routing, resilience and policy
+- Riley — provider integrations and credential flow
+- Lena — persistence and state
+- Aisha — security and privileged boundaries
+- Nolan — agent and extension surfaces
+- Sofia — dashboard, desktop and experience
+- Frank — CLI, build, packaging and delivery
+- Vera — quality, release and evidence
+Tier 3 — ephemeral, non-recursive task agents:
+- Sam — reconnaissance and impact mapping
+- Ruth — failure reproduction
+- Will — sole bounded implementer
+- Brooke — adversarial review
+- Paul — independent proof
+- Sue — fix-to-knowledge capture
+
+DISPATCH AND AUTHORITY RULES
+- Max is the only agent that dispatches or assigns task agents.
+- Tier-3 agents must not spawn agents.
+- Persistent means a versioned charter and maintained knowledge, not an indefinitely reused chat context.
+- Every change has one lead steward, required reviewers and one named branch owner.
+- One task, one operator-confirmed base, one isolated worktree, one branch and one writer.
+- Reviewers report findings; they do not silently edit Will's branch.
+- Paul and Vera remain independent of the production implementation they certify.
+- Do not use git stash or git stash pop.
+- Never touch another session's worktree, branch or PR.
+- Never move, delete, symlink, restructure or track _tasks. Repeat this boundary verbatim in every task-agent prompt.
+- Respect release freezes, repository hooks, checks and owner synchronization gates.
+
+TASK PACKET — REQUIRED BEFORE DISPATCH
+Max must provide: task ID; intent; operating mode; risk class; confirmed base; worktree; branch owner; lead steward; mandatory reviewers; allowed and protected paths; invariants; known failure; acceptance commands; required test runner(s); network/credential policy; forbidden actions; stop conditions; knowledge output; and return schema.
+
+STANDARD TASK FLOW
+Claude Code establishes intent → Max classifies → Sam maps impact → operator confirms base → Max issues the task packet → Ruth establishes failure evidence where applicable → Will performs the bounded edit → domain stewards review → Brooke challenges → Paul proves → Sue records the reusable lesson → Max integrates → Claude Code reports and synchronizes with the owner.
+
 MISSION
 Reconcile the HX target architecture so OmniRoute becomes the AI traffic plane / gateway and replaces LiteLLM in that role.
 
 THIS IS AN ARCHITECTURE / REPOSITORY RECONCILIATION WORKSTREAM FIRST.
-Do not install or deploy OmniRoute unless a later phase or explicit owner instruction authorizes live deployment.
+HX is currently in Phase 3 regroup. All OR-W identifiers below are OmniRoute workstream packets, not HX project phases.
+Do not install or deploy OmniRoute unless an explicit owner instruction authorizes live deployment.
 
 DECISION — AUTHORITATIVE FOR THIS WORKSTREAM
 OmniRoute is ADOPTED NARROWLY as the HX AI traffic plane.
@@ -70,7 +115,7 @@ This does NOT mean OmniRoute replaces:
 - SERVER-REGISTRY.md
 - HX hooks
 - HX skills
-- HX specialist agents
+- the Claude Code → Max council and task-cell architecture
 - HX AI Runtime Acceptance Contract
 - capacity/commissioning gates
 - Bash/SSH fleet control
@@ -102,15 +147,18 @@ Compensating HX boundaries:
 - infrastructure control remains outside OmniRoute
 
 SOURCE MATERIAL
-Use the reviewed OmniRoute v3.8.50 source snapshot as the initial reference:
+Use the reviewed OmniRoute release/v3.8.50 source snapshot as initial implementation evidence:
 SHA-256:
 2b04f4cba777b40ccc2af52ce23e2ffac27f2d8b5bcbd6cef6776b91c96c06e3
 
+The ZIP does not establish an exact Git commit. Do not call it an immutable release pin.
+Before deployment, separately verify the tag or commit and pin the exact artifact/container digest.
 Also re-check current official OmniRoute upstream before making version-sensitive assertions.
 
 REPOSITORY-FIRST DISCOVERY
 Before editing:
 1. Read current HX authority:
+   - root AGENTS.md and any applicable nested AGENTS.md
    - .specify/memory/constitution.md
    - knowledge/instructions.md
    - SERVER-REGISTRY.md
@@ -131,9 +179,10 @@ Before editing:
    HISTORICAL
    PROPOSED
    STALE/CONFLICTING
-4. Do not rewrite historical evidence merely to erase LiteLLM from history.
+4. Sam returns a read-only impact map to Max before any edit.
+5. Do not rewrite historical evidence merely to erase LiteLLM from history.
 
-PHASE 0 — ARCHITECTURE RECONCILIATION
+OR-P0 — ARCHITECTURE RECONCILIATION — LEAD: MAX; EVIDENCE REVIEW: VERA
 
 Create/update a canonical HX architecture decision/spec that says:
 - OmniRoute is the preferred AI traffic plane
@@ -154,7 +203,7 @@ If evidence says LiteLLM is actually deployed:
 - report the as-built finding
 - require a separate migration/decommission phase
 
-PHASE 1 — OMNIROUTE SCOPE SPECIFICATION
+OR-P1 — OMNIROUTE SCOPE SPECIFICATION — LEAD: CARSON; REVIEW: MAYA, RILEY, AISHA, VERA
 
 Define the HX-enabled OmniRoute feature set:
 
@@ -167,7 +216,12 @@ ADOPT:
 - provider health
 - traffic telemetry
 - later: circuit breaker/simple fallback after baseline
-- Claude Code gateway path
+- conditional Anthropic-compatible/Claude Code protocol path, subject to workload-specific acceptance
+
+HARD RUNTIME ACCEPTANCE BOUNDARY:
+Protocol compatibility does not make a model/runtime an accepted Claude Code backend.
+Qwen3.5-9B on hxs-4 is accepted for bounded local utility inference and is NOT ACCEPTED as a Claude Code backend.
+OmniRoute routing does not override or upgrade that disposition.
 
 DISABLE / EXCLUDE INITIALLY:
 - auto-routing
@@ -193,7 +247,7 @@ If documenting future MCP use, limit initial candidate set to read-only traffic-
 - route simulation/explanation
 Do not implement now.
 
-PHASE 2 — SSRF OWNER EXCEPTION
+OR-P2 — SSRF OWNER EXCEPTION — LEAD: AISHA; REVIEW: FRANK, VERA
 
 Find the exact OmniRoute v3.8.50/current configuration mechanism controlling SSRF protection.
 
@@ -213,7 +267,7 @@ This is NOT permission to enable:
 - MITM/root CA
 - arbitrary privileged provider modules
 
-PHASE 3 — LITELLM REPLACEMENT MANIFEST
+OR-P3 — LITELLM REPLACEMENT MANIFEST — LEAD: MAX; EVIDENCE REVIEW: VERA
 
 Create a file-by-file reconciliation manifest for every active LiteLLM reference.
 
@@ -234,7 +288,7 @@ Some requirements should stay generic:
 - route semantics
 - direct-vs-routed acceptance
 
-PHASE 4 — HX OMNIROUTE PROFILE / SPEC
+OR-P4 — HX OMNIROUTE PROFILE / SPEC — LEAD: CARSON; REVIEW: MAYA, RILEY, AISHA, VERA
 
 Create a target-state OmniRoute traffic-plane specification consistent with existing HX conventions.
 
@@ -257,16 +311,16 @@ It must define:
 Do not invent a physical host placement if SERVER-REGISTRY does not currently assign one.
 Host placement remains a separate future decision.
 
-PHASE 5 — PILOT TEST DESIGN ONLY
+OR-P5 — PILOT TEST DESIGN ONLY — LEAD: VERA; REVIEW: MAYA, CARSON, RILEY, AISHA
 
 Design the first live pilot but do not execute unless authorized.
 
 Pilot:
 DIRECT:
-HX client -&gt; hxs-4 Ollama -&gt; Qwen3.5-9B
+HX conformance harness -&gt; hxs-4 Ollama -&gt; Qwen3.5-9B
 
 ROUTED:
-HX client -&gt; OmniRoute -&gt; hxs-4 Ollama -&gt; Qwen3.5-9B
+HX conformance harness -&gt; OmniRoute -&gt; hxs-4 Ollama -&gt; Qwen3.5-9B
 
 Compare:
 - identity
@@ -284,8 +338,9 @@ Compare:
 - Anthropic Messages behavior where applicable
 
 Compression/memory/auto-routing/A2A must remain OFF during pilot.
+Testing Anthropic Messages fidelity does not authorize Claude Code to use Qwen3.5-9B as its backend.
 
-PHASE 6 — HX RUNTIME ACCEPTANCE INTEGRATION
+OR-P6 — HX RUNTIME ACCEPTANCE INTEGRATION — LEAD: VERA; INDEPENDENT PROOF: PAUL
 
 Extend the existing engine-neutral runtime acceptance framework without duplicating it.
 
@@ -308,11 +363,13 @@ Add invariants:
 - OmniRoute does not own durable model placement
 - routed tool-call fidelity is asserted
 - no hidden compression/memory in baseline route
+- gateway protocol compatibility cannot override workload-specific runtime acceptance
+- Qwen3.5-9B is not represented as an accepted Claude Code backend
 - LiteLLM no longer owns active gateway architecture
 - SSRF exception is explicit
 - no Ansible
 
-PHASE 7 — DEPLOYMENT SHAPE RECOMMENDATION
+OR-P7 — DEPLOYMENT SHAPE RECOMMENDATION — LEAD: FRANK; SECURITY REVIEW: AISHA; EVIDENCE: VERA
 
 Document, do not deploy:
 - pin exact OmniRoute release/version
@@ -325,21 +382,23 @@ Document, do not deploy:
 - loopback/trusted-LAN first
 - authentication enabled before shared access
 
-PHASE 8 — FUTURE SEQUENCING
+Aisha, Frank and Vera are mandatory reviewers for installer, process-execution, exposure, secret-handling and packaging decisions.
+
+OR-P8 — FUTURE SEQUENCING — LEAD: MAX; OWNER SYNCHRONIZATION: CLAUDE CODE
 
 Document:
-Phase 0: repo reconciliation
-Phase 1: single static Ollama route
-Phase 2: vLLM + static fallback/circuit breaker
-Phase 3: client consolidation
-Phase 4: advanced routing experiments
+OR-W0: repo reconciliation
+OR-W1: single static Ollama route
+OR-W2: vLLM + static fallback/circuit breaker
+OR-W3: approved-client consolidation
+OR-W4: advanced routing experiments
 Later: read-only MCP telemetry if useful
 
 Do not enable auto-routing, compression, memory or agent orchestration simply because OmniRoute supports them.
 
 VALIDATION
 
-Run all existing repository tests/invariants after changes.
+Vera selects the exact applicable test runners, ratchets and checks. Paul records every command, result and limitation. Do not report merely "all tests passed." OmniRoute uses multiple test ecosystems; evidence must be named and scoped.
 
 Add targeted tests proving:
 - no stale active LiteLLM gateway reference remains
@@ -352,6 +411,9 @@ Add targeted tests proving:
 - privileged OmniRoute subsystems are excluded from target state
 - no Ansible introduced
 - no Docling/LangGraph contamination
+- no recursive agent spawning
+- one writer/worktree/branch owner per task
+- embedded OmniRoute agent/memory/skill features remain distinct from the external Max-led repository-management hierarchy
 
 DELIVERABLES
 
@@ -361,6 +423,7 @@ DELIVERABLES
 4. HX runtime-acceptance extensions for direct-vs-routed testing.
 5. Invariants/tests.
 6. Dark-mode HTML completion report.
+7. Sue's structured knowledge record: symptom or decision trigger, root cause/context, rejected alternatives, implemented change, regression guard, validation evidence, recurrence signature and reusable lesson.
 
 FINAL REPORT MUST STATE CLEARLY
 
@@ -379,6 +442,16 @@ HX AGENTS
 HX MEMORY
 HX GOVERNANCE
 INFRASTRUCTURE ORCHESTRATION
+
+EXTERNAL REPOSITORY MANAGEMENT:
+CLAUDE CODE OWNS USER INTENT.
+MAX IS SOLE DISPATCHER AND INTEGRATOR.
+THE NINE NAMED STEWARDS OWN DOMAIN KNOWLEDGE AND REVIEW.
+SAM, RUTH, WILL, BROOKE, PAUL AND SUE ARE EPHEMERAL AND NON-RECURSIVE.
+
+CLAUDE CODE BACKEND:
+ANTHROPIC PROTOCOL COMPATIBILITY IS NOT BACKEND ACCEPTANCE.
+QWEN3.5-9B ON HXS-4 REMAINS NOT ACCEPTED AS A CLAUDE CODE BACKEND.
 
 SSRF:
 GLOBALLY DISABLED BY EXPLICIT HX OWNER DECISION.

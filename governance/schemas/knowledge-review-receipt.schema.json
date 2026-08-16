@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hx-infrastructure.local/schemas/knowledge-review-receipt.schema.json",
+  "title": "HX Knowledge Review Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "$comment": "Freshness is a runtime check: reject an unparseable or future review_completed_at value, or a receipt more than 3600 seconds old at validation time.",
+  "required": [
+    "schema_version",
+    "task_id",
+    "run_id",
+    "agent",
+    "operations_root",
+    "repository_identity",
+    "sources_reviewed",
+    "external_sources_reviewed",
+    "review_completed_at",
+    "max_age_seconds",
+    "review_completed"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "hx-knowledge-review-receipt/v1"
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "agent": {
+      "type": "string",
+      "minLength": 1
+    },
+    "operations_root": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "release_or_commit"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "release_or_commit": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "sources_reviewed": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256", "purpose"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "external_sources_reviewed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["identity", "sha256", "purpose"],
+        "properties": {
+          "identity": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "review_completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "max_age_seconds": {
+      "const": 3600
+    },
+    "review_completed": {
+      "const": true
+    }
+  }
+}

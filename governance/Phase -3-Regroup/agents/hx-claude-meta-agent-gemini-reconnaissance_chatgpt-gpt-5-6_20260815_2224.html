@@ -1,0 +1,146 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HX Claude Meta-Agent — Gemini Input Reconnaissance</title>
+<style>
+:root{--bg:#081018;--p:#101b27;--p2:#142334;--ink:#eaf2f8;--muted:#a1b3c5;--cyan:#4bd5e7;--gold:#f4c95d;--green:#6ee7a8;--red:#ff7b7b;--violet:#b99cff;--line:#294057}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#071019,#0b1520 48%,#101829);color:var(--ink);font:15px/1.55 Inter,Segoe UI,Arial,sans-serif}main{max-width:1180px;margin:auto;padding:42px 28px 72px}h1{font-size:40px;line-height:1.08;margin:8px 0 14px}h2{font-size:27px;margin:40px 0 14px;border-bottom:1px solid var(--line);padding-bottom:8px}h3{color:var(--cyan);margin:24px 0 8px}.k{color:var(--cyan);text-transform:uppercase;letter-spacing:.15em;font-weight:800}.sub{font-size:18px;color:var(--muted);max-width:950px}.meta,.small{font-size:13px;color:var(--muted)}.verdict{margin:26px 0;padding:21px 23px;border:1px solid #2f7180;border-left:5px solid var(--cyan);background:#0e2029;border-radius:10px}.verdict strong{color:var(--cyan);font-size:20px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px}.card{background:rgba(16,27,39,.94);border:1px solid var(--line);border-radius:10px;padding:16px}.tag{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:3px 8px;margin:2px;font-size:11px;font-weight:800}.yes{color:var(--green);border-color:#33795a}.mod{color:var(--gold);border-color:#806825}.no{color:var(--red);border-color:#8b3947}.pilot{color:var(--violet);border-color:#69538e}table{width:100%;border-collapse:collapse;margin:14px 0 25px;background:#0e1823;font-size:13.5px}th,td{vertical-align:top;text-align:left;border:1px solid var(--line);padding:10px 11px}th{background:#142536;color:var(--cyan)}tr:nth-child(even) td{background:#101d2a}code{color:#b9e9f0;background:#09141e;padding:1px 5px;border-radius:4px}.ok{border-left:4px solid var(--green);background:#10231b;padding:13px 16px;margin:15px 0}.note{border-left:4px solid var(--gold);background:#241f12;padding:13px 16px;margin:15px 0}.risk{border-left:4px solid var(--red);background:#251419;padding:13px 16px;margin:15px 0}ul,ol{padding-left:23px}li{margin:5px 0}pre{white-space:pre-wrap;background:#07111b;border:1px solid var(--line);border-radius:8px;padding:14px;color:#d5e8f5}.footer{margin-top:48px;border-top:1px solid var(--line);padding-top:17px;color:var(--muted)}a{color:#75d9ff}@media(max-width:720px){main{padding:25px 14px}h1{font-size:31px}table{display:block;overflow-x:auto}}
+</style></head><body><main>
+<div class="k">HX-Infrastructure · Phase 3 · Evidence-first reconnaissance</div>
+<h1>Claude Meta-Agent: Gemini Input Review</h1>
+<p class="sub">Verification of the proposed delegation, spawning, guardrail, error-handling and state-registry patterns against current official Claude Code and Claude Agent SDK behavior and the owner-approved HX three-tier architecture.</p>
+<p class="meta">Prepared 15 August 2026 · Official documentation statically reviewed; no Claude Code configuration changed</p>
+
+<div class="verdict"><strong>Disposition: ADOPT THE PRINCIPLES WITH CORRECTIONS.</strong><br>
+Gemini’s high-level instincts are good: isolate context, delegate atomic work, cap fan-out, normalize results, escalate repeated failure and retain minimal state. But its proposed <code>spawn_sub_agent</code> interface is not Claude Code’s native mechanism; the token budget is not a native per-agent control; its retry rule is too broad; and unrestricted specialist spawning conflicts with the owner-approved rule that Max is the sole dispatcher and Tier-3 task agents are non-recursive.</div>
+
+<div class="grid">
+<div class="card"><span class="tag yes">KEEP</span><h3>Architectural intent</h3><p>Claude handles owner intent and systemic routing; specialists remain domain-bounded; task contexts stay small.</p></div>
+<div class="card"><span class="tag mod">CORRECT</span><h3>Native mechanism</h3><p>Use Claude Code’s <code>Agent</code> tool, agent definitions, hooks, tool restrictions, <code>maxTurns</code>, isolation and runtime limits—not an assumed custom schema.</p></div>
+<div class="card"><span class="tag no">REJECT</span><h3>Recursive autonomy</h3><p>Do not let every specialist spawn freely. HX retains Max as sole dispatcher and removes <code>Agent</code> from Tier-3 tools.</p></div>
+<div class="card"><span class="tag pilot">VERIFY</span><h3>Runtime topology</h3><p>Prove whether Max runs as a first-layer subagent, dedicated main-session agent, or another governed handoff before writing final controls.</p></div>
+</div>
+
+<h2>What current official Claude Code actually supports</h2>
+<table><thead><tr><th>Capability</th><th>Verified current behavior</th><th>HX implication</th></tr></thead><tbody>
+<tr><td>Native spawning</td><td>Claude Code invokes subagents through the native <code>Agent</code> tool. The former <code>Task</code> name remains a compatibility alias.</td><td>Do not invent or document <code>spawn_sub_agent</code> as native. A wrapper would be HX-owned policy infrastructure and must justify itself.</td></tr>
+<tr><td>Agent definitions</td><td>Project and user subagents are Markdown files with YAML frontmatter. Supported controls include <code>tools</code>, <code>disallowedTools</code>, model, permission mode, MCP servers, hooks, <code>maxTurns</code>, skills, memory, background, effort and worktree isolation.</td><td>Most Gemini guardrails belong in versioned definitions and managed hooks.</td></tr>
+<tr><td>Nested subagents</td><td>Current Claude Code allows subagents to spawn subagents by default, up to three layers below the main conversation. <code>CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH</code> changes the limit; <code>1</code> disables nesting beneath top-level subagents.</td><td>Product capability does not override HX policy. Set the depth to the exact approved topology and omit <code>Agent</code> from Tier-3 agents.</td></tr>
+<tr><td>Concurrency</td><td>Current default is 20 concurrent subagents, configurable with <code>CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS</code>. There is no default total-session spawn count.</td><td>Twenty is far above the initial HX need. Use a conservative lower cap after a bounded pilot.</td></tr>
+<tr><td>Spend controls</td><td>The Agent SDK supports a whole-query <code>maxBudgetUsd</code>/<code>max_budget_usd</code> cap that includes subagent requests. Claude Code definitions provide <code>maxTurns</code>. Official documentation does not define Gemini’s per-subagent <code>max_token_budget: 2000</code> field.</td><td>Use turns, model/effort, concurrency, depth and SDK query spend. Do not promise a native per-agent token cap that does not exist.</td></tr>
+<tr><td>Context isolation</td><td>Non-fork subagents start in fresh contexts and receive their prompt, delegation message, applicable CLAUDE.md hierarchy and allowed tools—not the parent’s full conversation history. Their result returns to the caller.</td><td>Gemini’s context-minimization principle is correct. The mandatory operations review must still be explicit because files already read by the parent are not inherited.</td></tr>
+<tr><td>Worktree isolation</td><td><code>isolation: worktree</code> gives a subagent an isolated repository copy. Current versions enforce working-directory checks for isolated agents.</td><td>Strong fit for Will and other bounded writers, subject to OmniRoute’s operator-confirmed-base rules.</td></tr>
+<tr><td>Hooks</td><td>Session-wide hooks fire inside subagents. Events include <code>PreToolUse</code>, <code>PostToolUse</code>, <code>SubagentStart</code>, <code>SubagentStop</code>, task events, worktree events and instruction loading.</td><td>Use deterministic hooks to enforce who may spawn, required review receipts and protected tool/path policy. Prompt-only enforcement is insufficient.</td></tr>
+<tr><td>API failures</td><td>Current Claude Code distinguishes API-cutoff failures from successful findings and can return partial foreground output with an explicit cutoff notice.</td><td>Normalize native results into an HX envelope, but do not claim Claude Code emits Gemini’s exact custom error object.</td></tr>
+<tr><td>Resumption</td><td>Custom subagents can be resumed in the same session by retaining the session and agent IDs. Subagent transcripts persist separately.</td><td>Do not say raw conversations are “instantly cleared.” Compact active state while retaining auditable evidence under policy.</td></tr>
+<tr><td>Agent teams</td><td>Agent teams are experimental and disabled by default. They have known resumption, coordination and shutdown limitations; teammates cannot create nested teams.</td><td>Do not make agent teams a dependency of the HX model now. The standard subagent path is sufficient for the first control pilot.</td></tr>
+</tbody></table>
+
+<h2>Claim-by-claim disposition</h2>
+<table><thead><tr><th>Gemini proposal</th><th>Verdict</th><th>Reason and correction</th></tr></thead><tbody>
+<tr><td>Claude Code as high-level Meta-Agent</td><td><span class="tag yes">ADOPT</span></td><td>Matches HX: Claude owns owner interaction, intent, routing and synchronization—not implementation authority.</td></tr>
+<tr><td>Specialized agents focus on bounded domains</td><td><span class="tag yes">ADOPT</span></td><td>Matches the capability-first roster and Max’s council.</td></tr>
+<tr><td>Every specialist may spawn subagents</td><td><span class="tag no">REJECT</span></td><td>Conflicts with Max as sole dispatcher. Only approved coordinators receive <code>Agent</code>; Tier-3 agents do not.</td></tr>
+<tr><td>Custom <code>spawn_sub_agent</code> JSON schema</td><td><span class="tag no">REPLACE</span></td><td>Not the native Claude Code interface. Use <code>Agent</code> plus versioned definitions. Add an HX wrapper only if a proven enforcement gap remains.</td></tr>
+<tr><td>Maximum nesting depth</td><td><span class="tag yes">ADOPT</span></td><td>Native control exists. For Claude → Max → Tier-3 in one session, the conceptual depth is two subagent layers; Tier-3 must lack <code>Agent</code>. Exact configuration depends on the selected runtime topology.</td></tr>
+<tr><td>Per-agent 2,000-token default</td><td><span class="tag no">REJECT AS NATIVE</span></td><td>Use <code>maxTurns</code>, model/effort, depth/concurrency and whole-query SDK budget. A token-meter wrapper would be custom engineering.</td></tr>
+<tr><td>Atomic/stateless delegation</td><td><span class="tag yes">ADOPT</span></td><td>Strong fit for Sam, Ruth, Brooke, Paul and bounded Will tasks.</td></tr>
+<tr><td>“More than three logical steps” means delegate</td><td><span class="tag no">REJECT</span></td><td>Arbitrary complexity heuristic. Delegate based on domain ownership, context isolation, independent evidence, parallel value and write conflicts.</td></tr>
+<tr><td>Pass only exact required context</td><td><span class="tag yes">ADOPT</span></td><td>Use source references, paths, hashes and task packets. Do not hide governance or the mandatory knowledge-review requirement in the name of minimalism.</td></tr>
+<tr><td>Strict JSON return schema</td><td><span class="tag mod">ADOPT AS HX CONTRACT</span></td><td>Useful, but not the native <code>expected_json_output_format</code> Agent field. Validate a versioned HX result envelope above the native final response.</td></tr>
+<tr><td>Retry once on parsing/syntax failure</td><td><span class="tag mod">ADOPT NARROWLY</span></td><td>One retry only for classified, deterministic, recoverable transient/format errors. No automatic retry for permission, security, authority, missing knowledge, scope or evidence-integrity failures.</td></tr>
+<tr><td>After two failures, escalate to Claude</td><td><span class="tag yes">ADOPT</span></td><td>Max stops and returns the failed module, native error, evidence references, retry history and hypothesis. Never guess.</td></tr>
+<tr><td>Internal variable or Markdown scratchpad registry</td><td><span class="tag mod">REVISE</span></td><td>Use an artifact-backed, task-scoped execution registry with schema, references and retention. Do not create a second project task authority.</td></tr>
+<tr><td>Instantly clear raw output from memory</td><td><span class="tag no">REJECT LITERALLY</span></td><td>The model cannot guarantee selective erasure, and subagent transcripts persist. Compact active context; retain raw evidence under governed storage and reference it by hash/path.</td></tr>
+</tbody></table>
+
+<h2>Recommended HX delegation topology</h2>
+<div class="ok"><b>Keep the approved model unchanged:</b> Claude owns intent and owner authority. Max owns dispatch and integration. Stewards own domain knowledge and review. Tier-3 task agents perform atomic work and cannot spawn.</div>
+<pre>Agent Zero
+   ↓
+Claude — Meta-Agent, intent and synchronization
+   ↓
+Max — sole dispatcher and integrator
+   ├─ persistent stewards — advise, scope, review
+   └─ Tier-3 task agents — execute atomic responsibilities; no Agent tool</pre>
+
+<h3>Enforcement, not merely prompting</h3>
+<ul>
+<li>Give <code>Agent</code> only to the approved coordinating layer.</li>
+<li>Remove <code>Agent</code> from Sam, Ruth, Will, Brooke, Paul and Sue through <code>tools</code> or <code>disallowedTools</code>.</li>
+<li>Set the depth to the chosen topology; do not rely on the product default of three.</li>
+<li>Use a conservative concurrency cap during the pilot.</li>
+<li>Set <code>maxTurns</code> per task-agent type.</li>
+<li>If using the Agent SDK, cap the whole query’s spend and treat it as a circuit breaker, not a planning budget.</li>
+<li>Use <code>PreToolUse</code>/<code>SubagentStart</code> hooks to block unauthorized spawning and mutating tools.</li>
+<li>Require a Knowledge Base Review receipt before the first task tool. Custom subagents load CLAUDE.md, but they do not inherit files the parent already read.</li>
+</ul>
+
+<div class="risk"><b>Important implementation gap:</b> native <code>Agent(agent_type)</code> allow-list syntax is documented for an agent running as the main thread with <code>claude --agent</code>. Inside a subagent definition, listing <code>Agent</code> permits spawning while a parenthesized type list is ignored. Therefore, if Max runs as a subagent beneath Claude, exact child-type enforcement needs scope control, permissions and/or a deterministic hook—not Max’s prompt alone.</div>
+
+<h2>Two viable Max runtime patterns to evaluate</h2>
+<table><thead><tr><th>Pattern</th><th>Strength</th><th>Constraint</th><th>Disposition</th></tr></thead><tbody>
+<tr><td>Claude main session → Max first-layer subagent → Tier-3 second layer</td><td>Matches the conceptual three tiers in one session; nested summaries preserve Claude context.</td><td>Max’s exact child allow-list is not enforced by parenthesized syntax inside a subagent; requires hook/policy enforcement. Depth must allow two layers.</td><td><span class="tag pilot">PILOT CANDIDATE</span></td></tr>
+<tr><td>Dedicated Max main session via <code>claude --agent max</code></td><td>Native <code>Agent(type)</code> allow-list can restrict Max’s children; depth 1 prevents Tier-3 nesting.</td><td>Requires a governed intent/evidence handoff between Claude’s owner session and Max’s coordination session.</td><td><span class="tag pilot">PILOT CANDIDATE</span></td></tr>
+<tr><td>Experimental agent team</td><td>Shared task list and direct messages.</td><td>Experimental, higher token cost, no nested teams, resumption/task-state limitations.</td><td><span class="tag no">DEFER</span></td></tr>
+<tr><td>Custom <code>spawn_sub_agent</code> service</td><td>Could enforce an HX-specific schema and policy.</td><td>Creates custom execution/control infrastructure before proving native controls insufficient.</td><td><span class="tag no">DO NOT BUILD YET</span></td></tr>
+</tbody></table>
+
+<h2>Corrected result and failure envelope</h2>
+<p>Use <code>governance/schemas/agent-result-envelope.schema.json</code>, version <code>hx-agent-result/v1</code>, to wrap the native Agent result rather than pretending this is Claude Code’s tool schema. It is the sole contract for observed read/write scope, validation commands and results, independent review, and the classified error object. Producers and validators must consume that schema instead of maintaining an inline variant.</p>
+
+<h3>Retry policy</h3>
+<ul>
+<li><b>At most one automatic retry:</b> transient API interruption, deterministic formatting failure or narrowly correctable syntax error.</li>
+<li><b>No automatic retry:</b> knowledge review incomplete, permission denied, security stop, unauthorized scope, missing owner decision, worktree collision, evidence-integrity failure or concurrency limit that explicitly says not to retry.</li>
+<li><b>Every retry receives a new run identity</b> and preserves the original failure evidence.</li>
+<li><b>After the permitted retry fails, Max stops</b> and reports the exact task, module, native error, evidence references, retry history and hypothesis to Claude.</li>
+</ul>
+
+<h2>Corrected state-registry pattern</h2>
+<p>Gemini is right that Max should retain transitions rather than raw conversations. The durable form should be a task-scoped evidence registry, not an ungoverned internal memory or second project tracker.</p>
+<table><thead><tr><th>Registry retains</th><th>Registry does not become</th></tr></thead><tbody>
+<tr><td>Task/run IDs, agent identity, source identities, status transition, input references, output/evidence references, validation result, retry count, reviewer, next authority and timestamps.</td><td>Owner decision log, architecture truth, canonical actions/issues log, source repository, Mem0 memory, LoopX ledger, LangGraph checkpoint store or substitute for raw evidence.</td></tr>
+</tbody></table>
+<ul>
+<li>Reference large inputs and outputs by governed path and hash; do not paste them into Max’s active prompt.</li>
+<li>Retain raw evidence according to policy; compact only the active working context.</li>
+<li>Update transitions atomically and preserve failed attempts.</li>
+<li>Resume from the last independently verified state, not the last agent claim.</li>
+<li>Never pass a prior agent’s full response to the next agent when a smaller evidence-bearing payload is sufficient.</li>
+</ul>
+
+<h2>Recommended changes to the Meta-Agent draft</h2>
+<p>Do not replace the current draft. Add a delegation-control appendix after the runtime pattern is selected. The appendix should include:</p>
+<ol>
+<li>Native <code>Agent</code> terminology and version requirement.</li>
+<li>The exact Max runtime pattern and approved depth.</li>
+<li>Agent tool allow/deny rules and hook enforcement.</li>
+<li>Per-agent <code>maxTurns</code>, model/effort and concurrency policy.</li>
+<li>Optional whole-query SDK spend cap.</li>
+<li>The HX result/failure envelope.</li>
+<li>The task-scoped state registry and retention boundary.</li>
+<li>The classified one-retry policy.</li>
+<li>Explicit deferral of experimental agent teams and a custom spawning service.</li>
+</ol>
+
+<h2>Final recommendation</h2>
+<div class="verdict"><strong>ADOPT WITH CORRECTIONS.</strong><br>
+Use Gemini’s delegation, context-minimization, structured reporting, failure escalation and state-compaction ideas. Implement them with Claude Code’s native Agent architecture and deterministic HX controls. Preserve Max as sole dispatcher. Keep Tier-3 non-recursive. Do not build a custom spawning tool, promise a per-agent token cap, use the three-step heuristic, or rely on prompt-only enforcement.</div>
+
+<h2>Next synchronization decision</h2>
+<p>Before updating the canonical Meta-Agent definition, select one runtime pattern for a bounded control pilot:</p>
+<ol>
+<li>Claude main → Max subagent → Tier-3, with hook-enforced spawn policy; or</li>
+<li>dedicated Max main session with native child allow-list and a governed Claude↔Max handoff.</li>
+</ol>
+<p>The pilot should prove: only Max can spawn; Tier-3 cannot; knowledge-review receipts block tools; depth/concurrency/turn/spend limits work; error classification and one-retry behavior are correct; worktree isolation holds; and the state registry resumes from verified evidence.</p>
+
+<h2>Primary sources</h2>
+<ul>
+<li><a href="https://code.claude.com/docs/en/sub-agents">Anthropic Claude Code — Create custom subagents</a></li>
+<li><a href="https://code.claude.com/docs/en/agent-teams">Anthropic Claude Code — Orchestrate agent teams</a></li>
+<li><a href="https://code.claude.com/docs/en/hooks">Anthropic Claude Code — Hooks reference</a></li>
+<li><a href="https://platform.claude.com/docs/en/agent-sdk/subagents">Anthropic Claude Agent SDK — Subagents</a></li>
+</ul>
+<p class="small">Official documentation was reviewed on 2026-08-15. Claude Code agent behavior is version-sensitive; the report records current documented behavior, including changes introduced in recent 2.1.x releases. The supplied Gemini secondary-source links were treated as hypotheses, not authoritative implementation evidence.</p>
+<div class="footer">HX Infrastructure · Claude Meta-Agent reconnaissance · No implementation performed</div>
+</main></body></html>
