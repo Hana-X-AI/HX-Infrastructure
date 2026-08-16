@@ -64,7 +64,7 @@ implementation and no deployment. Method accepted; designs and deployments are g
 ## Related
 
 - `governance/policy/repository-migration-pattern.md` — the pattern this ratifies
-- `governance/operations/langgraph/phase Phase -2/claude_20260814_0848_langgraphfourdecisions.html` — the four
+- `governance/operations/langgraph/phase-2/claude_20260814_0848_langgraphfourdecisions.html` — the four
   owner decisions gating the LangGraph re-review
 - `governance/policy/runtime-acceptance-decisions.md` — where P-B is applied to runtime acceptance
 - `act-015` in `governance/logs/actions-and-issues.md`
