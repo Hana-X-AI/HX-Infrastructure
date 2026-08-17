@@ -280,7 +280,7 @@ survive into 2026 by default.
 
 **None of these partner services is built.** Every host below carries an *approved role
 assignment* in `SERVER-REGISTRY.md`, not a running service. No `servers/<host>/configuration.md`
-exists for any of them; server implementation is Phase 3 and has not started. The same
+exists for any of them; server implementation is a later owner-authorized phase and has not started. The same
 authority boundary this document applies to itself applies to its partners: role assignment is
 asserted, as-built state is not. Neither side of the LightRAG handoff exists yet.
 
