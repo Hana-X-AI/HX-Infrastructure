@@ -23,7 +23,7 @@ No files under `tests/ai-runtime/` were edited. `git diff --stat` for this task 
 
 ## 2. Part 1 — inventory and reference graph
 
-**Scope of the reference grep:** 28,685 repository files, `.git` excluded, each of the five owned script basenames searched literally.
+**Scope of the reference grep:** the repository working tree, `.git` excluded. The two sweeps in this report (the reference grep here and the `ds4` sweep in section 4) were run minutes apart while the working tree was changing, so their file totals differed by one (28,685 vs 28,686) — that difference is a timing artifact, not a scope difference. Re-run together against a single stable snapshot after the task, both covered the same 28,688 files. The count is a scope statement, not a result; the results below are unaffected.
 
 | Owned path | What it does | Live-contact path | Invoked by other code |
 | --- | --- | --- | --- |
@@ -81,6 +81,8 @@ The invariants test references `vllm-qwen` by name (asserting it stays PRIMARY) 
 | `ds4` sweep, owned subtree | 27 files | 0 matches |
 | Third-profile assumption sweep | 26 files (README excl.) | 0 matches |
 | `ds4` sweep, repo-wide | 28,686 files (`.git` excl.) | 74 files, all false-positive binaries, vendored mirrors, or historical text; 0 live references |
+
+The reference-grep and `ds4`-sweep totals differ by one (28,685 vs 28,686) because the two ran minutes apart while the working tree was changing. Re-run together against a single stable snapshot after the task, both covered the same 28,688 files. The one-file difference is a timing artifact, not a scope difference; the results are unaffected.
 
 **Main suite cross-check:** not run. This task touched nothing the main suite covers — no file was edited. Stated as an attestation, not a test result.
 
