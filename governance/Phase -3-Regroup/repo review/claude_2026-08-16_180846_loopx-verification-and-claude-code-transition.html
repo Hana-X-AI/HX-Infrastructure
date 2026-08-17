@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LoopX staged-work verification &amp; Claude Code transition — 2026-08-16</title>
+<style>
+:root{--bg:#0d1117;--bg2:#131a23;--panel:#161d27;--line:#26303d;--ink:#e6edf3;--ink2:#aab8c6;--ink3:#7d8b9a;
+--accent:#6ea8fe;--ok:#4ec9a0;--warn:#e3b341;--bad:#f26d6d;--info:#b085f5;
+--mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1060px;margin:0 auto;padding:48px 28px 96px}
+header{border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:36px}
+.eyebrow{font:600 11px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+h1{font-size:29px;line-height:1.22;margin:0 0 14px;font-weight:650;letter-spacing:-.015em}
+.sub{color:var(--ink2);font-size:15px;margin:0}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-top:26px}
+.meta div{background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:11px 13px}
+.meta .k{font:600 10px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px}
+.meta .v{font-size:13.5px;word-break:break-word}
+h2{font-size:22px;margin:52px 0 8px;font-weight:640;border-bottom:1px solid var(--line);padding-bottom:10px}
+h3{font-size:17px;margin:30px 0 10px;font-weight:640}
+p{margin:12px 0}ul,ol{margin:12px 0;padding-left:22px}li{margin:6px 0}
+code{font-family:var(--mono);font-size:.875em;background:#1c2531;border:1px solid var(--line);border-radius:4px;padding:1.5px 5px;color:#c9d6e4}
+pre{background:var(--bg2);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.6;color:#c9d6e4}
+pre code{background:none;border:0;padding:0;white-space:pre}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px}
+th{text-align:left;background:var(--bg2);color:var(--ink2);font-weight:640;font-size:11px;letter-spacing:.07em;text-transform:uppercase;padding:9px 11px;border:1px solid var(--line)}
+td{padding:9px 11px;border:1px solid var(--line);vertical-align:top}
+tbody tr:nth-child(even){background:#111823}
+.tag{display:inline-block;font:650 10px/1.5 var(--mono);letter-spacing:.06em;padding:3px 8px;border-radius:999px;border:1px solid;white-space:nowrap}
+.t-ok{color:var(--ok);border-color:#215c4a;background:#12271f}
+.t-warn{color:var(--warn);border-color:#5c4a1a;background:#241f10}
+.t-bad{color:var(--bad);border-color:#5f2b2b;background:#251414}
+.t-info{color:var(--info);border-color:#453163;background:#1c1728}
+.callout{border:1px solid var(--line);border-left:3px solid var(--accent);background:var(--panel);border-radius:8px;padding:16px 18px;margin:20px 0}
+.callout.bad{border-left-color:var(--bad)}.callout.warn{border-left-color:var(--warn)}.callout.ok{border-left-color:var(--ok)}
+.callout .ct{font:650 11px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;margin-bottom:9px;color:var(--ink3)}
+.callout.bad .ct{color:var(--bad)}.callout.warn .ct{color:var(--warn)}.callout.ok .ct{color:var(--ok)}
+.callout p:first-of-type{margin-top:0}.callout p:last-child{margin-bottom:0}
+.small{font-size:13px;color:var(--ink2)}
+footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--line);color:var(--ink3);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Verification record · pinned · read-only</div>
+  <h1>LoopX staged-work verification, and the control consequence of moving to Claude Code</h1>
+  <p class="sub">Independent verification of the three staged LoopX files and the rewrite script, plus a guard-state finding that determines where a Claude Code session may safely be opened.</p>
+  <div class="meta">
+    <div><div class="k">Prepared by</div><div class="v">Claude (claude-opus-5), cloud session</div></div>
+    <div><div class="k">Date</div><div class="v">2026-08-16 · 18:08 CDT</div></div>
+    <div><div class="k">Branch tips</div><div class="v"><code>remediation/phase3</code> @ <code>1902e0b9</code><br><code>docs/phase3-remediation-evidence</code> @ <code>bfc117ee</code></div></div>
+    <div><div class="k">Status</div><div class="v">Staged work verified. One blocking precondition before a Claude Code session in the base checkout.</div></div>
+  </div>
+</header>
+
+<div class="callout bad">
+  <div class="ct">Headline — read before opening Claude Code</div>
+  <p><strong>A Claude Code session opened at the base checkout right now runs with the server-mutation guard RELEASED.</strong></p>
+  <p>The evidence branch still carries the pre-hard-lock guard, and <code>SERVER-REGISTRY.md</code> reads <code>Phase 2 Status: READY</code>. <code>Test-HxPhase2Open</code> returns true, the guard calls <code>exit 0</code>, and every blocked pattern — <code>apt install</code>, <code>systemctl start</code>, <code>netplan apply</code>, <code>ollama pull</code>, <code>vllm serve</code> — passes unguarded. During Phase 3, which forbids exactly those.</p>
+  <p><strong>Cherry-pick <code>8ec683b</code> into the evidence branch before working there, or work in the <code>hx-remediation</code> worktree, which is hard-locked.</strong></p>
+</div>
+
+<h2>1 · Staged-work verification — all claims confirmed</h2>
+
+<table>
+  <thead><tr><th>Claim</th><th>Result</th></tr></thead>
+  <tbody>
+    <tr><td>Three staged files, SHA-256 as stated</td><td><span class="tag t-ok">all three MATCH</span></td></tr>
+    <tr><td>Four ledger YAML blocks parse</td><td><span class="tag t-ok">4/4 under PyYAML</span></td></tr>
+    <tr><td>Pilot YAML blocks parse</td><td><span class="tag t-ok">6/6</span></td></tr>
+    <tr><td>Space-only indentation</td><td><span class="tag t-ok">no tab indentation found</span></td></tr>
+    <tr><td>Zero eligible em-dash replacements in the pilot</td><td><span class="tag t-ok">confirmed independently — 0</span></td></tr>
+    <tr><td>All 13 rewrite-script properties</td><td><span class="tag t-ok">all hold on reading</span></td></tr>
+    <tr><td>1,221 inserted lines</td><td><span class="tag t-info">1,221 insertions by <code>git diff --cached --numstat</code> (the Git logical-insertion count); <code>wc -l</code> reported 1,220 because it counts newline terminators and the last line of each of the three files has no trailing newline. The two measures count different things; the Git insertion count is the authoritative inserted-line total.</span></td></tr>
+  </tbody>
+</table>
+
+<p>The script is careful work: <code>$PSScriptRoot</code> rather than <code>$PWD</code>; root containment checked on the <em>resolved</em> path so symlink and junction escapes are caught; fail-closed on both zero and mismatched counts; same-directory temporary file so <code>File.Replace</code> is genuinely atomic; byte-for-byte validation before replacement; validated temp preserved on failure; per-path cleanup that warns rather than throws and continues after a first failure. The BOM detection also orders UTF-32 LE before UTF-16 LE, which is the classic trap in that sequence and is handled correctly.</p>
+
+<h3>Two suspicions I raised and withdrew</h3>
+
+<p>Recorded so the negative work is visible and not repeated.</p>
+
+<table>
+  <thead><tr><th>Hypothesis</th><th>Outcome</th></tr></thead>
+  <tbody>
+    <tr><td>The ledger permits one authority to sign all six approvals — the M-02 self-certification analogue</td><td><span class="tag t-bad">REFUTED</span> — line 118: <em>"The four authority identities must be pairwise distinct. None may be Ariadne, the LoopX executor…"</em></td></tr>
+    <tr><td>Approval receipts lack key expiry and revocation checks</td><td><span class="tag t-bad">REFUTED</span> — the trust registry must <em>"provide the Ed25519 public key and validity interval, and show that the key is not revoked at verification time."</em> My keyword scan missed the vocabulary</td></tr>
+  </tbody>
+</table>
+
+<p>The cryptographic construction is sound, and two choices are better than typical: hash-equality is checked <strong>before</strong> signature verification, and the signing string is domain-separated as <code>HX-LEARNING-PROMOTION-APPROVAL-V1\n&lt;receipt_sha256&gt;\n</code>, which blocks cross-protocol signature reuse. Replay is bound by candidate, destination-change, record and trust-registry digests rather than by a time window — stronger here than a max-age bound, so its absence is a design choice rather than a gap.</p>
+
+<h3>Open items on the staged work — none blocking</h3>
+
+<ol>
+  <li><strong><code>temp_edit.ps1</code> fails the naming standard and sits at the repository root.</strong> <code>documentation-standards.html</code> reserves the underscore as the report field separator and requires scripts to be <code>lower-kebab-case</code>; the root is reserved for <code>SCREAMING-KEBAB-CASE.md</code> canonical documents. The <code>temp_</code> prefix on a permanent commit reads as scratch. Precedent exists at root — <code>_s2.py</code> — and a second entry entrenches it.</li>
+  <li><strong>Consider not committing it.</strong> Line 10 hardcodes a single target and there are zero eligible replacements today. If it should persist, rename to <code>fix-emdash-spacing.ps1</code>, move to <code>tools/</code>, and parameterize the path.</li>
+  <li><strong>No code-fence awareness — latent.</strong> The eligibility rule excludes <code>|</code>-leading lines but not fenced blocks. The pilot has 18 fence markers and 6 YAML blocks; <strong>zero</strong> <code> --- </code> currently sits inside a fence, so there is no live risk. A YAML document separator or shell snippet added later would be silently rewritten inside code. One boolean in the existing loop closes it.</li>
+  <li><strong>Two trivia.</strong> All three staged files lack a trailing newline — systematic, not accidental. And <code>Write-Output "Fixed $replaced em-dashes"</code> is backwards: the script replaces <code> --- </code> <em>with</em> em-dashes.</li>
+  <li><strong>Wording.</strong> "Six separate approvals with distinct authorities" reads as six authorities. It is six receipts from four pairwise-distinct authorities — the owner signs three.</li>
+</ol>
+
+<h2>2 · Where to open Claude Code</h2>
+
+<p>Three candidate locations were considered. The decision turns on where Claude Code discovers its project root, because that determines whether the hooks load at all.</p>
+
+<table>
+  <thead><tr><th>Location</th><th>Hooks</th><th>Verdict</th></tr></thead>
+  <tbody>
+    <tr><td><code>governance/</code></td><td><span class="tag t-bad">none load</span></td><td>No <code>.claude/</code> exists under <code>governance/</code>. No guard, no authority-edit guard, no policy guard. Every documented path is repo-root-relative and breaks. <code>tests/</code> and the scanner sit outside the workspace entirely.</td></tr>
+    <tr><td><code>governance/Phase -3-Regroup/remediation/</code></td><td><span class="tag t-bad">none load</span></td><td>Same failure, three levels deeper. The helper scripts there operate on the worktree root, which would be outside scope.</td></tr>
+    <tr><td><strong>repository root</strong></td><td><span class="tag t-ok">load</span></td><td>Hooks fire, <code>CLAUDE.md</code> loads as project instructions, every documented path resolves, and the gate scripts are in scope. <strong>This is the right level — but which checkout matters.</strong></td></tr>
+  </tbody>
+</table>
+
+<h3>Which checkout, and the guard consequence</h3>
+
+<pre><code>evidence branch (bfc117ee)   guard: calls Test-HxPhase2Open
+                             SERVER-REGISTRY.md: Phase 2 Status = READY
+                             -> Test-HxPhase2Open returns TRUE -> exit 0
+                             -> GUARD RELEASED
+
+remediation/phase3 (1902e0b9) guard: hard-locked, no registry read
+                             -> GUARD ACTIVE regardless of status</code></pre>
+
+<p>This is the practical consequence of <code>8ec683b</code> never having reached the evidence branch. Until now it was a documentation inconsistency. The moment a Claude Code session runs in that checkout it becomes a live control failure, because that session <em>can</em> run shell commands — unlike this cloud bridge, which cannot reach the workstation shell at all.</p>
+
+<div class="callout ok">
+  <div class="ct">Recommendation</div>
+  <p><strong>Cherry-pick <code>8ec683b</code> into <code>docs/phase3-remediation-evidence</code> first, then open Claude Code at <code>&lt;repository-root&gt;</code>.</strong></p>
+  <p>That was already the recommended next branch action for suite alignment. It now has a second and sharper reason: it is a precondition for running a shell-capable agent session in that checkout during Phase 3. After the cherry-pick, rerun the suite — expect <strong>160/0</strong>, not 154/0.</p>
+  <p>If work needs to start before that, open at <code>&lt;remediation-worktree&gt;</code> instead. That worktree is hard-locked and carries the hardened suite — but the staged LoopX work is not there.</p>
+</div>
+
+<h2>3 · One control gap that closes on this transition</h2>
+
+<p>Throughout this session I have flagged that writes through the cloud device bridge bypass the hooks entirely — they are filesystem writes, not Claude Code tool calls, so no <code>PreToolUse</code> gate evaluates them. That is proposed as an <code>iss-</code> row.</p>
+
+<p><strong>Moving to a Claude Code session at the repository root closes that gap for all work done in that session.</strong> The authority-edit guard, the permanent-policy guard and the mutation guard all fire on tool calls there. It is a genuine control improvement, and it is the strongest argument for the transition beyond convenience — provided the checkout carries the hard-locked guard, which is precisely why the cherry-pick comes first.</p>
+
+<h2>4 · State at pin time</h2>
+
+<table>
+  <thead><tr><th>Item</th><th>State</th></tr></thead>
+  <tbody>
+    <tr><td>F-01 restore + citation repair</td><td><span class="tag t-ok">published on both branches</span> — <code>bfac142</code>/<code>1902e0b</code>, <code>367ca55</code>/<code>bfc117e</code></td></tr>
+    <tr><td>Meta-Agent corrections M-01…M-06</td><td><span class="tag t-ok">verified at committed hashes</span> (<code>1260cf7</code>)</td></tr>
+    <tr><td>M-07</td><td><span class="tag t-info">accurate status — schemas are design contracts, no live enforcement</span></td></tr>
+    <tr><td>LoopX staged work</td><td><span class="tag t-warn">3 files staged, uncommitted, hashes verified</span></td></tr>
+    <tr><td>Hardened suite on the evidence branch</td><td><span class="tag t-bad">absent — 154/0 pre-hard-lock, not 160/0</span></td></tr>
+    <tr><td>P1-00, P1-01, Gate A</td><td><span class="tag t-bad">open</span></td></tr>
+    <tr><td>F-02 … F-06 from the 2026-08-15 reconnaissance</td><td><span class="tag t-bad">not started</span></td></tr>
+  </tbody>
+</table>
+
+<p class="small"><strong>Method.</strong> Three staged files read from the device and hashed; SHA-256 compared against the stated values. YAML blocks extracted and parsed with PyYAML. Em-dash eligibility reproduced by reimplementing the script's own rule in Python and counting. Code-fence exposure measured by tracking fence state across the file. Guard behaviour derived by reading <code>hx-phase1-guard.ps1</code> and <code>Test-HxPhase2Open</code> at each branch tip and evaluating them against the committed <code>SERVER-REGISTRY.md</code> value. No PowerShell was executed; script properties are established by source reading, not by running it.</p>
+
+<p class="small"><strong>Authority.</strong> Verification record. Asserts no as-built change, authorizes no server work. Phase 3 remains planning, decisions, and control-correction that only tightens.</p>
+
+<footer>
+claude_2026-08-16_180846_loopx-verification-and-claude-code-transition · Claude (claude-opus-5) · pinned verification record
+</footer>
+
+</div>
+</body>
+</html>

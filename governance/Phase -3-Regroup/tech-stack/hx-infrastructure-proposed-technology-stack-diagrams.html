@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HX-Infrastructure — Proposed Technology Stack Diagrams</title>
+  <style>
+    :root {
+      --bg: #080d18;
+      --panel: #111a2b;
+      --panel2: #162239;
+      --line: #293a59;
+      --text: #edf3ff;
+      --muted: #aebbd0;
+      --blue: #68b7ff;
+      --cyan: #66dfda;
+      --green: #58d69e;
+      --amber: #f3c96f;
+      --red: #ff7f8b;
+      --violet: #c19cff;
+      --shadow: 0 18px 48px rgba(0,0,0,.35);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 80% 0, #172a49 0, transparent 38%), linear-gradient(145deg, #070b14, #0d1525 60%, #090e19);
+      color: var(--text);
+      font: 15px/1.62 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .wrap {
+      max-width: 1280px;
+      margin: auto;
+      padding: 42px 24px 76px;
+    }
+    .eyebrow {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .13em;
+      color: var(--cyan);
+      font-weight: 800;
+    }
+    .hero { padding: 24px 0 16px; }
+    h1 {
+      font-size: 40px;
+      line-height: 1.12;
+      margin: 10px 0 14px;
+      color: #fff;
+    }
+    h2 {
+      font-size: 24px;
+      margin-top: 48px;
+      padding-bottom: 9px;
+      border-bottom: 1px solid var(--line);
+      color: var(--blue);
+    }
+    h3 {
+      font-size: 18px;
+      color: #dce8ff;
+      margin: 0 0 8px;
+    }
+    .lede {
+      font-size: 18px;
+      color: #c9d5e8;
+      max-width: 1000px;
+    }
+    .meta, .callout, .card, .diagram-card {
+      background: rgba(17, 26, 43, 0.94);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+    }
+    .meta, .callout { padding: 18px 21px; margin: 18px 0; }
+    .callout { border-left: 5px solid var(--cyan); }
+    .verdict { border-left-color: var(--green); }
+    .diagram-card {
+      padding: 24px;
+      margin: 24px 0 32px;
+      overflow-x: auto;
+    }
+    .diagram-header {
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(41, 58, 89, 0.6);
+      padding-bottom: 12px;
+    }
+    .status {
+      display: inline-block;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .foundation { color: var(--green); border-color: #2e805f; background: rgba(46,128,95,.15); }
+    .proposed { color: var(--blue); border-color: #356a97; background: rgba(53,106,151,.15); }
+    .conditional { color: var(--amber); border-color: #846723; background: rgba(132,103,35,.15); }
+    .roadmap { color: var(--violet); border-color: #694e8c; background: rgba(105,78,140,.15); }
+    .out { color: var(--red); border-color: #8c3540; background: rgba(140,53,64,.15); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(17, 26, 43, 0.95);
+      margin: 16px 0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #192741;
+      color: #e5eeff;
+      font-weight: 700;
+    }
+    code {
+      background: #08111f;
+      border: 1px solid #263a59;
+      border-radius: 5px;
+      padding: 2px 6px;
+      color: #b9dcff;
+      font-size: 13px;
+    }
+    .mermaid {
+      display: flex;
+      justify-content: center;
+      padding: 16px 0;
+      min-height: 200px;
+    }
+    .mermaid svg {
+      max-width: 100%;
+      height: auto;
+    }
+    .muted { color: var(--muted); }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        darkMode: true,
+        background: '#0d1525',
+        primaryColor: '#162b48',
+        primaryTextColor: '#edf3ff',
+        primaryBorderColor: '#3a5988',
+        lineColor: '#68b7ff',
+        secondaryColor: '#14251e',
+        tertiaryColor: '#2b2313'
+      },
+      flowchart: { curve: 'basis', htmlLabels: true },
+      sequence: { useMaxWidth: true }
+    });
+  </script>
+</head>
+<body>
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">Hana-X AI · HX-Infrastructure · Phase 3 Regroup</div>
+    <h1>Proposed Technology Stack Diagrams</h1>
+    <p class="lede">Visual architectural models, execution flows, ownership boundaries, developer toolchains, and lifecycle status synthesized directly from the proposed true-north stack.</p>
+  </section>
+
+  <div class="meta">
+    <b>Document Reference:</b> <code>chatgpt-gpt-5-6_20260815_0251_hx-infrastructure-proposed-technology-stack.html</code><br>
+    <b>Status:</b> PROPOSED TRUE-NORTH VISUAL ARCHITECTURE · <b>Date:</b> 2026-08-17<br>
+    <b>Scope:</b> Governed, self-hosted AI application platform for development, testing, and demonstrations.
+  </div>
+
+  <div class="callout verdict">
+    <strong>Executive Architectural Anchor:</strong> HX is structured across <strong>nine strictly separated planes</strong>. The stack adheres to the <em>"One authority per concern"</em> principle: one traffic plane (OmniRoute), one durable memory authority (Mem0), one relational state authority (PostgreSQL), one graph knowledge authority (LightRAG), and one fleet control standard (Bash/SSH over systemd).
+  </div>
+
+  <!-- DIAGRAM 1 -->
+  <h2>1. Nine-Plane Platform Architecture</h2>
+  <p class="muted">Layered structure showing all 9 platform planes, their components, lifecycle readiness, and primary integration vectors.</p>
+  
+  <div class="diagram-card">
+    <div class="diagram-header">
+      <h3>Nine-Plane Topology &amp; Component Map</h3>
+    </div>
+    <div class="mermaid">
+flowchart TB
+    subgraph P1["Plane 1: Governance & Control"]
+        P1_GIT["Git + GitHub (Canonical Truth)"]
+        P1_SDD["sdd-core & Markdown Specs"]
+        P1_CLAUDE["Claude Code + Fail-Closed Hooks"]
+    end
+
+    subgraph P2["Plane 2: Systems Foundation"]
+        P2_OS["Ubuntu Server + systemd"]
+        P2_VENV["Isolated Python venvs"]
+        P2_OPS["Bash + SSH/SCP & PowerShell"]
+    end
+
+    subgraph P8["Plane 8: Experience & Automation"]
+        P8_OWUI["Open WebUI (Chat / Testing)"]
+        P8_COPILOT["CopilotKit + AG-UI (Agent UI)"]
+        P8_N8N["n8n (Workflow Automation)"]
+    end
+
+    subgraph P3["Plane 3: Edge & Traffic"]
+        P3_NGINX["NGINX (Web Edge / TLS)"]
+        P3_OMNI["OmniRoute (Model Traffic Authority)"]
+    end
+
+    subgraph P6["Plane 6: Agents, Memory & MCP"]
+        P6_LANG["LangGraph (Workflow Orchestration)"]
+        P6_MEM["Mem0 (Durable Memory — In by Default)"]
+        P6_MCP["FastMCP Services (Streamable HTTP)"]
+    end
+
+    subgraph P5["Plane 5: Retrieval & Knowledge"]
+        P5_DOC["Docling + Granite Docling 258M"]
+        P5_EMB["TEI / Infinity (Embed & Rerank)"]
+        P5_VEC["Qdrant (Vector Collections)"]
+        P5_GRAPH["LightRAG (Graph Knowledge)"]
+    end
+
+    subgraph P4["Plane 4: AI Inference"]
+        P4_VLLM["vLLM (High-Throughput Reasoning)"]
+        P4_OLLAMA["Ollama (Bounded Local Utility)"]
+        P4_MODELS["Qwen Family + gpt-oss"]
+    end
+
+    subgraph P7["Plane 7: Data & State"]
+        P7_PG["PostgreSQL (Relational & Checkpoints)"]
+        P7_REDIS["Redis (Cache & Ephemeral Queues)"]
+    end
+
+    subgraph P9["Plane 9: Observability & Recovery"]
+        P9_PROM["Prometheus + DCGM Exporter"]
+        P9_LOKI["Loki (Searchable Logs)"]
+        P9_GRAF["Grafana (Dashboards)"]
+    end
+
+    P3_NGINX --> P8_OWUI
+    P3_NGINX --> P8_COPILOT
+    P8_N8N --> P6_LANG
+    P3_NGINX --> P6_LANG
+    P6_LANG --> P3_OMNI
+    P6_LANG <--> P6_MEM
+    P6_LANG <--> P6_MCP
+    P6_LANG <--> P7_PG
+    P6_LANG <--> P5_GRAPH
+    P3_OMNI --> P4_VLLM
+    P3_OMNI -. Loopback .-> P4_OLLAMA
+    P5_DOC --> P5_EMB --> P5_VEC & P5_GRAPH
+    P9_PROM & P9_LOKI --> P9_GRAF
+    </div>
+  </div>
+
+  <!-- DIAGRAM 2 -->
+  <h2>2. Functional Execution and Data Flows</h2>
+  <p class="muted">Three primary logical execution paths through the platform.</p>
+
+  <div class="diagram-card">
+    <div class="diagram-header">
+      <h3>Flow A: Interactive Human &amp; Agent Request Sequence</h3>
+    </div>
+    <div class="mermaid">
+sequenceDiagram
+    autonumber
+    actor User as Human / Client App
+    participant NGINX as NGINX (Edge Ingress)
+    participant UI as Open WebUI / CopilotKit
+    participant Orchestrator as LangGraph (Orchestration)
+    participant Memory as Mem0 (Durable Memory)
+    participant Traffic as OmniRoute (Traffic Authority)
+    participant LLM as vLLM / Ollama (Inference)
+    participant State as PostgreSQL (Checkpoints)
+
+    User->>NGINX: HTTPS Request
+    NGINX->>UI: Reverse Proxy Route
+    UI->>Orchestrator: Dispatches User Turn / Goal
+    Orchestrator->>Memory: Query User Context & Preferences
+    Memory-->>Orchestrator: Durable Persona / History
+    Orchestrator->>State: Write Workflow Checkpoint
+    Orchestrator->>Traffic: OpenAI-Compatible Chat Request
+    Note over Traffic: Governed Registry, Policy & Rate Control
+    Traffic->>LLM: Model Inference Request
+    LLM-->>Traffic: Streaming Tokens / Completions
+    Traffic-->>Orchestrator: Model Response / Tool Call
+    Orchestrator->>Memory: Persist Updated Long-Term Memory
+    Orchestrator->>State: Commit Completed Step Checkpoint
+    Orchestrator-->>UI: Streaming Agent Response
+    UI-->>User: Rendered Interface Output
+    </div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="diagram-header">
+      <h3>Flow B: Knowledge Ingestion &amp; Retrieval Pipeline</h3>
+    </div>
+    <div class="mermaid">
+flowchart LR
+    subgraph Sources["Ingestion Sources"]
+        DOCS["PDF / Office Documents"]
+        SCANS["Complex Scans / Visually Difficult Pages"]
+        WEB["Target Web Pages"]
+    end
+
+    subgraph Parsing["Ingestion & Parsing"]
+        DOCL_STD["Docling Standard Pipeline<br/>(Fast Benchmark Fallback)"]
+        DOCL_VLM["Granite Docling 258M VLM<br/>(Embedded Docling Preferred)"]
+        CRAWL["Crawl4AI Web Extractor"]
+    end
+
+    subgraph Transform["Embedding & Rerank"]
+        TEI["TEI / Infinity Serving Runtime"]
+        BGE["BGE-M3 / Nomic + BGE Reranker"]
+    end
+
+    subgraph Storage["Knowledge Plane"]
+        QDRANT["Qdrant (Vector Collections)"]
+        LIGHTRAG["LightRAG (Graph Knowledge)"]
+    end
+
+    subgraph Agent["Agent Context"]
+        CONTEXT["LangGraph / Agent Envelope"]
+    end
+
+    DOCS --> DOCL_STD
+    SCANS --> DOCL_VLM
+    WEB --> CRAWL
+
+    DOCL_STD & DOCL_VLM & CRAWL --> TEI
+    TEI --> BGE
+    BGE --> QDRANT
+    BGE --> LIGHTRAG
+    QDRANT & LIGHTRAG --> CONTEXT
+    </div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="diagram-header">
+      <h3>Flow C: Governed Tool Capability (FastMCP) Flow</h3>
+    </div>
+    <div class="mermaid">
+flowchart LR
+    subgraph Capabilities["Platform Capabilities"]
+        CAP_DOC["Docling Service"]
+        CAP_CRAWL["Crawl4AI Service"]
+        CAP_SEARCH["Qdrant / LightRAG Search"]
+        CAP_INFRA["Infrastructure Telemetry"]
+    end
+
+    subgraph MCP["FastMCP Boundary"]
+        MCP_ADAPTER["FastMCP Server (Streamable HTTP)<br/>• Explicit Capability Contracts<br/>• Bounded Scopes<br/>• Audited Execution"]
+    end
+
+    subgraph Clients["Authorized Consumers"]
+        LANG["LangGraph Orchestrator"]
+        CLAUDE["Claude Code Agent"]
+    end
+
+    subgraph Audit["Audit Trail"]
+        AUDIT_LOG["Execution Result & Log"]
+    end
+
+    CAP_DOC & CAP_CRAWL & CAP_SEARCH & CAP_INFRA --> MCP_ADAPTER
+    MCP_ADAPTER <-->|Governed Protocol| LANG & CLAUDE
+    MCP_ADAPTER --> AUDIT_LOG
+    </div>
+  </div>
+
+  <!-- DIAGRAM 3 -->
+  <h2>3. Strict Ownership Boundaries (One Authority per Concern)</h2>
+  <p class="muted">Clear separation of concerns preventing shadow authorities from emerging.</p>
+
+  <div class="diagram-card">
+    <div class="diagram-header">
+      <h3>Ownership Boundary Model</h3>
+    </div>
+    <div class="mermaid">
+flowchart TD
+    subgraph B1["1. Project Truth & Architecture Decisions"]
+        direction TB
+        AUTH_1["AUTHORITY: Owner Rulings + Repository Governance (sdd-core) + Markdown Specs"]
+        FORBID_1["FORBIDDEN SHADOW: Chat transcripts, AI Agent output, or Generated HTML"]
+    end
+
+    subgraph B2["2. Model Traffic Plane"]
+        direction TB
+        AUTH_2["AUTHORITY: OmniRoute (Registry, Policy, Access Mediation)"]
+        FORBID_2["FORBIDDEN SHADOW: NGINX, LangGraph, Open WebUI, LiteLLM, or Direct LAN Ports"]
+    end
+
+    subgraph B3["3. Orchestration State"]
+        direction TB
+        AUTH_3["AUTHORITY: LangGraph + PostgreSQL Checkpoints"]
+        FORBID_3["FORBIDDEN SHADOW: Mem0, Redis, UI Session State, or MCP Servers"]
+    end
+
+    subgraph B4["4. Durable User & Agent Memory"]
+        direction TB
+        AUTH_4["AUTHORITY: Mem0 (In by Default — Independent Storage Boundary)"]
+        FORBID_4["FORBIDDEN SHADOW: LangGraph Object Store, LightRAG, or Ad-hoc Prompts"]
+    end
+
+    subgraph B5["5. Document & Domain Knowledge"]
+        direction TB
+        AUTH_5["AUTHORITY: LightRAG + Governed Qdrant Collections"]
+        FORBID_5["FORBIDDEN SHADOW: Mem0 Memory or Code-Graph-RAG"]
+    end
+
+    subgraph B6["6. Tool Capability Exposure"]
+        direction TB
+        AUTH_6["AUTHORITY: Contracted FastMCP Services (Streamable HTTP)"]
+        FORBID_6["FORBIDDEN SHADOW: Unbounded Shell Access or Casual Inline Scripts"]
+    end
+    </div>
+  </div>
+
+  <!-- DIAGRAM 4 -->
+  <h2>4. Developer &amp; Code-Intelligence Toolchain</h2>
+  <p class="muted">AI-assisted engineering environment with repository-enforced constraints.</p>
+
+  <div class="diagram-card">
+    <div class="diagram-header">
+      <h3>Engineering Toolchain &amp; Governance Gates</h3>
+    </div>
+    <div class="mermaid">
+flowchart TD
+    DEV["Human Operator / Engineer"] -->|Prompts & Directives| CC["Claude Code (Primary Engineering Environment)"]
+    DEV -->|Pilot Local Workflows| JCODE["jcode (Local Development Agent Pilot)"]
+    
+    subgraph RepoGovernance["Repository Governance & Enforced Gates"]
+        RULES["AGENTS.md & Standing Conduct Rules"]
+        HOOKS["Fail-Closed Pre-Execution Hooks"]
+        SPECS["Markdown Specifications & Decisions"]
+    end
+
+    CC <--> RepoGovernance
+    JCODE <--> RepoGovernance
+
+    CC -->|Proposes Changes & Tests| GIT["Git / GitHub Repository"]
+    
+    subgraph CodeIntel["Code Intelligence (Roadmap)"]
+        CGR["Code-Graph-RAG (Read-Only AST / Call Graph / Imports)"]
+    end
+
+    GIT -. Indexed by .-> CGR
+    CGR -. Read-Only Structural Answers .-> CC
+    </div>
+  </div>
+
+  <!-- DIAGRAM 5 -->
+  <h2>5. Technology Adoption Taxonomy &amp; Lifecycle Status</h2>
+  <p class="muted">Classification of all platform components by decision and readiness tier.</p>
+
+  <div class="diagram-card">
+    <div class="diagram-header">
+      <h3>Adoption Taxonomy Hierarchy</h3>
+    </div>
+    <div class="mermaid">
+flowchart TD
+    ROOT["HX Target Technology Stack"]
+
+    subgraph CAT_FOUND["1. FOUNDATIONAL / DECIDED"]
+        F1["Git & GitHub"]
+        F2["sdd-core & Markdown Authorities"]
+        F3["Ubuntu Server & Native systemd"]
+        F4["Bash / SSH / SCP Fleet Control"]
+        F5["Claude Code & Fail-Closed Hooks"]
+    end
+
+    subgraph CAT_CORE["2. PROPOSED CORE (In by Default)"]
+        C1["NGINX (Web Edge / TLS)"]
+        C2["OmniRoute (Model Traffic Plane)"]
+        C3["vLLM (High-Throughput Inference)"]
+        C4["Ollama (Loopback Local Utility)"]
+        C5["Qdrant (Vector Storage)"]
+        C6["LightRAG (Graph Knowledge)"]
+        C7["Docling & Granite Docling 258M"]
+        C8["Crawl4AI (Web Acquisition)"]
+        C9["LangGraph (Workflow Orchestrator)"]
+        C10["Mem0 (Durable Memory)"]
+        C11["FastMCP (Streamable HTTP Tools)"]
+        C12["PostgreSQL (Relational State & Checkpoints)"]
+        C13["Redis (Cache / Queues / PubSub)"]
+        C14["Open WebUI & CopilotKit / AG-UI"]
+        C15["n8n (Workflow Automation)"]
+        C16["Prometheus, Grafana, Loki"]
+    end
+
+    subgraph CAT_COND["3. CONDITIONAL / PILOT"]
+        CD1["jcode (Development Agent Pilot)"]
+        CD2["TEI vs Infinity (Embedding Server)"]
+        CD3["BGE-M3 vs Nomic (Embedding Model)"]
+        CD4["SQLite (Narrow Local History Only)"]
+        CD5["Backup & Snapshot Tooling"]
+    end
+
+    subgraph CAT_ROAD["4. ROADMAP"]
+        R1["Code-Graph-RAG (Read-Only Code Intel)"]
+    end
+
+    subgraph CAT_OUT["5. EXPLICITLY OUT / SUPERSEDED"]
+        O1["Ansible (Permanently Out)"]
+        O2["LiteLLM (Superseded by OmniRoute)"]
+        O3["Kubernetes (Not Justified)"]
+        O4["Docker Platform Dependency (Not Required)"]
+        O5["Direct Network-Exposed Ollama (Refused)"]
+        O6["Premature Production HA / Mesh (Deferred)"]
+    end
+
+    ROOT --> CAT_FOUND
+    ROOT --> CAT_CORE
+    ROOT --> CAT_COND
+    ROOT --> CAT_ROAD
+    ROOT --> CAT_OUT
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Definition &amp; Operational Rule</th>
+        <th>Included Technologies</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="status foundation">FOUNDATIONAL</span></td>
+        <td>Owner-ratified durable project standard.</td>
+        <td>Git + GitHub, <code>sdd-core</code> specs, Ubuntu + <code>systemd</code>, Bash/SSH/SCP, Claude Code + hooks.</td>
+      </tr>
+      <tr>
+        <td><span class="status proposed">PROPOSED CORE</span></td>
+        <td>In target platform by default; requires evidence-based exclusion to remove.</td>
+        <td>NGINX, OmniRoute, vLLM, Ollama, Qdrant, LightRAG, Docling + Granite Docling 258M, Crawl4AI, LangGraph, Mem0, FastMCP, PostgreSQL, Redis, Open WebUI, CopilotKit / AG-UI, n8n, Prometheus, Grafana, Loki.</td>
+      </tr>
+      <tr>
+        <td><span class="status conditional">CONDITIONAL</span></td>
+        <td>Real stack requirement with an open runtime or model selection choice.</td>
+        <td><code>jcode</code> pilot, TEI vs. Infinity, BGE-M3 vs. Nomic, SQLite (narrow local only), Backup tooling.</td>
+      </tr>
+      <tr>
+        <td><span class="status roadmap">ROADMAP</span></td>
+        <td>Credible future capability; not current platform authority.</td>
+        <td>Code-Graph-RAG (read-only structural code intelligence).</td>
+      </tr>
+      <tr>
+        <td><span class="status out">OUT / SUPERSEDED</span></td>
+        <td>Explicitly excluded or replaced in the target architecture.</td>
+        <td>Ansible, LiteLLM (superseded by OmniRoute), Kubernetes, Docker platform dependency, Direct exposed Ollama, Premature HA/mesh.</td>
+      </tr>
+    </tbody>
+  </table>
+
+</main>
+</body>
+</html>

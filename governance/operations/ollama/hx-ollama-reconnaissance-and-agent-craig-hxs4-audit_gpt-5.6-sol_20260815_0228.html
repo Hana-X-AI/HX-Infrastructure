@@ -1,0 +1,272 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HX Ollama Reconnaissance and Craig hxs-4 Audit</title><style>
+:root{
+ --bg:#071019;--panel:#0d1823;--panel2:#11212f;--text:#e9f1f7;--muted:#9dafbe;
+ --line:#263b4d;--cyan:#69dbff;--green:#94e77a;--amber:#ffd166;--red:#ff7e8e;
+ --violet:#c4a4ff;--code:#06131c;--shadow:0 18px 48px rgba(0,0,0,.32);
+}
+*{box-sizing:border-box}
+body{margin:0;background:
+ radial-gradient(circle at 10% -5%,rgba(105,219,255,.11),transparent 28%),
+ radial-gradient(circle at 90% 0%,rgba(196,164,255,.08),transparent 24%),var(--bg);
+ color:var(--text);font:15px/1.62 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{width:min(1220px,calc(100% - 34px));margin:auto;padding:34px 0 82px}
+.hero{background:linear-gradient(145deg,rgba(17,33,47,.98),rgba(8,20,30,.98));
+ border:1px solid var(--line);border-radius:18px;padding:34px 36px;box-shadow:var(--shadow)}
+.eyebrow{color:var(--cyan);font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.15em}
+h1{font-size:clamp(36px,5.2vw,58px);line-height:1.02;letter-spacing:-.04em;margin:8px 0 12px}
+h2{font-size:27px;letter-spacing:-.02em;margin:40px 0 14px}
+h3{font-size:19px;margin:22px 0 8px}
+p{margin:8px 0 14px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.pill{border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:999px;padding:6px 11px;color:var(--muted);font-size:12px}
+.callout{margin:18px 0;padding:18px 20px;border:1px solid rgba(105,219,255,.25);border-left:4px solid var(--cyan);border-radius:11px;background:rgba(105,219,255,.05)}
+.callout.ok{border-left-color:var(--green);background:rgba(148,231,122,.045)}
+.callout.warn{border-left-color:var(--amber);background:rgba(255,209,102,.045)}
+.callout.bad{border-left-color:var(--red);background:rgba(255,126,142,.045)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.card{grid-column:span 6;border:1px solid var(--line);border-radius:14px;padding:20px;background:linear-gradient(180deg,rgba(17,33,47,.94),rgba(13,24,35,.94))}
+.card.third{grid-column:span 4}.card.full{grid-column:1/-1}
+.metric{font-size:28px;font-weight:850;letter-spacing:-.03em}.label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+table{width:100%;border-collapse:collapse;border:1px solid var(--line);background:rgba(13,24,35,.93)}
+th,td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+th{background:rgba(255,255,255,.03);color:#cfe4f2;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+tr:last-child td{border-bottom:0}
+code,pre{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+code{background:var(--code);border:1px solid rgba(255,255,255,.06);padding:2px 5px;border-radius:5px;color:#d7edf8}
+pre{white-space:pre-wrap;background:var(--code);border:1px solid var(--line);border-radius:12px;padding:17px;overflow:auto;color:#dbeaf3}
+.keep{color:var(--green);font-weight:800}.later{color:var(--amber);font-weight:800}.no{color:var(--red);font-weight:800}.strong{color:var(--violet);font-weight:800}
+ul,ol{padding-left:22px}li{margin:5px 0}
+a{color:var(--cyan)}
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+.copybtn{position:sticky;top:10px;float:right;margin:12px 12px -52px 0;z-index:4;cursor:pointer;padding:8px 11px;border-radius:9px;border:1px solid var(--line);background:#142536;color:var(--text);font-weight:700}
+@media(max-width:820px){main{width:min(100% - 22px,1220px)}.hero{padding:25px 21px}.card,.card.third{grid-column:1/-1}table{display:block;overflow:auto}}
+</style></head><body><main>
+<section class="hero">
+<div class="eyebrow">HX-Infrastructure · Reconnaissance + Specialist Mission Revision</div>
+<h1>Ollama / Craig: hxs-4 Full-Audit Mandate</h1>
+<p>Revises the Ollama Recon disposition so Agent Craig's first mandatory mission is a complete source-grounded audit and controlled correction of the existing hxs-4 Ollama implementation.</p>
+<div class="meta">
+<span class="pill">Ollama: ADOPT — NARROW ROLE</span>
+<span class="pill">Craig: ADOPT — ACTIVE SPECIALIST</span>
+<span class="pill">First mission: FULL HXS-4 AUDIT</span>
+<span class="pill">Installed evidence: Ollama 0.32.9</span>
+<span class="pill">Attached source: v0.32.11 commit 39df91c</span>
+<span class="pill">Current upstream checked: v0.32.13</span>
+<span class="pill">ZIP SHA-256: e7d05dd0…c6851</span>
+<span class="pill">Prepared by GPT-5.6 Sol</span>
+<span class="pill">2026-08-15 02:28 America/Panama</span>
+</div>
+</section>
+
+<div class="callout ok">
+<strong>Revised final disposition.</strong> Craig is not considered fully activated merely because his agent file exists. His first operational acceptance mission is a complete audit of hxs-4's existing Ollama implementation. The audit must assume that commissioning-era settings, source-version drift, and configuration corrections are possible until disproven. Craig must reconstruct the effective runtime, identify corrections from evidence, make only authorized reversible Ollama-specific changes, and re-run the acceptance properties affected by every change.
+</div>
+
+<h2>1. Why the full audit is warranted</h2>
+<p>hxs-4 is operational, but “operational” is not equivalent to “correctly normalized for durable HX use.” The commissioning succeeded only after discovering non-obvious GPU/backend behavior, a test harness incident that wedged the NVIDIA context, performance differences across context sizes, and a silent context-overflow failure that prevented Claude Code qualification.</p>
+<p>The repository reconnaissance also found that hxs-4's live runtime does not yet have a fully reconciled as-built authority and that the runtime gate family contains stale assumptions from an earlier workload era. The first Craig mission should therefore be audit + truth reconstruction, not a health check.</p>
+
+<h2>2. Source identity — the audit has a useful three-way baseline</h2>
+<table>
+<tr><th>Layer</th><th>Identity</th><th>Use in audit</th></tr>
+<tr><td>Live commissioning evidence</td><td>Ollama <strong>0.32.9</strong></td><td>Current known-good installed baseline; verify live rather than assuming unchanged.</td></tr>
+<tr><td>Attached source archive</td><td><strong>v0.32.11</strong>, commit <code>39df91c9826b3c0c83677f75cd230d8848d287c3</code></td><td>Exact source snapshot supplied for this Recon.</td></tr>
+<tr><td>Attached ZIP</td><td>SHA-256 <code>e7d05dd02814e8bedd7d99b5ee8110c27d356c6ad5997f15c4690e4d5abc6851</code></td><td>Reproducible provenance.</td></tr>
+<tr><td>Current official upstream at review</td><td><strong>v0.32.13</strong>, commit <code>0f25c31</code>, release date 2026-08-14 (per upstream release notes; confirm against the live release page at execution time — not locally verified here)</td><td>Upgrade/current-behavior comparison only; not automatic upgrade authority.</td></tr>
+</table>
+
+<p>The archive contains 1,272 files, 774 Go files, 332 Go test files, and approximately 2,607 detected Go tests. It is large enough that Craig must use targeted implementation paths instead of treating documentation as the sole source.</p>
+
+<h2>3. The most important new finding — truncation is structural</h2>
+<div class="callout bad">
+<strong>Do not treat “upgrade Ollama” as the fix for Claude Code overflow.</strong>
+</div>
+<p>The source explains the unsafe behavior observed on hxs-4. Native Ollama chat requests contain a <code>Truncate</code> field. The chat handler treats an unset field as truncation enabled. In the attached v0.32.11 Anthropic Messages adapter, the converted <code>api.ChatRequest</code> sets model, messages, options, stream, tools and thinking—but does not set <code>Truncate</code>. The request therefore reaches chat handling with the field unset and inherits truncation-enabled behavior.</p>
+
+<pre>Claude Code / Anthropic Messages
+        ↓
+anthropic.FromMessagesRequest(...)
+        ↓
+api.ChatRequest
+Truncate = nil
+        ↓
+server chat handler
+truncate := req.Truncate == nil || *req.Truncate
+        ↓
+TRUE
+        ↓
+over-limit history may be truncated</pre>
+
+<p>Current v0.32.13 still defaults an unset chat <code>Truncate</code> field to truncation enabled. Its release notes do not claim a correction to this path. Therefore Craig must keep the Claude Code refusal open until an over-limit <code>/v1/messages</code> request fails closed or an approved fronting layer enforces the real limit deterministically.</p>
+
+<h2>4. The audit is not “compare config file to a template”</h2>
+<p>Craig must reconstruct five truths and compare them:</p>
+<ol>
+<li>what HX currently authorizes;</li>
+<li>what hxs-4 is actually running;</li>
+<li>what the effective systemd environment is after drop-in merge;</li>
+<li>what the installed Ollama version actually supports;</li>
+<li>what the current release changes—and does not change.</li>
+</ol>
+
+<pre>INTENDED
+   ↕
+ACCEPTED
+   ↕
+CONFIGURED
+   ↕
+EFFECTIVE
+   ↕
+SUPPORTED BY INSTALLED SOURCE
+   ↕
+CURRENT UPSTREAM
+
+Any disagreement becomes a finding.</pre>
+
+<h2>5. High-probability correction candidates</h2>
+<p>These are audit targets, not claims that the live setting is currently present.</p>
+
+<table>
+<tr><th>Candidate</th><th>Current evidence</th><th>Craig treatment</th></tr>
+<tr><td><code>OLLAMA_DEBUG=1</code></td><td>Was explicitly enabled for commissioning.</td><td><strong>Likely remove</strong> if still effective and no diagnostic work requires it. Retain logs first.</td></tr>
+<tr><td><code>GGML_VK_VISIBLE_DEVICES=999</code></td><td>Used with <code>OLLAMA_VULKAN=0</code> to force isolation after Vulkan exposed both GPUs.</td><td><strong>Normalize/retest candidate.</strong> Current documented Vulkan-disable device sentinel is <code>-1</code>; the extra sentinel may be redundant when Vulkan is disabled. Never simplify without re-proving the reserved GPU is invisible.</td></tr>
+<tr><td><code>OLLAMA_VULKAN=0</code></td><td>Required by measured hxs-4 isolation.</td><td><strong>Keep unless disproven.</strong> Source shows Vulkan is enabled by default when available.</td></tr>
+<tr><td>CUDA GPU UUID pin</td><td>Required to isolate the 8 GB card.</td><td><strong>Keep / re-prove.</strong> UUID pin is preferable to index.</td></tr>
+<tr><td><code>OLLAMA_NO_CLOUD=1</code></td><td>Supported by installed-version source; HX role is local utility inference.</td><td><strong>Strong recommended candidate.</strong> Fail closed away from remote inference/web-search features; verify normal local operation afterward.</td></tr>
+<tr><td><code>OLLAMA_FLASH_ATTENTION</code></td><td>Prior hxs-4 measurement found it counterproductive on this model/workload.</td><td><strong>Ensure not enabled</strong> unless a new version is re-benchmarked and improves total memory/performance.</td></tr>
+<tr><td><code>OLLAMA_NUM_PARALLEL=1</code></td><td>Qwen3.5 scheduler source forces one parallel request.</td><td><strong>Mostly policy redundancy.</strong> Keeping explicit 1 is sensible on the fragile 8 GB card; do not rely on it as the only capacity guard.</td></tr>
+<tr><td><code>OLLAMA_MAX_LOADED_MODELS=1</code></td><td>Commissioning overlap of runners wedged the GPU driver.</td><td><strong>Keep.</strong> Still require explicit unload and GPU-clear proof for context changes.</td></tr>
+<tr><td><code>OLLAMA_KEEP_ALIVE</code></td><td>Default is 5 minutes.</td><td><strong>Inspect, don't guess.</strong> Operational tests that change context must explicitly unload regardless of keep-alive.</td></tr>
+<tr><td><code>OLLAMA_CONTEXT_LENGTH=65536</code></td><td>Largest useful safety margin before the measured overflow cliff, but materially slower and offloaded versus 16K.</td><td><strong>Do not blindly reduce.</strong> Audit whether a single default or explicit workload profiles best match current clients. Smaller global context can worsen silent-truncation risk.</td></tr>
+<tr><td>Thinking default</td><td>Prior test showed ~30× output-token difference on a trivial result.</td><td><strong>Verify client/profile behavior.</strong> For utility/tool workloads keep thinking off unless specifically needed.</td></tr>
+</table>
+
+<h2>6. Configuration points Craig must prove from source</h2>
+<p>Installed-version source explicitly exposes:</p>
+<ul>
+<li><code>OLLAMA_HOST</code> with loopback default;</li>
+<li><code>OLLAMA_MODELS</code>;</li>
+<li><code>OLLAMA_KEEP_ALIVE</code> default 5 minutes;</li>
+<li><code>OLLAMA_DEBUG</code>;</li>
+<li><code>OLLAMA_FLASH_ATTENTION</code>;</li>
+<li><code>OLLAMA_CONTEXT_LENGTH</code>;</li>
+<li><code>OLLAMA_VULKAN</code> and <code>GGML_VK_VISIBLE_DEVICES</code>;</li>
+<li><code>OLLAMA_NO_CLOUD</code>;</li>
+<li><code>OLLAMA_NUM_PARALLEL</code>;</li>
+<li><code>OLLAMA_MAX_LOADED_MODELS</code>;</li>
+<li><code>OLLAMA_MAX_QUEUE</code>;</li>
+<li><code>OLLAMA_GPU_OVERHEAD</code>;</li>
+<li><code>LLAMA_ARG_FIT</code> / <code>LLAMA_ARG_FIT_TARGET</code>.</li>
+</ul>
+<p>Craig must not add a variable merely because it exists. Every setting needs a measured or architectural reason.</p>
+
+<h2>7. Context is the hardest configuration decision</h2>
+<p>Prior measurements establish a real tradeoff:</p>
+<table>
+<tr><th>Context</th><th>Observed placement/performance</th><th>Interpretation</th></tr>
+<tr><td>16K</td><td>100% GPU, materially faster</td><td>Excellent local utility profile, but cannot accommodate agent-sized prompts.</td></tr>
+<tr><td>32K</td><td>Partial CPU offload</td><td>More headroom, slower.</td></tr>
+<tr><td>64K</td><td>Heavier CPU offload; prior loaded run observed substantial slowdown</td><td>Largest proven configured window, but still too small for some Claude Code sessions and unsafe past limit because of truncation.</td></tr>
+</table>
+
+<p>Source adds another nuance: a fixed <code>OLLAMA_CONTEXT_LENGTH</code> disables the newer automatic context-selection path. Craig must therefore distinguish:</p>
+<ul>
+<li>a fixed safety ceiling;</li>
+<li>automatic sizing;</li>
+<li>per-request <code>num_ctx</code>;</li>
+<li>client-side context enforcement.</li>
+</ul>
+
+<div class="callout warn">
+<strong>Current bias for hxs-4:</strong> do not lower the global context simply for speed until request-size enforcement exists. If short utility work benefits from 16K, prefer an explicit workload/client profile or per-request context over silently reducing the only safety margin.
+</div>
+
+<h2>8. Upgrade posture</h2>
+<p>The attached source is v0.32.11; the prior host evidence is 0.32.9; current official upstream at review is 0.32.13. Craig should absolutely evaluate an upgrade, but <strong>must not upgrade as a side effect of auditing configuration.</strong></p>
+<p>A version upgrade is its own mutation class requiring:</p>
+<ul>
+<li>release/source diff;</li>
+<li>binary/service/drop-in snapshot;</li>
+<li>model-store preservation;</li>
+<li>rollback to exact 0.32.9 baseline;</li>
+<li>GPU isolation retest;</li>
+<li>residency/context/performance retest;</li>
+<li>native/OpenAI/Anthropic protocol retest;</li>
+<li>deliberate over-limit truncation test.</li>
+</ul>
+
+<h2>9. Full hxs-4 audit phases</h2>
+<table>
+<tr><th>Phase</th><th>Purpose</th></tr>
+<tr><td>A — Authority</td><td>Resolve owner decisions, registry/service authority, runtime acceptance, open issues. Do not silently settle registry conflict.</td></tr>
+<tr><td>B — Source identity</td><td>Installed Ollama version, matching source tag, attached/local checkout identity, current stable release.</td></tr>
+<tr><td>C — Host/GPU foundation</td><td>OS/kernel/driver/GPU UUIDs/topology/health and NVRM/Xid history.</td></tr>
+<tr><td>D — Effective service state</td><td>systemd unit, every drop-in, effective environment, service user, bind, process tree, model store.</td></tr>
+<tr><td>E — Configuration audit</td><td>Every Ollama variable classified KEEP/CORRECT/RETEST/DEFER/OWNER.</td></tr>
+<tr><td>F — GPU/backend isolation</td><td>Prove reserved 16 GB GPU is absent from Ollama and active model residency is on intended device.</td></tr>
+<tr><td>G — Model identity</td><td>Tag/digest/architecture/quantization/capabilities/model store.</td></tr>
+<tr><td>H — Runtime capacity</td><td>Safe context matrix with explicit unload between changes; no overlapping runners.</td></tr>
+<tr><td>I — Protocol</td><td>Native, OpenAI, Anthropic, stream, tools, errors, thinking.</td></tr>
+<tr><td>J — Overflow safety</td><td>Native default, native <code>truncate=false</code>, and Anthropic <code>/v1/messages</code> tested independently.</td></tr>
+<tr><td>K — Controlled correction</td><td>One reversible Ollama-specific correction at a time; prove no adjacent regression.</td></tr>
+<tr><td>L — Final evidence</td><td>Pre/post configuration matrix, remaining issues, upgrade recommendation, QA handoff, as-built recommendation.</td></tr>
+</table>
+
+<h2>10. Correction authority for the audit</h2>
+<div class="callout ok">
+<strong>Craig may correct Ollama-specific configuration drift during the audit workstream when the change is reversible, supported by live evidence + version-matched source, and has an explicit rollback.</strong>
+</div>
+<p>Examples potentially in scope:</p>
+<ul>
+<li>systemd Ollama drop-in environment cleanup;</li>
+<li>debug/cloud/Vulkan/device visibility settings;</li>
+<li>Ollama concurrency/load/context settings when audit evidence supports the change;</li>
+<li>service restart;</li>
+<li>explicit model unload/reload;</li>
+<li>repeatable Ollama verification.</li>
+</ul>
+
+<p>Still out of scope without separate authority:</p>
+<ul>
+<li>GPU driver/toolkit changes;</li>
+<li>host reboot;</li>
+<li>use of the reserved 16 GB GPU;</li>
+<li>network exposure beyond loopback;</li>
+<li>OmniRoute modification;</li>
+<li>model replacement;</li>
+<li>filesystem/storage redesign;</li>
+<li>server-role or registry decisions;</li>
+<li>unreviewed Ollama version upgrade.</li>
+</ul>
+
+<h2>11. Runtime gate repair</h2>
+<p>The audit must not trust a green test suite whose gate scripts do not match the current workload schema. Current HX repository reconnaissance already found stale DS4-era assumptions in runtime gate tooling. Craig should identify those mismatches and hand a concrete, evidence-backed repair requirement to QA—or create the Ollama-specific test inputs when the current repository contract permits it. Final acceptance remains independent.</p>
+
+<h2>12. As-built consequence</h2>
+<p>A full Craig audit will produce enough evidence to reconstruct an authoritative hxs-4 Ollama as-built snapshot. Whether that becomes <code>servers/hxs-4/configuration.md</code> depends on the owner's lifecycle ruling: the repository has previously treated the absence of that file as a traceability gap requiring adjudication, not an automatic policy violation.</p>
+<p>Craig should therefore deliver the exact proposed as-built content and identify the decision, but must not rewrite discovery history or decide the host's durable role.</p>
+
+<h2>13. Revised Item 20 — Final disposition</h2>
+<div class="callout ok">
+<strong>Ollama: ADOPT — NARROW ROLE.</strong><br>
+Retain Ollama as HX's flexible local/GGUF utility and specialist-model runtime. Do not promote it into the traffic plane or universal primary serving runtime.<br><br>
+
+<strong>Agent Craig: ADOPT — ACTIVE SPECIALIST, SUBJECT TO FIRST-MISSION AUDIT.</strong><br>
+Craig's first mandatory operational mission is a full source-grounded audit of the existing hxs-4 Ollama implementation. He must reconstruct the live effective configuration, compare it to installed-version source and current upstream, identify commissioning leftovers and configuration drift, apply only authorized reversible Ollama-specific corrections, and re-prove every affected property. Craig is not considered operationally validated until this audit produces a clean evidence-backed baseline or an explicit list of unresolved blockers/owner decisions.<br><br>
+
+<strong>Expected audit posture:</strong> assume the hxs-4 runtime is proven functional but <em>not presumed normalized or optimal</em>. The audit is expected to find corrections if the evidence supports them.
+</div>
+
+<h2>14. Sources / provenance</h2>
+<ul>
+<li>Uploaded <code>ollama-main.zip</code> — SHA-256 <code>e7d05dd02814e8bedd7d99b5ee8110c27d356c6ad5997f15c4690e4d5abc6851</code>, GitHub archive commit <code>39df91c...</code>.</li>
+<li>Official Ollama v0.32.9 / v0.32.11 / v0.32.13 release records.</li>
+<li>Version-matched Ollama <code>envconfig/config.go</code>, <code>server/routes.go</code>, scheduler, Anthropic adapter, and API types.</li>
+<li>HX hxs-4 Qwen3.5-9B commissioning evidence and runtime acceptance records.</li>
+<li>Current HX repository reconnaissance findings on hxs-4 authority/as-built and runtime gate drift.</li>
+</ul>
+
+<footer>
+Truth state: reconnaissance + specialist mission definition. This artifact authorizes no cross-boundary infrastructure mutation. Live configuration changes belong to the dedicated Craig hxs-4 audit/remediation workstream and must preserve rollback and independent acceptance.
+</footer>
+</main></body></html>
