@@ -213,6 +213,8 @@ Assert-True "rem-001: incomplete SubagentStop has no strict-mode error" ([string
 # ---------- rem-002: Phase 1 guard path coverage ----------
 
 $guardHook = "$root\.claude\hooks\hx-phase1-guard.ps1"
+$policyHook = "$root\.claude\hooks\hx-permanent-policy-guard.ps1"
+$authorityHook = "$root\.claude\hooks\hx-authority-edit-guard.ps1"
 $guardCases = @(
     @{ Name = "bare forward path"; Tool = "Bash"; Input = @{ command = "echo x > servers/hx-test/configuration.md" } },
     @{ Name = "bare backslash path"; Tool = "PowerShell"; Input = @{ command = "Set-Content servers\hx-test\configuration.md x" } },
@@ -754,6 +756,17 @@ Assert-True "F2: absent agent_type still blocks an incomplete record" ($noAgentT
 # The guard denies protected mutations for EVERY registry state. No Phase 2
 # status value releases it. (READY/IN PROGRESS/COMPLETE flipped from release
 # to deny in the same change as the guard code.)
+#
+# CR-5: the two axes are crossed here. Previously the registry-state axis was
+# exercised against one command (apt-get install) while the protected-mutation
+# axis was exercised against one default root, and the product was never tested.
+# A regression that released systemctl for exactly one registry state passed
+# both loops. Every cell below is a real hook invocation.
+#
+# The malformed-payload rows are the F-03 regression. Under
+# Set-StrictMode -Version Latest an unguarded property read throws, the hook
+# dies before it can emit a decision, and the protected call proceeds. The guard
+# now fails closed on any payload it cannot classify or inspect, in every state.
 
 $phase2States = @(
     @{ Value = "BLOCKED";     GuardActive = $true },
@@ -764,6 +777,38 @@ $phase2States = @(
     @{ Value = "";            GuardActive = $true }     # malformed / empty
 )
 
+# $guardCategories covers the shell route to a protected mutation. These cover
+# the direct tool route to servers/<host>/configuration.md, which no state loop
+# previously exercised at all.
+$guardToolCases = @(
+    @{ Category = "Write configuration.md"; Tool = "Write"; Input = @{ file_path = "servers/hx-test/configuration.md" } },
+    @{ Category = "Edit configuration.md";  Tool = "Edit";  Input = @{ file_path = "C:\hx\servers\hx-test\configuration.md" } }
+)
+
+# Payloads the guard cannot classify or inspect. Each must deny, in every state.
+$guardMalformedCases = @(
+    @{ Category = "empty payload";            Payload = @{} },
+    @{ Category = "no tool_name";             Payload = @{ hook_event_name = "PreToolUse"; tool_input = @{ command = "lsblk" } } },
+    @{ Category = "Bash without tool_input";  Payload = @{ hook_event_name = "PreToolUse"; tool_name = "Bash" } },
+    @{ Category = "Write without tool_input"; Payload = @{ hook_event_name = "PreToolUse"; tool_name = "Write" } },
+    @{ Category = "Bash with empty command";  Payload = @{ hook_event_name = "PreToolUse"; tool_name = "Bash"; tool_input = @{ command = "" } } },
+    @{ Category = "Write with empty path";    Payload = @{ hook_event_name = "PreToolUse"; tool_name = "Write"; tool_input = @{ file_path = "" } } },
+    @{ Category = "tool outside the matcher"; Payload = @{ hook_event_name = "PreToolUse"; tool_name = "Read"; tool_input = @{ file_path = "README.md" } } }
+)
+
+function Test-GuardDenied {
+    param($Result)
+    if ($Result.ExitCode -ne 0) { return $false }
+    if (-not [string]::IsNullOrWhiteSpace($Result.StdErr)) { return $false }
+    if ([string]::IsNullOrWhiteSpace($Result.StdOut)) { return $false }
+    $json = $Result.StdOut | ConvertFrom-Json
+    return (
+        $json.hookSpecificOutput.hookEventName -eq "PreToolUse" -and
+        $json.hookSpecificOutput.permissionDecision -eq "deny" -and
+        -not [string]::IsNullOrWhiteSpace($json.hookSpecificOutput.permissionDecisionReason)
+    )
+}
+
 foreach ($phase2State in $phase2States) {
     $stateRoot = Join-Path $tmpDir ("phase2-" + ($phase2State.Value -replace '\s', '-'))
     New-Item -ItemType Directory -Path $stateRoot -Force | Out-Null
@@ -771,24 +816,55 @@ foreach ($phase2State in $phase2States) {
         "# HX Server Registry`r`n`r`n**Phase 1 Status:** IN PROGRESS`r`n**Phase 2 Status:** " + $phase2State.Value
     )
 
-    $stateResult = Invoke-Hook $guardHook @{
+    $stateLabel = $phase2State.Value
+    if ([string]::IsNullOrWhiteSpace($stateLabel)) { $stateLabel = "<empty>" }
+
+    foreach ($guardCategory in $guardCategories) {
+        $cellResult = Invoke-Hook $guardHook @{
+            hook_event_name = "PreToolUse"
+            tool_name = "Bash"
+            tool_input = @{ command = $guardCategory.Blocked }
+        } $stateRoot
+
+        if ($phase2State.GuardActive) {
+            Assert-True "F1: $stateLabel x $($guardCategory.Category) stays denied" (Test-GuardDenied $cellResult)
+        } else {
+            Assert-True "F1: $stateLabel x $($guardCategory.Category) releases the guard" ([string]::IsNullOrWhiteSpace($cellResult.StdOut))
+        }
+    }
+
+    foreach ($toolCase in $guardToolCases) {
+        $toolResult = Invoke-Hook $guardHook @{
+            hook_event_name = "PreToolUse"
+            tool_name = $toolCase.Tool
+            tool_input = $toolCase.Input
+        } $stateRoot
+
+        if ($phase2State.GuardActive) {
+            Assert-True "F1: $stateLabel x $($toolCase.Category) stays denied" (Test-GuardDenied $toolResult)
+        } else {
+            Assert-True "F1: $stateLabel x $($toolCase.Category) releases the guard" ([string]::IsNullOrWhiteSpace($toolResult.StdOut))
+        }
+    }
+
+    foreach ($malformedCase in $guardMalformedCases) {
+        $malformedResult = Invoke-Hook $guardHook $malformedCase.Payload $stateRoot
+        Assert-True "F1: $stateLabel x $($malformedCase.Category) fails closed" (Test-GuardDenied $malformedResult)
+    }
+
+    # Control: the guard must still allow ordinary read-only discovery work in
+    # this state. Without this row the matrix would also pass a guard that
+    # denied everything unconditionally.
+    $stateAllowed = Invoke-Hook $guardHook @{
         hook_event_name = "PreToolUse"
         tool_name = "Bash"
-        tool_input = @{ command = "apt-get ins" + "tall -y curl" }
+        tool_input = @{ command = "lsblk -o NAME,SIZE" }
     } $stateRoot
-
-    Assert-True "F1: $($phase2State.Value) exits zero" ($stateResult.ExitCode -eq 0)
-    Assert-True "F1: $($phase2State.Value) has no strict-mode error" ([string]::IsNullOrWhiteSpace($stateResult.StdErr))
-
-    if ($phase2State.GuardActive) {
-        $stateJson = $stateResult.StdOut | ConvertFrom-Json
-        Assert-True "F1: $($phase2State.Value) keeps the guard active" (
-            $stateJson.hookSpecificOutput.permissionDecision -eq "deny" -and
-            -not [string]::IsNullOrWhiteSpace($stateJson.hookSpecificOutput.permissionDecisionReason)
-        )
-    } else {
-        Assert-True "F1: $($phase2State.Value) releases the guard" ([string]::IsNullOrWhiteSpace($stateResult.StdOut))
-    }
+    Assert-True "F1: $stateLabel allows a read-only discovery command" (
+        $stateAllowed.ExitCode -eq 0 -and
+        [string]::IsNullOrWhiteSpace($stateAllowed.StdErr) -and
+        [string]::IsNullOrWhiteSpace($stateAllowed.StdOut)
+    )
 }
 
 $noRegistryRoot = Join-Path $tmpDir "phase2-no-registry"
@@ -798,16 +874,74 @@ $noRegistryResult = Invoke-Hook $guardHook @{
     tool_name = "Bash"
     tool_input = @{ command = "apt-get ins" + "tall -y curl" }
 } $noRegistryRoot
-$noRegistryJson = $noRegistryResult.StdOut | ConvertFrom-Json
-Assert-True "F1: missing registry keeps the guard active" (
-    $noRegistryResult.ExitCode -eq 0 -and
-    $noRegistryJson.hookSpecificOutput.permissionDecision -eq "deny"
+Assert-True "F1: missing registry keeps the guard active" (Test-GuardDenied $noRegistryResult)
+
+# F-03: the same fail-closed contract on the other two PreToolUse guards. Both
+# are registered on narrow matchers, so a payload they cannot classify is a
+# protected call they were unable to screen.
+$policyMalformed = Invoke-Hook $policyHook @{} $tmpDir
+Assert-True "F1: permanent-policy guard fails closed on a malformed payload" (Test-GuardDenied $policyMalformed)
+
+$policyAllowed = Invoke-Hook $policyHook @{
+    hook_event_name = "PreToolUse"
+    tool_name = "Bash"
+    tool_input = @{ command = "lsblk -o NAME,SIZE" }
+} $tmpDir
+Assert-True "F1: permanent-policy guard still allows a read-only command" (
+    $policyAllowed.ExitCode -eq 0 -and
+    [string]::IsNullOrWhiteSpace($policyAllowed.StdErr) -and
+    [string]::IsNullOrWhiteSpace($policyAllowed.StdOut)
 )
 
+$authorityMalformed = Invoke-Hook $authorityHook @{} $tmpDir
+$authorityMalformedJson = $authorityMalformed.StdOut | ConvertFrom-Json
+Assert-True "F1: authority-edit guard escalates a malformed payload" (
+    $authorityMalformed.ExitCode -eq 0 -and
+    [string]::IsNullOrWhiteSpace($authorityMalformed.StdErr) -and
+    $authorityMalformedJson.hookSpecificOutput.permissionDecision -eq "ask"
+)
+
+$authorityAllowed = Invoke-Hook $authorityHook @{
+    hook_event_name = "PreToolUse"
+    tool_name = "Write"
+    tool_input = @{ file_path = "servers/hx-test/discovery.md" }
+} $tmpDir
+Assert-True "F1: authority-edit guard still allows an ordinary write" (
+    $authorityAllowed.ExitCode -eq 0 -and
+    [string]::IsNullOrWhiteSpace($authorityAllowed.StdErr) -and
+    [string]::IsNullOrWhiteSpace($authorityAllowed.StdOut)
+)
+
+# The fail-closed design above depends on each guard being registered only for
+# the tools it knows how to inspect. A widened matcher would send unrelated
+# tools into a guard that now denies what it cannot classify, so the matchers
+# are pinned rather than assumed.
+$preToolUseMatchers = @{}
+$settingsPreToolUse = (Get-Content "$root\.claude\settings.json" -Raw | ConvertFrom-Json).hooks.PreToolUse
+foreach ($entry in $settingsPreToolUse) {
+    foreach ($hookDefinition in $entry.hooks) {
+        $hookFile = [System.IO.Path]::GetFileName([string]($hookDefinition.args | Select-Object -Last 1))
+        $preToolUseMatchers[$hookFile] = [string]$entry.matcher
+    }
+}
+Assert-True "F1: phase 1 guard matcher is pinned to its inspectable tools" (
+    $preToolUseMatchers["hx-phase1-guard.ps1"] -eq "Bash|PowerShell|Write|Edit"
+)
+Assert-True "F1: permanent-policy guard matcher is pinned to shell tools" (
+    $preToolUseMatchers["hx-permanent-policy-guard.ps1"] -eq "Bash|PowerShell"
+)
+Assert-True "F1: authority-edit guard matcher is pinned to write tools" (
+    $preToolUseMatchers["hx-authority-edit-guard.ps1"] -eq "Write|Edit"
+)
+
+# Secondary checks. These are textual, not behavioural: they confirm the source
+# still looks hard-locked, and they are deliberately placed after the matrix
+# above, which is what actually proves it. A green grep with a red matrix means
+# the matrix.
 Assert-True "F1: OPEN is not reintroduced into the registry" (
     (Get-Content "$root\SERVER-REGISTRY.md" -Raw) -notmatch '(?im)^\s*\*\*Phase 2 Status:\*\*\s*OPEN\s*$'
 )
-Assert-True "F1: guard is hard-locked (Phase 2 release removed)" (
+Assert-True "F1: guard source retains no Phase 2 release branch (secondary)" (
     (Get-Content "$root\.claude\hooks\hx-phase1-guard.ps1" -Raw) -notmatch 'if\s*\(\s*Test-HxPhase2Open'
 )
 
@@ -830,6 +964,28 @@ Assert-True "item 5: settings and packaged fragment hooks stay in sync" (
     ($fragmentObject.hooks | ConvertTo-Json -Depth 30 -Compress)
 )
 
+# .claude/AGENTS.md requires the active and packaged hook copies to stay
+# synchronized, but only the settings fragment was checked. The hook scripts
+# themselves were unguarded, so a fix applied to .claude/hooks/ shipped a stale
+# script to anyone installing from claude-hooks/. Compared by content, both ways.
+$activeHookDir = "$root\.claude\hooks"
+$packagedHookDir = "$root\claude-hooks\claude-hooks\hooks"
+$activeHookFiles = @(Get-ChildItem -LiteralPath $activeHookDir -Filter *.ps1 | Select-Object -ExpandProperty Name)
+$packagedHookFiles = @(Get-ChildItem -LiteralPath $packagedHookDir -Filter *.ps1 | Select-Object -ExpandProperty Name)
+
+Assert-True "item 5: active and packaged hook sets contain the same files" (
+    ($activeHookFiles.Count -eq $packagedHookFiles.Count) -and
+    (@($activeHookFiles | Where-Object { $packagedHookFiles -notcontains $_ }).Count -eq 0)
+)
+
+$desyncedHooks = @($activeHookFiles | Where-Object {
+    $packagedCopy = Join-Path $packagedHookDir $_
+    (-not (Test-Path -LiteralPath $packagedCopy)) -or
+    ((Get-FileHash -LiteralPath (Join-Path $activeHookDir $_) -Algorithm SHA256).Hash -ne
+     (Get-FileHash -LiteralPath $packagedCopy -Algorithm SHA256).Hash)
+})
+Assert-True "item 5: active and packaged hook scripts are byte-identical" ($desyncedHooks.Count -eq 0)
+
 $denyRules = @($settingsObject.permissions.deny)
 # Each element is parenthesised. In PowerShell the comma operator binds tighter
 # than +, so @("mk" + "fs", "wipe" + "fs") collapses into a single joined string
@@ -851,6 +1007,99 @@ Assert-True "item 7: audit/hook strictness difference is documented" (
 $remediationDoc = Get-Content "$root\governance\reports\GitHub-Copilot\GITHUB-REMEDIATION-INSTRUCTIONS.md" -Raw
 Assert-True "item 7: packaged hook paths are correct" (
     $remediationDoc -notmatch '(?<!claude-hooks/)claude-hooks/hooks/'
+)
+
+# ---------- F-06 / CR-3: hook installer idempotence ----------
+# apply-hooks.ps1 removes its own prior entries before appending the packaged
+# ones. Its removal pattern was hand-listed and omitted two of the three
+# PreToolUse guards, so a re-run kept their old groups AND appended new copies:
+# seven registrations became nine, then eleven. The pattern is now derived from
+# the fragment, and the installer is run repeatedly here to prove the count holds.
+
+$applyHooks = "$root\claude-hooks\apply-hooks.ps1"
+$fragmentForCount = Get-Content "$root\claude-hooks\claude-hooks\settings.fragment.json" -Raw | ConvertFrom-Json
+
+function Get-HxHookCommandCount {
+    param($HooksObject)
+    $total = 0
+    foreach ($eventProperty in $HooksObject.PSObject.Properties) {
+        foreach ($group in @($eventProperty.Value)) {
+            $total += @($group.hooks).Count
+        }
+    }
+    return $total
+}
+
+function Invoke-HxInstaller {
+    param([string]$TargetRoot)
+    $installerOutput = & (Get-Command powershell.exe).Source `
+        -NoProfile -ExecutionPolicy Bypass -File $applyHooks -ProjectRoot $TargetRoot 2>&1
+    return [pscustomobject]@{
+        Output   = ($installerOutput | Out-String)
+        ExitCode = $LASTEXITCODE
+    }
+}
+
+$expectedCommandCount = Get-HxHookCommandCount $fragmentForCount.hooks
+Assert-True "F-06: packaged fragment declares seven hook commands" ($expectedCommandCount -eq 7)
+
+$installRoot = Join-Path $tmpDir "installer-clean"
+New-Item -ItemType Directory -Path $installRoot -Force | Out-Null
+$installSettings = Join-Path $installRoot ".claude\settings.json"
+
+$runCounts = @()
+foreach ($runIndex in 1..3) {
+    $installResult = Invoke-HxInstaller $installRoot
+    Assert-True "F-06: installer run $runIndex exits zero" ($installResult.ExitCode -eq 0)
+    $installedHooks = (Get-Content -LiteralPath $installSettings -Raw | ConvertFrom-Json).hooks
+    $runCounts += (Get-HxHookCommandCount $installedHooks)
+}
+
+Assert-True "F-06: first install registers exactly the packaged command count" ($runCounts[0] -eq $expectedCommandCount)
+# Three runs, not two: the defect grew by two per run, so a fix that only handled
+# the first duplicate would still pass a two-run test.
+Assert-True "F-06: re-running the installer does not duplicate registrations" (
+    $runCounts[1] -eq $runCounts[0] -and $runCounts[2] -eq $runCounts[0]
+)
+
+$installedFinal = (Get-Content -LiteralPath $installSettings -Raw | ConvertFrom-Json).hooks
+$installedPreToolUse = Get-HxHookCommandCount ([pscustomobject]@{ PreToolUse = $installedFinal.PreToolUse })
+Assert-True "F-06: all three PreToolUse guards survive a re-run exactly once" ($installedPreToolUse -eq 3)
+
+$installedScripts = @(
+    [regex]::Matches(($installedFinal | ConvertTo-Json -Depth 30), '(?i)hx-[a-z0-9-]+\.ps1') |
+        ForEach-Object { $_.Value } | Sort-Object -Unique
+)
+Assert-True "F-06: every packaged guard is registered after a re-run" (
+    $installedScripts -contains "hx-permanent-policy-guard.ps1" -and
+    $installedScripts -contains "hx-authority-edit-guard.ps1" -and
+    $installedScripts -contains "hx-phase1-guard.ps1"
+)
+
+# The installer promises to preserve unrelated existing hooks. A fix that simply
+# cleared every group for our events would pass the idempotence check above and
+# break this one.
+$preserveRoot = Join-Path $tmpDir "installer-preserve"
+New-Item -ItemType Directory -Path (Join-Path $preserveRoot ".claude") -Force | Out-Null
+$preserveSettings = Join-Path $preserveRoot ".claude\settings.json"
+Set-Content -LiteralPath $preserveSettings -Encoding UTF8 -Value (@{
+    hooks = @{
+        PreToolUse = @(
+            @{ matcher = "Bash"; hooks = @(@{ type = "command"; command = "third-party-tool.exe" }) }
+        )
+    }
+} | ConvertTo-Json -Depth 30)
+
+[void](Invoke-HxInstaller $preserveRoot)
+[void](Invoke-HxInstaller $preserveRoot)
+$preservedJson = Get-Content -LiteralPath $preserveSettings -Raw
+$preservedHooks = $preservedJson | ConvertFrom-Json
+
+Assert-True "F-06: an unrelated third-party hook survives the installer" (
+    ([regex]::Matches($preservedJson, 'third-party-tool\.exe')).Count -eq 1
+)
+Assert-True "F-06: preserving a foreign hook does not change the HX command count" (
+    (Get-HxHookCommandCount $preservedHooks.hooks) -eq ($expectedCommandCount + 1)
 )
 
 # Cleanup

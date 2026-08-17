@@ -14,18 +14,27 @@
 $inputObject = Read-HxHookInput
 
 $tool = [string](Get-HxInputProperty $inputObject "tool_name")
-if ($tool -ne "Write" -and $tool -ne "Edit") {
+$toolInput = Get-HxInputProperty $inputObject "tool_input"
+$rawPath = [string](Get-HxInputProperty $toolInput "file_path")
+
+# Malformed input fails closed. This hook is registered only on the matcher
+# Write|Edit, so a payload that does not name one of those tools, or whose
+# file_path cannot be read, is a write the guard was unable to classify. It
+# cannot be shown to miss the protected set, so it is escalated to the owner
+# rather than allowed silently. Escalating is 'ask', not 'deny': the write may
+# be entirely ordinary, and only the confirmation step is being preserved.
+if (($tool -ne "Write" -and $tool -ne "Edit") -or [string]::IsNullOrWhiteSpace($rawPath)) {
+    Write-HxJson @{
+        hookSpecificOutput = @{
+            hookEventName = "PreToolUse"
+            permissionDecision = "ask"
+            permissionDecisionReason = "The authority-edit guard could not read a tool name and file path from this payload, so it cannot establish that the target is outside the protected authority set. Confirm the write is intended."
+        }
+    }
     exit 0
 }
 
-$toolInput = Get-HxInputProperty $inputObject "tool_input"
-$filePath = ""
-if ($null -ne $toolInput -and $null -ne $toolInput.PSObject.Properties["file_path"]) {
-    $filePath = Normalize-HxPath ([string]$toolInput.file_path)
-}
-if ([string]::IsNullOrWhiteSpace($filePath)) {
-    exit 0
-}
+$filePath = Normalize-HxPath $rawPath
 
 # Protected classes. Matched against the normalised (forward-slash, lowercase) path.
 $protected = @(

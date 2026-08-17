@@ -3,10 +3,10 @@
 $inputObject = Read-HxHookInput
 $root = Get-HxProjectRoot $inputObject
 
-$filePath = ""
-if ($null -ne $inputObject.tool_input.PSObject.Properties["file_path"]) {
-    $filePath = [string]$inputObject.tool_input.file_path
-}
+# Read through Get-HxInputProperty: a direct .tool_input read throws under
+# Set-StrictMode when the payload is malformed, which skips validation entirely.
+$toolInput = Get-HxInputProperty $inputObject "tool_input"
+$filePath = [string](Get-HxInputProperty $toolInput "file_path")
 
 if ([string]::IsNullOrWhiteSpace($filePath)) {
     exit 0

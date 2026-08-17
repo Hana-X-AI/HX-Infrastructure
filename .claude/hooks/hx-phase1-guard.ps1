@@ -8,21 +8,39 @@ $root = Get-HxProjectRoot $inputObject
 # authorization record that replaces the hard lock is designed in the
 # Transition Stage (P-F1), not here. (Previously released on Phase 2 = READY.)
 
-$tool = [string]$inputObject.tool_name
+# Malformed input fails closed. Two separate defects were confirmed here:
+#
+# 1. Every payload field is read through Get-HxInputProperty. Under
+#    Set-StrictMode -Version Latest a direct property read on an absent field
+#    throws, the hook dies before it can emit a deny decision, and the protected
+#    tool call proceeds.
+# 2. A guarded read alone is not enough. Reading an absent field as "" and then
+#    finding no pattern match still allows the call, which is the same fail-open
+#    outcome by a quieter route.
+#
+# .claude/AGENTS.md forbids both: "missing or malformed hook input must not
+# silently create a fail-open path for a protected operation". This hook is
+# registered only on the matcher Bash|PowerShell|Write|Edit, so every payload
+# reaching it is a protected call by construction; one it cannot classify or
+# inspect is denied, not allowed. The tool name is re-checked here rather than
+# trusted from the matcher, the same posture hx-validate-subagent.ps1 adopted.
+
+$tool = [string](Get-HxInputProperty $inputObject "tool_name")
+$toolInput = Get-HxInputProperty $inputObject "tool_input"
 $denyReason = $null
 
 if ($tool -eq "Write" -or $tool -eq "Edit") {
-    $filePath = ""
-    if ($null -ne $inputObject.tool_input.PSObject.Properties["file_path"]) {
-        $filePath = Normalize-HxPath ([string]$inputObject.tool_input.file_path)
-    }
+    $rawPath = [string](Get-HxInputProperty $toolInput "file_path")
 
-    if ($filePath -match '(?:^|/)servers/[^/]+/configuration\.md$') {
+    if ([string]::IsNullOrWhiteSpace($rawPath)) {
+        $denyReason = "Phase 3 (Regroup) hard-lock: the $tool payload carries no readable file_path, so the guard cannot establish that the target is not servers/<host>/configuration.md. An uninspectable protected call is denied."
+    }
+    elseif ((Normalize-HxPath $rawPath) -match '(?:^|/)servers/[^/]+/configuration\.md$') {
         $denyReason = "Phase 3 (Regroup) hard-lock: configuration.md is created only in the later owner-authorized implementation phase, not now."
     }
 }
 elseif ($tool -eq "Bash" -or $tool -eq "PowerShell") {
-    $command = [string]$inputObject.tool_input.command
+    $command = [string](Get-HxInputProperty $toolInput "command")
 
     $blockedPatterns = @(
         '(?i)\bapt(-get)?\s+(-\S+\s+)*(install|upgrade|full-upgrade|dist-upgrade|remove|purge|autoremove)\b',
@@ -46,12 +64,20 @@ elseif ($tool -eq "Bash" -or $tool -eq "PowerShell") {
         '(?i)(?:^|[^a-z0-9_])servers[/\\][^/\\\s"'']+[/\\]configuration\.md'
     )
 
-    foreach ($pattern in $blockedPatterns) {
-        if ($command -match $pattern) {
-            $denyReason = "Phase 3 (Regroup) hard-lock: this command performs role-specific or persistent server configuration, which is denied until the owner authorizes the implementation phase."
-            break
+    if ([string]::IsNullOrWhiteSpace($command)) {
+        $denyReason = "Phase 3 (Regroup) hard-lock: the $tool payload carries no readable command, so the guard cannot screen it against the blocked mutation patterns. An uninspectable protected call is denied."
+    }
+    else {
+        foreach ($pattern in $blockedPatterns) {
+            if ($command -match $pattern) {
+                $denyReason = "Phase 3 (Regroup) hard-lock: this command performs role-specific or persistent server configuration, which is denied until the owner authorizes the implementation phase."
+                break
+            }
         }
     }
+}
+else {
+    $denyReason = "Phase 3 (Regroup) hard-lock: this guard is registered only for Bash, PowerShell, Write and Edit, and the payload did not identify one of them. An unclassifiable protected call is denied."
 }
 
 if ($null -ne $denyReason) {
