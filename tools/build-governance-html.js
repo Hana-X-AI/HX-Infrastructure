@@ -229,14 +229,14 @@ function readRows(file, idPattern) {
 function navHtml(current) {
   const items = [
     ['index', 'Governance'],
-    ['actions', 'Actions &amp; issues'],
-    ['lessons', 'Lessons learned'],
-    ['standards', 'Standards'],
     ['inventory', 'Fleet inventory'],
     ['architecture', 'Architecture v0.3'],
     ['frozen', 'v0.1 frozen'],
     ['validation', 'Validation'],
     ['recommendations', 'Recommendations'],
+    ['actions', 'Actions &amp; issues'],
+    ['lessons', 'Lessons learned'],
+    ['standards', 'Standards'],
   ];
   return items
     .map(([k, label]) => {
