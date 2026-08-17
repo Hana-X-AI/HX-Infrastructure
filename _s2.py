@@ -21,7 +21,8 @@ banner = (
 )
 text = text[:body_end] + banner + text[eyebrow_start:]
 count = text.count('SUPERSEDED V1')
-assert count == 1, f'Expected 1, got {count}'
+if count != 1:
+    sys.exit(f'FAIL: expected 1 SUPERSEDED V1 banner, got {count}')
 f.write_text(text, encoding='utf-8')
 print(f'Banner count: {count}')
 print('Stage 2 PASS')
