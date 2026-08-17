@@ -214,7 +214,10 @@ Owning the contract would make ingestion depend on the orchestrator being health
 incorporating the blocking corrections has <strong>not been re-reviewed</strong>.</li>
 <li>The SME acceptance gate does <strong>not</strong> pass: the model gateway and MCP tool plane are
 both classified CURRENT REQUIRED, which makes their integration SMEs mandatory, and neither a
-<code>litellm</code> nor an MCP-plane contract exists.</li>
+<code>litellm</code> nor an MCP-plane contract exists. <em>(Historical, 2026-08-14. Superseded: the
+<code>litellm</code> SME-contract requirement was withdrawn when the model gateway moved to OmniRoute;
+no gateway contract is outstanding. See <code>act-017</code> in
+<code>governance/logs/actions-and-issues.md</code>.)</em></li>
 </ul>
 
 <h2>8. Recommendation</h2>
@@ -232,7 +235,10 @@ Store ruling, the Redis classification and the checkpointer configuration.</li>
 <li><strong>Orchestration topology.</strong> Four candidates are documented with consequences; the
 ruling is the owner's, not a verification item.</li>
 <li>Whether to create the <code>litellm</code> and MCP-plane contracts, or downgrade those two
-classifications.</li>
+classifications. <em>(Historical, 2026-08-14. Resolved: the <code>litellm</code> contract requirement
+was withdrawn — the model gateway moved to OmniRoute and no gateway contract is outstanding. Only the
+MCP-plane contract question remains. See <code>act-017</code> in
+<code>governance/logs/actions-and-issues.md</code>.)</em></li>
 </ol>
 
 <p><strong>On the method itself</strong> — which is what this second pilot was testing. It held

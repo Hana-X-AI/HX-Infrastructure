@@ -89,8 +89,9 @@ ul.tight li{margin:4px 0}ul.tight b,ul.tight code{color:var(--fg)}
    sha256: 64eb356f5b22d39c4705e2babb48a16fe6a20e3fa4d5747cba6ed7516c64cd59
    record it as manifest_resolved_sha256; if the hash does not match, STOP.
    base manifest path  : governance/reports/claude/manifestv3.jsonl
-   base manifest sha256: 9aace8476d5646b2e53f499a8d4101baa62b0470fa85c6e12e471c970d1077d6
-   record it as manifest_base_sha256; verify before reading provenance.
+   base manifest sha256: computed and recorded by the executor at run time as manifest_base_sha256.
+   This file carries no pre-computed comparison value; the executor records the hash for
+   provenance and there is no fixed comparison gate against a value stored here.
 
 3. Source of record (the intentional protected RAW archive — see risk-003):
    ref    : legacy/2025
@@ -243,7 +244,7 @@ Integration SMEs if CURRENT REQUIRED: <span class="sme">litellm</span>
 <p><strong>Historical / superseded runtime assumption.</strong> This pilot execution brief assumed
 a bare-metal virtual environment managed by systemd. Final owner Decision 3 instead selected a
 packaged server with its own service lifecycle. The final record is
-<code>governance/operations/langgraph/phase-2/Claude-Opus-5_2026-08-14_langgraph-review-verdicts.md</code>,
+<code>governance/operations/langgraph/phase Phase -2/Claude-Opus-5_2026-08-14_langgraph-review-verdicts.md</code>,
 “Decision 3 — FINAL: packaged server.” The outline below is retained as pilot history and is
 not current deployment guidance.</p>
 <div class="tree">LangGraph
@@ -267,7 +268,9 @@ not current deployment guidance.</p>
 │   ├── LightRAG                 # pipeline-required, contract NOT established
 │   ├── Postgres / Redis
 │   └── MCP tools (provider-neutral MCP gateway)
-├── Runtime and service model   # HISTORICAL / SUPERSEDED: bare-metal venv, systemd; no containers
+├── Runtime and service model   # bare-metal venv + isolated dependency tree: CURRENT;
+│                               # systemd / service-lifecycle claim: HISTORICAL / SUPERSEDED
+│                               # (governing runtime record: services/langgraph/service.md, packaged server)
 ├── Configuration model         # no hardcoded endpoints/paths; resolve from registry
 ├── Validation requirements     # re-baselined; no 2025 counts
 ├── Failure handling            # retries, graceful degradation, human-in-loop
