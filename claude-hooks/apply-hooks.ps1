@@ -37,7 +37,23 @@ if ($null -eq $settings.PSObject.Properties["hooks"]) {
     $settings | Add-Member -NotePropertyName "hooks" -NotePropertyValue ([pscustomobject]@{})
 }
 
-$ourPattern = 'hx-(session-state|phase1-guard|validate-discovery|validate-subagent|notify)\.ps1'
+# The removal pattern is derived from the packaged fragment, not hand-listed. The
+# hand-listed version omitted hx-permanent-policy-guard.ps1 and
+# hx-authority-edit-guard.ps1, so a re-run kept their old groups instead of
+# replacing them and then appended the fragment's copies as well: seven
+# registrations became nine, then eleven. Deriving the pattern means a hook added
+# to the fragment can never be missed here.
+$ourHookFiles = @(
+    [regex]::Matches(($fragment | ConvertTo-Json -Depth 30), '(?i)hx-[a-z0-9-]+\.ps1') |
+        ForEach-Object { $_.Value } |
+        Sort-Object -Unique
+)
+
+if ($ourHookFiles.Count -eq 0) {
+    throw "Settings fragment references no hx-*.ps1 hook scripts: $fragmentPath"
+}
+
+$ourPattern = '(' + ((@($ourHookFiles) | ForEach-Object { [regex]::Escape($_) }) -join '|') + ')'
 
 foreach ($eventProperty in $fragment.hooks.PSObject.Properties) {
     $eventName = $eventProperty.Name
@@ -69,9 +85,19 @@ if (Test-Path -LiteralPath "$settingsPath.bak") {
     Write-Host "Backup: $settingsPath.bak"
 }
 Write-Host ""
+$installedCount = 0
+foreach ($eventProperty in $settings.hooks.PSObject.Properties) {
+    foreach ($group in @($eventProperty.Value)) {
+        $installedCount += @($group.hooks).Count
+    }
+}
+Write-Host "Registered hook commands: $installedCount"
+Write-Host ""
 Write-Host "In Claude Code, run /hooks to verify:"
-Write-Host "  SessionStart"
-Write-Host "  PreToolUse"
-Write-Host "  PostToolUse"
-Write-Host "  SubagentStop"
-Write-Host "  Notification"
+foreach ($eventProperty in $fragment.hooks.PSObject.Properties) {
+    $eventCount = 0
+    foreach ($group in @($eventProperty.Value)) {
+        $eventCount += @($group.hooks).Count
+    }
+    Write-Host ("  {0,-14} {1}" -f $eventProperty.Name, $eventCount)
+}

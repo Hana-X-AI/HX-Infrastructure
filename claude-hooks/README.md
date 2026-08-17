@@ -4,11 +4,33 @@ This package installs the seven approved project hook commands without replacing
 
 ## Hooks
 
-1. `SessionStart` — injects current Phase 1 / Phase 2 and registry counts.
-2. `PreToolUse` — hard-locks obvious role-specific or persistent server configuration during Phase 3 (Regroup); no registry status releases it.
-3. `PostToolUse` — validates `discovery.md` and `SERVER-REGISTRY.md` after Claude writes/edits them.
-4. `SubagentStop` — requires the `server-discovery` subagent to leave a valid completed discovery record before it exits.
-5. `Notification` — displays a Windows alert when Claude Code is idle or a background agent needs input.
+Seven hook commands across five events. `PreToolUse` carries three of them, which is why the
+command count and the event count differ.
+
+**`SessionStart`**
+
+1. `hx-session-state.ps1` — injects current Phase 1 / Phase 2 and registry counts.
+
+**`PreToolUse`** — matcher `Bash|PowerShell|Write|Edit`, `Bash|PowerShell`, and `Write|Edit` respectively
+
+2. `hx-phase1-guard.ps1` — hard-locks obvious role-specific or persistent server configuration during Phase 3 (Regroup); no registry status releases it.
+3. `hx-permanent-policy-guard.ps1` — enforces prohibitions that hold in **every** phase and never consults Phase 2 state.
+4. `hx-authority-edit-guard.ps1` — asks before an edit to a file that governs HX behaviour, and denies a specialist subagent outright.
+
+**`PostToolUse`**
+
+5. `hx-validate-discovery.ps1` — validates `discovery.md` and `SERVER-REGISTRY.md` after Claude writes/edits them.
+
+**`SubagentStop`**
+
+6. `hx-validate-subagent.ps1` — requires the `server-discovery` subagent to leave a valid completed discovery record before it exits.
+
+**`Notification`**
+
+7. `hx-notify.ps1` — displays a Windows alert when Claude Code is idle or a background agent needs input.
+
+`hx-common.ps1` is a shared library, not a registered command. The package ships eight `.ps1`
+files and registers seven.
 
 ## Apply
 
@@ -44,15 +66,19 @@ Start or resume Claude Code in the project and run:
 /hooks
 ```
 
-You should see project hooks for:
+You should see project hooks for these five events, carrying seven commands in total:
 
 ```text
-SessionStart
-PreToolUse
-PostToolUse
-SubagentStop
-Notification
+SessionStart     1 command
+PreToolUse       3 commands
+PostToolUse      1 command
+SubagentStop     1 command
+Notification     1 command
 ```
+
+Re-running the installer must leave those counts unchanged. It replaces its own entries rather
+than appending them; a regression test runs it three times against a scratch project and fails
+if the total moves.
 
 ## Phase Gate — Phase 3 hard-lock
 
