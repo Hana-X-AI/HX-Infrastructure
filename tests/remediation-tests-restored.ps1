@@ -403,7 +403,7 @@ Assert-True "rem-008: Phase 2 transitions are defined" (
     $regText -match 'COMPLETE\s+-\s+consolidation is complete and verified'
 )
 Assert-True "rem-008: the Phase 2 column records its runtime readers" (
-    $regText -match 'hx-common\.ps1.*hx-phase1-guard\.ps1.*hx-session-state\.ps1' -and
+    $regText -match 'hx-common\.ps1.*hx-session-state\.ps1.*hx-authority-edit-guard\.ps1.*hx-validate-discovery\.ps1' -and
     $regText -match 'must not be removed without removing those readers'
 )
 $configurationTemplate = Get-Content "$root\servers\_templates\configuration.md" -Raw

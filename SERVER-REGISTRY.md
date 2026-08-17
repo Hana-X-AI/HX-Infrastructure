@@ -29,7 +29,7 @@ IN PROGRESS - consolidation work has started
 COMPLETE    - consolidation is complete and verified
 ```
 
-Phase 2 opened on 2026-08-13 once the Phase 1 gate was satisfied. The column is retained and read at runtime by `hx-common.ps1`, `hx-phase1-guard.ps1` and `hx-session-state.ps1`; it must not be removed without removing those readers in the same change.
+Phase 2 opened on 2026-08-13 once the Phase 1 gate was satisfied. The column is retained and read at runtime by `hx-common.ps1`, `hx-session-state.ps1`, `hx-authority-edit-guard.ps1` and `hx-validate-discovery.ps1`; it must not be removed without removing those readers in the same change.
 
 ## Registry
 
