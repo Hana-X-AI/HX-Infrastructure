@@ -56,11 +56,15 @@ parameterises Postgres but **not** Redis, so a default deployment stands Redis u
 the registry places it on hxs-9. The design still classified it INDIRECT with a "no correctness
 property may depend on it" invariant attached.
 
-**The adopted serialisation control fails silently.** `STRICT_MSGPACK` without an allowlist does not
-raise on a blocked type — it returns raw data or `None`. HX's own versioned state schema and
-structured interrupts are not on the safe-types list, so enabling it degrades checkpoints silently
-on resume: the same failure direction as the autocommit defect the design elevated to its flagship
-gate.
+**Source verification correction — the adopted serialisation control is observable but may change
+blocked values.** In the reviewed LangGraph 1.2.11 source, `LANGGRAPH_STRICT_MSGPACK=true` selects
+the built-in safe-type list. An unregistered constructor emits a `msgpack_blocked` event and a
+warning, then returns its decoded argument payload instead of reconstructing the type; `None` is
+returned only when the guarded decode or construction path catches an exception. The safe list
+explicitly includes `langgraph.types.Interrupt` and `langgraph.types.StateSnapshot`. The earlier
+claim that this behavior is silent and that structured interrupts are absent from the safe list was
+incorrect. Any HX-specific custom state type still requires an explicit identity check and a
+round-trip test before deployment.
 
 ## Findings against the design's own method
 

@@ -57,6 +57,8 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}th,td{text
 
 <div class="dec">
 <h2><span class="dnum">3</span>Deployment mode: embedded library vs packaged server <span class="tag t-block">DESIGN-DEFINING</span></h2>
+<div class="callout warn"><h3>Historical / superseded runtime assumption</h3>
+<p>The final owner ruling records <b>Decision 3: FINAL — PACKAGED SERVER</b> in <code>governance/operations/langgraph/phase-2/Claude-Opus-5_2026-08-14_langgraph-review-verdicts.md</code>. The comparison below is retained as the decision's historical input and must not be used to reopen the deployment-mode ruling.</p></div>
 <p><b>Problem.</b> This is not packaging trivia — it silently decides Store semantics, Redis requirement, checkpointer construction, process ownership, networking, service lifecycle, failure isolation, and how OmniRoute interacts with orchestration/model calls.</p>
 <table><thead><tr><th>Dimension</th><th>Embedded library</th><th>Packaged server</th></tr></thead><tbody>
 <tr><td>Process / lifecycle</td><td>In-process with the orchestration service</td><td>Separate service/process, own lifecycle</td></tr>
