@@ -20,8 +20,8 @@ that is testable today. This contract draws the line between what can be proven 
 inference and what genuinely requires a live model, so that neither gets claimed on the
 other's evidence.
 
-Design source: the reviewed DwarfStar snapshot, mined for its treatment of an AI runtime
-as a protocol, state, tooling and QA surface. See *Provenance* below.
+Design source: a reviewed third-party inference-runtime snapshot, mined for its treatment of
+an AI runtime as a protocol, state, tooling and QA surface. See *Provenance* below.
 
 ---
 
@@ -97,8 +97,9 @@ failure and must never be reported as a pass.
 
 ## The tool round-trip invariant
 
-Mined from exact sampled representation, using canonical re-rendering only as a fallback, because
-re-serializing a tool call can differ from what the model actually emitted and break
+Mined from the reviewed runtime's tool-call replay mechanism: it keeps a bounded map from tool
+ID to the exact sampled representation, using canonical re-rendering only as a fallback,
+because re-serializing a tool call can differ from what the model actually emitted and break
 continuation and cache identity.
 
 HX states the runtime-neutral invariant:
@@ -123,10 +124,12 @@ style, capability declarations, timeouts, live/offline status.
 | --- | --- | --- |
 | `offline-fixture` | executable now | Model-free deterministic protocol validation |
 | `vllm-qwen` | PRIMARY — configuration now, live later | The intended primary HX local model runtime |
-| ` live later | Anthropic-compatible and OpenAI-compatible cross-runtime testing, tool fidelity, cache experiments |
 
-**The experimental classification applies to the ` not to any
-server.** Adding a further profile must not require editing this contract.
+A cross-runtime profile — for Anthropic-compatible and OpenAI-compatible conformance testing,
+tool fidelity and cache experiments — is a valid future addition. None is declared today.
+
+**A profile's status classification applies to the runtime profile, not to any server.**
+Adding a further profile must not require editing this contract.
 
 No credentials, no secrets and no live host are hardcoded anywhere in this contract or in the
 profiles.
@@ -161,24 +164,28 @@ Machine-readable JSON plus a human-readable summary.
 - It does not treat a runtime-specific optional capability as a failure unless the contract
   marks it REQUIRED.
 - It does not replace the primary vLLM/Qwen runtime decision.
-- It does not adopt `
+- It does not adopt any third-party agent framework as an HX orchestration framework.
+- It does not adopt any third-party markup or serialization format as an HX format.
 
 ---
 
 ## Provenance
 
-Design inspiration only — the reviewedzip`, SHA-256
-`e4e5a5ad5124436f13f6bb6b0ef91d496c6c2e5cd954e20fef709510a7f43bac`, upstream
-`github.com/antirez/ MIT licensed, copyrightc authors and the ggml authors.
+Design inspiration only — a reviewed third-party inference-runtime snapshot, identified by
+SHA-256 `e4e5a5ad5124436f13f6bb6b0ef91d496c6c2e5cd954e20fef709510a7f43bac`. The snapshot is
+MIT licensed; copyright rests with its own authors and with the ggml authors. The upstream
+project is not named here, per the owner ruling that dropped it from this work; the hash above
+identifies the snapshot the review was performed against.
 
-**No** The patterns adopted — evidence-class separation,
-the tool-call fidelity invariant, cold/warm cache distinctions, and separating fast protocol
-regression from model-backed quality testing — were independently implemented in the existing
-HX test language. No MIT notice obligation is triggered by idea reuse; had source been copied,
-the notice and source path would be recorded here.
+**No source code from that snapshot was copied into HX.** The patterns adopted — evidence-class
+separation, the tool-call fidelity invariant, cold/warm cache distinctions, and separating fast
+protocol regression from model-backed quality testing — were independently implemented in the
+existing HX test language. No MIT notice obligation is triggered by idea reuse; had source been
+copied, the notice and source path would be recorded here, and the ruling above would not
+override that obligation.
 
-Facts asserted about
-inference engine targeting not a general GGUF runner; it exposes
+Facts asserted about that snapshot come from the snapshot itself and are not broadened: it is a
+narrow inference engine targeting a single model family, not a general GGUF runner; it exposes
 `/v1/models`, `/v1/chat/completions`, `/v1/responses`, `/v1/completions` and an
 Anthropic-compatible `/v1/messages`; it supports Metal, CUDA and ROCm; the snapshot contained
 1,166 files and zero model weights.

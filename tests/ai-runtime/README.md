@@ -101,8 +101,9 @@ two heavy models fit concurrently.
 
 ## Provenance
 
-Design inspiration from the reviewed DwarfStar snapshot, upstream
-`github.com/antirez/ MIT licensed. **No** The adopted ideas —
+Design inspiration from a reviewed third-party inference-runtime snapshot, MIT licensed.
+**No source code from that snapshot was copied into HX.** The adopted ideas —
 evidence-class separation, the tool-call fidelity invariant, cold/warm cache distinctions, and
 separating fast protocol regression from model-backed quality testing — were independently
-implemented here in PowerShell. See the contract's *Provenance* section.
+implemented here in PowerShell. See the contract's *Provenance* section, which carries the
+snapshot's SHA-256 and the licence position in full.
