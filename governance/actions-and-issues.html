@@ -176,12 +176,12 @@
   </header>
 
   <dl class="strip">
-    <div class="cell"><dt>Entries</dt><dd>41</dd></div>
-    <div class="cell"><dt>Actions</dt><dd>19</dd></div>
+    <div class="cell"><dt>Entries</dt><dd>42</dd></div>
+    <div class="cell"><dt>Actions</dt><dd>20</dd></div>
     <div class="cell"><dt>Issues</dt><dd>22</dd></div>
     <div class="cell"><dt>Open</dt><dd>6</dd></div>
     <div class="cell"><dt>Backlog</dt><dd>3</dd></div>
-    <div class="cell"><dt>Closed</dt><dd>32</dd></div>
+    <div class="cell"><dt>Closed</dt><dd>33</dd></div>
   </dl>
 
   <section>
@@ -452,6 +452,17 @@
         <div class="field body"><span class="field-label">Item</span><p><code>hx-validate-subagent.ps1</code> reads <code>last_assistant_message</code> under <code>Set-StrictMode -Version Latest</code>, and <code>.claude/settings.json</code> filters SubagentStop with <code>^server-discovery$</code>. Neither assumption has been confirmed in a live session. A missing field makes the hook error out, which is treated as non-blocking; an unhonoured filter applies the hook to every subagent. The existing test supplies the field itself, so it confirms its own fixture rather than real behaviour. Report: <code>Claude-Opus-5_2026-08-11_201530_outstanding-findings.md</code>.</p></div>
         <div class="field sub"><span class="field-label">Impact / outcome</span><p>Discovery records could be accepted without validation, or unrelated subagents could be blocked.</p></div>
         <div class="field sub"><span class="field-label">Resolution / closeout</span><p>Live SubagentStop payloads captured 2026-08-11. Matcher is honoured: an <code>Explore</code> subagent did not fire the hook. Real payload supplies both <code>agent_type</code> and <code>last_assistant_message</code>, so the fail-open path did not occur in practice. Hook hardened anyway: <code>Get-HxInputProperty</code> performs defensive reads, <code>agent_type</code> is checked in the hook itself rather than relying on the matcher, and an absent final message now blocks instead of passing. Six regression cases added.</p></div>
+      </article>
+      <article class="entry is-done">
+        <div class="entry-head">
+          <span class="eid">act-020</span>
+          <span class="chip">action</span>
+          <span class="pill is-done">done</span>
+          
+        </div>
+        <div class="field body"><span class="field-label">Item</span><p><strong>P1-06 DS4-era runtime-gate quarantine.</strong> Inventory and sweeps of the four gate scripts under <code>tests/ai-runtime/</code>, prompted by a briefing that asserted they could reach hardware.</p></div>
+        <div class="field sub"><span class="field-label">Impact / outcome</span><p>The premise was wrong against the current tree, so the item produced no diff.</p></div>
+        <div class="field sub"><span class="field-label">Resolution / closeout</span><p><strong>Closed premise-invalid 2026-08-17.</strong> No live-contact path exists: no gate script executes an install, download, service, network, or host command, and the <code>hx-runtime-acceptance.ps1</code> live branch terminates in <code>live execution not implemented in this pass</code> without issuing a request. Task 1a closed the denylist gap (PowerShell-native remoting verbs) clean. No DS4 or third-profile assumption remains; <code>tests/ai-runtime/</code> is ds4-clean and <code>profiles/</code> holds exactly <code>offline-fixture</code> and <code>vllm-qwen</code>. No fail-closed guard added per owner ruling (guarding an unimplemented capability is over-engineering); a comment at <code>hx-runtime-acceptance.ps1:268</code> records that requirement for whoever implements the path. Zero files under <code>tests/ai-runtime/</code> changed; suites 22/0 before and after. Report: <code>governance/Phase -3-Regroup/reports/kimi-k3_2026-08-17_011739_p1-06-runtime-gate-quarantine.md</code>.</p></div>
       </article>
       <article class="entry is-done">
         <div class="entry-head">
