@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HX OmniRoute Current Documents Reconciliation</title>
+<style>
+:root{--bg:#081018;--p:#101b27;--p2:#142334;--ink:#eaf2f8;--muted:#a1b3c5;--cyan:#4bd5e7;--gold:#f4c95d;--green:#6ee7a8;--red:#ff7b7b;--line:#294057;--violet:#b99cff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#071019,#0b1520 48%,#101829);color:var(--ink);font:15px/1.55 Inter,Segoe UI,Arial,sans-serif}main{max-width:1160px;margin:auto;padding:42px 28px 72px}h1{font-size:40px;line-height:1.1;margin:8px 0 14px}h2{margin:40px 0 14px;font-size:27px;border-bottom:1px solid var(--line);padding-bottom:8px}h3{color:var(--cyan);margin:25px 0 8px}.kicker{color:var(--cyan);letter-spacing:.15em;text-transform:uppercase;font-weight:800}.sub{font-size:18px;color:var(--muted);max-width:930px}.meta,.small{font-size:13px;color:var(--muted)}.verdict{margin:26px 0;padding:21px 23px;border:1px solid #2f7180;border-left:5px solid var(--cyan);background:#0e2029;border-radius:10px}.verdict strong{font-size:20px;color:var(--cyan)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.card{background:rgba(16,27,39,.94);border:1px solid var(--line);border-radius:10px;padding:17px}.card h3{margin-top:0}.status{display:inline-block;border-radius:999px;padding:3px 9px;font-size:12px;font-weight:800}.major{background:#42202a;color:#ffc0c8}.minor{background:#403719;color:#ffe7a3}.keep{background:#123722;color:#a7f3ca}.truth{background:#202743;color:#d7d2ff}table{width:100%;border-collapse:collapse;margin:14px 0 25px;background:#0e1823;font-size:14px}th,td{vertical-align:top;text-align:left;border:1px solid var(--line);padding:10px 11px}th{background:#142536;color:var(--cyan)}tr:nth-child(even) td{background:#101d2a}code{color:#b9e9f0;background:#09141e;padding:1px 5px;border-radius:4px}.risk{border-left:4px solid var(--red);background:#251419;padding:13px 16px;margin:15px 0}.note{border-left:4px solid var(--gold);background:#241f12;padding:13px 16px;margin:15px 0}.ok{border-left:4px solid var(--green);background:#10231b;padding:13px 16px;margin:15px 0}ul,ol{padding-left:23px}li{margin:5px 0}blockquote{margin:15px 0;padding:11px 18px;border-left:4px solid var(--violet);background:#15172a}a{color:#75d9ff}.footer{margin-top:48px;border-top:1px solid var(--line);padding-top:17px;color:var(--muted)}@media(max-width:720px){main{padding:25px 14px}h1{font-size:31px}table{display:block;overflow-x:auto}}
+</style></head><body><main>
+<div class="kicker">HX Infrastructure · Phase 3 Regroup · Document Reconnaissance</div>
+<h1>OmniRoute Current Documents Reconciliation</h1>
+<p class="sub">Decision-grade review of the two existing OmniRoute artifacts against the v3.8.50 source reconnaissance, HX runtime decisions, and the newly approved three-tier federated-control model.</p>
+<p class="meta">Prepared 15 August 2026 · Static document review · No source documents modified</p>
+
+<div class="verdict"><strong>Verdict: update both, but at different depths.</strong><br>
+The architecture decision remains fundamentally correct and needs a focused revision. The Claude Code integration prompt must be substantively rewritten before execution because it still assumes one Claude session will coordinate a large multi-phase workstream and does not incorporate Max, the nine named stewards, ephemeral task cells, worktree isolation, or independent proof.</div>
+
+<div class="grid">
+<section class="card"><h3>Architecture decision</h3><p><span class="status minor">UPDATE REQUIRED — MODERATE</span></p><p>Keep the narrow traffic-plane disposition, LiteLLM replacement decision, SSRF owner exception, and disabled OmniRoute product subsystems. Correct source identity, phase labeling, agent-governance language, and Claude Code backend implications.</p></section>
+<section class="card"><h3>Claude Code prompt</h3><p><span class="status major">REWRITE BEFORE USE — HIGH</span></p><p>The mission is still valid, but the execution method is stale. Running it as written would recreate the Max-scale cognitive-load problem the new architecture was designed to eliminate.</p></section>
+</div>
+
+<h2>Evidence basis</h2>
+<table><thead><tr><th>Current repository artifact</th><th>Current SHA-256</th><th>Reviewed source-copy label and recorded SHA-256</th><th>Role</th></tr></thead><tbody>
+<tr><td><code>hx-omniroute-architecture-decision-litellm-replacement_gpt-5.6-sol_20260814_0031.html</code></td><td><code>5666c4292da40f851d24d48423600f91a0cfbba2f531347ee4587569b245b8e3</code></td><td><code>hx-omniroute-architecture-decision-litellm-replacement_gpt-5.6-sol_20260814_0031(1).html</code><br><code>95d6fe5ad49fe130e8d38c44c20ccc621959557c4ace9ced2facb05fa2cafd75</code></td><td>Target-state architecture decision</td></tr>
+<tr><td><code>hx-omniroute-claude-code-integration-prompt_gpt-5.6-sol_20260814_0031.html</code></td><td><code>d744b40cb892f9f7d0382dbed087db622915680229b4e4ecc985da3efcf2b87b</code></td><td><code>hx-omniroute-claude-code-integration-prompt_gpt-5.6-sol_20260814_0031(1).html</code><br><code>3908827f6d55760169750cc664c1f0caadbd6ff72fce9aab6a5833e329d235dd</code></td><td>Repository execution handoff</td></tr>
+<tr><td>OmniRoute supplied source snapshot</td><td><code>2b04f4cba777b40ccc2af52ce23e2ffac27f2d8b5bcbd6cef6776b91c96c06e3</code></td><td>Not applicable</td><td>Primary implementation evidence for release/v3.8.50 snapshot</td></tr>
+</tbody></table>
+<p><strong>Copy mapping:</strong> each retained artifact maps to the reviewed <code>(1)</code> source-copy label by its base filename. The <code>(1)</code> files are not retained, and the current hashes differ from the recorded source-copy hashes. The mapping therefore establishes document lineage, not byte identity. Use the current hashes for the repository artifacts and the older hashes only as provenance for the review inputs.</p>
+<p>The comparison also uses the accepted HX runtime disposition: Qwen3.5-9B on hxs-4 is accepted for bounded local utility inference, but is <strong>not accepted as a Claude Code backend</strong>; and the owner-approved OmniRoute management architecture: Claude Code → Max-led council → non-recursive task cells.</p>
+
+<h2>What remains valid in both documents</h2>
+<div class="ok"><b>The core architecture decision survives reconnaissance.</b> OmniRoute remains the HX AI traffic plane, not the HX governance, infrastructure, memory, skill, or agent authority.</div>
+<ul>
+<li><b>OmniRoute replaces the planned LiteLLM gateway role:</b> still valid as a target-state architecture decision.</li>
+<li><b>Narrow adoption:</b> protocol gateway, approved provider routes, static routing first, traffic evidence, later resilience only after fidelity.</li>
+<li><b>Authority boundary:</b> SERVER-REGISTRY owns host truth; runtime profiles own approved workloads; HX acceptance owns behavioral proof.</li>
+<li><b>Excluded product features:</b> OmniRoute memory injection, embedded skills, A2A/agent orchestration, broad MCP mutation/control, MITM/root CA, keychain import, and cloud sync remain outside the initial HX traffic-plane role.</li>
+<li><b>Direct-versus-routed acceptance:</b> remains essential. A direct runtime pass does not prove the gateway route.</li>
+<li><b>SSRF owner exception:</b> remains an explicit owner decision and must stay conspicuous, bounded to the trusted network, and paired with authentication and least privilege.</li>
+<li><b>No deployment by implication:</b> both documents correctly require separate authorization before live installation or deployment.</li>
+</ul>
+
+<h2>Critical distinction introduced by the new agent architecture</h2>
+<blockquote>External agents managing the OmniRoute repository are not the same thing as enabling OmniRoute’s embedded agent framework inside the HX runtime architecture.</blockquote>
+<table><thead><tr><th>Plane</th><th>Approved authority</th><th>Disposition</th></tr></thead><tbody>
+<tr><td>Repository-management plane</td><td>Claude Code, Max, Maya, Carson, Riley, Lena, Aisha, Nolan, Sofia, Frank, Vera; plus Sam, Ruth, Will, Brooke, Paul, and Sue</td><td class="keep">ADOPTED</td></tr>
+<tr><td>HX AI traffic plane</td><td>OmniRoute gateway and bounded routing functions</td><td class="keep">ADOPTED NARROWLY</td></tr>
+<tr><td>OmniRoute product agent/memory/skills plane</td><td>OmniRoute embedded A2A, memory injection, skill and control subsystems</td><td>DISABLED / EXCLUDED INITIALLY</td></tr>
+</tbody></table>
+<p>Neither existing document makes this distinction because both predate the Max-led council. The update must add it explicitly so “do not adopt OmniRoute agents” is not misread as rejecting the approved external repository-management team.</p>
+
+<h2>Document 1 — Architecture decision</h2>
+<p><span class="status minor">UPDATE REQUIRED — MODERATE</span></p>
+<h3>Required changes</h3>
+<table><thead><tr><th>Finding</th><th>Why it matters</th><th>Required revision</th><th>Priority</th></tr></thead><tbody>
+<tr><td>Generic “HX specialist agents” language</td><td>The governing model is now specific and owner-approved.</td><td>Name Claude Code as Meta-Agent, Max as sole dispatcher/integrator, the nine persistent stewards, and non-recursive task cells. State this is repository stewardship, not an OmniRoute runtime feature.</td><td>High</td></tr>
+<tr><td>“Claude Code gateway path — ADOPT” is too broad</td><td>It can imply that routed Qwen3.5-9B is accepted as a Claude Code backend. HX explicitly rejected that interpretation.</td><td>Change to <code>CONDITIONAL / PROTOCOL PILOT ONLY</code>. State that Anthropic-compatible protocol support does not confer Claude Code backend acceptance; every model/runtime/client path requires its own acceptance evidence.</td><td>Critical</td></tr>
+<tr><td>Pilot names an “HX client” but tests Claude Messages</td><td>The test target can become conflated with Claude Code itself.</td><td>Use an HX conformance harness as the initial client. Test Anthropic Messages fidelity separately; do not represent Claude Code as the pilot client unless a backend has been explicitly accepted for it.</td><td>High</td></tr>
+<tr><td>Phase 0–4 labels</td><td>HX is now in Phase 3 regroup. Local phase numbers create false project-state conflicts.</td><td>Rename them <code>OR-W0</code> through <code>OR-W4</code>, or “OmniRoute workstream stages.” Preserve sequence without claiming HX project phases.</td><td>High</td></tr>
+<tr><td>Version label says “OmniRoute version reviewed: v3.8.50”</td><td>The supplied artifact is a release/v3.8.50 snapshot with no Git metadata; exact commit identity cannot be proven from the ZIP.</td><td>Say “source snapshot: release/v3.8.50; archive hash …; exact commit not established from ZIP.” Do not silently treat it as an official immutable release artifact.</td><td>Medium</td></tr>
+<tr><td>Minimal deployment recommendation is underspecified</td><td>The v3.8.50 repository is a broad platform with privileged and auxiliary surfaces.</td><td>Reference the bounded-feature manifest and name Aisha, Frank, and Vera as mandatory reviewers for exposure, installer, process, secret, and packaging decisions.</td><td>Medium</td></tr>
+<tr><td>No relationship to the Max council</td><td>Maintenance and change control are now architectural decisions.</td><td>Add a short “repository stewardship” section or companion reference to the approved agent architecture.</td><td>Medium</td></tr>
+</tbody></table>
+
+<h3>Keep unchanged in substance</h3>
+<ul>
+<li>“OmniRoute = HOW AI traffic gets there; HX = WHAT, WHERE, WHO, and WHETHER.”</li>
+<li>LiteLLM replacement in active target-state gateway architecture.</li>
+<li>SSRF decision and compensating controls, unless the owner later revises it.</li>
+<li>Static route first; compression, auto-routing, memory and embedded agent features off during baseline.</li>
+<li>Direct endpoints remain valid for validation and troubleshooting.</li>
+</ul>
+<div class="note"><b>Disposition:</b> do not discard or rewrite from scratch. Issue a new version of the same architecture decision with the seven targeted corrections above.</div>
+
+<h2>Document 2 — Claude Code integration prompt</h2>
+<p><span class="status major">REWRITE BEFORE USE — HIGH</span></p>
+<h3>Why the prompt is not safe to execute as written</h3>
+<p>The prompt assigns one Claude Code session discovery, repository-wide classification, architecture reconciliation, policy work, manifest production, specification design, acceptance extensions, invariants, deployment recommendations, sequencing, testing, and reporting. That is precisely the single-agent cognitive-load pattern rejected by the approved management architecture.</p>
+<table><thead><tr><th>Finding</th><th>Current risk</th><th>Required rewrite</th></tr></thead><tbody>
+<tr><td>No Max or council</td><td>Claude becomes both Meta-Agent and repository integrator.</td><td>Claude issues intent to Max. Max classifies and dispatches to named stewards; Max alone integrates.</td></tr>
+<tr><td>No task-cell decomposition</td><td>Reconnaissance, implementation and verification share one context and can confirm their own assumptions.</td><td>Use Sam for impact mapping, Ruth for failure evidence, Will as sole writer, Brooke for adversarial review, Paul for independent proof, and Sue for knowledge capture.</td></tr>
+<tr><td>No worktree/branch ownership contract</td><td>Conflicts with OmniRoute’s explicit repository rules.</td><td>Require operator-confirmed base, one task/branch/worktree/writer, no stash/pop, no foreign worktree/branch/PR edits, and verbatim protection of <code>_tasks</code>.</td></tr>
+<tr><td>Recursive delegation is unspecified</td><td>Authority and cost can fan out invisibly.</td><td>State that Max is the sole dispatcher and Tier-3 agents cannot spawn agents.</td></tr>
+<tr><td>“Run all tests” is imprecise</td><td>OmniRoute uses two test ecosystems plus many ratchets; a generic claim can omit relevant evidence.</td><td>Vera selects required runners/checks; Paul records exact commands, outputs and limitations.</td></tr>
+<tr><td>Prompt phases collide with HX Phase 3</td><td>Creates governance ambiguity and misleading status reports.</td><td>Rename to work packets <code>OR-W0…OR-W8</code>; state current HX phase separately.</td></tr>
+<tr><td>Claude Code gateway language is over-permissive</td><td>Could bypass the explicit Qwen3.5-9B Claude Code refusal.</td><td>Add a hard invariant: gateway protocol compatibility cannot override workload-specific runtime acceptance.</td></tr>
+<tr><td>Snapshot identity is treated as a release pin</td><td>Could turn a branch snapshot into an assumed deployable release.</td><td>Use it for source evidence only; require a separately verified tag/commit/artifact digest before deployment.</td></tr>
+<tr><td>No fix-to-knowledge output</td><td>Lessons remain trapped in one completion report.</td><td>Require Sue’s structured record: symptom, root cause, rejected hypotheses, fix, regression guard, validation, recurrence signature, reusable lesson.</td></tr>
+</tbody></table>
+
+<h3>Recommended work-packet routing</h3>
+<table><thead><tr><th>Work packet</th><th>Lead steward</th><th>Mandatory support</th></tr></thead><tbody>
+<tr><td>Authority discovery and LiteLLM classification</td><td>Max</td><td>Sam; Vera for truth-state and evidence quality</td></tr>
+<tr><td>Traffic-plane decision/spec revision</td><td>Carson</td><td>Maya, Riley, Aisha, Vera</td></tr>
+<tr><td>Provider and protocol capability profile</td><td>Riley</td><td>Maya, Carson, Vera</td></tr>
+<tr><td>SSRF exception and exposure controls</td><td>Aisha</td><td>Frank, Vera; owner escalation retained</td></tr>
+<tr><td>Runtime acceptance extension</td><td>Vera</td><td>Maya, Carson, Riley; Paul independently proves</td></tr>
+<tr><td>Repository edits</td><td>Named domain lead</td><td>Will as sole bounded writer; Brooke reviews</td></tr>
+<tr><td>Completion and reusable knowledge</td><td>Max</td><td>Paul evidence ledger; Sue knowledge record; Claude user report</td></tr>
+</tbody></table>
+
+<h2>Conflict and non-conflict summary</h2>
+<table><thead><tr><th>Statement</th><th>Current status</th><th>Action</th></tr></thead><tbody>
+<tr><td>OmniRoute replaces LiteLLM gateway role</td><td><span class="status keep">VALID</span></td><td>Retain</td></tr>
+<tr><td>OmniRoute embedded agents/skills/memory remain excluded</td><td><span class="status keep">VALID</span></td><td>Retain; clarify external-management distinction</td></tr>
+<tr><td>Claude Code → Max council → task cells</td><td><span class="status truth">NEW AUTHORITY</span></td><td>Add to both documents</td></tr>
+<tr><td>Qwen3.5-9B can back Claude Code through OmniRoute</td><td><span class="status major">NOT ACCEPTED</span></td><td>Explicitly prohibit this inference</td></tr>
+<tr><td>Phase 0–4/8 labels are HX project phases</td><td><span class="status major">CONFLICTING</span></td><td>Rename as OmniRoute workstream IDs</td></tr>
+<tr><td>v3.8.50 ZIP is an exact official release commit</td><td><span class="status minor">UNPROVEN</span></td><td>Use snapshot/hash wording; verify deployable artifact later</td></tr>
+<tr><td>Global SSRF protection disabled by owner decision</td><td><span class="status keep">VALID OWNER DECISION</span></td><td>Retain with compensating controls</td></tr>
+</tbody></table>
+
+<h2>Recommended update order</h2>
+<ol>
+<li><b>Revise the architecture decision first.</b> It is the authority document from which the handoff should derive.</li>
+<li><b>Rewrite the integration prompt second.</b> Generate it from the revised decision and the approved agent-management architecture.</li>
+<li><b>Do not execute the old prompt.</b> Mark it superseded after the replacement is approved, while preserving its history.</li>
+<li><b>Keep deployment outside this reconciliation.</b> The next synchronization gate remains owner approval of a bounded single-route pilot.</li>
+</ol>
+
+<h2>Final disposition</h2>
+<div class="verdict"><strong>Document 1: UPDATE, preserve identity and core decision.</strong><br>
+<strong>Document 2: REWRITE BEFORE EXECUTION, then supersede the old prompt.</strong><br><br>
+Neither document should be deleted. Their core strategy is sound, and their history is valuable. The architecture decision needs precision; the execution prompt needs the approved operating model.</div>
+
+<h2>Sources and limits</h2>
+<ul>
+<li>The two supplied HTML documents and their hashes recorded above.</li>
+<li>The supplied OmniRoute release/v3.8.50 source snapshot and the completed repository architecture reconnaissance.</li>
+<li>The owner-approved Max-led federated control architecture.</li>
+<li>Current HX runtime acceptance decisions and Phase 3 regroup status.</li>
+<li>Official upstream reference points: <a href="https://github.com/diegosouzapw/OmniRoute/tree/release/v3.8.50">release/v3.8.50 branch</a> and <a href="https://github.com/diegosouzapw/OmniRoute/releases">release history</a>.</li>
+</ul>
+<p class="small">This review determines required document changes; it does not implement those changes or authorize deployment. Mutable upstream release identity must be reverified when a deployable artifact is selected.</p>
+<div class="footer">HX Infrastructure · OmniRoute document reconciliation · Evidence-first review</div>
+</main></body></html>
