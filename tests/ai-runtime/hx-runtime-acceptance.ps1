@@ -265,6 +265,9 @@ $liveTests = @(
     @{ id='L4-05'; cap='RT-26'; class='C'; name='GPU and VRAM residency evidence' }
     @{ id='L5-01'; cap='RT-01'; class='A'; name='cross-runtime contract conformance' }
 )
+# Implementing the live path requires a fail-closed phase guard at the script
+# entry point first, per the Phase 3 control model; without it this script must
+# stay unable to reach a live endpoint during Regroup & Reconciliation.
 $reason = if ($isLive) { 'live execution not implemented in this pass' } else { 'LIVE RUNTIME NOT CONFIGURED' }
 foreach ($t in $liveTests) { Add-Result $t.id $t.cap $t.class 'SKIP' ("$($t.name) - SKIP: $reason") }
 
