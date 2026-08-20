@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qwen3.8-27B — Ollama Serving, Capability Profile, and hxs-1 Role Fit</title>
+<style>
+  :root{
+    color-scheme: light;
+    --surface-1:#fcfcfb; --page:#f9f9f7;
+    --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#898781;
+    --grid:#e1e0d9; --baseline:#c3c2b7; --border:rgba(11,11,11,0.10);
+    --series-1:#2a78d6; --series-2:#eb6834; --series-3:#1baf7a;
+    --st-good:#0ca30c; --st-warning:#fab219; --st-serious:#ec835a; --st-critical:#d03b3b;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --surface-1:#1a1a19; --page:#0d0d0d;
+      --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#898781;
+      --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,0.10);
+      --series-1:#3987e5; --series-2:#d95926; --series-3:#199e70;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--text-primary);
+       font:16px/1.62 system-ui,-apple-system,"Segoe UI",sans-serif;}
+  .wrap{max-width:940px;margin:0 auto;padding:48px 24px 96px}
+  h1{font-size:27px;line-height:1.26;margin:0 0 18px;letter-spacing:-.012em;
+     padding-bottom:20px;border-bottom:1px solid var(--grid)}
+  h2{font-size:20px;margin:46px 0 12px;padding-top:20px;
+     border-top:1px solid var(--grid);letter-spacing:-.01em}
+  h3{font-size:15.5px;margin:28px 0 8px}
+  h4{font-size:14px;margin:20px 0 6px;color:var(--text-secondary);
+     text-transform:uppercase;letter-spacing:.05em}
+  p{margin:0 0 14px} ul,ol{margin:0 0 14px;padding-left:22px} li{margin:6px 0}
+  li > p{margin:0 0 8px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.8px;
+       background:var(--surface-1);border:1px solid var(--grid);border-radius:4px;padding:1px 5px}
+  pre{background:var(--surface-1);border:1px solid var(--grid);border-radius:8px;
+      padding:14px 16px;overflow-x:auto;font-size:12.8px;line-height:1.6}
+  pre code{background:none;border:none;padding:0;font-size:12.5px}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px;
+        font-variant-numeric:tabular-nums}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--grid);vertical-align:top}
+  th{font-weight:600;color:var(--text-secondary);font-size:12px;
+     text-transform:uppercase;letter-spacing:.05em;font-variant-numeric:normal}
+  tbody tr:hover{background:var(--surface-1)}
+  td code{white-space:nowrap}
+  blockquote{margin:16px 0;padding:12px 18px;border-left:3px solid var(--baseline);
+             color:var(--text-secondary);background:var(--surface-1);border-radius:0 6px 6px 0}
+  blockquote p:last-child{margin:0}
+  hr{border:none;border-top:1px solid var(--grid);margin:34px 0}
+  a{color:var(--series-1)}
+  .meta table{font-size:13.5px;margin:0 0 8px}
+  .meta td{border-bottom:none;padding:3px 12px 3px 0}
+  .meta td:first-child{color:var(--text-muted);width:150px;white-space:nowrap}
+  .meta thead{display:none}
+  .ok{color:var(--st-good);font-weight:600}
+  .no{color:var(--st-critical);font-weight:600}
+  .warn{color:var(--st-warning);font-weight:600}
+  footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--grid);
+         color:var(--text-muted);font-size:12.8px;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Qwen3.8-27B — Ollama Serving, Capability Profile, and hxs-1 Role Fit</h1>
+<div class="meta"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Document ID</strong></td>
+<td><code>hx-research_qwen38-27b-ollama-serving-and-capability-fit_synthesis_2026-08-17_claude-opus-5</code></td>
+</tr>
+<tr>
+<td><strong>Subject</strong></td>
+<td>Second third-party field report on Qwen3.8-27B, verified against the official model card and the Ollama registry; artifact register; capability profile; hxs-1 role fit</td>
+</tr>
+<tr>
+<td><strong>Evidence tier</strong></td>
+<td><code>synthesis</code> — third-party transcript (trigger) reconciled against <strong>vendor primary</strong> (Qwen model card, Ollama registry manifest) and <strong>HX primary</strong> (registry, discovery, workload records)</td>
+</tr>
+<tr>
+<td><strong>Author</strong></td>
+<td>Claude (Opus 5)</td>
+</tr>
+<tr>
+<td><strong>Date</strong></td>
+<td>2026-08-17</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Research record. <strong>Not a decision, not an acceptance, not an authorization.</strong></td>
+</tr>
+<tr>
+<td><strong>Supersedes</strong></td>
+<td>Nothing. <strong>Companion to</strong> <code>codex_20260817_1524_hx-qwen38-27b-ollama-deployment-deep-dive.html</code> (deployment runbook) and <code>hx-research_qwen38-27b-inference-performance_third-party_2026-08-17_claude-opus-5</code> (inference performance). Deliberately does not duplicate either.</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>1. Verdict</h2>
+<p><strong>The model is real, the benchmarks check out, and it is available in the official Ollama
+library today. But the single most consequential finding is not about serving — it is that
+Qwen3.8-27B's strongest capability has no home in the HX architecture, and the role it has been
+assigned is the one capability where it is weakest.</strong></p>
+<p>hxs-1's registry role is <strong><code>Deep reasoning &amp; synthesis</code></strong>. Verified against the official model
+card, Qwen3.8-27B is <strong>not a frontier reasoner</strong> — HLE 30.8 against Opus 4.6 Max's 40.0,
+GPQA-Diamond 89.2 against 91.3, Terminal-Bench 73.0 against 78.2. What it <em>is</em>, decisively, is
+the best <strong>computer-use / GUI-agent</strong> model in its own comparison table: OSWorld-Verified <strong>84.3
+against Opus's 72.7</strong>, AndroidWorld 81.9 against 62.0, SWE-MM 38.6 against 27.1. A full repo
+search establishes that <strong>HX has no computer-use, GUI-automation, or browser-control plane
+anywhere</strong> — not in the registry's fifteen roles, not in the fleet architecture, not in the
+Phase 3 tech stack.</p>
+<p>Three qualifications keep this from being an argument to change anything today. First, <strong>the only
+<em>recorded justification</em> for the placement is hardware-based</strong> — VRAM, PCIe generation, matched
+card pairs — and across every HX document available to this search, no record defines a reasoning
+bar the occupant must clear. The model is not failing a test that exists. Second, the role's own
+founding document describes "multi-agent synthesis (Flow B)", which is closer to long-horizon
+agentic work than to frontier reasoning. Third, role assignment is explicitly an owner decision
+that agents may not make.</p>
+<p>The honest framing is therefore not <em>"the wrong model is in the slot."</em> It is: <strong>HX is about to
+commission a best-in-class agentic/computer-use model into a slot named for reasoning, with no
+recorded definition of what that slot requires, and no plane to consume the thing the model is
+actually exceptional at.</strong> That is a decision worth making deliberately rather than by default.</p>
+<p>On serving, the practical findings are smaller but sharp: <strong>the default <code>qwen3.8:27b</code> tag is the
+MTP variant, not plain Q4_K_M</strong>, and they are genuinely different artifacts; <strong><code>27b-nvfp4</code> and
+<code>27b-mlx</code> resolve to the same artifact</strong>, so at least one of the two format names is wrong; and
+<strong>no HX record anywhere specifies sampler settings for any model</strong>, while this model ships two
+distinct official sampler regimes that materially affect output quality.</p>
+<hr>
+<h2>2. Provenance and evidence discipline</h2>
+<h3>2.1 The trigger source</h3>
+<p>A transcript of a second publicly published video review of Qwen3.8-27B by an independent
+operator, supplied by the project owner on 2026-08-17. It is a different author from the field
+report in the companion inference-performance record.</p>
+<p><strong>Unlike that first source, this one is largely a conduit for vendor-published material.</strong> Its
+benchmark section restates the official model card; its serving section restates the Ollama
+library page. That makes it <em>verifiable</em>, and I have verified essentially all of it — which
+means the load-bearing evidence in this document is <strong>vendor primary</strong>, not third-party. The
+transcript's value is as a pointer and as a source of operator judgement, not as data.</p>
+<h3>2.2 Excluded material</h3>
+<p><strong>Minutes 1:38–3:45 of the transcript are a paid advertising segment</strong> for a third-party
+testing product, structured as a narrative about agent feedback loops. It is unrelated to
+Qwen3.8-27B, it is commercial content, and <strong>none of it is carried into this document</strong> — not
+the product, not the claims, not the anecdote. It is noted here only so that a future reader
+comparing this record against the source knows the omission is deliberate.</p>
+<h3>2.3 Evidence classes used</h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Sources</th>
+<th>Weight</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Vendor primary</strong></td>
+<td>Qwen3.8-27B official model card (benchmarks, samplers, thinking controls, architecture); Ollama library registry (tags, sizes, digests); Ollama context-length docs; llama.cpp server docs</td>
+<td>Load-bearing</td>
+</tr>
+<tr>
+<td><strong>HX primary</strong></td>
+<td><code>SERVER-REGISTRY.md</code>, <code>servers/hxs-1/discovery.md</code>, <code>tests/ai-runtime/workloads/qwen35-9b-ollama.json</code> (measured hxs-4 as-built)</td>
+<td>Authoritative for HX state</td>
+</tr>
+<tr>
+<td><strong>HX design / in-flight</strong></td>
+<td><code>codex_20260817_1524_...deployment-deep-dive.html</code>, <code>governance/fleet-architecture-v0.3.html</code>, <code>hx-stack-alignment-v0.1-frozen.html</code></td>
+<td>Proposals, not authority</td>
+</tr>
+<tr>
+<td><strong>Third-party</strong></td>
+<td>The transcript</td>
+<td>Pointer and judgement only</td>
+</tr>
+<tr>
+<td><strong>Derived</strong></td>
+<td>Memory arithmetic in §6</td>
+<td>Explicitly labelled</td>
+</tr>
+</tbody>
+</table>
+<h3>2.4 Authority note</h3>
+<p><code>SERVER-REGISTRY.md</code> is authoritative for assigned role and approved workload/model. Neither
+this document, the Codex runbook, nor any other agent output changes it. Per the registry's own
+rule: <em>"Agents must not assign roles automatically."</em></p>
+<hr>
+<h2>3. Benchmark verification</h2>
+<p>Every figure the transcript stated was checked against the official model card. <strong>The transcript
+is accurate — of twenty-two checkable numbers, twenty-two match.</strong></p>
+<p><em>Correction, recorded rather than quietly fixed: a first pass of this document declared two of
+the transcript's benchmark claims unverifiable, having retrieved only part of the model card's
+text table. Both are in the model card and both are exact. The error is instructive — it is an
+absence-of-evidence inference drawn from an incomplete retrieval, which is the same failure mode
+this document cautions against in F1. The two rows are restored below.</em></p>
+<h3>3.1 Text and agentic</h3>
+<table>
+<thead>
+<tr>
+<th>Benchmark</th>
+<th><strong>Qwen3.8-27B</strong></th>
+<th>Qwen3.6-27B</th>
+<th>Qwen3.7-Plus</th>
+<th>Muse Glimmer-30B</th>
+<th>Opus 4.6 Max</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SWE-bench Pro</td>
+<td><strong>61.7</strong></td>
+<td>53.5</td>
+<td>57.6</td>
+<td>51.2</td>
+<td>53.4</td>
+<td><span class="ok">✅</span> beats Opus</td>
+</tr>
+<tr>
+<td>Terminal-Bench 2.1</td>
+<td>73.0</td>
+<td>63.4</td>
+<td>64.0</td>
+<td>51.7</td>
+<td><strong>78.2</strong></td>
+<td><span class="no">❌</span> behind Opus</td>
+</tr>
+<tr>
+<td>CoWorkBench</td>
+<td><strong>70.7</strong></td>
+<td>61.0</td>
+<td>65.1</td>
+<td>—</td>
+<td>68.2</td>
+<td><span class="ok">✅</span> beats Opus</td>
+</tr>
+<tr>
+<td>IFBench (instruction following)</td>
+<td><strong>79.5</strong></td>
+<td>69.1</td>
+<td>79.1</td>
+<td>77.0</td>
+<td>62.5</td>
+<td><span class="ok">✅</span> beats Opus</td>
+</tr>
+<tr>
+<td>LiveCodeBench v6</td>
+<td><strong>90.3</strong></td>
+<td>83.9</td>
+<td>89.6</td>
+<td>—</td>
+<td>88.8</td>
+<td><span class="ok">✅</span> top of table</td>
+</tr>
+<tr>
+<td>QwenSWEBench</td>
+<td><strong>79.0</strong></td>
+<td>49.3</td>
+<td>59.2</td>
+<td>—</td>
+<td>63.8</td>
+<td><span class="ok">✅</span> beats Opus</td>
+</tr>
+<tr>
+<td>DeepSWE 1.1</td>
+<td><strong>42.2</strong></td>
+<td>13.3</td>
+<td>14.2</td>
+<td>—</td>
+<td>—</td>
+<td><span class="ok">✅</span> top of table</td>
+</tr>
+<tr>
+<td>NL2Repo-Bench</td>
+<td>42.3</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><strong>47.6</strong></td>
+<td><span class="no">❌</span> behind Opus</td>
+</tr>
+<tr>
+<td>GPQA-Diamond</td>
+<td>89.2</td>
+<td>87.8</td>
+<td>90.3</td>
+<td>83.5</td>
+<td><strong>91.3</strong></td>
+<td><span class="no">❌</span> behind Opus</td>
+</tr>
+<tr>
+<td><strong>HLE</strong></td>
+<td>30.8</td>
+<td>24.0</td>
+<td>34.7</td>
+<td>22.0</td>
+<td><strong>40.0</strong></td>
+<td><span class="no">❌</span> <strong>well behind Opus, and behind Qwen3.7-Plus</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>DeepSWE 1.1 deserves note: 13.3 → 42.2 is a 3.2× generation-over-generation jump</strong> on an
+agentic software-engineering benchmark. It is the largest single improvement in the table and it
+reinforces F2's reading of where this model's strength actually lies.</p>
+<h3>3.2 Vision and computer use — <strong>computer-use subset</strong></h3>
+<p><strong>Scope warning.</strong> The model card's vision-language table has <strong>17 rows</strong>; the five below are the
+computer-use and GUI-agent rows. On the remaining rows Qwen3.8-27B is <em>not</em> the leader —
+<strong>Qwen3.7-Plus leads on at least six</strong>, including ClawEval-MM Average (60.1 vs 56.9), MathVision
+(90.3 vs 90.0), CharXiv RQ (85.8 vs 83.7), OmniDocBench 1.5 (91.4 vs 91.1), RealWorldQA (86.9 vs
+85.9) and ERQA (69.8 vs 65.5). <strong>This model is the computer-use leader, not the general
+vision-language leader</strong>, and any HX claim must be scoped that way.</p>
+<table>
+<thead>
+<tr>
+<th>Benchmark</th>
+<th><strong>Qwen3.8-27B</strong></th>
+<th>Qwen3.6-27B</th>
+<th>Qwen3.7-Plus</th>
+<th>Muse Glimmer-30B</th>
+<th>Opus 4.6 Max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OSWorld-Verified</strong> (desktop computer use)</td>
+<td><strong>84.3</strong></td>
+<td>63.9</td>
+<td>73.3</td>
+<td>65.9</td>
+<td>72.7</td>
+</tr>
+<tr>
+<td>WebArena-Verified (browser)</td>
+<td><strong>64.8</strong></td>
+<td>48.8</td>
+<td>55.3</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>AndroidWorld (mobile)</td>
+<td><strong>81.9</strong></td>
+<td>70.3</td>
+<td>81.0</td>
+<td>—</td>
+<td>62.0</td>
+</tr>
+<tr>
+<td>Vision2Web</td>
+<td><strong>62.9</strong></td>
+<td>45.0</td>
+<td>42.1</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>SWE-MM (multimodal SWE)</td>
+<td><strong>38.6</strong></td>
+<td>25.7</td>
+<td>30.0</td>
+<td>—</td>
+<td>27.1</td>
+</tr>
+</tbody>
+</table>
+<h3>3.3 A resolved loose end</h3>
+<p><strong>"Muse Glimmer" is real and is in the official comparison table</strong> as Muse Glimmer-30B. The
+first field report referred to it in passing and this record could not corroborate it at the
+time. It is now corroborated as a vendor-named comparison model — though HX has no reason to
+care about it beyond that.</p>
+<hr>
+<h2>4. The Ollama artifact register</h2>
+<p>Retrieved from the official Ollama library, 2026-08-17. <strong>Twelve tags</strong>, matching the
+transcript's count.</p>
+<table>
+<thead>
+<tr>
+<th>Tag</th>
+<th>Size</th>
+<th>Short digest</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>qwen3.8:latest</code></td>
+<td>18 GB</td>
+<td><code>22130167c4c2</code></td>
+<td><span class="warn">⚠️</span> <strong>= the MTP variant</strong></td>
+</tr>
+<tr>
+<td><code>qwen3.8:27b</code></td>
+<td>18 GB</td>
+<td><code>22130167c4c2</code></td>
+<td><span class="warn">⚠️</span> <strong>= the MTP variant</strong></td>
+</tr>
+<tr>
+<td><code>qwen3.8:27b-mtp-q4_K_M</code></td>
+<td>18 GB</td>
+<td><code>22130167c4c2</code></td>
+<td>MTP speculative decoding</td>
+</tr>
+<tr>
+<td><code>qwen3.8:27b-q4_K_M</code></td>
+<td>18 GB</td>
+<td><code>25b843619e94</code></td>
+<td><strong>Non-MTP. Different artifact.</strong></td>
+</tr>
+<tr>
+<td><code>qwen3.8:27b-mtp-q8_0</code></td>
+<td>30 GB</td>
+<td><code>8a1582877303</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>qwen3.8:27b-q8_0</code></td>
+<td>30 GB</td>
+<td><code>8f5fb6b71ea0</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>qwen3.8:27b-mlx</code></td>
+<td>18 GB</td>
+<td><code>5642e97495e1</code></td>
+<td>Apple Silicon</td>
+</tr>
+<tr>
+<td><code>qwen3.8:27b-nvfp4</code></td>
+<td>18 GB</td>
+<td><code>5642e97495e1</code></td>
+<td><span class="warn">⚠️</span> <strong>same digest as <code>-mlx</code></strong></td>
+</tr>
+<tr>
+<td><code>qwen3.8:27b-mxfp8</code></td>
+<td>32 GB</td>
+<td><code>464021588235</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>qwen3.8:27b-bf16</code></td>
+<td>56 GB</td>
+<td><code>1aa85dae8b2d</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>qwen3.8:27b-mtp-bf16</code></td>
+<td>56 GB</td>
+<td><code>197257101a8c</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>qwen3.8:27b-mlx-bf16</code></td>
+<td>56 GB</td>
+<td><code>65e5e1c72d2d</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>All tags advertise a <strong>256K context window</strong> with <strong>text and image</strong> capability.</p>
+<hr>
+<h2>5. Findings, ordered by impact</h2>
+<h3>F1 — Role–capability mismatch, with no capability bar to fail</h3>
+<p><code>SERVER-REGISTRY.md</code> assigns hxs-1: <strong>Assigned Role <code>Deep reasoning &amp; synthesis</code></strong>, <strong>Workload
+<code>Qwen 3.8 27B — unreleased, slot reserved</code></strong>.</p>
+<p>Searching the full repo for the rationale behind that role returns a split answer. <strong>The only
+<em>recorded justification</em> is hardware-based; the role <em>naming</em> is capability-framed, and nothing
+connects the two.</strong> <code>fleet-architecture-v0.3.html</code> justifies it as
+<code>TP = 2, 4-bit, ~14 GB weights + KV → fits</code>. <code>hx-stack-alignment-v0.1-frozen.html</code> calls hxs-1
+"the <strong>reasoning flagship</strong>" and pairs the role with "Deep reasoning, multi-agent synthesis
+(Flow B)". <code>hx-validation-findings.html</code> debates the placement purely on PCIe generation: <em>"If
+either big model should sit on the one PCIe-4 host, it's the coder, not the reasoning model."</em></p>
+<p>Note the tension inside that evidence: "reasoning flagship" and "multi-agent synthesis (Flow B)"
+are <em>capability</em> language, sitting inside a pipeline taxonomy — but every justification offered
+for the placement is about VRAM, PCIe generation and matched card pairs.</p>
+<p><strong>Across every HX document available to this search, no record defines a reasoning-capability
+requirement, benchmark threshold, or acceptance criterion for the hxs-1 role.</strong> The name appears
+to derive from the model already earmarked for the slot, not from a specification the occupant
+must satisfy. This is an absence-of-evidence conclusion, and it is safe only because
+<code>SERVER-REGISTRY.md</code> is <em>stated</em> to be authoritative for role assignment — so silence there is
+meaningful rather than merely incomplete.</p>
+<p>That cuts both ways, and both matter:</p>
+<ul>
+<li><strong>It softens the mismatch.</strong> The model is not failing a bar, because no bar was ever written.
+  And "multi-agent synthesis" is arguably a better description of what this model excels at
+  than "deep reasoning" is.</li>
+<li><strong>It sharpens the gap.</strong> HX is about to commission a model into a role whose meaning is
+  undefined. The Codex runbook independently reached the same place, listing as an unresolved
+  owner decision: <em>"Primary workload and success measures: coding, agentic tool use, research,
+  vision/document analysis, or a weighted mix."</em> Two independent workstreams arriving at the
+  same unanswered question is a signal.</li>
+</ul>
+<p><strong>Defining what <code>Deep reasoning &amp; synthesis</code> requires is the prerequisite decision.</strong> Without
+it, no acceptance test for hxs-1 can be written that means anything — which is exactly the
+failure mode the evidence-class model exists to prevent.</p>
+<h3>F2 — The model's best capability has nowhere to go</h3>
+<p>OSWorld-Verified 84.3 makes Qwen3.8-27B the strongest computer-use model in its comparison
+table, ahead of Opus 4.6 Max. AndroidWorld 81.9, WebArena-Verified 64.8, Vision2Web 62.9 all
+point the same direction.</p>
+<p>A full search of the registry's fifteen roles, <code>fleet-architecture-v0.3.html</code>, and
+<code>governance/Phase -3-Regroup/tech-stack/</code> establishes: <strong>HX has no computer-use, GUI-agent, or
+browser-control plane.</strong> The three adjacent things are all explicitly scoped away from it:</p>
+<ul>
+<li><strong>Crawl4AI on hxs-6</strong> is web <em>scraping</em>, characterised as "web scraping &amp; cleaning;
+  I/O-bound" — not browser control.</li>
+<li><strong>Granite Docling</strong> is fenced off by explicit ruling: <em>"It remains inside the Docling service
+  boundary and is <strong>not</strong> a general-purpose vision endpoint."</em></li>
+<li>The only vision capability HX has measured is incidental — a red-rectangle recognition test on
+  hxs-4 recorded in <code>qwen35-9b-ollama.json</code> at a <strong>12 MiB</strong> VRAM cost.</li>
+</ul>
+<p><strong>This is informational, not a blocker.</strong> Nothing obliges HX to use every capability a model
+has. But an 84.3 OSWorld score is the single most differentiated thing about this model, and
+commissioning it without noticing that the fleet cannot consume that capability would be a
+missed observation, not a neutral one.</p>
+<h3>F3 — The default tag is the MTP variant, and MTP is not free</h3>
+<p><code>qwen3.8:latest</code>, <code>qwen3.8:27b</code>, and <code>qwen3.8:27b-mtp-q4_K_M</code> <strong>all resolve to digest
+<code>22130167c4c2</code></strong>. The plain <code>qwen3.8:27b-q4_K_M</code> is a <strong>different artifact</strong>, digest
+<code>25b843619e94</code>.</p>
+<p>So the transcript's instruction — <em>"you just run <code>ollama pull qwen3.8:27b</code> and that's it"</em> —
+pulls the <strong>multi-token-prediction speculative-decoding build</strong>, not plain Q4_K_M. Both are
+18 GB, so size gives no warning.</p>
+<p>This matters because of a measurement already in the HX evidence set. The companion
+inference-performance record captured, from an independent operator on a 4090: <strong>MTP had to be
+disabled to reach high concurrency</strong>, and the 32-agent aggregate figure was obtained with MTP
+off. That is the expected trade — speculative decoding spends spare compute to cut
+single-stream latency, and batching wants that compute back.</p>
+<p>The in-flight Codex runbook independently reached the correct handling: recommend
+<strong><code>qwen3.8:27b-q4_K_M</code> (non-MTP) as the baseline</strong>, with the MTP default as <em>"the first
+optimization A/B"</em>. This record corroborates that from the registry side and adds the reason:
+<strong>the two tags are not interchangeable, and the default is the less conservative choice.</strong></p>
+<h3>F4 — <code>27b-nvfp4</code> resolves to the MLX artifact — an NVIDIA-named tag pointing at an Apple build</h3>
+<p><code>qwen3.8:27b-mlx</code> and <code>qwen3.8:27b-nvfp4</code> <strong>share digest <code>5642e97495e1</code></strong>, verified on a second
+retrieval specifically to rule out a misreading.</p>
+<p>NVFP4 is NVIDIA's 4-bit floating-point format for Blackwell-class tensor cores. MLX is Apple's
+Silicon framework. <strong>These should not be the same artifact.</strong> Either the registry has a
+packaging error, or one tag is an alias placed in error.</p>
+<p>For hxs-1 this is a concrete trap: an operator on an NVIDIA host reaching for <code>27b-nvfp4</code>
+expecting a native FP4 build would get the MLX artifact. And separately — <strong>NVFP4 requires
+Blackwell (compute capability 10.0+); hxs-1's Ada cards are 8.9</strong>, so an NVFP4 build would not
+be the right target for this host regardless.</p>
+<p><strong>Disposition: do not pull <code>27b-nvfp4</code> on hxs-1.</strong> Not because of the digest anomaly alone, but
+because neither of the two things it might be is correct for an Ada host. This finding does not
+appear in the Codex runbook.</p>
+<h3>F5 — Hypothesis H8 is <strong>not</strong> resolved — the registry answers the GGUF channel, not the vLLM channel</h3>
+<p>This finding was originally written as "H8 is resolved." That was wrong, and the correction
+matters more than the original claim did.</p>
+<p><strong>H8 asks specifically about the vLLM channel:</strong> <em>"A vLLM-compatible 4-bit artifact does </em><em>not</em><em>
+fit the 29.98 GiB budget… Resolve actual </em><em>w4a16 / AWQ / GPTQ</em><em> manifest byte counts before
+download."</em> The Ollama registry supplies <strong>GGUF Q4_K_M</strong> sizes. Those are different channels, and
+the companion record itself supplies the reason they are not interchangeable — HX's own measured
+9B artifacts: <strong>GGUF Q4_K_M 6.6 GB against w4a16 10.65 GB, a ratio of 1.61×.</strong></p>
+<p>Extrapolating that measured ratio to the verified 18 GB GGUF artifact:</p>
+<table>
+<thead>
+<tr>
+<th>Channel</th>
+<th>27B artifact</th>
+<th>Headroom against 32.20 GB usable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GGUF Q4_K_M (<strong>verified</strong>)</td>
+<td>18 GB</td>
+<td><strong>+14.20 GB</strong> for KV</td>
+</tr>
+<tr>
+<td>vLLM w4a16 (<strong>extrapolated, 1.61×</strong>)</td>
+<td>~29.05 GB</td>
+<td><strong>+3.15 GB</strong> for a preallocated KV pool</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The vLLM path is roughly 4.5× tighter on KV headroom</strong>, and vLLM preallocates its KV block pool
+rather than growing into free memory. <strong>H8 remains open, and this evidence points toward its
+stated hypothesis being true.</strong> That materially strengthens — not weakens — the companion
+record's runtime caution. Only real w4a16/AWQ/GPTQ manifest byte counts settle it.</p>
+<h4>What the registry <em>does</em> resolve: the GGUF sizing</h4>
+<p>The 18 GB Q4_K_M artifact includes a <strong>461M-parameter BF16 vision projector</strong> (per the Codex
+runbook's reading of the manifest) ≈ <strong>0.92 GB</strong>, implying text-only weights ≈ <strong>17.1 GB</strong>.</p>
+<p><strong>This is a consistency check, not three independent confirmations</strong> — a first draft of this
+section claimed the latter and it was circular. The 4090 field measurement of 23.5 GiB does not
+corroborate the 18 GB weight figure: this document <em>assumes</em> weights = 18 GB in order to derive
+KV by subtraction, so the same datum cannot both confirm the weights and be the residual computed
+from them. And the earlier paper's 16–17 GB was a <em>text-weights</em> estimate while 18 GB is the
+<em>full artifact</em>; 17.08 sits just outside that band. The honest statement is that <strong>the manifest is
+consistent with the earlier estimate and does not overturn it.</strong></p>
+<p><small>All sizes in this section are <strong>decimal GB</strong> — Ollama's registry publishes decimal, and the
+MiB/GiB host figures are converted to match. Re-deriving in GiB gives materially different
+headroom numbers.</small></p>
+<p>Against hxs-1's <strong>32.20 GB usable</strong> (32,752 MiB aggregate less 2 × 1 GiB CUDA context):</p>
+<table>
+<thead>
+<tr>
+<th>Tag</th>
+<th>Size</th>
+<th>Weights-only headroom</th>
+<th>Disposition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>27b-q4_K_M</code> (non-MTP)<sup>†</sup></td>
+<td>18 GB</td>
+<td><strong>+14.20 GB</strong></td>
+<td><span class="ok">✅</span> the viable baseline</td>
+</tr>
+<tr>
+<td><code>27b-q8_0</code></td>
+<td>30 GB</td>
+<td>+2.20 GB</td>
+<td><span class="warn">⚠️</span> fits, but almost nothing left for KV</td>
+</tr>
+<tr>
+<td><code>27b-mxfp8</code></td>
+<td>32 GB</td>
+<td>+0.20 GB</td>
+<td><span class="no">❌</span> not viable in practice</td>
+</tr>
+<tr>
+<td><code>27b-bf16</code></td>
+<td>56 GB</td>
+<td>−23.80 GB</td>
+<td><span class="no">❌</span> cannot reside in VRAM</td>
+</tr>
+</tbody>
+</table>
+<p><small><sup>†</sup> The MTP default tag is the same 18 GB but a <strong>distinct artifact</strong> — see F3.
+Listing them on one row would reproduce exactly the conflation F3 exists to prevent.</small></p>
+<p>This corroborates the Codex runbook's independent conclusion: <em>"Do not begin with Q8 or BF16.
+Q8 is 30 GB and BF16 is 56 GB."</em></p>
+<p><strong>And 18 GB still does not fit one card</strong> — single-card usable is 16.10 GB. Multi-GPU remains
+mandatory, so the unresolved PCIe ×4 link width remains a blocking question.</p>
+<h3>F6 — Full native 262K context is plausibly reachable — a possibility no current HX proposal considers</h3>
+<p><strong>The functional form matters, and the model card supplies it.</strong> The architecture is
+<code>16 × (3 × (Gated DeltaNet → FFN) → 1 × (Gated Attention → FFN))</code> — a <strong>3:1 linear-to-full ratio
+with 16 full-attention layers</strong>. Only the Gated Attention layers grow with context; the DeltaNet
+recurrent state is constant. KV is therefore <strong>affine</strong>, <code>KV(C) = aC + b</code>, not a power law. Fitting
+HX's measured 9B datum (KV × 12 across a × 16 context increase) to the affine form gives
+<code>b = (4/11)aC</code>, so <strong>doubling context multiplies KV by 26/15 = 1.733</strong> — not the 1.861 a power-law
+fit would give. <em>(A first draft used the power law; it overestimates KV by 7.4%, which is
+conservative in direction but wrong in form.)</em></p>
+<p>Deriving from the 4090 field measurement — 23.5 GiB total at 131K context, implying <strong>~7.23 GB of
+KV</strong> if the weights were 18 GB:</p>
+<table>
+<thead>
+<tr>
+<th>Context</th>
+<th>KV (fp16)</th>
+<th>Total</th>
+<th>Headroom</th>
+<th>KV @ <code>q8_0</code></th>
+<th>Total</th>
+<th>Headroom</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>131,072</td>
+<td>7.23 GB</td>
+<td>25.23 GB</td>
+<td><strong>+6.96 GB</strong></td>
+<td>3.84 GB</td>
+<td>21.84 GB</td>
+<td>+10.35 GB</td>
+</tr>
+<tr>
+<td><strong>262,144</strong> (native)</td>
+<td>12.54 GB</td>
+<td>30.54 GB</td>
+<td><strong>+1.66 GB</strong></td>
+<td>6.66 GB</td>
+<td><strong>24.66 GB</strong></td>
+<td><strong>+7.54 GB</strong></td>
+</tr>
+</tbody>
+</table>
+<p><small><code>q8_0</code> KV is taken at <strong>0.53125×</strong> fp16, not 0.5× — llama.cpp's q8_0 block is 32 int8 values
+plus one fp16 scale, 34 bytes per 32. Ollama's own documentation describes q8_0 as "approximately
+1/2 the memory of f16", so this is a refinement, not a disagreement. The constant DeltaNet state
+may not be quantized at all, which would make even 0.53125× optimistic.</small></p>
+<h4>The dominant uncertainty is not the arithmetic — it is the source datum</h4>
+<p>The companion record flags limitation <strong>L2</strong> on exactly the number this entire derivation rests
+on: <em>"The 23.5 GiB figure is stated adjacent to the 3-bit discussion and its tier is not
+unambiguous. The single most important number carries a tier ambiguity."</em> <strong>A first draft of this
+section hedged generically without naming that error term. That was the same stale-claim failure
+this document criticises in C2</strong>, so it is named here explicitly.</p>
+<table>
+<thead>
+<tr>
+<th>If the 23.5 GiB run was…</th>
+<th>implied weights</th>
+<th>KV @ 131K</th>
+<th>262K fp16</th>
+<th>262K @ <code>q8_0</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>4-bit</strong> (assumed above)</td>
+<td>18 GB</td>
+<td>7.23 GB</td>
+<td>30.54 GB — <strong>+1.66</strong></td>
+<td>24.66 GB — <strong>+7.54</strong></td>
+</tr>
+<tr>
+<td><strong>3-bit</strong> (L2 branch)</td>
+<td>~14.1 GB</td>
+<td><strong>11.15 GB</strong></td>
+<td>37.32 GB — <strong>−5.13 OVER</strong></td>
+<td>28.27 GB — <strong>+3.93</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>The two branches disagree on the headline conclusion.</strong> Under the 4-bit reading, 262K fp16 is
+marginal and <code>q8_0</code> is comfortable. Under the 3-bit reading, <strong>262K fp16 does not fit at all</strong> and
+even <code>q8_0</code> is tight. 131K fits under both.</p>
+<p><strong>Conclusion, appropriately hedged:</strong> 131K context is well-supported under every branch. Anything
+beyond it is <strong>NOT ESTABLISHED</strong> and depends on a source figure whose quantization tier is
+unresolved. This is a hypothesis for the commissioning ladder, not a result — <strong>KV must be
+measured, never estimated</strong>, and the fit gate is right to refuse.</p>
+<p><strong>A prerequisite neither the transcript nor a first draft of this section stated:</strong> Ollama's
+documentation makes KV quantization conditional — <em>"The K/V context cache can be quantized… </em><em>when
+Flash Attention is enabled</em><em>."</em> Setting <code>OLLAMA_KV_CACHE_TYPE=q8_0</code> without <code>OLLAMA_FLASH_ATTENTION=1</code>
+means the entire <code>q8_0</code> column above silently does not happen. The Codex runbook sets both; any
+HX configuration must.</p>
+<p>This matters because both current proposals aim far lower. The Codex runbook proposes
+<strong><code>OLLAMA_CONTEXT_LENGTH=32768</code></strong> with 64K as the next target. The transcript urges the
+opposite — <em>"push it as high as your memory will allow… if you run it in a tiny window you have
+essentially bought a sports car and left it in first gear."</em></p>
+<p><strong>The derivation suggests both current proposals are conservative</strong> — 131K is supported under
+every branch above, against the 32K they target — while stopping well short of endorsing the
+transcript's "as high as your memory will allow." The right posture is a measured ladder that
+does not stop at 64K, with <code>OLLAMA_FLASH_ATTENTION=1</code> and <code>OLLAMA_KV_CACHE_TYPE=q8_0</code> treated as
+paired variables rather than fallbacks.</p>
+<h3>F7 — Ollama's default context on hxs-1 is 32K, not 4K — the transcript's headline warning is miscalibrated for this host</h3>
+<p>The transcript's most emphatic operational warning is that Ollama silently uses a small default
+context. Ollama's documentation gives the actual behaviour as VRAM-tiered:</p>
+<table>
+<thead>
+<tr>
+<th>VRAM</th>
+<th>Default context</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&lt; 24 GiB</td>
+<td><strong>4K</strong></td>
+</tr>
+<tr>
+<td>24–48 GiB</td>
+<td><strong>32K</strong></td>
+</tr>
+<tr>
+<td>48+ GiB</td>
+<td><strong>256K</strong></td>
+</tr>
+</tbody>
+</table>
+<p>hxs-1 has <strong>31.98 GiB aggregate</strong>, landing it in the 32K band. HX's own workload record captured
+the low tier — <em>"systems under 24 GiB VRAM default to 4K"</em> — which is why hxs-4's 8 GB card
+behaved as it did.</p>
+<p>Two consequences. The 4K catastrophe the transcript warns about <strong>does not apply to hxs-1</strong>. And
+the Codex runbook's proposed <code>OLLAMA_CONTEXT_LENGTH=32768</code> is <strong>not a tightening — it is pinning
+the value the host would default to anyway</strong>, which is good practice (explicit beats implicit)
+but should be understood as a floor rather than a considered ceiling.</p>
+<p><strong>Caveat, flagged rather than assumed:</strong> whether the tier is evaluated against <em>aggregate</em> VRAM
+across both cards or <em>per-device</em> is not stated in the documentation. If per-device, each 15.99
+GiB card falls in the &lt; 24 GiB band and the default would be <strong>4K after all</strong>. This is cheap to
+settle at commissioning with <code>ollama ps</code>, and it should be settled rather than assumed.</p>
+<h3>F8 — No HX record anywhere specifies sampler settings, and this model ships two regimes</h3>
+<p>An exhaustive search of <code>tests/ai-runtime/</code> (including all 17 fixtures, the acceptance suite,
+both profiles, and the hxs-4 workload record), all of <code>governance/</code>, and the registry for
+<code>temperature</code>, <code>top_p</code>, <code>top_k</code>, <code>min_p</code>, <code>presence_penalty</code>, <code>repetition_penalty</code>, and <code>seed</code>
+returns: <strong>no HX record specifies sampler settings for any model, on any host, at any point.</strong>
+The acceptance harness sends no generation options at all. The Codex deployment runbook contains
+none either.</p>
+<p>The official model card specifies two distinct regimes:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th><strong>Thinking mode</strong></th>
+<th><strong>Non-thinking / instruct</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>temperature</code></td>
+<td>1.0</td>
+<td>0.7</td>
+</tr>
+<tr>
+<td><code>top_p</code></td>
+<td>0.95</td>
+<td>0.80</td>
+</tr>
+<tr>
+<td><code>top_k</code></td>
+<td>20</td>
+<td>20</td>
+</tr>
+<tr>
+<td><code>min_p</code></td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td><code>presence_penalty</code></td>
+<td>0.0</td>
+<td><strong>1.5</strong></td>
+</tr>
+<tr>
+<td><code>repetition_penalty</code></td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+</tbody>
+</table>
+<p>The transcript's judgement on this is worth quoting because it is the one place its operator
+experience adds something the vendor docs do not: <em>"please do set them, because the default
+sampler settings will make this model look noticeably worse than it actually is, and then you'll
+blame the model."</em></p>
+<p><strong>This is the cheapest quality intervention available and nobody currently has it.</strong> It costs
+one configuration block. Left unset, any future HX evaluation of this model risks measuring the
+sampler rather than the model — which would corrupt exactly the class-B evidence the acceptance
+contract exists to produce.</p>
+<p><strong>The reasoning-effort default is the more consequential omission.</strong> The model card records three
+levels — <strong><code>xhigh</code> (default)</strong>, <code>medium</code>, <code>low</code> — and the default is <em>the most expensive one</em>. On a
+host with single-digit GB of KV headroom and a fleet-serving role, silently defaulting to maximum
+reasoning effort multiplies latency and context burn on every request. The companion
+inference-performance record measured exactly this: a single-prompt task consuming ~120,000 tokens
+over 7–8 minutes at maximum effort. <strong>This belongs in the workload definition explicitly, not left
+to a vendor default.</strong></p>
+<p>One further note: the model card records a <strong><code>preserve_thinking</code> flag, default <code>True</code></strong>, which
+retains reasoning context across conversation turns. For multi-step agentic work — which is
+what this model is good at — that is likely load-bearing and should be explicit in any
+configuration rather than left to a default that could change.</p>
+<h3>F9 — The transcript's own scoping caveat argues <em>against</em> its recommendation for HX</h3>
+<p>The transcript reverses its author's prior advice, moving from vLLM to Ollama/LM Studio. Read
+carelessly, that is support for Ollama on hxs-1. Read carefully, <strong>it is the opposite</strong>, because
+the author scopes the reversal explicitly:</p>
+<blockquote>
+<p><em>"vLLM is great if you have a proper multi-GPU box and you're serving a team. But if you're
+one person on one machine trying to run an agent, vLLM is a lot of setup…"</em></p>
+</blockquote>
+<p>and closes:</p>
+<blockquote>
+<p><em>"If you're serving a team off a multi-GPU box, sure, go do that. But for one person on one
+machine, it's just extra work for the same result."</em></p>
+</blockquote>
+<p><strong>hxs-1 is a two-GPU server intended to serve a fifteen-server fleet.</strong> It is not the
+single-user, single-machine case the reversal is scoped to.</p>
+<p>The defensible conclusion — and no more than this — is that <strong>this transcript does not support
+Ollama for HX's deployment shape and must not be cited as if it did.</strong> A first draft went
+further and said it "points to vLLM"; that overshoots. The author's "sure, go do that" is
+permissive, not a positive indication, and two premises are shaky in any case: a fleet of
+<em>servers</em> is not obviously the author's "serving a team" of humans, and two consumer cards behind
+a ×4 link may not be the "proper multi-GPU box" they have in mind.</p>
+<p>That does <strong>not</strong> settle the runtime question — the companion record's countervailing evidence
+stands unchanged: the ×4 link penalises TP=2, vLLM w4a16 artifacts run larger than GGUF, and
+vLLM fails to start rather than degrading. But it does remove this transcript from the column of
+evidence supporting Ollama for HX, where a casual reading would have placed it.</p>
+<p><strong>This is a case where the source's headline and the source's applicability to HX point in
+opposite directions.</strong> Recording it because the naive citation would have been wrong.</p>
+<h3>F10 — The <code>--jinja</code> claim is outdated</h3>
+<p>The transcript states that running llama.cpp directly requires <em>"the <code>--jinja</code> flag on
+llama-server for tool calling to work at all."</em></p>
+<p>Current llama.cpp server documentation lists: <code>--jinja, --no-jinja | whether to use jinja
+template engine for chat (**default: enabled**)</code>. The flag was historically required when the
+Jinja path defaulted off; <strong>it no longer is.</strong></p>
+<p>Low impact — HX would not run llama.cpp directly — but it is a claim that would have propagated
+into a runbook as a required flag, and it is wrong. Recorded for that reason.</p>
+<h3>F11 — <code>iss-015</code>'s scope against the OpenAI-compatible endpoint is unestablished, and it matters</h3>
+<p><code>iss-015</code> (open) records that Ollama silently truncates prompts exceeding the context window,
+collapsing to 32,770 tokens rather than erroring. The companion record captured the root cause
+found in source: <strong>the Anthropic adapter constructs an <code>api.ChatRequest</code> that never sets
+<code>Truncate</code>, and the chat handler defaults it true.</strong></p>
+<p>The transcript's entire integration story runs over the <strong>OpenAI-compatible endpoint</strong> at
+<code>:11434/v1</code>. Whether that path shares the defect, or whether it was specific to the Anthropic
+adapter, <strong>is NOT ESTABLISHED</strong> by any evidence in this document or in the HX record.</p>
+<p>This is materially important in both directions. If the OpenAI path does not truncate silently,
+one of the strongest arguments for vLLM over Ollama weakens considerably. If it does, then the
+defect is systemic and <code>iss-015</code> should be restated in engine-general terms rather than
+adapter-specific ones.</p>
+<p><strong>Settling this is cheap</strong> — it requires reading the OpenAI handler in the already-vendored
+<code>ollama-main</code> source tree, with no host access and no network. It may be the highest
+value-per-effort open item in the whole Qwen3.8 workstream.</p>
+<hr>
+<h2>6. Contradictions and conflicts discovered</h2>
+<h3>C1 — Two same-day proposals assign different storage paths</h3>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Proposed model store</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>codex_20260817_1524_...deployment-deep-dive.html</code></td>
+<td><strong><code>/srv/hx-ai/models/ollama</code></strong></td>
+</tr>
+<tr>
+<td><code>hx-research_hxs1-model-storage-architecture_synthesis_2026-08-17_claude-opus-5</code></td>
+<td><strong><code>/srv/hx/models/ollama</code></strong></td>
+</tr>
+</tbody>
+</table>
+<p>Both are dated 2026-08-17, both are unratified proposals, and both are mine to disclose — the
+second is my own. <strong>Neither is authority, and they must not both be implemented.</strong></p>
+<p><strong>The conflict is deeper than the path string, in two ways a first draft understated.</strong></p>
+<ol>
+<li><strong>The partition plans are contradictory, not merely different.</strong> Codex proposes capacity
+   partitioning — 1 TB for inference, 2 TB if adaptation is pursued. The storage record specifies
+   <em>"GPT label, </em><em>single partition spanning the device</em><em>"</em>. These are mutually exclusive layouts,
+   not one plan plus an addition.</li>
+<li><strong>The mount point propagates.</strong> <code>/srv/hx/models</code> in the storage record is not a bare path — it
+   is a mount point with dependents: two fstab UUID entries, <code>/srv/hx/archive</code> for the SMR drive,
+   <code>RequiresMountsFor=</code> in the systemd drop-in, the <code>chattr +i</code> bare-mountpoint procedure,
+   <code>OLLAMA_MODELS</code>, and <code>HF_HOME</code>/<code>HF_HUB_CACHE</code>. Changing it touches all of them.</li>
+</ol>
+<p><strong>Recommendation: adopt the Codex <code>/srv/hx-ai</code> path and its partition plan</strong> unless the owner
+prefers otherwise — because it is embedded in a fuller deployment plan with agent ownership
+assigned, and because the naming distinguishes the AI platform from generic HX data. <em>(Both were
+authored the same day, so precedence carries no weight here.)</em></p>
+<p>What survives the choice: the storage record's <em>device-level</em> findings — the SMR disqualification,
+serial-based device resolution, the <code>nofail</code> second-order hazard, <code>-m 0 -T largefile</code>, and the
+in-place download behaviour — are genuinely path-independent. Its <em>mount architecture</em> is not.</p>
+<h3>C2 — hxs-4 vision testing: the record contradicts itself</h3>
+<p><code>governance/logs/actions-and-issues.md</code> <code>act-014</code> states <em>"vision was </em><em>not</em><em> tested and would
+add unmeasured VRAM"</em>, and the commissioning report's footer agrees. But
+<code>tests/ai-runtime/workloads/qwen35-9b-ollama.json</code> carries a <code>vision_as_built</code> block:
+<code>"status": "TESTED AND WORKING"</code>, <code>"vram_cost_mib": 12</code>, concluding <em>"Vision does NOT break
+full-GPU residency."</em></p>
+<p>The workload JSON is the later record and explicitly flags itself as superseding. <strong>The log and
+the commissioning report are stale on this point</strong> and should be corrected — it is a small
+correction, but <code>ll-030</code> in the lessons register is precisely about stale claims propagating
+into everything that reads them afterwards.</p>
+<p>This is directly relevant here: Qwen3.8-27B is a native VL model with a 461M vision projector,
+and the question "does vision cost meaningful VRAM" is one HX has already answered once.</p>
+<h3>C4 — The fleet architecture's fit premise rests on a figure now known to be 29% low</h3>
+<p><code>fleet-architecture-v0.3.html</code> justifies the hxs-1 placement with the cell
+<strong><code>TP = 2, 4-bit, ~14 GB weights + KV</code> → <code>fits</code></strong>. §4 establishes the actual Q4_K_M artifact is
+<strong>18 GB</strong> — <strong>29% larger</strong> than the number that "fits" verdict was computed against.</p>
+<p>The outcome does not change: 18 GB still fits 32.20 GB usable, with 14.20 GB left for KV. <strong>The
+margin does.</strong> And under the repository's own <code>ll-030</code> — <em>"comparative claims rot as records are
+added"</em> — a stale load-bearing figure should be corrected rather than re-quoted, which is what
+F1 above does when it cites the same cell as evidence of hardware-driven reasoning.</p>
+<p><em>Disclosure: this document quoted that cell twice before noticing its own §4 had invalidated it.</em></p>
+<h3>C3 — HX's practised digest standard is weaker than its own invariant requires</h3>
+<p><code>hx-runtime-invariants.tests.ps1</code> asserts that <em>"model identity and checksum are required before
+OPERATIONAL"</em>, and <code>hx-workload-commission.ps1</code> fails with <code>'model acquired but no checksum
+recorded'</code> when <code>checksum_sha256</code> is absent. Yet <code>qwen35-9b-ollama.json</code> — the only workload
+record that exists — <strong>has no <code>checksum_sha256</code> field at all.</strong> The invariant passes because it
+greps the driver <em>source</em> for the string rather than checking the data exists.</p>
+<p>HX's practised standard is therefore <strong>short display digest + upstream byte count</strong>, not a
+cryptographic artifact lock. The Codex runbook independently flags this: <em>"The website's
+<code>25b843619e94</code> is a short display ID, </em><em>not sufficient as the only immutable lock</em><em>."</em></p>
+<p>Given F3 and F4 — where tag-to-artifact mapping is genuinely surprising in two separate ways —
+<strong>recording full blob SHA-256 identities for whatever is pulled onto hxs-1 is the correct
+standard</strong>, and the existing invariant already claims to require it.</p>
+<hr>
+<h2>7. Recommendations</h2>
+<p>Six, ordered. Each states what it resolves and what it deliberately does not.</p>
+<p><strong>Scope note:</strong> R2 and R5 are Ollama-specific and assume an Ollama evaluation track is
+authorized. They do <strong>not</strong> presuppose that Ollama wins the runtime question — §8 preserves the
+<code>vllm-qwen remains PRIMARY</code> invariant, and F5 now points toward the vLLM channel being tighter
+than assumed rather than looser. Read them as "if and when an Ollama track is authorized".</p>
+<h3>R1 — Define what <code>Deep reasoning &amp; synthesis</code> requires, before commissioning anything</h3>
+<p><strong>Do:</strong> record, in <code>SERVER-REGISTRY.md</code> or a policy document, what capability the hxs-1 role
+demands and how it will be demonstrated.
+<strong>Why:</strong> F1 establishes no such definition exists. Both this record and the Codex runbook
+arrived independently at the same unanswered question.
+<strong>Resolves:</strong> makes an hxs-1 acceptance test meaningful; converts an implicit assumption into a
+recorded owner decision.
+<strong>Does not resolve:</strong> whether Qwen3.8-27B is the right occupant — that follows from the
+definition, not the other way round.
+<strong>Owner decision. Not delegable</strong> — the registry forbids agents assigning roles or selecting
+workloads.
+<strong>Reversal criteria:</strong> revisit if the fleet gains a computer-use plane, which would change what
+this model is best used for.</p>
+<h3>R2 — Pin the artifact by full digest, and pull the non-MTP tag</h3>
+<p><strong>Do:</strong> baseline on <strong><code>qwen3.8:27b-q4_K_M</code></strong> (digest <code>25b843619e94</code>), never bare <code>qwen3.8:27b</code>.
+Record the complete local manifest and all blob SHA-256 identities, not the short display ID.
+Treat the MTP default as a later A/B.
+<strong>Why:</strong> F3 — the default is a different artifact; F4 — tag naming is demonstrably unreliable in
+this repository; C3 — HX's invariant already claims to require a checksum it has never had.
+<strong>Resolves:</strong> artifact ambiguity and the MTP-under-concurrency question becoming a confound.
+<strong>Does not resolve:</strong> whether MTP is beneficial for HX's traffic shape — that needs the A/B.
+<strong>Corroborates</strong> the Codex runbook rather than competing with it.</p>
+<h3>R3 — Establish sampler settings as a recorded configuration artifact</h3>
+<p><strong>Do:</strong> record both official regimes (§F8) in the hxs-1 workload definition, and set them
+explicitly at serving time. Include <code>preserve_thinking</code> and the reasoning-effort level.
+<strong>Why:</strong> F8 — zero prior art anywhere in HX, and default samplers will make the model measure
+worse than it is.
+<strong>Resolves:</strong> prevents future class-B evidence from measuring the sampler instead of the model.
+<strong>Does not resolve:</strong> which reasoning-effort level suits which workload — that is a measurement.
+<strong>Prerequisite:</strong> none. Repository-side, no host access. <strong>Cheapest item on this list.</strong></p>
+<h3>R4 — Settle <code>iss-015</code>'s scope by reading the vendored source</h3>
+<p><strong>Do:</strong> read the OpenAI-compatible handler in <code>governance/operations/ollama/ollama-main</code> and
+determine whether the <code>Truncate</code> defect is adapter-specific or engine-wide.
+<strong>Why:</strong> F11 — it is unestablished, it is cheap, and it materially moves the runtime argument.
+<strong>Resolves:</strong> either weakens a principal argument for vLLM, or promotes <code>iss-015</code> from an
+adapter defect to an engine property.
+<strong>Does not resolve:</strong> the runtime decision itself, which also turns on the ×4 link and artifact
+sizing.
+<strong>Prerequisite:</strong> none — the source is already in the repository. No host, no network.</p>
+<h3>R5 — Carry the context question into the commissioning ladder rather than settling it on paper</h3>
+<p><strong>Do:</strong> extend the planned context ladder past 64K, and test <code>OLLAMA_FLASH_ATTENTION=1</code> +
+<code>OLLAMA_KV_CACHE_TYPE=q8_0</code> together (Ollama gates KV quantization on flash attention) as a
+first-class variable rather than a fallback. Confirm at commissioning whether Ollama's VRAM
+tiering reads aggregate or per-device.
+<strong>Why:</strong> F6 suggests the full 262K native context may be reachable with quantized KV — well
+beyond the 32K/64K both current proposals target. F7 shows the default-context hazard is
+miscalibrated for this host in one direction and possibly understated in the other.
+<strong>Resolves:</strong> whether hxs-1 can actually exploit the model's headline capability.
+<strong>Does not resolve:</strong> anything on paper. <strong>KV must be measured, never estimated</strong> — the fit gate
+is right to refuse, and §F6's arithmetic is a hypothesis for it to test, not a result.</p>
+<h3>R6 — Choose one model-store mount architecture</h3>
+<p><strong>Do:</strong> pick <code>/srv/hx-ai</code> (Codex) or <code>/srv/hx</code> (storage record), and with it one partition plan —
+capacity-split or single-partition. Record the choice before any partitioning.
+<strong>Why:</strong> C1 — two same-day unratified proposals specify mutually exclusive layouts.
+<strong>Resolves:</strong> prevents two runbooks diverging at implementation time.
+<strong>Does not resolve:</strong> the device-level storage findings, which hold either way.
+<strong>Owner decision</strong>, but a cheap one. <strong>Must precede</strong> any storage mutation.</p>
+<hr>
+<h2>8. Explicitly not recommended</h2>
+<ul>
+<li><strong>Do not treat this record as grounds to break the <code>vllm-qwen remains PRIMARY</code> invariant.</strong>
+  F9 shows this source cannot be cited in support of Ollama for HX's deployment shape, and F5
+  now shows the vLLM artifact question is <em>more</em> open than previously recorded, not less.</li>
+<li><strong>Do not pull <code>qwen3.8:27b-nvfp4</code> on hxs-1</strong> — F4. Neither of the two things it might be is
+  correct for Ada.</li>
+<li><strong>Do not begin on Q8 or BF16</strong> — F5, corroborating the Codex runbook.</li>
+<li><strong>Do not reopen the storage design</strong> — C1 needs a path choice, not a redesign. The technical
+  findings are path-independent.</li>
+<li><strong>Do not treat the OSWorld result as a reason to build a computer-use plane.</strong> F2 is an
+  observation about capability going unused, not an argument for new architecture.</li>
+</ul>
+<hr>
+<h2>9. Remaining verification and owner decisions</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Item</th>
+<th>Type</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V1</td>
+<td>Does the OpenAI <code>/v1</code> path share <code>iss-015</code>'s truncation defect?</td>
+<td>Verification</td>
+<td>Read vendored source — free</td>
+</tr>
+<tr>
+<td>V2</td>
+<td>Is Ollama's VRAM context tiering aggregate or per-device?</td>
+<td>Verification</td>
+<td>One <code>ollama ps</code> at commissioning</td>
+</tr>
+<tr>
+<td>V3</td>
+<td>Full blob SHA-256 for the chosen artifact</td>
+<td>Verification</td>
+<td>At pull time</td>
+</tr>
+<tr>
+<td>V4</td>
+<td>Is GPU1's ×4 physical or a reporting artifact?</td>
+<td>Verification</td>
+<td><code>sudo lspci -vvs</code>, carried from prior records</td>
+</tr>
+<tr>
+<td>V5</td>
+<td>The <code>27b-nvfp4</code> / <code>27b-mlx</code> shared digest — which name is the mislabel?</td>
+<td>Verification</td>
+<td>Upstream to fix, but HX must not pull the tag either way</td>
+</tr>
+<tr>
+<td>V6</td>
+<td>Real w4a16 / AWQ / GPTQ manifest byte counts for the 27B — <strong>H8, still open</strong></td>
+<td>Verification</td>
+<td>No host access; the single cheapest decision-relevant test</td>
+</tr>
+<tr>
+<td>D1</td>
+<td>What does <code>Deep reasoning &amp; synthesis</code> require?</td>
+<td><strong>Owner decision</strong></td>
+<td>Not delegable</td>
+</tr>
+<tr>
+<td>D2</td>
+<td><code>/srv/hx-ai</code> or <code>/srv/hx</code>, and which partition plan?</td>
+<td><strong>Owner decision</strong></td>
+<td>Mechanical, but propagates into fstab, the systemd unit, and the Ollama/HF environment — decide before partitioning, not after</td>
+</tr>
+<tr>
+<td>D3</td>
+<td>Is a computer-use / GUI-agent plane wanted at all?</td>
+<td><strong>Owner decision</strong></td>
+<td>Architectural</td>
+</tr>
+<tr>
+<td>D4</td>
+<td>Implementation-phase authorization for hxs-1</td>
+<td><strong>Owner decision</strong></td>
+<td>Gates everything</td>
+</tr>
+</tbody>
+</table>
+<p>Two stale records to correct as Phase 3 documentation work: <strong>C2</strong> (hxs-4 vision testing) and
+the <code>hx-gpu-fit.ps1</code> compute-capability floor recorded in the companion CUDA record.</p>
+<hr>
+<h2>10. Provenance</h2>
+<p><strong>Vendor primary — retrieved 2026-08-17</strong>
+- Qwen3.8-27B official model card — benchmark tables, sampler regimes, reasoning-effort levels,
+  <code>enable_thinking</code> / <code>preserve_thinking</code>, architecture, context.
+  <a href="https://huggingface.co/Qwen/Qwen3.8-27B">https://huggingface.co/Qwen/Qwen3.8-27B</a>
+- Ollama library, Qwen3.8 tags — twelve tags with sizes and short digests; retrieved twice, the
+  second time specifically to confirm the <code>-mlx</code> / <code>-nvfp4</code> digest collision.
+  <a href="https://ollama.com/library/qwen3.8/tags">https://ollama.com/library/qwen3.8/tags</a>
+- Ollama context-length documentation — VRAM-tiered defaults.
+  <a href="https://docs.ollama.com/context-length">https://docs.ollama.com/context-length</a>
+- llama.cpp server documentation — <code>--jinja</code> default state.
+  <a href="https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md">https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md</a></p>
+<p><strong>HX primary</strong>
+<code>SERVER-REGISTRY.md</code> · <code>servers/hxs-1/discovery.md</code> ·
+<code>tests/ai-runtime/workloads/qwen35-9b-ollama.json</code> ·
+<code>tests/ai-runtime/hx-runtime-invariants.tests.ps1</code> · <code>tests/ai-runtime/hx-workload-commission.ps1</code> ·
+<code>governance/logs/actions-and-issues.md</code> (<code>act-014</code>, <code>iss-013</code>, <code>iss-014</code>, <code>iss-015</code>, <code>iss-016</code>)</p>
+<p><strong>HX design / in-flight</strong>
+<code>governance/operations/ollama/codex_20260817_1524_hx-qwen38-27b-ollama-deployment-deep-dive.html</code> ·
+<code>governance/fleet-architecture-v0.3.html</code> · <code>governance/hx-stack-alignment-v0.1-frozen.html</code> ·
+<code>governance/hx-validation-findings.html</code> · <code>governance/hx-recommendations.html</code> (R8) ·
+<code>governance/operations/ollama/craig-ollama-specialist.md</code> ·
+<code>governance/operations/docling/hx-granite-docling-reconnaissance-report_chatgpt-gpt-5-6_20260815_0305.html</code></p>
+<p><strong>Companion research records</strong> (same directory)
+<code>hx-research_qwen38-27b-inference-performance_third-party_2026-08-17_claude-opus-5</code> ·
+<code>hx-research_cuda-driver-runtime-requirements-hxs1_vendor_2026-08-17_claude-opus-5</code> ·
+<code>hx-research_hxs1-model-storage-architecture_synthesis_2026-08-17_claude-opus-5</code></p>
+<p><strong>Third-party trigger source</strong>
+Independent operator video review, transcript supplied by project owner 2026-08-17.
+<strong>Advertising segment at 1:38–3:45 excluded in full.</strong> Two benchmark claims from this source
+("Qwen's WebBench", "DeepSWE 1.1") could not be verified and are excluded from all conclusions.</p>
+<p><strong>Derived</strong>
+Memory arithmetic in §F5 and §F6 is derived from vendor manifest sizes, the 461M BF16 vision
+projector figure, the 4090 field measurement, and HX's own measured hybrid-attention KV
+scaling. It is <strong>derived, not measured on hxs-1</strong>, and no figure in it should be quoted as an
+HX measurement.</p>
+<hr>
+<p><em>Prepared by Claude (Opus 5), 2026-08-17. Research record — no authority asserted, no decision
+made, no acceptance granted, no role assigned. Per repository convention, a proposal is not a
+ruling.</em></p>
+<footer>Generated from the Markdown source of the same name — the pair is published together and must not diverge.<br>Research record — no authority asserted, no decision made.<br>Companion Markdown source: <code>hx-research_qwen38-27b-ollama-serving-and-capability-fit_synthesis_2026-08-17_claude-opus-5.md</code></footer>
+</div>
+</body>
+</html>

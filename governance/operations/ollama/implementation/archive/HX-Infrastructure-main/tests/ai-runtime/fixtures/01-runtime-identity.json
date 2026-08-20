@@ -1,0 +1,21 @@
+{
+  "id": "F01",
+  "capability": "RT-01",
+  "evidence_class": "A",
+  "api_style": "openai-chat",
+  "description": "Models endpoint returns runtime and model identity.",
+  "response": {
+    "object": "list",
+    "data": [
+      {
+        "id": "hx-test-model",
+        "object": "model",
+        "owned_by": "hx-fixture"
+      }
+    ]
+  },
+  "expect": {
+    "json_path": "data.0.id",
+    "equals": "hx-test-model"
+  }
+}

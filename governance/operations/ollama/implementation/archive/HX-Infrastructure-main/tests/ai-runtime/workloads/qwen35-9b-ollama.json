@@ -1,0 +1,401 @@
+{
+  "workload": "qwen35-9b-ollama",
+  "classification": "COMMISSIONED",
+  "classification_scope": "Applies to this workload. No server is classified by it.",
+  "runtime": "ollama",
+  "runtime_profile": "ollama-qwen35-9b",
+  "commissioning_state": "OPERATIONAL - LOOPBACK ONLY",
+  "commissioned_on": "2026-08-14",
+
+  "purpose": [
+    "first real HX local inference/API/tool validation runtime",
+    "exercise the HX AI Runtime Acceptance contract against a live model",
+    "Anthropic-compatible client testing"
+  ],
+
+  "target_host": {
+    "host": "hxs-4",
+    "address_source": "SERVER-REGISTRY.md - never duplicated here",
+    "durable_role": "Retrieval & AI utility",
+    "durable_role_source": "SERVER-REGISTRY.md",
+    "note": "Placement candidate. Durable role is registry-owned and is not redefined by this workload."
+  },
+
+  "model_selection": {
+    "identity": "Qwen3.5-9B",
+    "tag": "qwen3.5:9b-q4_K_M",
+    "quantization": "Q4_K_M",
+    "published_artifact_size_gb": 6.6,
+    "published_artifact_size_bytes": 6594474236,
+    "size_source": "AS-BUILT: registry.ollama.ai manifest, HTTP 200, verified 2026-08-14. 6.6 GB is the download (OCI layer) size in decimal gigabytes (1 GB = 10^9 bytes). Resident weights are 4.61 GB as measured by CUDA0 model buffer on hxs-4 — smaller because the vision encoder is not loaded for text-only inference.",
+    "digest": "6488c96fa5fa",
+    "verified_upstream_on": "2026-08-14",
+    "supported_by_runtime_version": "0.32.9",
+    "runtime_minimum_required": "0.17.1",
+    "parameters": "9.7B",
+    "native_context_length": 262144,
+    "embedding_length": 4096,
+    "capabilities": ["completion", "vision", "tools", "thinking"],
+    "architecture_note": "AS-BUILT: hybrid attention. The runtime allocates BOTH a KV cache and a separate recurrent-state (RS) buffer. Only the full-attention layers scale with context, so KV grows sublinearly - 12x from 4K to 64K, not 16x. Do not size this model with a standard transformer KV formula.",
+    "architecture_name": "Gated DeltaNet - linear attention combined with sparse mixtures, per the model's published description. The RS buffer and the runtime's 'KV cache shifting is not supported for this context' message were observed on the host BEFORE that description was consulted, and are consistent with it.",
+
+    "vision_as_built": {
+      "_comment": "MEASURED 2026-08-14. Supersedes the earlier 'untested, would add unmeasured VRAM' caveat, which was too conservative.",
+      "status": "TESTED AND WORKING",
+      "test": "a generated PNG containing a red rectangle was submitted via the images[] field; the model answered 'red' correctly",
+      "vram_cost_mib": 12,
+      "measurement": "text-only at 16384 = 6794 MiB, 100% GPU. Same runner, same context, with an image = 6806 MiB, still 100% GPU.",
+      "conclusion": "Vision does NOT break full-GPU residency and does not meaningfully consume headroom on this card.",
+      "packaging": "Native multimodality confirmed structurally: the Ollama manifest carries ONE model layer of 6288.9 MiB with no separate mmproj/projector file, and clip/vision tensors are present inside it.",
+      "artifact_vs_resident": "The 6.14 GB artifact against a 4.61 GB CUDA0 model buffer is explained by vision tensors not being resident on GPU for text-only work - not by a separate encoder file."
+    }
+  },
+
+  "gpu_isolation": {
+    "required": true,
+    "proven": true,
+    "proven_on": "2026-08-14",
+    "reason": "Current Ollama behaviour may spread a model across all visible GPUs if it does not fit one. hxs-4 has an asymmetric pair, so isolation is mandatory before any residency conclusion is valid.",
+    "target_device": {
+      "name": "NVIDIA GeForce RTX 5060",
+      "pci_bus_id": "00000000:07:00.0",
+      "vram_mib": 8151,
+      "uuid": "GPU-cc758e31-d23b-3c53-bee6-dae3299a6f11",
+      "uuid_status": "AS-BUILT: confirmed by live nvidia-smi -L on hxs-4",
+      "compute_capability": "12.0",
+      "durable_identity": "UUID, never GPU index"
+    },
+    "excluded_device": {
+      "name": "NVIDIA GeForce RTX 5060 Ti",
+      "pci_bus_id": "00000000:01:00.0",
+      "vram_mib": 16311,
+      "uuid": "GPU-11b1a30e-8c11-001b-7b8b-7b1e15ab6978",
+      "reason": "reserved; must remain invisible to Ollama",
+      "verified_absent": true
+    },
+    "mechanism": {
+      "CUDA_VISIBLE_DEVICES": "target UUID",
+      "GGML_VK_VISIBLE_DEVICES": "999",
+      "OLLAMA_VULKAN": "0",
+      "why_vulkan_must_be_disabled": "AS-BUILT DEFECT: CUDA_VISIBLE_DEVICES does NOT constrain Ollama's Vulkan backend. With Vulkan enabled the runtime re-enumerated BOTH cards including the excluded 16 GB device, silently defeating isolation. CUDA-only isolation is insufficient on this host."
+    }
+  },
+
+  "model_selection_rationale": {
+    "_comment": "Recorded 2026-08-14 so the selection is not re-litigated. Settled: keep Qwen3.5-9B at Q4_K_M on this 8 GB card.",
+    "verdict": "CORRECT MODEL FOR THIS TIER - do not substitute without new evidence",
+    "decided_by": "owner research, corroborated by measurement on hxs-4",
+
+    "published_benchmarks": {
+      "_provenance": "OWNER-SUPPLIED RESEARCH, not independently verified by measurement on this host. Treat as selection evidence, not as an HX test result.",
+      "gpqa_diamond": { "qwen35_9b": 81.7, "gpt_oss_120b": 80.1, "note": "9B beats a model 13x its size on graduate-level science" },
+      "mmlu_pro": { "qwen35_9b": 82.5, "gpt_oss_120b": 80.8 },
+      "mmlu_redux": { "qwen35_9b": 91.1, "gpt_oss_120b": 91.0 },
+      "hmmt_competition_maths": { "qwen35_9b": 83.2, "gpt_oss_120b": 90.0, "note": "the row the 9B loses - same table, same run" },
+      "function_calling": 66.1,
+      "multi_turn_tool_use": 79.1,
+      "instruction_following": 91.5,
+      "long_document_reasoning": 55.2,
+      "licence": "Apache 2.0"
+    },
+
+    "benchmark_to_observed_behaviour": {
+      "_comment": "The card predicted our results. GPQA is the headline; these two rows are the operating envelope.",
+      "function_calling_66_1": "MATCHES OBSERVATION. Simple tool surfaces succeeded - 4/4 correct tool selection from 3 tools, 5/5 valid strict-schema JSON. Claude Code's large multi-tool surface failed and hallucinated unrelated file paths. Good on simple, degrades on complex, exactly as a 66.1 predicts.",
+      "long_document_reasoning_55_2": "MATCHES OBSERVATION. The weakest row on the card and the one that bit us: a 4-line file was miscounted as 6, and post-truncation output was confidently wrong. Do not rely on this model for long-document accuracy.",
+      "selection_lesson": "Judge this model by function calling and long-document reasoning, NOT by GPQA. GPQA measures graduate science Q&A, which is not what this endpoint is for."
+    },
+
+    "measurement_vs_published_guidance": {
+      "_comment": "Where hxs-4 differs from the general 8 GB-tier guidance.",
+      "weights_q4_k_m": {
+        "ollama_ps_reported_gb": 5.5,
+        "ollama_ps_note": "'ollama ps' reports 5.5 GB; this is the in-process allocation as reported by Ollama, which may differ from the raw file and from CUDA-resident bytes",
+        "cuda0_model_buffer_mib": 4717.38,
+        "cuda0_model_buffer_note": "4717.38 MiB (~4.61 GB) measured from 'ollama ps' VRAM column at 4096 context on hxs-4; this is the resident model buffer on the CUDA device, excluding KV, RS buffer, and compute scratch. Vision encoder not resident for text-only work, which accounts for the gap between the 6.6 GB download artifact and the 4.61 GB resident size."
+      },
+      "at_8k_context":  { "guidance": "~7 GB, still runs", "measured": "6530 MiB, 100% GPU", "agreement": "match, marginally better" },
+      "generation_rate": { "guidance": "~38 tok/s on an 8 GB card", "measured": "119 tok/s at 8192", "agreement": "MEASURED 3x FASTER - guidance predates Blackwell; this card is compute 12.0" },
+      "headroom": { "guidance": "~2.5 GB free after weights", "measured": "1.7 GB free at 4K", "agreement": "guidance omits ~1.2 GB CUDA context and allocator overhead - this is why the fit gate reserves overhead explicitly rather than subtracting weights from VRAM" }
+    },
+
+    "alternatives_evaluated": {
+      "_comment": "Verified against registry.ollama.ai manifests on 2026-08-14, not assumed from model names.",
+      "gemma4-e4b": {
+        "verdict": "REJECTED - NO BENEFIT, NOT BECAUSE IT CANNOT FIT",
+        "correction": "An earlier reading of this comparison was WRONG. It cited Ollama's library tag at 8.94 GB and concluded the model was too large. That figure is an artifact of Ollama's packaging, not the model.",
+        "ollama_library": { "gemma4:e4b": 8.94, "gemma4:e4b-it-q4_K_M": 8.94, "note": "the -q4_K_M tag returns an identical size to the default, so it is aliasing rather than shipping a real Q4 build. E4B STORES roughly 8B parameters (4B effective under MatFormer), so 8.94 GB is consistent with a Q8-class build plus the vision projector." },
+        "huggingface_actual": {
+          "unsloth/gemma-4-E4B-it-GGUF Q4_K_M": 4.63,
+          "unsloth/gemma-4-E4B-it-GGUF Q4_0": 4.5,
+          "google/gemma-4-E4B-it-qat-q4_0-gguf": 4.8,
+          "vision_projector_mmproj": 0.92,
+          "note": "separate file, only loaded for image work"
+        },
+        "real_reason_to_reject": "At Q4_K_M on HuggingFace, Gemma 4 E4B is 4.63 GB against Qwen3.5-9B's measured 4.61 GB text-only resident weight. The footprints are effectively IDENTICAL, so switching frees no VRAM and buys no context, while giving up the stronger benchmark profile. Not 'too big' - 'same size, weaker'.",
+        "source_discipline": "Compare artifacts from the SAME distribution channel. Ollama library tags and HuggingFace GGUF files for the same model differ by nearly 2x here."
+      },
+      "qwen3.5:4b":  { "size_gb": 3.15, "verdict": "VIABLE BUT UNNECESSARY", "reason": "would fit 65536 fully on GPU with no offload, but the 9B already meets the requirement at working context and is stronger. Untested." },
+      "qwen3.5:2b":  { "size_gb": 2.55, "verdict": "not evaluated" },
+      "gemma3:4b":   { "size_gb": 3.10, "verdict": "not evaluated" },
+      "llama3.2:3b": { "size_gb": 1.88, "verdict": "not evaluated" },
+      "smaller_quantization": {
+        "verdict": "REJECTED",
+        "reason": "Q4_K_M already fits with headroom at working context and runs 100% on GPU to 16384. Dropping to a lower quant would trade accuracy on precisely the two benchmark rows this model is already weakest on. Wrong lever."
+      }
+    },
+
+    "naming_hazard": "Model names no longer describe model sizes. 'Mistral Small 4' is 119B total parameters and ~238 GB at full precision; 'Gemma 4 E4B' is 8.94 GB despite the 4B in its name. Always resolve the actual manifest size before evaluating fit - never infer it from the name."
+  },
+
+  "published_guidance_verified_against_measurement": {
+    "_comment": "Owner-supplied guidance for running this model on 8 GB, checked row by row against hxs-4 on 2026-08-14. Recorded because several widely-repeated figures are wrong for this hardware in the CONSERVATIVE direction, and one tuning instruction is actively counterproductive.",
+
+    "confirmed": {
+      "gated_deltanet_linear_attention": "CONFIRMED independently. RS buffer allocated alongside KV, KV scaling 12x across a 16x context increase, and 'KV cache shifting is not supported'. Observed before the architecture description was seen.",
+      "constant_memory_scales_linearly": "CONFIRMED. 128 MiB KV at 4096 to 1536 MiB at 65536 - sublinear, not quadratic.",
+      "native_multimodality_no_separate_encoder": "CONFIRMED. One model layer, no mmproj file, vision costs 12 MiB and holds 100% GPU residency.",
+      "context_262144_native": "CONFIRMED via ollama show.",
+      "unquantized_16bit_needs_about_18gb": "CONFIRMED. HuggingFace BF16 GGUF 16.68 GB; official safetensors 17.98 GB.",
+      "weights_about_4_5gb_at_4bit": "CLOSE. Measured 4.61 GB resident for text-only work."
+    },
+
+    "contradicted_by_measurement": {
+      "limit_context_under_8048_to_avoid_oom": {
+        "claim": "keep context under ~8,048 tokens to avoid out-of-memory",
+        "measured": "16,384 runs at 100% GPU with 6794 MiB of 8151. 65,536 runs with a CPU/GPU split. Neither OOMs.",
+        "verdict": "TOO CONSERVATIVE by at least 2x. The real constraint on this card is the full-GPU residency ceiling at 16,384, not an OOM at 8K."
+      },
+      "always_enable_flash_attention": {
+        "claim": "always enable FlashAttention to keep the KV cache footprint small",
+        "measured": "KV did fall, 1536 to 1088 MiB. But the compute buffer rose from 248 to 543 MiB and consumed most of the saving.",
+        "verdict": "COUNTERPRODUCTIVE HERE - tested and reverted. Do not apply this as a blanket rule on this host."
+      },
+      "about_3_5gb_of_headroom_remains": {
+        "claim": "~4.5 GB of weights leaves about 3.5 GB free on an 8 GB card",
+        "measured": "1.7 GB free at 4096 context - 6394 MiB used of 8151.",
+        "verdict": "WRONG. The arithmetic subtracts weights from VRAM and ignores roughly 1.2 GB of CUDA context, allocator and compute buffers. This is exactly why the fit gate reserves overhead explicitly."
+      },
+      "q3_k_m_is_about_3_4gb": {
+        "claim": "3-bit Q3_K_M requires ~3.4 GB",
+        "measured": "HuggingFace unsloth/Qwen3.5-9B-GGUF Q3_K_M is 4.35 GB.",
+        "verdict": "UNDERSTATED by ~1 GB."
+      },
+      "close_background_apps": {
+        "claim": "close browsers and hardware-accelerated apps to free VRAM",
+        "verdict": "NOT APPLICABLE. hxs-4 is a headless server; the target GPU idles at 0 MiB with no processes."
+      }
+    },
+
+    "lesson": "Consumer 8 GB-tier guidance is written for desktops sharing a GPU with a display and browser, and is tuned to avoid support requests rather than to maximise a dedicated card. On a headless server with an isolated GPU it is systematically pessimistic. Measure the host; do not inherit the desktop assumptions."
+  },
+
+  "runtime_tuning_levers_tested": {
+    "_comment": "Tested 2026-08-14 at num_ctx 65536. Recorded so they are not retried blind.",
+    "OLLAMA_FLASH_ATTENTION + OLLAMA_KV_CACHE_TYPE=q8_0": {
+      "verdict": "NO BENEFIT ON THIS HOST - reverted",
+      "measured": "KV cache fell from 1536 MiB to 1088 MiB (952 CUDA + 136 CPU), but the compute buffer rose from 248 MiB to 543 MiB, consuming most of the saving. CPU/GPU split improved slightly, 21%/79% against 28%/72%.",
+      "throughput": "NOT CLEANLY MEASURED. A follow-up attempt to isolate the two flags produced identical buffer figures across all three cases, which means the log window was re-reading a stale load rather than the current one. No throughput delta is claimed from it.",
+      "state": "both settings removed; service restored to the recorded configuration and re-verified"
+    }
+  },
+
+  "throughput_correction": {
+    "_comment": "Correction to the ladder figures recorded earlier in this file.",
+    "issue": "The ladder's generation rates were taken with trivial prompts producing very few tokens, which flatters the result.",
+    "ladder_figure_at_65536": 49.98,
+    "measured_with_real_generation": 28,
+    "guidance": "Treat the ladder as an ALLOCATION map. For steady-state throughput at 65536 under real generation, use ~28 tok/s and an 8.5 GB working set."
+  },
+
+  "forward_path_vllm_huggingface": {
+    "_comment": "Owner direction 2026-08-14: the fleet goes forward on vLLM with HuggingFace models rather than Ollama with library tags. Evaluated against this host on the same day.",
+    "verdict_for_this_8gb_card": "QWEN3.5-9B UNDER VLLM DOES NOT FIT THE 8 GB DEVICE",
+    "artifact_sizes_measured": {
+      "RedHatAI/Qwen3.5-9B-quantized.w4a16": 10.65,
+      "AxionML/Qwen3.5-9B-NVFP4": 8.71,
+      "Qwen/Qwen3.5-9B (bf16)": 17.98,
+      "device_usable_gb": 7.96
+    },
+    "why_larger_than_gguf": "GGUF Q4_K_M download artifact is 6.6 GB (6,594,474,236 bytes) but the resident model buffer is 4.61 GB because the vision encoder is not loaded for text-only work. vLLM w4a16 artifacts are ~10.65 GB because they keep activations at 16-bit and commonly leave embeddings and lm_head at higher precision, and these repositories ship the full vision tower (pipeline image-text-to-text). Do not assume a 4-bit vLLM artifact matches a 4-bit GGUF in size.",
+    "critical_behavioural_difference": "vLLM preallocates a KV block pool against gpu_memory_utilization and does NOT offload layers to CPU. Where Ollama degraded gracefully to a CPU/GPU split, vLLM fails to start. The forgiving behaviour that let a 9B model run at all on this card is an llama.cpp property and does not transfer.",
+    "what_vllm_fixes": "iss-015. vLLM returns an explicit error when input exceeds max_model_len rather than silently truncating. That is a material improvement over the silent collapse measured here, and on its own is a good reason to prefer it.",
+    "what_is_lost": "The native Anthropic Messages API. vLLM serves an OpenAI-compatible surface only, so any Anthropic-protocol client would need a translation proxy. Acceptable per owner note that Claude Code is unlikely to target this model.",
+    "placement_consequence": "The 16 GB RTX 5060 Ti in this same host is idle at 0 MiB and holds 16311 MiB. The w4a16 artifact at 10.65 GB fits it with roughly 5.6 GB left for a KV pool, fully resident, with continuous batching. If the fleet standardises on vLLM, that card is the correct target and the 8 GB card is not.",
+    "carries_over_from_this_commissioning": [
+      "GPU isolation by UUID - still required, and simpler under vLLM because it is CUDA-only with no Vulkan enumeration path (iss-013 does not apply)",
+      "the as-built hardware facts: device UUIDs, VRAM, driver 580.173.02, CUDA 13.0, compute capability 12.0",
+      "the engine-neutral acceptance contract and gates, which were written not to name a runtime precisely so this transition costs nothing",
+      "the overcommit lesson from iss-014"
+    ],
+    "does_not_carry_over": [
+      "the measured context ladder - vLLM's paged KV has a different memory model entirely",
+      "the GGUF artifacts",
+      "the Anthropic Messages API result"
+    ]
+  },
+
+  "intended_clients": {
+    "_comment": "Recorded 2026-08-14 after end-to-end testing of each.",
+    "langgraph": {
+      "status": "SUITABLE - PRIMARY INTENDED CLIENT",
+      "evidence": "5/5 valid strict-schema JSON and 4/4 correct tool selection from 3 tools, at 8192 context, 100% GPU, 119 tok/s",
+      "why_it_fits": "LangGraph controls its own prompt size, so it stays far below the 65,536 truncation cliff - the inverse of Claude Code's profile"
+    },
+    "docling": {
+      "status": "NOT APPLICABLE - DOES NOT USE THIS ENDPOINT",
+      "evidence": "services/docling-mcp/service.md: 'Core document conversion is not served by a language model and must not be described as [such]' - conversion runs computer-vision and parsing models inside the processing library on CPU-only torch",
+      "exception": "optional picture-description enrichment uses a vision model, which is a separate pipeline and not this chat endpoint"
+    },
+    "claude_code": {
+      "status": "NOT QUALIFIED - AND NOT A PROJECT GOAL",
+      "owner_position": "owner noted 2026-08-14 there is a good chance Claude Code never uses this model",
+      "detail": "see claude_code_qualification and iss-016; the disqualification is recorded for completeness, not as an outstanding blocker to resolve"
+    }
+  },
+
+  "requirements": {
+    "backend": ["cuda"],
+    "min_compute_capability": 5.0,
+    "min_driver_version": 531,
+    "context_initial": 4096,
+    "context_ladder": [4096, 8192, 16384, 32768, 65536],
+    "claude_code_recommended_context": 65536,
+    "context_guidance_source": "current Ollama docs: systems under 24 GiB VRAM default to 4K; at least 64K recommended for coding/agent tools"
+  },
+
+  "measured_residency": {
+    "_comment": "AS-BUILT. Every row observed on hxs-4 2026-08-14. KV is measured, never estimated.",
+    "as_built_host": {
+      "driver_version": "580.173.02",
+      "cuda_version": "13.0",
+      "ollama_version": "0.32.9",
+      "device_total_mib": 8151
+    },
+    "buffers_at_4096": {
+      "model_buffer_mib": 4717.38,
+      "kv_buffer_mib": 128.00,
+      "recurrent_state_buffer_mib": 50.25,
+      "compute_buffer_mib": 248.10
+    },
+    "ladder": [
+      { "context": 4096,  "kv_mib": 128,  "vram_used_mib": 6394, "processor": "100% GPU",       "gen_tok_s": null },
+      { "context": 8192,  "kv_mib": 256,  "vram_used_mib": 6530, "processor": "100% GPU",       "gen_tok_s": 119.41 },
+      { "context": 16384, "kv_mib": 512,  "vram_used_mib": 6794, "processor": "100% GPU",       "gen_tok_s": 124.05 },
+      { "context": 32768, "kv_mib": 1024, "vram_used_mib": 6932, "processor": "15%/85% CPU/GPU", "gen_tok_s": 75.70 },
+      { "context": 65536, "kv_mib": 1536, "vram_used_mib": 6984, "processor": "28%/72% CPU/GPU", "gen_tok_s": 49.98 }
+    ],
+    "full_gpu_residency_ceiling": 16384,
+    "identical_workload_comparison": {
+      "_comment": "Same 8311-token prompt at two context settings. Larger context is strictly slower below its own limit.",
+      "prompt_tokens": 8311,
+      "at_16384": { "prompt_tok_s": 2449, "gen_tok_s": 70, "processor": "100% GPU", "recall": "correct" },
+      "at_65536": { "prompt_tok_s": 1216, "gen_tok_s": 26, "processor": "28%/72% CPU/GPU", "recall": "correct" }
+    },
+    "long_context_load_test": {
+      "context": 65536,
+      "prompt_tokens": 22846,
+      "prompt_tok_s": 1182,
+      "gen_tok_s": 17,
+      "wall_clock_s": 25,
+      "recall": "correct - retrieved a fact buried at mid-depth",
+      "stability": "no D-state processes, no driver wedge"
+    }
+  },
+
+  "api_surface": {
+    "_comment": "AS-BUILT. All verified live on 2026-08-14.",
+    "anthropic_messages": {
+      "endpoint": "/v1/messages",
+      "native": true,
+      "significance": "Ollama 0.32.9 serves the Anthropic Messages API directly. Claude Code needs no translation proxy.",
+      "verified": ["system prompt", "tool_use", "tool_result round-trip", "SSE streaming"],
+      "sse_events": ["message_start", "content_block_start", "content_block_delta", "content_block_stop", "message_delta", "message_stop"],
+      "thinking_disable": "thinking:{\"type\":\"disabled\"} is honoured - output drops from 159 to 5 tokens for the same answer"
+    },
+    "openai_compatible": { "endpoint": "/v1/chat/completions", "verified": ["completion", "tool calling"] },
+    "ollama_native": { "endpoints": ["/api/generate", "/api/chat", "/api/show"], "verified": ["streaming", "tool calling", "thinking"] },
+    "client_constraint": "MEASURED: thinking blocks consume the max_tokens budget BEFORE any text block is emitted. At max_tokens=128 the response contained no text at all. Clients must either send a generous max_tokens (>=1024) or disable thinking."
+  },
+
+  "acceptance_states": {
+    "_comment": "Deliberately not collapsed.",
+    "A_qwen_local_runtime_operational": "REACHED 2026-08-14 - 100% GPU residency on the isolated device, correct output, stable under a 22.8K-token load",
+    "B_hx_validation_operational": "REACHED 2026-08-14 - Anthropic, OpenAI and native surfaces verified including full tool round-trip",
+    "C_claude_code_qualified": "NOT REACHED 2026-08-14 - tested end to end over an SSH tunnel. The protocol works and the agent loop runs, but Claude Code's system prompt alone exceeds the usable window and prompt overflow truncates silently. See claude_code_qualification."
+  },
+
+  "context_overflow_behavior": {
+    "_comment": "MEASURED 2026-08-14. The most operationally dangerous finding in this commissioning.",
+    "configured_window": 65536,
+    "behavior_within_window": "correct - ~54K-token prompt processed in full at 64,880 tokens",
+    "behavior_on_overflow": "SILENT TRUNCATION TO 32,770 TOKENS. Not an error, not a clamp to the window - the runtime discards more than half the prompt and the model answers confidently from the remainder.",
+    "evidence": [
+      { "sent_tokens_approx": 37000, "sent_tokens_note": "client-side estimate before template expansion and system prompt; processed count from Ollama may differ", "processed": 43880, "result": "full" },
+      { "sent_tokens_approx": 54000, "sent_tokens_note": "client-side estimate before template expansion and system prompt; processed count from Ollama may differ", "processed": 64880, "result": "full" },
+      { "sent_tokens_approx": 74000, "sent_tokens_note": "client-side estimate; processed count collapsed to 32,770 - roughly half the window - due to silent truncation", "processed": 32770, "result": "collapsed" },
+      { "sent_tokens_approx": 85000, "sent_tokens_note": "client-side estimate; processed count collapsed to 32,770", "processed": 32770, "result": "collapsed - a fact placed at the start of the prompt was destroyed and the model reported it absent" }
+    ],
+    "operational_consequence": "A wrong answer indistinguishable from a right one. Any client that can exceed 65,536 tokens must bound its own prompt, because the runtime will not report the loss."
+  },
+
+  "claude_code_qualification": {
+    "_comment": "MEASURED 2026-08-14 against Claude Code 2.1.221 over an SSH tunnel.",
+    "verdict": "NOT QUALIFIED",
+    "protocol": "PROVEN - connects to /v1/messages, runs a 3-turn agent loop, calls its Read tool and receives real file contents",
+    "tests": [
+      { "test": "plain text reply", "result": "PASS", "input_tokens": 28440, "ttft_ms": 36725, "note": "exact requested output" },
+      { "test": "tool use, default workstation profile", "result": "FAIL", "input_tokens": 69386, "note": "zero output then hallucinated unrelated file paths; never read the target file" },
+      { "test": "tool use, clean profile", "result": "PARTIAL", "input_tokens": 73351, "num_turns": 3, "note": "genuinely read the file, then miscounted a 4-line file as 6 lines" }
+    ],
+    "blocking_reasons": [
+      "Claude Code reports contextWindow 200000 and has no mechanism to discover the real 65,536 limit, so it routinely sends 69-73K tokens.",
+      "Its baseline system prompt measured 28,440 tokens before any user request, which also makes a 16,384 context impossible for this client.",
+      "Overflow is silently truncated rather than refused, so the failure is invisible to both client and user."
+    ],
+    "what_would_change_the_verdict": [
+      "real headroom above the ~30K baseline - the reserved 16 GB card would provide it",
+      "overflow becoming an error rather than a silent collapse"
+    ],
+    "thinking_note": "MAX_THINKING_TOKENS=0 is required. Left at default, thinking content surfaced as the reply - the first smoke test returned the single word 'Wait'."
+  },
+
+  "network_exposure": {
+    "state": "LOOPBACK ONLY",
+    "listener": "127.0.0.1:11434",
+    "note": "Ollama has no authentication. Binding it to 0.0.0.0 publishes an unauthenticated inference endpoint that will emit tool-call payloads to any host that can route to it. Not applied.",
+    "access_used": "SSH port-forward, service never left loopback. Resolve the host address from SERVER-REGISTRY.md: ssh -N -L 11434:127.0.0.1:11434 <user>@<hxs-4>",
+    "owner_decision_required": true
+  },
+
+  "concurrency": { "assume_coexistence": false },
+
+  "activation": {
+    "requires_gate": "hx-capacity-gate",
+    "model_download_allowed": true,
+    "host_mutation_authorized": true,
+    "authorized_by": "owner instruction 'proceed with install', 2026-08-14",
+    "note": "Ollama install, model pull and systemd configuration executed under that authorization."
+  },
+
+  "isolation": {
+    "config_separate_from": ["vllm"],
+    "model_dir_separate": true,
+    "env_scoped_to_profile": true,
+    "removable_without_host_rebuild": true,
+    "service_represents": "the Qwen workload, never the host role"
+  },
+
+  "incidents": [
+    {
+      "id": "hxs4-wedge-001",
+      "date": "2026-08-14",
+      "summary": "NVIDIA kernel context wedged; nvidia-smi entered unkillable D-state and the host required a reboot.",
+      "trigger": "A context-ladder loop requested a new num_ctx without unloading the previous runner. Ollama spawns a separate runner per context size, so two ~5.5 GB runners attempted to coexist on an 8 GB device.",
+      "root_cause": "test-harness defect, not a hardware or model limit",
+      "evidence": "two llama-server processes in D-state for ~20 minutes; every subsequent nvidia-smi also entered D-state",
+      "resolution": "graceful reboot; all rungs including 65536 subsequently passed with an unload between each",
+      "standing_rule": "Always unload and confirm the device is clear before changing num_ctx on a single-GPU host. An OOM here does not degrade gracefully - it wedges the driver."
+    }
+  ]
+}

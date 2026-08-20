@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LangGraph — Four Decisions Applied — 2026-08-14</title>
+<style>
+  :root{--bg:#fff;--fg:#1a1d21;--muted:#5b6570;--line:#dfe3e8;--card:#f7f8fa;
+        --accent:#0b6ea8;--pass:#0a7d3f;--fail:#b3261e;--warn:#8a5a00;--code:#f2f4f7;}
+  :root[data-theme="dark"], html.dark{--bg:#0f1216;--fg:#e6e9ed;--muted:#9aa4b0;--line:#262c34;--card:#161b21;
+        --accent:#5cb3e6;--pass:#5fd08a;--fail:#ff7b72;--warn:#e3b341;--code:#171c22;}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+        --bg:#0f1216;--fg:#e6e9ed;--muted:#9aa4b0;--line:#262c34;--card:#161b21;
+        --accent:#5cb3e6;--pass:#5fd08a;--fail:#ff7b72;--warn:#e3b341;--code:#171c22;}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:1020px;margin:0 auto;padding:32px 20px 80px}
+  header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;
+         border-bottom:2px solid var(--line);padding-bottom:18px;margin-bottom:26px}
+  h1{font-size:1.55rem;margin:0 0 6px;line-height:1.3}
+  h2{font-size:1.2rem;margin:34px 0 12px;padding-top:16px;border-top:1px solid var(--line)}
+  h3{font-size:1rem;margin:22px 0 8px;color:var(--accent)}
+  .sub{color:var(--muted);font-size:.9rem}
+  #themeToggle{background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:999px;
+    padding:8px 16px;font-size:.85rem;cursor:pointer;white-space:nowrap}
+  #themeToggle:hover{border-color:var(--accent);color:var(--accent)}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.89rem}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--card);font-weight:600}
+  .scroll{overflow-x:auto}
+  code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+  code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.87em}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:13px 15px;
+      overflow-x:auto;font-size:.82rem;line-height:1.5}
+  .pass{color:var(--pass);font-weight:600}.fail{color:var(--fail);font-weight:600}.warn{color:var(--warn);font-weight:600}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:16px 0}
+  .card.stop{border-left:4px solid var(--fail)}.card.good{border-left:4px solid var(--pass)}
+  .card.flag{border-left:4px solid var(--warn)}
+  ul,ol{padding-left:22px} li{margin:6px 0}
+  footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:.83rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <h1>LangGraph — four owner decisions applied</h1>
+    <div class="sub">Record &amp; reconcile pass &middot; 2026-08-14 &middot; branch <code>migration/langgraph-pilot</code></div>
+  </div>
+  <button id="themeToggle" type="button">◐ Theme</button>
+</header>
+
+<div class="card good">
+<strong>All four decisions ruled and recorded.</strong> The method is ratified as the repository
+standard. The LangGraph design remains <strong>REVISED / NOT ACCEPTED</strong> — but what blocks it
+is no longer a set of open questions. It is now bounded work: re-derive three sections against the
+packaged-server ruling, and write one capability contract.
+</div>
+
+<h2>1. The rulings</h2>
+
+<div class="scroll">
+<table>
+<thead><tr><th>#</th><th>Decision</th><th>Ruling</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Qwen network-consumability</td><td class="pass">OmniRoute-only path</td>
+  <td>Qwen is <strong>not promoted</strong>. It stays loopback-bound on hxs-4; remote consumption is authorized only through OmniRoute. Direct network consumption is refused <em>permanently</em>, not deferred.</td></tr>
+<tr><td>2</td><td>LiteLLM → OmniRoute</td><td class="pass">Reconciled</td>
+  <td>Model gateway is <code>BLOCKED / PENDING OMNIROUTE RECONCILIATION</code>. The <code>litellm</code> contract requirement is withdrawn — building it would have formalised a superseded component.</td></tr>
+<tr><td>3</td><td>Deployment mode</td><td class="warn">Packaged server</td>
+  <td>LangGraph runs as its own service with its own lifecycle. <strong>The most consequential ruling</strong> — see below.</td></tr>
+<tr><td>4</td><td>MCP day-one required</td><td class="warn">Keep CURRENT REQUIRED</td>
+  <td>No downgrade. An MCP-plane SME contract is <strong>mandatory</strong> before the SME gate passes. Now a known, accepted blocker rather than an open question.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>2. Decision 3 invalidated part of my own reasoning</h2>
+
+<div class="card stop">
+<p>The Store ruling — that HX does not use LangGraph's cross-thread <code>Store</code>, because
+Mem0 is the single durable memory authority — rested on three statements. The third was
+<em>"HX does not run the LangGraph Server / Platform runtime."</em> That was the statement making
+the other two true <strong>by construction</strong> rather than by discipline.</p>
+<p><strong>The packaged-server ruling makes it false.</strong> That runtime provisions a base store
+automatically.</p>
+<p>The ruling itself still stands: one durable memory authority, and it is Mem0. What changes is its
+character — from a description of something that does not exist, into a policy that must be
+actively enforced against a runtime that supplies the thing. The enforcement points stop being
+confirmatory and become load-bearing:</p>
+<ul>
+<li>Startup must <em>actively disable or refuse</em> a provisioned store, not merely assert none was constructed.</li>
+<li>The negative database assertion — no store tables in the schema — becomes the <strong>primary</strong> detection mechanism rather than a belt-and-braces check.</li>
+<li><code>VERIFICATION REQUIRED</code> — whether the packaged runtime permits a store to be disabled at all. If it does not, that is an owner decision requiring <code>mem0</code> agreement, not a design detail.</li>
+</ul>
+<p><strong>Marked, not rewritten.</strong> Guessing at packaged-runtime behaviour without a pinned
+release would repeat exactly the error the upstream-pinning gate exists to prevent.</p>
+</div>
+
+<p>Two further consequences recorded rather than resolved: the checkpointer section — including
+whether the three psycopg parameters remain caller-supplied and whether the four-table shape and
+dedicated schema survive — must be re-derived at the pinned release; and Redis may move from
+INDIRECT to required depending on what the packaged runtime uses it for.</p>
+
+<p>One thing the ruling <em>settles</em>: the served interface. "Does LangGraph serve an interface at
+all" was <code>VERIFICATION REQUIRED</code>; the answer is now yes, so listen address, port and
+transport become required values rather than conditional ones.</p>
+
+<h2>3. An open mechanism question under decision 1</h2>
+
+<div class="card flag">
+<p>Not a challenge to the ruling — a gap inside it. OmniRoute is placed on hxs-8, and a process on
+hxs-8 cannot reach a loopback socket on hxs-4 any more than LangGraph on hxs-11 can.</p>
+<p>So the ruling settles the <strong>policy</strong> — only OmniRoute may consume remotely — while
+the <strong>mechanism</strong> by which OmniRoute fronts a loopback-bound endpoint on a different
+host still needs defining and measuring. Candidates include co-locating a plane component on hxs-4,
+or an explicit forwarding path. That definition and its measurement are prerequisites to granting
+<code>accepted-network-consumable</code>.</p>
+<p>Recorded in <code>runtime-acceptance-decisions.md</code> under the ruling. Not resolved here.</p>
+</div>
+
+<h2>4. Method ratified</h2>
+
+<p><code>governance/policy/migration-method-decision.md</code> records the legacy-mining workflow as
+the repository's <strong>standard</strong> — no longer a pilot — after two validations: Docling with
+one integration boundary, LangGraph with six. Future services run it directly, with the same gates
+and no pilot framing.</p>
+
+<p>Two principles are folded into <code>repository-migration-pattern.md</code>, each earned rather
+than invented:</p>
+
+<div class="scroll">
+<table>
+<thead><tr><th>Principle</th><th>Statement</th><th>Earned by</th></tr></thead>
+<tbody>
+<tr><td><strong>P-A</strong> — gate construction</td>
+  <td>A gate must specify <em>how</em> it verifies, not only the property it claims. A gate that cannot fail is worse than none: it ships confidence.</td>
+  <td><code>iss-018</code> — the checkpointer gate named the right property and both obvious constructions passed while persistence was broken.</td></tr>
+<tr><td><strong>P-B</strong> — acceptance scope</td>
+  <td>An acceptance states exactly what it authorizes and how that was verified, never more. Materially different scopes become distinct states.</td>
+  <td><code>iss-017</code> — a loopback-only acceptance was later read as remote reachability.</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>P-B is applied in the same pass that earned it: Qwen3.5-9B / hxs-4 now holds
+<code>accepted-local-runtime</code> (granted) and <code>accepted-network-consumable</code>
+(not granted), with the rule stated that a local grant never implies remote consumability.</p>
+
+<h2>5. Preservation</h2>
+
+<pre><code>credential literals   0
+ledger                64eb356f…cd59 — unmodified, pin unchanged
+provenance            213 LangGraph rows intact, all migration_status: pending
+historical files      0 tracked under the active tree
+main                  untouched
+legacy/2025           a98846d6930f — untouched
+regression            154 pass / 0 fail</code></pre>
+
+<h2>6. What remains before acceptance</h2>
+
+<ol>
+<li><strong>Re-derive</strong> the Store, Redis and checkpointer sections against the packaged-server ruling, at a pinned release. This is the direct consequence of decision 3 and cannot be done from guesswork.</li>
+<li><strong>Pin upstream</strong> — still an open acceptance-gate failure, recorded rather than concealed. Nothing in point 1 can be answered without it.</li>
+<li><strong>Write the MCP-plane capability contract</strong>, confirmed mandatory by decision 4.</li>
+<li><strong>Define and measure</strong> the OmniRoute-to-hxs-4 mechanism before <code>accepted-network-consumable</code> can be granted.</li>
+<li><strong>Re-run all four capability reviews</strong> in separate contexts. No author self-certification.</li>
+</ol>
+
+<p>Only then does the status advance from REVISED / NOT ACCEPTED to ACCEPTED FOR IMPLEMENTATION.
+Deployment on hxs-11 stays NO-GO until it does.</p>
+
+<div class="card flag">
+<p style="margin:0"><strong>Housekeeping.</strong> Vendored upstream clones now sit under
+<code>governance/operations/</code> — <code>langgraph-main</code>, <code>ollama</code>,
+<code>vllm</code>. They are untracked and were deliberately not staged, matching the
+<code>ds4-main</code> precedent, but <strong>no gitignore rule covers them</strong>, so a future
+<code>git add -A</code> will keep catching on them. <code>core.safecrlf</code> refused one such
+add during this pass, which is the protection working as intended.</p>
+</div>
+
+<footer>
+Claude Opus 5 &middot; 2026-08-14 &middot; LangGraph decisions applied<br>
+Method: <code>governance/policy/migration-method-decision.md</code> &middot;
+Design: <code>services/langgraph/service.md</code> &middot;
+Packet: <code>claude_20260814_0848_langgraphfourdecisions.html</code>
+</footer>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themeToggle');
+  var saved=null; try{saved=localStorage.getItem('hx-theme');}catch(e){}
+  if(saved){root.setAttribute('data-theme',saved);}
+  function current(){var t=root.getAttribute('data-theme');if(t)return t;
+    return (window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}
+  function label(){btn.textContent = current()==='dark' ? '☀ Light' : '☾ Dark';}
+  btn.addEventListener('click',function(){
+    var next = current()==='dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme',next);
+    try{localStorage.setItem('hx-theme',next);}catch(e){}
+    label();});
+  label();
+})();
+</script>
+</body>
+</html>

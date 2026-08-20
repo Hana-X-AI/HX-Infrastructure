@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HX-Infrastructure — Repository Reconnaissance & Alignment Brief</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2330; --edge:#2b3444;
+    --ink:#e6edf3; --dim:#9aa7b4; --faint:#6b7684;
+    --accent:#4aa3ff; --accent2:#7c5cff;
+    --good:#3fb950; --warn:#d29922; --bad:#f85149; --info:#39c5cf;
+    --mono:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    line-height:1.6;font-size:15px}
+  .wrap{max-width:1040px;margin:0 auto;padding:40px 26px 80px}
+  header.masthead{border-bottom:1px solid var(--edge);padding-bottom:22px;margin-bottom:30px}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+  h1{font-size:30px;line-height:1.2;margin:10px 0 8px}
+  .sub{color:var(--dim);font-size:15px}
+  .meta{font-family:var(--mono);font-size:12px;color:var(--faint);margin-top:14px;display:flex;flex-wrap:wrap;gap:8px 22px}
+  h2{font-size:21px;margin:44px 0 14px;padding-top:16px;border-top:1px solid var(--edge)}
+  h2 .num{font-family:var(--mono);color:var(--accent2);font-size:15px;margin-right:10px}
+  h3{font-size:16px;margin:26px 0 8px;color:#cdd8e4}
+  p{margin:10px 0}
+  a{color:var(--accent);text-decoration:none}
+  code{font-family:var(--mono);font-size:.86em;background:var(--panel2);padding:1px 5px;border-radius:4px;color:#d9e2ec}
+  .lead{font-size:16px;color:#d7e0ea}
+  .card{background:var(--panel);border:1px solid var(--edge);border-radius:10px;padding:18px 20px;margin:16px 0}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:720px){.grid{grid-template-columns:1fr}}
+  .pill{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid;white-space:nowrap}
+  .p-good{color:var(--good);border-color:#2ea04340}
+  .p-warn{color:var(--warn);border-color:#d2992240}
+  .p-bad{color:var(--bad);border-color:#f8514940}
+  .p-info{color:var(--info);border-color:#39c5cf40}
+  .p-dim{color:var(--dim);border-color:var(--edge)}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--edge);vertical-align:top}
+  th{color:var(--dim);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+  tr:last-child td{border-bottom:none}
+  td.mono,.mono{font-family:var(--mono);font-size:12.5px}
+  ul{margin:10px 0;padding-left:22px}
+  li{margin:6px 0}
+  .flag{border-left:3px solid var(--warn);background:#20262e;padding:12px 16px;border-radius:0 8px 8px 0;margin:12px 0}
+  .flag.bad{border-left-color:var(--bad)}
+  .flag.good{border-left-color:var(--good)}
+  .flag .tag{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint)}
+  .idref{font-family:var(--mono);font-size:12px;color:var(--accent2)}
+  .foot{margin-top:60px;border-top:1px solid var(--edge);padding-top:18px;color:var(--faint);font-size:12.5px}
+  .tornote{background:#161b22;border:1px dashed var(--edge);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--dim);margin:14px 0}
+  .big{font-size:22px;font-weight:700;font-family:var(--mono)}
+  .statrow{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0}
+  .stat{flex:1;min-width:150px;background:var(--panel);border:1px solid var(--edge);border-radius:9px;padding:14px 16px}
+  .stat .n{font-size:24px;font-weight:700;font-family:var(--mono);color:var(--accent)}
+  .stat .l{font-size:12px;color:var(--dim);margin-top:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="kicker">HX-Infrastructure · Regroup Phase · Reconnaissance</div>
+  <h1>Repository Reconnaissance &amp; Alignment Brief</h1>
+  <div class="sub">A read-through-and-cross-check of the <code>HX-Infrastructure-main</code> repository — current true state, the method spine, the fault lines, and the decisions waiting on the owner.</div>
+  <div class="meta">
+    <span>PREPARED BY · Claude (Opus 4.8)</span>
+    <span>DATE · 2026-08-15</span>
+    <span>SCOPE · 234 files, full-tree deep read</span>
+    <span>STATUS · Alignment record — asserts no as-built change</span>
+  </div>
+</header>
+
+<p class="lead">This brief exists because the first pass was a skim. This one is the real thing: the whole tree read against its own authority order — owner rulings &rarr; registry &rarr; as-built discovery &rarr; upstream &rarr; design &rarr; history &rarr; inference — with an active hunt for contradictions and facts that have drifted. Everything below is cited to a file, an ID, or an issue in <code>governance/logs/actions-and-issues.md</code>. Where two documents disagree, both are named rather than reconciled silently.</p>
+
+<div class="tornote">Reading order note. The single most useful orientation fact in the repo: <code>start-up/session-resume.md</code> (dated 2026-08-14, <code>main&nbsp;@&nbsp;97cfd6c</code>, clean) is the current "where are we." The older <code>governance/operations/sessions/session-resume.md</code> (2026-08-13) is partially superseded and is the source of one stale action item flagged in §7.</div>
+
+<!-- 1 -->
+<h2><span class="num">01</span>Where the project stands now</h2>
+<p>HX-Infrastructure is an <strong>infrastructure project, not a product build</strong> (<code>GOALS-AND-OBJECTIVES.md</code>). Its spine is a phase model that was <em>redefined</em> mid-flight on 2026-08-13.</p>
+
+<div class="statrow">
+  <div class="stat"><div class="n">15 + 1</div><div class="l">fleet servers + <code>hxs-cp</code> control plane (outside the fleet)</div></div>
+  <div class="stat"><div class="n">100%</div><div class="l">discovery complete · all roles assigned</div></div>
+  <div class="stat"><div class="n">1</div><div class="l">runtime actually commissioned (Qwen3.5-9B, loopback)</div></div>
+  <div class="stat"><div class="n">0</div><div class="l">services deployed to their assigned hosts</div></div>
+</div>
+
+<div class="flag bad">
+  <div class="tag">SUPERSEDED PHASE MODEL · 2026-08-15</div>
+  <p><code>GOALS-AND-OBJECTIVES.md</code> is canonical. Phase 3 is Regroup &amp; Reconciliation, and server implementation is deferred to a later owner-authorized phase. The table below remains unchanged as dated reconnaissance evidence; it is not current lifecycle authority.</p>
+</div>
+
+<table>
+<thead><tr><th>Phase</th><th>Meaning (current)</th><th>State</th></tr></thead>
+<tbody>
+<tr><td class="mono">Phase 1</td><td>Discovery &amp; documentation — read-only, no role assignment by agents</td><td><span class="pill p-good">COMPLETE</span> gate closed 2026-08-13</td></tr>
+<tr><td class="mono">Phase 2</td><td><strong>Redefined 2026-08-13</strong> to mean repository consolidation &amp; alignment (was: role configuration)</td><td><span class="pill p-good">COMPLETE</span> tree consolidated &amp; pushed</td></tr>
+<tr><td class="mono">Phase 3</td><td>Server implementation — configure each host for its approved role</td><td><span class="pill p-warn">NOT STARTED</span> READY, needs its own authorization</td></tr>
+</tbody>
+</table>
+
+<p><strong>Git end-state.</strong> Origin holds two <em>deliberately unrelated</em> branches: <code>main</code> (the 2026 lineage, all workstreams + the hooks/skills control plane) and <code>legacy/2025&nbsp;@&nbsp;a98846d</code> (a protected 522-file 2025 archive — "never modify, never delete", <span class="idref">risk-003</span>). Their empty merge-base is by design, not a defect. The pilot branches (<code>migration/docling-pilot</code>, <code>migration/langgraph-pilot</code>, <code>feature/ai-runtime-acceptance</code>) were merged into <code>main</code> and deleted.</p>
+
+<p class="lead" style="margin-top:18px">Net position, in one sentence: <strong>everything is discovered and every role is assigned, but nothing is deployed.</strong> The only live substrate is (a) the Claude Code control plane — hooks and skills — and (b) exactly one commissioned model runtime, loopback-bound on <code>hxs-4</code>. LangGraph, OmniRoute, Docling, jcode and Code-Graph-RAG are all designs, pilots, or roadmap candidates — none is running.</p>
+
+<!-- 2 -->
+<h2><span class="num">02</span>The fleet at a glance</h2>
+<p>Fifteen bare-metal hosts on a static <code>192.168.50.200-254</code> range, domain <code>hx.local.arpa</code>, all Ubuntu 24.04.4 LTS / kernel 7.0.0-28. Four carry GPUs; eleven are CPU-only mini-PCs. Total measured VRAM across the fleet is <strong>122,458&nbsp;MiB</strong> (driver-confirmed).</p>
+
+<table>
+<thead><tr><th>Host</th><th>Compute / RAM</th><th>GPU (as-found &rarr; driver-confirmed)</th><th>Assigned role · workload</th></tr></thead>
+<tbody>
+<tr><td class="mono">hxs-1</td><td>Ultra 9 285K 24c · 128GB DDR5</td><td>2× RTX 4070 Ti SUPER — 32,752 MiB (+ Intel NPU, + Hailo-8 unusable)</td><td>Deep reasoning &amp; synthesis · <span class="p-dim mono">Qwen 3.8 27B (unreleased, slot reserved)</span></td></tr>
+<tr><td class="mono">hxs-2</td><td>i7-5960X 8c/16t · 66GB</td><td>2× RTX 5060 Ti — 32,622 MiB <span class="pill p-warn">was "faulty"</span></td><td>Coding · Qwen2.5-Coder-32B AWQ, TP=2</td></tr>
+<tr><td class="mono">hxs-3</td><td>i7-5960X 8c/16t · 66GB</td><td>2× RTX 5060 Ti — 32,622 MiB (2nd GPU reseated)</td><td>Agent intelligence · gpt-oss-20b; LightRAG</td></tr>
+<tr><td class="mono">hxs-4</td><td>i7-14700F 20c · 32GB DDR5</td><td>1× RTX 5060 Ti 16GB + 1× RTX 5060 8GB — 24,462 MiB (asymmetric)</td><td>Retrieval &amp; AI utility · Qdrant; <strong>Qwen2.5-3B</strong>; BGE-M3 <span class="pill p-bad">authority conflict — §6</span></td></tr>
+<tr><td class="mono">hxs-5</td><td>i5-7500 4c · 32GB</td><td>none (iGPU only)</td><td>Edge / ingress · NGINX</td></tr>
+<tr><td class="mono">hxs-6</td><td>i5-8500T 6c · 16GB</td><td>none <span class="pill p-info">Secure Boot ON</span></td><td>Ingestion — crawling · Crawl4AI</td></tr>
+<tr><td class="mono">hxs-7</td><td>i5-8500T 6c · 16GB single-ch</td><td>none <span class="pill p-info">Secure Boot ON</span></td><td>MCP services · FastMCP runtime</td></tr>
+<tr><td class="mono">hxs-8</td><td>i5-9400T 6c · 16GB single-ch</td><td>none (only non-HP; newest firmware)</td><td>API gateway &amp; control · <strong>LiteLLM</strong> <span class="pill p-bad">superseded — §6</span></td></tr>
+<tr><td class="mono">hxs-9</td><td>i5-7500 4c · 32GB</td><td>none</td><td>State services · PostgreSQL + Redis; LangGraph checkpoints</td></tr>
+<tr><td class="mono">hxs-10</td><td>i5-7500 4c · 32GB</td><td>none <span class="pill p-warn">dup-hostname history</span></td><td>Web application · Open WebUI; CopilotKit</td></tr>
+<tr><td class="mono">hxs-11</td><td>i5-7500 4c · 32GB</td><td>none (aftermarket SSD)</td><td>Agent runtime · LangGraph; Mem0</td></tr>
+<tr><td class="mono">hxs-12</td><td>i5-7500 4c · 32GB</td><td>none</td><td>Ingestion — parsing · Docling (+ MCP)</td></tr>
+<tr><td class="mono">hxs-13</td><td>i5-6500 4c · 32GB (SATA boot)</td><td>none (HD 530, oldest gen)</td><td>Automation · n8n (+ MCP)</td></tr>
+<tr><td class="mono">hxs-14</td><td>i5-7500 4c · 32GB</td><td>none (aftermarket SSD)</td><td>Development · prompt eng; LangGraph client dev</td></tr>
+<tr><td class="mono">hxs-15</td><td>i5-7500 4c · 32GB</td><td>none <span class="pill p-bad">no VT-x</span></td><td>Test &amp; integration · QA, regression, benchmarks</td></tr>
+</tbody>
+</table>
+
+<p><span class="idref">hxs-cp</span> — the 16th machine (<code>192.168.50.215</code>, Wi-Fi-attached) — is the command-and-control server where agents pull, build, validate and deploy to the fleet over SSH. It is <strong>deliberately outside the fleet</strong>, holds no registry row, and is explicitly not for inference or production workloads (<code>governance/design/hx-fleet-control-server.md</code>). Its orchestration was ruled "<strong>not Ansible</strong>", permanently, on 2026-08-13.</p>
+
+<div class="flag"><span class="tag">Host quirks worth carrying into Phase 3</span>
+<ul style="margin-bottom:0">
+<li><span class="idref">iss-011</span> — <strong>hxs-15 exposes no VT-x</strong> (firmware setting; the only host in the fleet without it). Cannot run KVM/hypervisor workloads; containers unaffected. Needs console/BIOS work.</li>
+<li>hxs-2's two MSI cards read as "faulty" as-found (nouveau <code>-22</code>) — <strong>proven not faulty</strong> under the proprietary driver (<span class="idref">iss-008</span>). Any reader of the as-found section alone carries a stale impression.</li>
+<li>hxs-4 has <strong>32 GB system RAM &lt; 24,462 MiB combined VRAM</strong> and an asymmetric 16GB/8GB GPU pair — matched-GPU work bottlenecks on the 8 GB card.</li>
+<li>hxs-6 &amp; hxs-7 are the only <strong>Secure Boot ON</strong> hosts (unsigned/DKMS modules need signing). hxs-11/14/15 run aftermarket SSDs of unknown endurance history.</li>
+</ul></div>
+
+<!-- 3 -->
+<h2><span class="num">03</span>The method spine — what makes this repo unusually disciplined</h2>
+<p>The project's real asset is not the fleet; it is a ratified method for turning legacy material and vendor docs into trustworthy target-state records. Two principles, both <em>earned by a specific failure</em>, now govern all future work (<code>governance/policy/repository-migration-pattern.md</code>, ratified 2026-08-14):</p>
+
+<div class="grid">
+  <div class="card"><span class="pill p-info">P-A · gate construction</span>
+  <p style="margin-bottom:0">A validation gate must specify <em>how</em> it verifies, not only the property it claims. "A gate that names the right property but cannot fail is worse than none — it ships confidence." Earned by <span class="idref">iss-018</span> (a Postgres-checkpointer gate that passed via config-echo while persistence was broken).</p></div>
+  <div class="card"><span class="pill p-info">P-B · acceptance scope</span>
+  <p style="margin-bottom:0">An acceptance states exactly what it authorizes and how it was verified — never more. Materially different scopes become <em>distinct acceptance states</em>. Earned by <span class="idref">iss-017</span> (a loopback-only endpoint later read as network-reachable, same repo, same day).</p></div>
+</div>
+
+<p><strong>Legacy migration is a ledger, not a merge.</strong> The 2025 archive is mined file-by-file through a frozen ledger — <code>manifestv3.1resolved.jsonl</code>, 522 rows, sha256 <code>64eb356f…cd59</code>, each row pinned to legacy commit <code>a98846d6</code> — plus a provenance index. Dispositions are counted <em>per row, never by pattern</em> (a loose regex once inflated a coverage figure by five rows). Ratified as the standard workflow after two validations: <strong>Docling</strong> (1 integration boundary — accepted) and <strong>LangGraph</strong> (6 boundaries — method validated, design correctly failed). Corollary, load-bearing: <em>a service's method pass is independent of its design acceptance.</em></p>
+
+<p>The AI-runtime layer adds a parallel discipline: <strong>three evidence classes that are never substituted</strong> — A (protocol/client conformance, provable offline), B (model behaviour), C (performance/resource). "An offline fixture result is class A only. It is never evidence for B or C." A <em>skip is not a pass</em> (<code>governance/policy/ai-runtime-acceptance-contract.md</code>).</p>
+
+<!-- 4 -->
+<h2><span class="num">04</span>The AI runtime reality</h2>
+<p>One runtime is commissioned: <strong>Qwen3.5-9B q4_K_M via Ollama 0.32.9 on hxs-4</strong>, isolated to the 8 GB RTX 5060. The measurements are unusually honest and carry three hard constraints every downstream client must respect.</p>
+
+<table>
+<thead><tr><th>Acceptance state (P-B)</th><th>Grant</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td class="mono">accepted-local-runtime</td><td><span class="pill p-good">GRANTED</span></td><td>Loopback <code>127.0.0.1:11434</code>, bounded prompts, thinking disabled. Local utility inference only.</td></tr>
+<tr><td class="mono">accepted-network-consumable</td><td><span class="pill p-bad">NOT GRANTED</span></td><td>Remote use authorized <em>only</em> through OmniRoute (owner ruling, option B, permanent). Mechanism undefined — see §6.</td></tr>
+<tr><td class="mono">Claude Code backend</td><td><span class="pill p-bad">NOT QUALIFIED</span></td><td><span class="idref">iss-016</span> — baseline system prompt alone is 28,440 tokens; requests reach 69–73K into a 65,536 window.</td></tr>
+</tbody>
+</table>
+
+<div class="flag bad"><span class="tag">The dangerous finding · iss-015</span>
+<p style="margin:6px 0 0"><strong>Prompt overflow is silently truncated, not refused.</strong> Above ~64,880 tokens the runtime discards the excess and processes only <strong>32,770</strong> — no error, no warning — then "answers confidently from the remainder." A wrong answer indistinguishable from a right one. No Ollama setting converts this into an error; the mitigation is client-side prompt bounding. This is the concrete reason the contract prefers vLLM (which errors on overflow) as the declared <em>primary</em> runtime — even though Ollama is what's actually running.</p></div>
+
+<p>Two more constraints travel with the workload: GPU isolation on this host requires <code>OLLAMA_VULKAN=0</code> + <code>GGML_VK_VISIBLE_DEVICES=999</code> + <code>CUDA_VISIBLE_DEVICES</code> by <em>UUID</em> — CUDA-only isolation silently fails as the Vulkan backend re-enumerates both cards (<span class="idref">iss-013</span>); and overcommitting the card wedges the NVIDIA kernel context into an unkillable D-state requiring reboot, so a model must be unloaded before changing context size (<span class="idref">iss-014</span>, incident <code>hxs4-wedge-001</code>).</p>
+
+<!-- 5 -->
+<h2><span class="num">05</span>Candidate &amp; roadmap technologies — dispositions</h2>
+<p>Several forward-looking technologies have been evaluated (mostly in briefs authored by ChatGPT / <code>gpt-5.6-sol</code>) and ruled on by the owner. None is deployed; each has a clear disposition and a clear open condition.</p>
+
+<table>
+<thead><tr><th>Technology</th><th>Disposition</th><th>Open condition</th></tr></thead>
+<tbody>
+<tr><td><strong>OmniRoute</strong> v3.8.50<br><span class="mono p-dim">AI gateway / traffic plane</span></td><td><span class="pill p-good">ADOPT — narrow</span> replaces LiteLLM</td><td>Pilot not started. The <strong>mechanism</strong> by which it makes loopback Qwen network-consumable is undefined (§6). SSRF protection is globally disabled by owner exception — must be documented so it isn't read as an upstream-safe default.</td></tr>
+<tr><td><strong>jcode</strong> 0.75.5<br><span class="mono p-dim">Rust local coding-agent harness</span></td><td><span class="pill p-warn">PILOT WARRANTED</span> tandem with Claude Code</td><td>Its <code>pre_tool</code> hook <strong>fails open</strong> — permanent HX controls can't depend on it. Fix upstream (fail-closed) or add a shared enforcement boundary below all harnesses. Not an HX fork.</td></tr>
+<tr><td><strong>Code-Graph-RAG</strong> 0.0.630<br><span class="mono p-dim">structural code intelligence</span></td><td><span class="pill p-info">ROADMAP CANDIDATE</span> not a core service</td><td>Not a LightRAG replacement. Pilot corpus is jcode + OmniRoute (this repo is 504/522 Markdown — a poor benchmark). Needs a read-only MCP tool allowlist before adoption.</td></tr>
+<tr><td><strong>Mem0</strong><br><span class="mono p-dim">durable memory authority</span></td><td><span class="pill p-good">ESTABLISHED</span> sole memory owner</td><td>LangGraph's packaged <code>/store</code> route competes with it — must be disabled at deploy (part of iss-019).</td></tr>
+<tr><td><strong>LangGraph</strong><br><span class="mono p-dim">stateful orchestrator, hxs-11</span></td><td><span class="pill p-bad">PARKED</span> revised / not accepted</td><td>Design failed five capability reviews (<span class="idref">iss-019</span>). The <em>method pilot</em> succeeded; the <em>design</em> did not. Implementation NOT authorized.</td></tr>
+<tr><td><strong>LiteLLM</strong></td><td><span class="pill p-dim">SUPERSEDED</span> by OmniRoute</td><td>Do not build a LiteLLM contract. Registry still names it (§6).</td></tr>
+<tr><td><strong>DS4 / DeepSeek</strong></td><td><span class="pill p-dim">DROPPED</span> 2026-08-14</td><td>Candidacy withdrawn; capacity gate returned BLOCKED (needs 96 GB vs hxs-3's 66 GB). Closed.</td></tr>
+<tr><td><strong>Ansible</strong></td><td><span class="pill p-bad">RULED OUT</span> permanently</td><td>Enforced by <code>hx-permanent-policy-guard.ps1</code> in every phase. Keep the expertise, never re-propose the tool.</td></tr>
+</tbody>
+</table>
+
+<!-- 6 -->
+<h2><span class="num">06</span>The fault lines — cross-workstream contradictions &amp; drift</h2>
+<p>These are the tensions that only appear when documents are read against each other. They are the substance of the regroup. Every one is live.</p>
+
+<div class="flag bad"><span class="tag">FL-1 · the flagship — iss-017</span>
+<p style="margin:6px 0 0"><strong>The only accepted inference capability is unreachable from the host meant to consume it.</strong> Qwen3.5-9B is accepted <em>loopback-only on hxs-4</em>; LangGraph (the named client) sits on hxs-11 and routes through the gateway on hxs-8 — neither can reach a loopback socket on hxs-4. Remote use is authorized only through OmniRoute, but OmniRoute on hxs-8 can't reach that loopback either. <strong>The policy is ruled; the mechanism is undefined and unmeasured.</strong> This is the top downstream blocker.</p></div>
+
+<div class="flag bad"><span class="tag">FL-2 · hxs-4 authority conflict — unruled</span>
+<p style="margin:6px 0 0"><code>SERVER-REGISTRY.md</code> (the declared source of truth) assigns hxs-4 <strong>Qwen2.5-3B</strong> + a Qdrant/embedding/rerank plane. The runtime-acceptance record commissions <strong>Qwen3.5-9B</strong> on the same 8 GB card — and <span class="idref">act-014</span> confirms the registry-assigned workloads are <em>not installed</em>. Two authorities disagree about one host, and <code>session-resume.md</code> still marks it <strong>"unruled."</strong> Someone must rule which authority governs.</p></div>
+
+<div class="flag bad"><span class="tag">FL-3 · LiteLLM vs OmniRoute — registry is behind</span>
+<p style="margin:6px 0 0">Target state moved the gateway to OmniRoute; the <strong>registry still names LiteLLM</strong> on hxs-8 and hxs-9, and OmniRoute appears nowhere in it. Worse, the three authorities disagree three ways: registry says LiteLLM, LangGraph's design says "OmniRoute supersedes it / plane BLOCKED", and Docling's design still calls it "LiteLLM — legacy candidate." The entire network-consumable path rests on a component the registry doesn't list and that doesn't yet exist.</p></div>
+
+<div class="flag"><span class="tag">FL-4 · declared-primary runtime ≠ running runtime</span>
+<p style="margin:6px 0 0">The runtime contract names <strong>vLLM/Qwen as PRIMARY</strong>, and an invariant test enforces that label — yet the only operational runtime is <strong>Ollama</strong>, whose silent-truncation behaviour (iss-015) is exactly the failure mode vLLM was preferred to avoid. Not a policy violation (the contract is explicitly target-state), but a standing tension: the deployed path is not the declared one, and forward analysis notes Qwen3.5-9B under vLLM does not fit the 8 GB card at all — it belongs on the idle 16 GB card.</p></div>
+
+<div class="tornote">Drift worth an owner glance: several version pins anchor everything and will rot — <code>Ollama 0.32.9</code>, <code>Claude Code 2.1.221</code> + its 28,440-token baseline, <code>nvidia-driver-580</code> / CUDA 13.0. And the Qwen family naming is internally inconsistent across authorities: "Qwen 3.8 27B" (hxs-1), "Qwen2.5-3B" (hxs-4 registry) vs "Qwen3.5-9B" (hxs-4 acceptance), "Qwen2.5-Coder-32B" (hxs-2). "Qwen3.5" is not a publicly released family as of the May-2025 knowledge cutoff — worth an owner confirm on the exact model identities.</div>
+
+<!-- 7 -->
+<h2><span class="num">07</span>Concrete defects found during recon — the "ugly"</h2>
+<p>These are not tensions of interpretation; they are things that are wrong on disk and would misdirect a reader or break on re-run. Ordered by how much trouble they cause.</p>
+
+<table>
+<thead><tr><th>#</th><th>Defect</th><th>Why it matters</th></tr></thead>
+<tbody>
+<tr><td class="mono">D-1</td><td><strong>Data corruption in <code>ai-runtime-acceptance-contract.md</code>.</strong> The provenance / third-profile / MIT-attribution block is garbled — the runtime's name is stripped, the third profile is unnamed.</td><td>A contract that asserts "no MIT notice obligation is triggered" while its own attribution block is corrupted is a compliance risk. Repair from history.</td></tr>
+<tr><td class="mono">D-2</td><td><strong><code>claude-hooks/apply-hooks.ps1</code> is not idempotent</strong> for the two newest guards. Its dedup regex matches only the original five hooks, so re-running <em>duplicates</em> the Ansible-deny and authority-edit PreToolUse groups. The regression suite never invokes the installer, so it's uncaught.</td><td>Violates a stated definition-of-done ("hooks do not duplicate on repeated installation"). A real bug in a load-bearing guardrail.</td></tr>
+<tr><td class="mono">D-3</td><td><strong>Phantom assets.</strong> <code>start-up/session-resume.md</code> claims six HX discipline skills, three quick skills, and an <code>ELI5</code> output style exist; <code>settings.json</code> sets <code>outputStyle: "ELI5"</code>. <em>None of those files exist</em> in this snapshot — <code>.claude/skills/</code> holds only the four discovery-lifecycle skills.</td><td>The handoff doc describes a control plane the repo doesn't contain; <code>outputStyle</code> points at an absent file. Exactly the "operations doc = target-state, repo = as-built" trap the project warns about.</td></tr>
+<tr><td class="mono">D-4</td><td><strong><code>services/langgraph/service.md</code> not updated to its own final outcome.</strong> Its header still says four reviews with <code>testing-qa</code> = CONDITIONAL PASS; the authoritative verdicts file says <strong>five reviews, all FAIL</strong> (testing-qa regressed).</td><td>The service doc contradicts the record it points to. Verdict is unchanged (still not accepted) but the stated reason is stale.</td></tr>
+<tr><td class="mono">D-5</td><td><strong>Regression pass-count disagreement:</strong> the issue log says 153/153, a discovery report says 153 (down from 161), and both session-resume docs say 154/0.</td><td>No single source of truth for suite state — and the count is the evidence a change is safe.</td></tr>
+<tr><td class="mono">D-6</td><td><strong>Capacity/commission gates are keyed to an absent workload.</strong> <code>hx-capacity-gate.ps1</code> / <code>hx-workload-commission.ps1</code> read keys (SSD-streaming mode, storage_gate, model_acquisition) that don't exist in <code>qwen35-9b-ollama.json</code>; a phase-2 reason string even hardcodes "hxs-3" while the target is hxs-4. They were written for the dropped DS4 workload.</td><td>The commission state machine can't reproduce the JSON's self-declared "OPERATIONAL" — it BLOCKS at the storage gate.</td></tr>
+<tr><td class="mono">D-7</td><td><strong>Housekeeping:</strong> the completed one-shot <code>nvidia-driver-install-directive.md</code> still sits in <code>governance/policy/</code> with no COMPLETE marker (invites re-execution); <code>.claude/AGENTS.md</code> mandates a test path (<code>tests/remediation-tests.ps1</code>) that is Norton-locked (real file is <code>-restored</code>, iss-010); two policy docs lack authority/date headers.</td><td>Small, but each is a paper-cut that misdirects the next reader or agent.</td></tr>
+</tbody>
+</table>
+
+<div class="flag good"><span class="tag">Correction to the older handoff — credentials</span>
+<p style="margin:6px 0 0">The 2026-08-13 session-resume lists "rotate the two exposed credentials" as an open action. That is <strong>superseded</strong>: <span class="idref">iss-012</span> is <em>closed</em> and <span class="idref">risk-003</span> records the owner's determination that both credential classes are dead/revoked — no rotation required, and a future scan hit is to be read as known-dead. The working tree was redacted and history rewritten; neither affected document was ever published. Worth confirming, but it is not an open task.</p></div>
+
+<!-- 8 -->
+<h2><span class="num">08</span>Open owner decisions — the queue</h2>
+<p>What actually needs a human ruling to move forward, highest-leverage first. None of these can be resolved by an agent — they are exactly the decisions the method reserves to the owner.</p>
+<ul>
+<li><strong>Rule the hxs-4 authority conflict</strong> (FL-2): does the registry (Qwen2.5-3B + retrieval plane) or the acceptance record (Qwen3.5-9B) govern that host? Everything about hxs-4's role hangs on this.</li>
+<li><strong>Define the OmniRoute reachability mechanism</strong> (FL-1 / iss-017): co-locate a plane component on hxs-4, or an explicit forwarding path — then measure it. Prerequisite to any remote Qwen use and to LangGraph having a model endpoint at all.</li>
+<li><strong>Reconcile the registry to target state</strong> (FL-3): add OmniRoute, retire the LiteLLM cells — or explicitly rule the registry stays as-built until Phase 3 touches each host.</li>
+<li><strong>Schedule (or shelve) LangGraph implementation</strong>: the iss-019 backlog is the correction list; the packaged-server mode is final and not to be re-litigated.</li>
+<li><strong>Green-light the approved pilots</strong>: OmniRoute, jcode, and Code-Graph-RAG are all approved-to-pilot but none has begun — each needs a go and a sync checkpoint.</li>
+<li><strong>Authorize Phase 3</strong>: server implementation is READY but requires its own authorization.</li>
+</ul>
+
+<!-- 9 -->
+<h2><span class="num">09</span>The lessons-learned through-line</h2>
+<p>Thirty-three recorded lessons (<code>governance/logs/lessons-learned.md</code>) reduce to one sentence, and it is the right compass heading for the next phase:</p>
+<p class="lead" style="margin:14px 0"><em>"Parses" is not "passes" is not "proven" — and every claim rots or lies unless it is tested against reality.</em></p>
+<p>The concrete forms it has already taken here: a syntax check is not an execution test (<span class="idref">ll-001</span>); an untested guard pattern is an unguarded path (<span class="idref">ll-002</span>, the RAID rule that could never match); a PCI BAR is an address aperture, not VRAM (<span class="idref">ll-011</span>); a hostname is a claim, not an identity (<span class="idref">ll-026</span>); a comparative claim is only true of the set that existed when it was written — closing one gap surfaced 27 stale superlatives (<span class="idref">ll-030</span>); a proposal complete enough to act on will be read as a decision (<span class="idref">ll-032</span>); and a document that warns about a secret will happily print it (<span class="idref">ll-033</span>). The defects in §7 are new instances of the same lesson — which is why the recon that finds them matters.</p>
+
+<div class="foot">
+  <p><strong>What this document is.</strong> An alignment record produced by reading the full repository against its own authority order and hunting for contradictions. It asserts no as-built change and assigns no roles. Every claim traces to a file, an ID, or an issue row; where sources disagree, both are named. Prepared for the HX-Infrastructure regroup phase.</p>
+  <p class="mono">Claude (Opus 4.8) · 2026-08-15 · repo snapshot HX-Infrastructure-main · aligned, ready for direction.</p>
+</div>
+
+</div>
+</body>
+</html>

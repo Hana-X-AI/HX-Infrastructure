@@ -1,0 +1,10 @@
+# SHA-256 manifest for GitHub Copilot Phase 3 remediation package
+# Generated 2026-08-15. This manifest does not include its own digest.
+fc01856a14b2061dd8a4734507fc14e6745508db61f704f7b54070529bbb3245  github-copilot_2026-08-15_phase3-remediation-summary.md
+1cddc7a3a86b54d8ef4d884e51e43db6ddab7a96e072becfe5ae432171ac3565  p1-01-scan-after.txt
+043f51e83d569ce0c3522392d38223767a401b788e4f245d428f4409ddd60836  p1-01-scan-before.txt
+865a81d193c84df33da692e6bcbc90062b0c99d3cc83bad0e774966f09f2a6eb  p1-01-scan-before-p102.txt
+928a488a309ed019bfa50dcc3a74f5a3ad470135005123dfb2301ee312bcbed6  p101scan.ps1
+4d3e4989aeed35fb85b97f487e9d310961f7993c8de841fa1268d1b772c21e8a  p101scanv2.ps1
+6b8a40adf78da1fa4796362dab75c95e59a0867586e5714b2569c98c9868b9da  phase3-remediation-worktree.patch
+d5917157bfceb765c0dfe127be27cfc921982914d12bddaacb5143619716e7f4  validation-results.txt

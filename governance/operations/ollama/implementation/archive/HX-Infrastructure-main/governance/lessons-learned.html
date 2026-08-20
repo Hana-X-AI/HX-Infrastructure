@@ -1,0 +1,528 @@
+<title>Lessons Learned — HX Governance</title>
+<style>
+  :root {
+    --ground:#fbfbf9; --surface:#f2f3f0; --raised:#ffffff;
+    --ink:#1b1f1d; --muted:#6b726e; --faint:#949b96;
+    --line:#dde0db; --line-firm:#c3c8c1;
+    --accent:#0f6e5c; --accent-wash:#e6f0ec;
+    --signal:#b4531a; --signal-wash:#fbeee4;
+    --ok:#2f6d4f; --ok-wash:#e4efe8;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --step--2:0.6875rem; --step--1:0.8125rem; --step-0:0.9375rem;
+    --step-1:1.125rem; --step-2:1.5rem; --step-3:2.125rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground:#141917; --surface:#1b211e; --raised:#1f2724;
+      --ink:#e8ebe8; --muted:#97a09b; --faint:#6f7873;
+      --line:#2b342f; --line-firm:#3c4740;
+      --accent:#4fbfa3; --accent-wash:#16302a;
+      --signal:#e08a4c; --signal-wash:#33251a;
+      --ok:#6cc09a; --ok-wash:#162c22;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#141917; --surface:#1b211e; --raised:#1f2724;
+    --ink:#e8ebe8; --muted:#97a09b; --faint:#6f7873;
+    --line:#2b342f; --line-firm:#3c4740;
+    --accent:#4fbfa3; --accent-wash:#16302a;
+    --signal:#e08a4c; --signal-wash:#33251a;
+    --ok:#6cc09a; --ok-wash:#162c22;
+  }
+  :root[data-theme="light"] {
+    --ground:#fbfbf9; --surface:#f2f3f0; --raised:#ffffff;
+    --ink:#1b1f1d; --muted:#6b726e; --faint:#949b96;
+    --line:#dde0db; --line-firm:#c3c8c1;
+    --accent:#0f6e5c; --accent-wash:#e6f0ec;
+    --signal:#b4531a; --signal-wash:#fbeee4;
+    --ok:#2f6d4f; --ok-wash:#e4efe8;
+  }
+
+  :root { color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root { color-scheme: dark; } }
+  :root[data-theme="dark"] { color-scheme: dark; }
+  :root[data-theme="light"] { color-scheme: light; }
+
+  body {
+    margin:0; padding:clamp(1.5rem,4vw,3.5rem) clamp(1rem,4vw,2rem) 5rem;
+    background:var(--ground); color:var(--ink);
+    font-family:var(--sans); font-size:var(--step-0); line-height:1.55;
+    -webkit-text-size-adjust:100%;
+  }
+  .page { max-width:1100px; margin:0 auto; display:flex; flex-direction:column; gap:2.25rem; }
+
+  .bar { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .nav { display:flex; gap:1.1rem; flex-wrap:wrap; align-items:center;
+         font-family:var(--mono); font-size:var(--step--2);
+         text-transform:uppercase; letter-spacing:0.1em; }
+  .nav a { color:var(--muted); text-decoration:none; border-bottom:1px solid transparent; padding-bottom:2px; }
+  .nav a:hover { color:var(--accent); border-bottom-color:var(--accent); }
+  .nav a[aria-current="page"] { color:var(--accent); border-bottom-color:var(--accent); }
+
+  .toggle {
+    font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+    letter-spacing:0.09em; color:var(--muted); background:var(--surface);
+    border:1px solid var(--line-firm); border-radius:2px; padding:0.4rem 0.75rem; cursor:pointer;
+    transition:color 120ms ease, border-color 120ms ease;
+  }
+  .toggle:hover { color:var(--accent); border-color:var(--accent); }
+
+  .masthead { display:flex; flex-direction:column; gap:0.7rem; }
+  .eyebrow { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+             letter-spacing:0.14em; color:var(--accent); margin:0; }
+  h1 { font-size:var(--step-3); line-height:1.08; letter-spacing:-0.02em; font-weight:650;
+       margin:0; text-wrap:balance; }
+  .masthead p { margin:0; max-width:65ch; color:var(--muted); }
+
+  .strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:1px;
+           background:var(--line); border:1px solid var(--line); border-radius:3px; overflow:hidden; }
+  .cell { background:var(--surface); padding:0.8rem 1rem; display:flex; flex-direction:column; gap:0.1rem; }
+  .cell dt { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+             letter-spacing:0.1em; color:var(--muted); }
+  .cell dd { margin:0; font-size:var(--step-1); font-weight:600; font-variant-numeric:tabular-nums; }
+
+  h2 { font-size:var(--step-2); letter-spacing:-0.015em; font-weight:620; margin:0; text-wrap:balance; }
+  section { display:flex; flex-direction:column; gap:0.85rem; }
+  .lede { margin:0; color:var(--muted); max-width:70ch; font-size:var(--step--1); }
+
+  .entries { display:flex; flex-direction:column; gap:0.75rem; }
+  .entry { border:1px solid var(--line); border-radius:3px; background:var(--raised);
+           padding:1rem 1.15rem; display:flex; flex-direction:column; gap:0.6rem;
+           border-left:3px solid var(--line-firm); }
+  .entry.is-open { border-left-color:var(--signal); }
+  .entry.is-done { border-left-color:var(--ok); }
+  .entry.is-hold { border-left-color:var(--faint); }
+
+  .entry-head { display:flex; align-items:center; gap:0.55rem; flex-wrap:wrap; }
+  .eid { font-family:var(--mono); font-weight:650; font-size:var(--step-0); }
+  .chip { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+          letter-spacing:0.08em; padding:0.15rem 0.45rem; border-radius:2px;
+          border:1px solid var(--line-firm); color:var(--muted); }
+  .pill { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+          letter-spacing:0.08em; padding:0.15rem 0.5rem; border-radius:10px; font-weight:600; }
+  .pill.is-open { background:var(--signal-wash); color:var(--signal); }
+  .pill.is-done { background:var(--ok-wash); color:var(--ok); }
+  .pill.is-hold { background:var(--surface); color:var(--muted); }
+  .rel { margin-left:auto; font-family:var(--mono); font-size:var(--step--2); color:var(--faint); }
+
+  .field { display:flex; flex-direction:column; gap:0.2rem; }
+  .field-label { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+                 letter-spacing:0.09em; color:var(--faint); }
+  .field p { margin:0; max-width:78ch; }
+  .field.body p { color:var(--ink); }
+  .field.sub p { color:var(--muted); font-size:var(--step--1); }
+
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1rem; }
+  .card { border:1px solid var(--line); border-radius:3px; background:var(--raised);
+          padding:1.15rem 1.25rem; display:flex; flex-direction:column; gap:0.5rem;
+          text-decoration:none; color:inherit;
+          transition:border-color 120ms ease, transform 120ms ease; }
+  .card:hover { border-color:var(--accent); transform:translateY(-2px); }
+  .card h3 { margin:0; font-size:var(--step-1); font-weight:620; letter-spacing:-0.01em; }
+  .card p { margin:0; font-size:var(--step--1); color:var(--muted); }
+  .card .meta { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+                letter-spacing:0.09em; color:var(--accent); margin-top:auto; padding-top:0.3rem; }
+
+  .scroll { overflow-x:auto; border:1px solid var(--line); border-radius:3px; background:var(--raised); }
+  table { border-collapse:collapse; width:100%; font-size:var(--step--1); }
+  thead th { background:var(--surface); border-bottom:1px solid var(--line-firm);
+             font-family:var(--mono); font-size:var(--step--2); font-weight:600;
+             text-transform:uppercase; letter-spacing:0.09em; color:var(--muted);
+             text-align:left; padding:0.65rem 0.85rem; white-space:nowrap; }
+  tbody td { padding:0.6rem 0.85rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:last-child td { border-bottom:none; }
+
+  ul.notes { padding-left:1.15rem; margin:0; font-size:var(--step--1); color:var(--muted);
+             display:flex; flex-direction:column; gap:0.4rem; }
+  ul.notes b, ul.notes code { color:var(--ink); }
+
+  code { font-family:var(--mono); font-size:0.92em; background:var(--surface);
+         padding:0.05em 0.32em; border-radius:2px; }
+  pre { margin:0; overflow-x:auto; background:var(--surface); border:1px solid var(--line);
+        border-radius:3px; padding:0.85rem 1rem; }
+  pre code { background:none; padding:0; font-size:var(--step--1); }
+
+  footer { border-top:1px solid var(--line); padding-top:1rem; font-size:var(--step--2); color:var(--faint); }
+  a { color:var(--accent); }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
+</style>
+
+<div class="page">
+
+  <div class="bar">
+    <nav class="nav">
+        <a href="https://claude.ai/code/artifact/09f4465a-1924-40c5-b352-cbe19926100d">Governance</a>
+        <a href="https://claude.ai/code/artifact/130cf301-c270-4851-a1e5-eb9ed8586074">Fleet inventory</a>
+        <a href="https://claude.ai/code/artifact/1a0858b2-4e47-4111-b4c2-12005ee67ed4">Architecture v0.3</a>
+        <a href="https://claude.ai/code/artifact/01a9f2ed-02d1-4491-9cab-07934be22dd1">v0.1 frozen</a>
+        <a href="https://claude.ai/code/artifact/c16b4563-b9d4-4c17-9961-46329fe4faac">Validation</a>
+        <a href="https://claude.ai/code/artifact/1af2b128-6708-4e55-949d-d38cc293f67a">Recommendations</a>
+        <a href="https://claude.ai/code/artifact/4062f99f-e8d4-44ba-aae2-74472bde91f5">Actions &amp; issues</a>
+        <a href="https://claude.ai/code/artifact/9325f481-90f0-4439-9fa0-e8f48d629ff4" aria-current="page">Lessons learned</a>
+        <a href="https://claude.ai/code/artifact/ac6d1ab7-8dae-436d-94f1-80bfbb99d467">Standards</a>
+    </nav>
+    <button type="button" class="toggle" id="theme-toggle">Dark mode</button>
+  </div>
+
+
+  <header class="masthead">
+    <p class="eyebrow">HX-Infrastructure &middot; running log</p>
+    <h1>Lessons Learned</h1>
+    <p>Things this project learned the hard way. A lesson belongs here when it changes how
+    work should be done next time; the defect itself lives in the actions and issues log.
+    Each entry names the evidence that produced it and what was changed in response.</p>
+  </header>
+
+  <dl class="strip">
+    <div class="cell"><dt>Lessons</dt><dd>33</dd></div>
+    <div class="cell"><dt>First</dt><dd>2026-08-11</dd></div>
+    <div class="cell"><dt>Latest</dt><dd>2026-08-13</dd></div>
+  </dl>
+
+  <section>
+    <h2>Log</h2>
+    <p class="lede">Most recent first.</p>
+    <div class="entries">
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-033</span>
+          <span class="chip">2026-08-13</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>A document that warns about a secret will happily print it. Review artifacts need the same secret discipline as the code they describe.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>Three review documents produced during the merge assessment named an exposed password and API key in cleartext. One of them was the migration manifest, whose own §6 mandates secret-scanning every migration commit. All three were bound for a governance directory and a published web artifact. Separately, the legacy <code>hx-password-guard-hook.py</code> — written to block credentials — hard-codes the very password it guards against.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Scan every document before commit, not only code and configuration. A finding can be stated as "the vault password is reused as the service-account password" without reproducing it; naming the location is what makes it actionable, and naming the value is what makes it dangerous.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-032</span>
+          <span class="chip">2026-08-13</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>A proposal complete enough to act on will eventually be read as a decision. Where a candidate document and the authoritative record disagree, the divergence is only stable while someone is actively holding it open.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>Architecture v0.3 carried a full role mapping for all 16 machines while <code>SERVER-REGISTRY.md</code> recorded zero assigned roles and Phase 2 <code>BLOCKED</code>. The gap was correct — <code>CLAUDE.md</code>, <code>GOALS-AND-OBJECTIVES.md</code> and the registry all forbid an agent from assigning roles — and it held for three days across several document revisions. It was an outside review, not the process, that pushed it to resolution.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>The control worked and should not be weakened: an agent must still never assign a role. What was missing was a forcing function. Where a proposal reaches the point of being complete and internally consistent, say plainly that it is awaiting ratification and name what ratification changes — here, that it releases the Phase 1 guard fleet-wide. State the consequence at the moment of the decision, not afterwards.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-031</span>
+          <span class="chip">2026-08-13</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>Do not re-derive a fact from evidence when an authoritative record already holds it. Evidence is noisy by nature; the authoritative record exists precisely so the fact does not have to be guessed twice.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>Normalizing the 15 pre-work records needed each server IP. Extracting it from the terminal paste looked obvious and was wrong on 4 of 15: <code>hxs-2</code> and <code>hxs-3</code> returned the subnet <code>192.168.50.0</code>, <code>hxs-5</code> returned the gateway <code>192.168.50.1</code>, and <code>hxs-7</code> returned an unrelated <code>192.168.50.115</code>. Every one of those addresses appears legitimately in its paste. <code>SERVER-REGISTRY.md</code> had the correct value for all fifteen.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>The documentation standard now requires the IP in a pre-work record to come from the registry, never from the paste. More generally: when a script must fill a field, name the authoritative source for that field before writing the extraction, and if there is no authoritative source, that is the finding.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-030</span>
+          <span class="chip">2026-08-13</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>A comparative claim is only true of the set that existed when it was written. In a record set built incrementally, every superlative and every uniqueness claim silently rots as later records arrive, and nothing in the record itself signals that it has.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>Closing the "documented and comparable" gate condition surfaced 27 stale or false cross-host claims across 13 of the 15 discovery records. hxs-6 claimed the newest firmware in the fleet; hxs-8 is newer, and hxs-8 in turn claimed to be second newest. hxs-6 claimed to be the only host with Secure Boot; hxs-7 also has it. hxs-4 claimed the smallest memory and smallest storage; three later hosts beat it on both. Batch-membership notes counted four or five members where six now exist. All were accurate on the day they were written.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Write comparative claims with their scope attached — "of the four GPU hosts", "of the six-unit batch" — rather than "in the fleet" or "so far", which quietly expand as the set grows. Before accepting a set of records as comparable, re-verify every superlative against the complete set; a scan for <code>only</code>, <code>newest</code>, <code>smallest</code>, <code>largest</code> and <code>so far</code> finds them cheaply. Treat this as a required step whenever an incrementally-built record set is declared complete.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-029</span>
+          <span class="chip">2026-08-13</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>Batch identity does not imply configuration identity. Two machines from the same production batch, with consecutive serials and identical hardware, can still differ in firmware settings — and that difference is invisible unless the same field is collected from every host and compared across the fleet.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p><code>iss-011</code>: <code>hxs-15</code> is the sixth member of the <code>8CG8170Sxx</code> batch and matches <code>hxs-5</code>, <code>hxs-9</code>, <code>hxs-10</code>, <code>hxs-11</code> and <code>hxs-12</code> in CPU, memory, integrated graphics, storage class and firmware revision. It is the only host in 15 where VT-x is not exposed. Nothing about its model, serial or hardware predicted it. It surfaced only from a fleet-wide comparison of the one field that all 14 other records also carried.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>The value of a uniform collector is the comparison it makes possible, not the individual record. Before accepting a record as unremarkable because the host belongs to a known batch, diff its fields against the batch. Treat "same as the others" as a claim to be checked, not a default.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-028</span>
+          <span class="chip">2026-08-12</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>A change made for a non-functional reason can still change behaviour. Run the tests after cosmetic and defensive edits, not only after logic edits.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>Splitting the destructive literals for <code>iss-010</code> was meant to be purely textual, but <code>@("mk" + "fs", "wipe" + "fs")</code> does not build a 7-element array: in PowerShell the comma operator binds tighter than <code>+</code>, so it evaluates as <code>"mk" + ("fs","wipe") + "fs"</code> and collapses to one joined string. The deny-rule coverage check silently had nothing left to check. Only running the suite caught it.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Parenthesise each element when concatenating inside an array literal. More generally, treat "this edit cannot affect behaviour" as a claim to be verified by the suite, not an assumption that licenses skipping it.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-027</span>
+          <span class="chip">2026-08-12</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>Test data that mimics an attack will be treated as one. A file full of destructive command literals is indistinguishable from a destructive script to a scanner that reads bytes rather than intent.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p><code>iss-010</code>: Norton 360 quarantined the regression suite. Its 14 verbatim destructive commands existed solely to prove the Phase 1 guard denies them, but combined with redirected-stdio process spawning and temp-file writes they read as a disk-wiping script. Nothing in the file was malicious and nothing needed removing.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Destructive literals in test data are assembled at runtime from fragments, so the token never appears verbatim while the assembled string still reaches the code under test. Coverage is unchanged. Where a security guard is tested by feeding it real attack strings, expect the test file itself to be scanned as hostile and design for it.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-026</span>
+          <span class="chip">2026-08-12</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>A hostname is a claim by the host, not an identity. Confirm identity with serial and machine ID before trusting a name, especially across cloned or imaged machines.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>Two physically distinct EliteDesk 800 G3 units both reported <code>hxs-9</code>. They were separated only by system serial <code>8CG8170SW8</code> against <code>8CG8170SXM</code>, and by their machine IDs. A pre-work record showing <code>hxsa@hxs-9</code> prompts was initially read as a copy-paste error from the previous server; it was actually correct, and the machine really was misnamed.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Where a host's reported name conflicts with the intended one, treat serial and machine ID as the deciding evidence, write no discovery record, and raise it. Recorded as <code>iss-009</code>.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-025</span>
+          <span class="chip">2026-08-12</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>Never name an output file from a value the remote host controls, unless the name is also made unique by something you control. A collision destroys the earlier file with no error.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p><code>hx-collect.ps1</code> named its output <code>&lt;hostname&gt;-facts.txt</code>. The host at <code>.209</code> reports itself as <code>hxs-9</code>, so collecting it silently overwrote the genuine <code>hxs-9</code> collection from <code>.208</code>. Only the raw facts file was lost, because the discovery record had already been written, but nothing warned.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Output is now <code>&lt;hostname&gt;-&lt;last-octet&gt;-facts.txt</code>, and the script prints a note when it overwrites an existing file.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-024</span>
+          <span class="chip">2026-08-12</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>"Read it first" means before every other action, not in the same batch as them. A gating step run concurrently with the steps it is meant to gate has not been run at all.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p><code>ll-014</code> created step 0 of the discovery skill after the <code>hxs-3</code> GPU miss. Two servers later, on <code>hxs-5</code>, the pre-work file was opened in the same batch as network probes of two candidate addresses. The file already stated the address, the account and <code>SUDO_NOPASSWD=yes</code> on lines 12, 68 and 78. Nothing needed probing, and one of the two probed addresses was pure inference from a numbering pattern. The failure was announced as "following step 0" while not following it, which is worse than skipping it openly.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Step 0 now reads "before contacting the target in any way. Not in the same batch as other calls. Not concurrently." It names the address, account and privilege state as facts the file supplies, and forbids probing for them or inferring an address from a pattern.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-023</span>
+          <span class="chip">2026-08-12</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>Kernel messages from the open-source driver are a trustworthy VRAM source. Verify the method when the authoritative source finally becomes available.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p><code>nouveau</code> reported 16376, 16311 and 8151 MiB across the fleet during Phase 1 discovery. When <code>nvidia-smi</code> became available it returned exactly the same figures for every card. The governance rule requiring a kernel message that names the value as VRAM produced correct results with no vendor driver present.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>The kernel-message method stands as the Phase 1 VRAM source. Where an independent authority later appears, compare and record the agreement rather than silently replacing the earlier value.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-022</span>
+          <span class="chip">2026-08-12</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>An open-source driver failing to initialize hardware is not evidence that the hardware is faulty. Test the vendor driver before touching the machine.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>Two MSI 1462:5351 cards in <code>hxs-2</code> aborted <code>nouveau</code> initialization with <code>-22</code> across multiple boots and a full upgrade. Under <code>nvidia-driver-580-server-open</code> both initialized immediately as RTX 5060 Ti with 16311 MiB each. The physical card-swap work planned in <code>act-008</code> was never needed and closed unperformed.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Where a vendor driver exists and is authorized, run that test before scheduling hardware handling. It is faster, reversible, and does not risk damaging working parts.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-021</span>
+          <span class="chip">2026-08-12</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>When two variables are confounded, design the test that separates them in one move rather than the test that is easiest to reach.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>The obvious next step was removing one card from <code>hxs-2</code> — but MSI 1462:5351 had only ever run in pairs and only in that host, so card and host stayed confounded whatever the result. Moving one card into the known-good <code>hxs-4</code> separates them in a single step.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p><code>act-008</code> specifies the cross-host swap, and states what each outcome proves before it is run.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-020</span>
+          <span class="chip">2026-08-12</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>A matching PCI device ID does not mean a matching card. Record the subsystem ID, which identifies the board partner and the VBIOS, not just the chip.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>Two hosts were described as having "the same GB206, PCI 10de:2d04", and the difference between working and failing was assumed to be one card versus two. The subsystem IDs showed otherwise: the failing host runs MSI 1462:5351, the working ones run PNY 196e:143e and MSI 1462:5371. The only failing model is MSI 1462:5351, on both instances.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Subsystem ID is now recorded for every GPU in every <code>discovery.md</code>. Comparisons across hosts use it, not the device ID alone.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-019</span>
+          <span class="chip">2026-08-12</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>An owner-initiated change is also an experiment. Record what it ruled out.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>A full package upgrade and reboot of all four servers left both GPU faults completely unchanged, and the kernel stayed at 7.0.0-28-generic so <code>nouveau</code> never changed version. That single action eliminated stale packages, a transient boot-time race, and driver version as explanations, and it cost nothing.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>When the owner changes host state, re-collect and state explicitly which hypotheses the change eliminated, rather than only noting that the fault persists.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-018</span>
+          <span class="chip">2026-08-12</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>A plausible hypothesis with a real supporting pattern can still be wrong. Run the test before acting on it, and report the refutation as prominently as the theory.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>The Above 4G Decoding theory fitted every visible fact: both faults on the only two 2016-firmware hosts, <code>-22</code> consistent with MMIO exhaustion, modern boards unaffected. The diagnostic confirmed Above 4G is disabled and every BAR sits below 4G, then refuted the theory outright — <code>hxs-3</code> works with the identical 256 MiB BAR1. The real failure is GSP firmware initialization. Acting on the theory would have meant a firmware change that fixes nothing.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p><code>act-007</code> records the refutation in full. A correct-looking cause that survives only because it was never tested is worse than an open question.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-017</span>
+          <span class="chip">2026-08-12</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>State a hypothesis as a hypothesis, and name the evidence that would settle it. Circumstantial correlation across a small fleet is a lead, not a finding.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>Both GPU faults occur on the only two hosts with 2016 firmware, while both hosts with 2025 firmware run two GPUs each. That pattern suggests an Above 4G Decoding / MMIO exhaustion cause, and <code>-22</code> is consistent with it — but no BAR evidence has actually been collected.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p><code>act-007</code> records it explicitly as a hypothesis with the confirming test attached. Hardware conclusions are not written into a <code>discovery.md</code> until measured.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-016</span>
+          <span class="chip">2026-08-12</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>A filter written for one purpose will silently exclude evidence for another. The collector's kernel-log filter targets GPU memory, so it cannot see PCI enumeration failures, which is precisely the evidence needed when a GPU does not appear.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>Investigating <code>iss-007</code> and <code>iss-008</code> produced no BAR or resource errors from the collected output. That absence was an artefact of the <code>vram|gddr|nouveau|nvidia</code> filter, not evidence that no errors occurred.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Fault investigation uses a purpose-built diagnostic (<code>hx-gpu-diagnose.sh</code>), not the discovery collector. Never read "the collector found nothing" as "nothing is there".</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-015</span>
+          <span class="chip">2026-08-12</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>Read all of what a tool collected, not just the field being hunted. A narrow extraction filter discards facts the collector correctly captured.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>The GPU chip identity <code>NVIDIA GB206</code> was present in both hosts' kernel output, and the <code>nouveau</code> initialization failure on <code>hxs-2</code> (<code>Device allocation failed: -22</code>) alongside it. Both were missed by grepping only for <code>vram|gddr</code>, and both are more informative than the fields that were extracted.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Extraction filters are for finding a starting point, not for deciding what matters. Scan the surrounding context of any section that answers a key question.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-014</span>
+          <span class="chip">2026-08-12</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>Read the human pre-work record before collecting, every server, not only when told to. It is an independent second source, and the value is in comparing it with the collected facts rather than in either one alone.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p><code>hxs-3</code> was recorded as having one GPU because the operating system enumerates one. The owner knew two were installed. The discrepancy was caught by the owner, not by the process, and it turned out to be a real hardware fault (<code>iss-007</code>). <code>hxs-2</code>'s pre-work happened to corroborate its collection, but only because that file was read by chance.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p><code>discover-server</code> skill now makes reading and cross-checking pre-work step 0. Device counts are compared explicitly, and a truncated pre-work file is reported before collection begins.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-013</span>
+          <span class="chip">2026-08-11</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>Look upstream of a missing fact before working to obtain it. The unreadable value is often a symptom of a larger condition that matters more than the value.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>GPU VRAM could not be read on <code>hxs-1</code>. The cause was that both GPUs run <code>nouveau</code> with no CUDA driver installed — which also means the host cannot serve a model at all. The driver, not the number, was the finding.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Report the upstream condition first. Resolving it usually resolves the missing fact for free.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-012</span>
+          <span class="chip">2026-08-11</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>Record the source of every measured fact alongside the value. A number without its provenance cannot be audited, and invites a plausible substitute when the real source is missing.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>Same VRAM work: two candidate sources disagreed in principle, and only one was legitimate.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p><code>discovery.md</code> states VRAM and VRAM source as separate fields.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-011</span>
+          <span class="chip">2026-08-11</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>A PCI base address register is an address-space aperture, not physical memory. BAR size must never be recorded as GPU VRAM, and the Resizable-BAR "BAR1 equals VRAM" heuristic is not evidence.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>A VRAM probe was drafted that offered BAR1 as corroboration. Corrected by <code>governance/reports/Claude Prompt - Discover GPU VRAM Without NVIDIA Drivers.md</code>.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>VRAM is taken only from a kernel message that names it as VRAM or framebuffer memory, or from a sysfs VRAM attribute. Otherwise recorded as unavailable with the model and PCI ID preserved.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-010</span>
+          <span class="chip">2026-08-11</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>Check whether a remote name is already taken before planning to push to it.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>The intended GitHub repository name held an unrelated public project with its own history and an open pull request.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p><code>act-005</code> stays open pending a destination decision. Nothing was forced.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-009</span>
+          <span class="chip">2026-08-11</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>Policy contradictions surface at first contact with real hardware, not during review. Three documents had been reviewed repeatedly without anyone noticing the address ranges would exclude the first server.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p><code>iss-006</code>: <code>hxs-1</code> at <code>.200</code> fell outside the documented server range on the day it was discovered.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Resolved by owner amendment. Expect the remaining 14 discoveries to surface similar contradictions; record them rather than quietly conforming.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-008</span>
+          <span class="chip">2026-08-11</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>A guard that inspects command text cannot tell a quoted example from a real invocation.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>The Phase 1 guard denied a commit whose message described a RAID fix. Correct behaviour, surprising in the moment.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Pass commit messages through a file. Do not weaken the pattern to make prose easier to write.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-007</span>
+          <span class="chip">2026-08-11</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p><code>sudo -n</code> in a collector fails silently and takes required facts with it. The non-root <code>dmidecode</code> fallback returns a banner and no data, which reads like a collected result.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>First <code>hxs-1</code> collection lost manufacturer serial, BIOS detail and the whole DIMM layout without any visible error.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Collector needs a non-root fallback to <code>/sys/class/dmi/id/*</code>, and a supplementary root pass where firmware facts are required.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-006</span>
+          <span class="chip">2026-08-11</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>The <code>!</code> prefix has no controlling terminal, so anything needing an interactive prompt fails there. Redirecting a script into <code>ssh</code> also consumes the stdin that the password prompt would use.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>Two failed discovery attempts; the second sent the script's opening comment lines as password guesses.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Interactive authentication runs in the operator's own terminal. Automation-facing work needs an authentication method that does not prompt.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-005</span>
+          <span class="chip">2026-08-11</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>PowerShell mangles scripts piped to a remote shell. <code>Get-Content</code> yields an array of lines and the pipeline rejoins them with <code>\r\n</code>, so a byte-perfect LF script arrives at Linux <code>bash</code> full of <code>\r</code>.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p>Remote <code>bash</code> failed with <code>$'\r': command not found</code> while the local file contained zero CR bytes.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Transfer scripts base64-encoded, or use a shell whose redirect is byte-exact. Never diagnose the file before checking the transport.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-004</span>
+          <span class="chip">2026-08-11</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>Verify the repository can accept a commit before relying on it for history.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p><code>iss-005</code>: the baseline was committed with CRLF already in the objects while <code>core.autocrlf</code> and <code>core.safecrlf</code> were both true, so every subsequent commit was refused. Nothing had been committed since, so it went unnoticed.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p><code>.gitattributes</code> disables end-of-line conversion. Commit early enough to surface this class of problem.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-003</span>
+          <span class="chip">2026-08-11</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>Do not infer live tool behaviour from documentation or from a test fixture. The subagent test supplied the very field whose existence was in question, so it validated its own assumption.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p><code>iss-002</code>: only a live run proved the matcher is honoured and that the payload really carries <code>agent_type</code> and <code>last_assistant_message</code>.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Verify against a live run before hardening. Fixtures confirm shape, not reality.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-002</span>
+          <span class="chip">2026-08-11</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>An untested guard pattern is an unguarded path. Test coverage existed for 1 of 13 blocked categories, and the untested ones included the most destructive.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p><code>iss-004</code>: the RAID rule could never match, because <code>\b</code> finds no word boundary between a space and a leading dash. Array creation was permitted for the entire life of the guard.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Every guard category now has a blocked case and a read-only allowed case.</p></div>
+      </article>
+      <article class="entry">
+        <div class="entry-head">
+          <span class="eid">ll-001</span>
+          <span class="chip">2026-08-11</span>
+        </div>
+        <div class="field body"><span class="field-label">Lesson</span><p>A syntax check is not an execution test. <code>bash -n</code> and PowerShell parse checks were treated as proof the automation worked; neither the regression suite nor the discovery collector had ever actually run.</p></div>
+        <div class="field sub"><span class="field-label">Evidence</span><p><code>iss-003</code>: the suite deadlocked on its second hook call and had never completed. The collector's first real execution was against <code>hxs-1</code>, weeks after it was declared verified.</p></div>
+        <div class="field sub"><span class="field-label">Applied</span><p>Suite now runs to completion and reports a result. Treat "parses" and "passes" as different claims.</p></div>
+      </article>
+    </div>
+  </section>
+
+
+  <footer>
+    HX-Infrastructure governance &middot; generated from the Markdown sources in <code>governance/</code> on 2026-08-13.
+    The Markdown files remain the source of truth.
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById('theme-toggle');
+  if (!btn) { return; }
+  var media = window.matchMedia('(prefers-color-scheme: dark)');
+  function stored(v) {
+    try { if (v === undefined) { return localStorage.getItem('hx-theme'); } localStorage.setItem('hx-theme', v); }
+    catch (e) { /* sandboxed: the toggle still works for this view */ }
+    return null;
+  }
+  function active() {
+    var e = root.getAttribute('data-theme');
+    return (e === 'dark' || e === 'light') ? e : (media.matches ? 'dark' : 'light');
+  }
+  function relabel() {
+    var next = active() === 'dark' ? 'light' : 'dark';
+    btn.textContent = next === 'dark' ? 'Dark mode' : 'Light mode';
+    btn.setAttribute('aria-label', 'Switch to ' + next + ' mode');
+  }
+  var saved = stored();
+  if (saved === 'dark' || saved === 'light') { root.setAttribute('data-theme', saved); }
+  relabel();
+  btn.addEventListener('click', function () {
+    var next = active() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next); stored(next); relabel();
+  });
+  if (typeof media.addEventListener === 'function') { media.addEventListener('change', relabel); }
+  if (typeof MutationObserver === 'function') {
+    new MutationObserver(relabel).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  }
+})();
+</script>

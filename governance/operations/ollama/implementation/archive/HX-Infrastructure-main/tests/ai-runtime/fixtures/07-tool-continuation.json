@@ -1,0 +1,48 @@
+{
+  "id": "F07",
+  "capability": "RT-08",
+  "evidence_class": "A",
+  "api_style": "openai-chat",
+  "description": "Tool result correlates to the originating call id and history stays coherent.",
+  "history": [
+    {
+      "role": "user",
+      "content": "which role is hxs-3"
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "call_hx_001",
+          "type": "function",
+          "function": {
+            "name": "hx_read_registry",
+            "arguments": "{\"host\":\"hxs-3\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_hx_001",
+      "content": "{\"role\":\"Agent intelligence\"}"
+    }
+  ],
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "message": {
+          "role": "assistant",
+          "content": "FIXTURE RESPONSE - NOT MODEL OUTPUT"
+        }
+      }
+    ]
+  },
+  "expect": {
+    "correlated_id": "call_hx_001",
+    "history_turns": 3,
+    "tool_result_follows_call": true
+  }
+}

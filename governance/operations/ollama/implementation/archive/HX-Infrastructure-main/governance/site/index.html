@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Governance — HX-Infrastructure</title>
+<style>
+  :root {
+    --ground:#fbfbf9; --surface:#f2f3f0; --raised:#ffffff;
+    --ink:#1b1f1d; --muted:#6b726e; --faint:#949b96;
+    --line:#dde0db; --line-firm:#c3c8c1;
+    --accent:#0f6e5c; --accent-wash:#e6f0ec;
+    --signal:#b4531a; --signal-wash:#fbeee4;
+    --ok:#2f6d4f; --ok-wash:#e4efe8;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --step--2:0.6875rem; --step--1:0.8125rem; --step-0:0.9375rem;
+    --step-1:1.125rem; --step-2:1.5rem; --step-3:2.125rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground:#141917; --surface:#1b211e; --raised:#1f2724;
+      --ink:#e8ebe8; --muted:#97a09b; --faint:#6f7873;
+      --line:#2b342f; --line-firm:#3c4740;
+      --accent:#4fbfa3; --accent-wash:#16302a;
+      --signal:#e08a4c; --signal-wash:#33251a;
+      --ok:#6cc09a; --ok-wash:#162c22;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#141917; --surface:#1b211e; --raised:#1f2724;
+    --ink:#e8ebe8; --muted:#97a09b; --faint:#6f7873;
+    --line:#2b342f; --line-firm:#3c4740;
+    --accent:#4fbfa3; --accent-wash:#16302a;
+    --signal:#e08a4c; --signal-wash:#33251a;
+    --ok:#6cc09a; --ok-wash:#162c22;
+  }
+  :root[data-theme="light"] {
+    --ground:#fbfbf9; --surface:#f2f3f0; --raised:#ffffff;
+    --ink:#1b1f1d; --muted:#6b726e; --faint:#949b96;
+    --line:#dde0db; --line-firm:#c3c8c1;
+    --accent:#0f6e5c; --accent-wash:#e6f0ec;
+    --signal:#b4531a; --signal-wash:#fbeee4;
+    --ok:#2f6d4f; --ok-wash:#e4efe8;
+  }
+
+  :root { color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root { color-scheme: dark; } }
+  :root[data-theme="dark"] { color-scheme: dark; }
+  :root[data-theme="light"] { color-scheme: light; }
+
+  body {
+    margin:0; padding:clamp(1.5rem,4vw,3.5rem) clamp(1rem,4vw,2rem) 5rem;
+    background:var(--ground); color:var(--ink);
+    font-family:var(--sans); font-size:var(--step-0); line-height:1.55;
+    -webkit-text-size-adjust:100%;
+  }
+  .page { max-width:1100px; margin:0 auto; display:flex; flex-direction:column; gap:2.25rem; }
+
+  .bar { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .nav { display:flex; gap:1.1rem; flex-wrap:wrap; align-items:center;
+         font-family:var(--mono); font-size:var(--step--2);
+         text-transform:uppercase; letter-spacing:0.1em; }
+  .nav a { color:var(--muted); text-decoration:none; border-bottom:1px solid transparent; padding-bottom:2px; }
+  .nav a:hover { color:var(--accent); border-bottom-color:var(--accent); }
+  .nav a[aria-current="page"] { color:var(--accent); border-bottom-color:var(--accent); }
+
+  .toggle {
+    font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+    letter-spacing:0.09em; color:var(--muted); background:var(--surface);
+    border:1px solid var(--line-firm); border-radius:2px; padding:0.4rem 0.75rem; cursor:pointer;
+    transition:color 120ms ease, border-color 120ms ease;
+  }
+  .toggle:hover { color:var(--accent); border-color:var(--accent); }
+
+  .masthead { display:flex; flex-direction:column; gap:0.7rem; }
+  .eyebrow { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+             letter-spacing:0.14em; color:var(--accent); margin:0; }
+  h1 { font-size:var(--step-3); line-height:1.08; letter-spacing:-0.02em; font-weight:650;
+       margin:0; text-wrap:balance; }
+  .masthead p { margin:0; max-width:65ch; color:var(--muted); }
+
+  .strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:1px;
+           background:var(--line); border:1px solid var(--line); border-radius:3px; overflow:hidden; }
+  .cell { background:var(--surface); padding:0.8rem 1rem; display:flex; flex-direction:column; gap:0.1rem; }
+  .cell dt { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+             letter-spacing:0.1em; color:var(--muted); }
+  .cell dd { margin:0; font-size:var(--step-1); font-weight:600; font-variant-numeric:tabular-nums; }
+
+  h2 { font-size:var(--step-2); letter-spacing:-0.015em; font-weight:620; margin:0; text-wrap:balance; }
+  section { display:flex; flex-direction:column; gap:0.85rem; }
+  .lede { margin:0; color:var(--muted); max-width:70ch; font-size:var(--step--1); }
+
+  .entries { display:flex; flex-direction:column; gap:0.75rem; }
+  .entry { border:1px solid var(--line); border-radius:3px; background:var(--raised);
+           padding:1rem 1.15rem; display:flex; flex-direction:column; gap:0.6rem;
+           border-left:3px solid var(--line-firm); }
+  .entry.is-open { border-left-color:var(--signal); }
+  .entry.is-done { border-left-color:var(--ok); }
+  .entry.is-hold { border-left-color:var(--faint); }
+
+  .entry-head { display:flex; align-items:center; gap:0.55rem; flex-wrap:wrap; }
+  .eid { font-family:var(--mono); font-weight:650; font-size:var(--step-0); }
+  .chip { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+          letter-spacing:0.08em; padding:0.15rem 0.45rem; border-radius:2px;
+          border:1px solid var(--line-firm); color:var(--muted); }
+  .pill { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+          letter-spacing:0.08em; padding:0.15rem 0.5rem; border-radius:10px; font-weight:600; }
+  .pill.is-open { background:var(--signal-wash); color:var(--signal); }
+  .pill.is-done { background:var(--ok-wash); color:var(--ok); }
+  .pill.is-hold { background:var(--surface); color:var(--muted); }
+  .rel { margin-left:auto; font-family:var(--mono); font-size:var(--step--2); color:var(--faint); }
+
+  .field { display:flex; flex-direction:column; gap:0.2rem; }
+  .field-label { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+                 letter-spacing:0.09em; color:var(--faint); }
+  .field p { margin:0; max-width:78ch; }
+  .field.body p { color:var(--ink); }
+  .field.sub p { color:var(--muted); font-size:var(--step--1); }
+
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1rem; }
+  .card { border:1px solid var(--line); border-radius:3px; background:var(--raised);
+          padding:1.15rem 1.25rem; display:flex; flex-direction:column; gap:0.5rem;
+          text-decoration:none; color:inherit;
+          transition:border-color 120ms ease, transform 120ms ease; }
+  .card:hover { border-color:var(--accent); transform:translateY(-2px); }
+  .card h3 { margin:0; font-size:var(--step-1); font-weight:620; letter-spacing:-0.01em; }
+  .card p { margin:0; font-size:var(--step--1); color:var(--muted); }
+  .card .meta { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+                letter-spacing:0.09em; color:var(--accent); margin-top:auto; padding-top:0.3rem; }
+
+  .scroll { overflow-x:auto; border:1px solid var(--line); border-radius:3px; background:var(--raised); }
+  table { border-collapse:collapse; width:100%; font-size:var(--step--1); }
+  thead th { background:var(--surface); border-bottom:1px solid var(--line-firm);
+             font-family:var(--mono); font-size:var(--step--2); font-weight:600;
+             text-transform:uppercase; letter-spacing:0.09em; color:var(--muted);
+             text-align:left; padding:0.65rem 0.85rem; white-space:nowrap; }
+  tbody td { padding:0.6rem 0.85rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:last-child td { border-bottom:none; }
+
+  ul.notes { padding-left:1.15rem; margin:0; font-size:var(--step--1); color:var(--muted);
+             display:flex; flex-direction:column; gap:0.4rem; }
+  ul.notes b, ul.notes code { color:var(--ink); }
+
+  code { font-family:var(--mono); font-size:0.92em; background:var(--surface);
+         padding:0.05em 0.32em; border-radius:2px; }
+  pre { margin:0; overflow-x:auto; background:var(--surface); border:1px solid var(--line);
+        border-radius:3px; padding:0.85rem 1rem; }
+  pre code { background:none; padding:0; font-size:var(--step--1); }
+
+  footer { border-top:1px solid var(--line); padding-top:1rem; font-size:var(--step--2); color:var(--faint); }
+  a { color:var(--accent); }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="bar">
+    <nav class="nav">
+        <a href="index.html" aria-current="page">Governance</a>
+        <a href="hx-fleet-inventory.html">Fleet inventory</a>
+        <a href="fleet-architecture-v0.3.html">Architecture v0.3</a>
+        <a href="hx-stack-alignment-v0.1-frozen.html">v0.1 frozen</a>
+        <a href="hx-validation-findings.html">Validation</a>
+        <a href="hx-recommendations.html">Recommendations</a>
+        <a href="actions-and-issues.html">Actions &amp; issues</a>
+        <a href="lessons-learned.html">Lessons learned</a>
+        <a href="documentation-standards.html">Standards</a>
+    </nav>
+    <button type="button" class="toggle" id="theme-toggle">Dark mode</button>
+  </div>
+
+  <header class="masthead">
+    <p class="eyebrow">HX-Infrastructure</p>
+    <h1>Governance</h1>
+    <p>The record of how this fleet was built and how it is being consolidated: what was found
+    on each machine, what is tracked, what was learned, and the rules the documents themselves
+    follow. Phase 1 discovery is complete and all fifteen servers carry an assigned role.
+    <strong>Phase 2 &mdash; repository consolidation and alignment &mdash; is complete;</strong>
+    Phase 3 &mdash; Regroup &amp; Reconciliation &mdash; is current. Server implementation is a
+    later owner-authorized phase and has not begun.</p>
+  </header>
+
+  <dl class="strip">
+    <div class="cell"><dt>Fleet servers</dt><dd>15</dd></div>
+    <div class="cell"><dt>Control plane</dt><dd>1</dd></div>
+    <div class="cell"><dt>Discovery</dt><dd>15 / 15</dd></div>
+    <div class="cell"><dt>Roles assigned</dt><dd>15 / 15</dd></div>
+    <div class="cell"><dt>Phase 1</dt><dd>Complete</dd></div>
+    <div class="cell"><dt>Legacy files</dt><dd>522</dd></div>
+    <div class="cell"><dt>Phase 2</dt><dd>Complete</dd></div>
+  </dl>
+
+  <section>
+    <h2>Documents</h2>
+    <p class="lede">Eight views onto the project. The inventory and architecture answer what the fleet is and what it will run; the rest answer how the project is run.</p>
+    <div class="cards">
+
+      <a class="card" href="hx-fleet-inventory.html">
+        <h3>Fleet Server Inventory</h3>
+        <p>Hardware manifest for all fifteen servers and the control-plane host — hostname,
+        address, FQDN, storage, CPU, GPU, VRAM and memory, every value measured on the
+        machine itself.</p>
+        <span class="meta">16 machines</span>
+      </a>
+
+      <a class="card" href="fleet-architecture-v0.3.html">
+        <h3>Fleet Architecture v0.3</h3>
+        <p>The current architecture: which model or service runs on which host, and why. Folds in the owner decisions and the accepted validation findings. <strong>A proposal for review</strong> &mdash; the registry still records zero roles.</p>
+        <span class="meta">v0.3 &middot; current</span>
+      </a>
+
+      <a class="card" href="hx-validation-findings.html">
+        <h3>Research &amp; Validation Findings</h3>
+        <p>Six threads checking the frozen v0.1 architecture against current runtime
+        behaviour. The architecture holds. Five corrections were folded into v0.2; two were overruled.</p>
+        <span class="meta">31 checked &middot; 4 risks</span>
+      </a>
+
+      <a class="card" href="hx-recommendations.html">
+        <h3>Recommendations</h3>
+        <p>Things worth doing, from discovery and from reviewing the architecture and
+        validation work. Proposals with reasoning and cost &mdash; not yet tracked work.</p>
+        <span class="meta">9 items &middot; 4 do first</span>
+      </a>
+
+      <a class="card" href="hx-stack-alignment-v0.1-frozen.html">
+        <h3>Stack Alignment &mdash; v0.1 frozen</h3>
+        <p>The immutable baseline the validation pass was run against. Superseded for
+        current work; kept so the validation findings stay traceable.</p>
+        <span class="meta">frozen 2026-08-13</span>
+      </a>
+
+      <a class="card" href="actions-and-issues.html">
+        <h3>Actions &amp; Issues</h3>
+        <p>The single project log. Work that must be done and problems that are known, each
+        entry carrying its own resolution so the outcome stays with the item.</p>
+        <span class="meta">42 entries · 6 open</span>
+      </a>
+
+      <a class="card" href="lessons-learned.html">
+        <h3>Lessons Learned</h3>
+        <p>What this project learned the hard way, with the evidence that produced each
+        lesson and the change made in response.</p>
+        <span class="meta">33 lessons</span>
+      </a>
+
+      <a class="card" href="documentation-standards.html">
+        <h3>Documentation Standards</h3>
+        <p>How files are named and where they belong, including the deliberate exceptions
+        that look like drift and must not be "fixed".</p>
+        <span class="meta">Written 2026-08-13</span>
+      </a>
+
+    </div>
+  </section>
+
+
+  <section>
+    <h2>Repository merge &mdash; assessments</h2>
+    <p class="lede">Seven documents from three reviewers, converging on one plan and then on an
+    executable ledger. The manifest and its change-set are the working artifacts; the rest record
+    how the plan was reached and independently checked.</p>
+    <div class="cards">
+
+      <a class="card" href="https://claude.ai/code/artifact/8c8aaee7-5921-48dc-acb9-da3810366414">
+        <h3>Current-Repo Change-Set v1</h3>
+        <p>The parallel edit-set the 522-row ledger does not cover &mdash; the phase guard, the
+        registry's Phase 2 column and its readers, the test suite, and the credential in history.</p>
+        <span class="meta">Claude &middot; companion to the manifest</span>
+      </a>
+
+      <a class="card" href="https://claude.ai/code/artifact/5094e47b-744e-40da-bc22-ab90e200aa8c">
+        <h3>Manifest v2 Validation</h3>
+        <p>Machine check of the ledger against a live query of the org repository. Exact
+        coverage &mdash; 522 of 522, nothing missing, nothing invented &mdash; plus two findings.</p>
+        <span class="meta">Claude Code &middot; 522/522 verified</span>
+      </a>
+
+      <a class="card" href="https://claude.ai/code/artifact/5a7b2386-0339-4b27-abea-cff7b4f4c70f">
+        <h3>File-by-File Migration Manifest</h3>
+        <p>The disposition of every legacy asset class across seven disposition types. Superseded by
+        the v2 dual-layer ledger, which carries one deterministic record per file.</p>
+        <span class="meta">Claude &middot; 12:54</span>
+      </a>
+
+      <a class="card" href="https://claude.ai/code/artifact/dc175c5f-3eb6-42a8-aa5f-5c83cbaf8bab">
+        <h3>Migration Manifest Findings</h3>
+        <p>Seven findings measured against the repository. Two block &sect;0: retiring the guard
+        contradicts the manifest's own 153/0 criterion, and dropping the Phase 2 column would
+        silently re-block the fleet.</p>
+        <span class="meta">Claude Code &middot; 2 blocking</span>
+      </a>
+
+      <a class="card" href="https://claude.ai/code/artifact/432dee74-aab8-4a75-8c1c-d4a67f8cd0b9">
+        <h3>Three Reviews Converge &mdash; baseline</h3>
+        <p>The agreed plan. Claude's response to GPT-5.6's feedback, conceding four verified
+        catches and folding all three reviews into one sequence. <strong>This is the baseline
+        going forward.</strong></p>
+        <span class="meta">Claude &middot; baseline &middot; 11:40</span>
+      </a>
+
+      <a class="card" href="https://claude.ai/code/artifact/dba92083-b578-482e-9318-916cd4001f01">
+        <h3>Merge Plan Feedback</h3>
+        <p>Review of both plans, checked against the live repositories. Nine points of agreement,
+        three real differences, four factual corrections.</p>
+        <span class="meta">Claude Code &middot; verdict: take both</span>
+      </a>
+
+      <a class="card" href="https://claude.ai/code/artifact/f8cdf908-c0cf-4e12-95c7-c63710e45279">
+        <h3>Legacy-to-Current Merge Assessment</h3>
+        <p>Full assessment: one repository, one lineage, one authority. Specialist agents
+        preserved, eight migration stages, acceptance criteria and provenance rules.</p>
+        <span class="meta">GPT-5.6 Sol</span>
+      </a>
+
+      <a class="card" href="https://claude.ai/code/artifact/53285e92-8f4b-4dc4-bffc-87fd77a82890">
+        <h3>What Goes, What Stays</h3>
+        <p>Lean merge decision: adopt the agent roster and two service blueprints, distil the
+        defect log, leave the legacy ceremony behind.</p>
+        <span class="meta">Claude &middot; rev 2</span>
+      </a>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Where authority sits</h2>
+    <ul class="notes">
+      <li><b><code>SERVER-REGISTRY.md</code></b> is authoritative for assigned role, approved
+      workload, discovery status and Phase 2 status. Where any page here disagrees with it,
+      the registry wins.</li>
+      <li><b><code>servers/&lt;host&gt;/discovery.md</code></b> records each server as found.
+      It is never rewritten to reflect later configuration.</li>
+      <li><b><code>governance/logs/actions-and-issues.md</code></b> is the only routine tracking
+      log. No separate action-item or issue documents are created.</li>
+      <li><b>Roles are assigned manually.</b> Agents may compare capabilities and report
+      constraints, but may not assign a role, select a workload, or choose a model.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Where the project stands</h2>
+    <p class="lede">Phase 1 was discovery and documentation only. It ended at a seven-condition
+    gate, all seven of which were met on 2026-08-13. The gate is <strong>retired as a control and
+    kept as a record</strong> &mdash; it stands as evidence that discovery finished properly before
+    any configuration began.</p>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr><th scope="col">Phase 1 gate condition</th><th scope="col">State</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Every expected server is present in the registry</td><td>15 of 15 — met</td></tr>
+          <tr><td>Every server has a complete <code>discovery.md</code></td><td>15 of 15 — met</td></tr>
+          <tr><td>Fleet hardware capabilities are documented and comparable</td><td>met 2026-08-13</td></tr>
+          <tr><td>Fleet capabilities have been manually reviewed</td><td>met 2026-08-13 — owner</td></tr>
+          <tr><td>Every server has a manually assigned role</td><td>15 of 15 — met</td></tr>
+          <tr><td>Every assigned role is recorded in the registry</td><td>met — registry updated</td></tr>
+          <tr><td>No role-specific configuration has begun</td><td>0 <code>configuration.md</code> files — met</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lede"><strong>Phase 1 and Phase 2 are complete; Phase 3 is current.</strong> The
+    owner ratified the role mapping on 2026-08-13 and <code>act-012</code> is closed. Phase 2
+    &mdash; repository consolidation and alignment, folding the 2025 pre-relocation project
+    into this one &mdash; is closed by owner ruling. Phase 3 is Regroup &amp; Reconciliation;
+    server implementation is a later owner-authorized phase.</p>
+  </section>
+
+
+  <footer>
+    HX-Infrastructure governance &middot; generated from the Markdown sources in <code>governance/</code> on 2026-08-13.
+    The Markdown files remain the source of truth.
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById('theme-toggle');
+  if (!btn) { return; }
+  var media = window.matchMedia('(prefers-color-scheme: dark)');
+  function stored(v) {
+    try { if (v === undefined) { return localStorage.getItem('hx-theme'); } localStorage.setItem('hx-theme', v); }
+    catch (e) { /* sandboxed: the toggle still works for this view */ }
+    return null;
+  }
+  function active() {
+    var e = root.getAttribute('data-theme');
+    return (e === 'dark' || e === 'light') ? e : (media.matches ? 'dark' : 'light');
+  }
+  function relabel() {
+    var next = active() === 'dark' ? 'light' : 'dark';
+    btn.textContent = next === 'dark' ? 'Dark mode' : 'Light mode';
+    btn.setAttribute('aria-label', 'Switch to ' + next + ' mode');
+  }
+  var saved = stored();
+  if (saved === 'dark' || saved === 'light') { root.setAttribute('data-theme', saved); }
+  relabel();
+  btn.addEventListener('click', function () {
+    var next = active() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next); stored(next); relabel();
+  });
+  if (typeof media.addEventListener === 'function') { media.addEventListener('change', relabel); }
+  if (typeof MutationObserver === 'function') {
+    new MutationObserver(relabel).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  }
+})();
+</script>
+</body>
+</html>

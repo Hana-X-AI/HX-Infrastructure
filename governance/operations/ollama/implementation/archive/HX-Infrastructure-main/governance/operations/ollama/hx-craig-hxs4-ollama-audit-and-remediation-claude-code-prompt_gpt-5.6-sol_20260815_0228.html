@@ -1,0 +1,676 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HX Craig hxs-4 Ollama Audit and Remediation Prompt</title><style>
+:root{
+ --bg:#071019;--panel:#0d1823;--panel2:#11212f;--text:#e9f1f7;--muted:#9dafbe;
+ --line:#263b4d;--cyan:#69dbff;--green:#94e77a;--amber:#ffd166;--red:#ff7e8e;
+ --violet:#c4a4ff;--code:#06131c;--shadow:0 18px 48px rgba(0,0,0,.32);
+}
+*{box-sizing:border-box}
+body{margin:0;background:
+ radial-gradient(circle at 10% -5%,rgba(105,219,255,.11),transparent 28%),
+ radial-gradient(circle at 90% 0%,rgba(196,164,255,.08),transparent 24%),var(--bg);
+ color:var(--text);font:15px/1.62 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{width:min(1220px,calc(100% - 34px));margin:auto;padding:34px 0 82px}
+.hero{background:linear-gradient(145deg,rgba(17,33,47,.98),rgba(8,20,30,.98));
+ border:1px solid var(--line);border-radius:18px;padding:34px 36px;box-shadow:var(--shadow)}
+.eyebrow{color:var(--cyan);font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.15em}
+h1{font-size:clamp(36px,5.2vw,58px);line-height:1.02;letter-spacing:-.04em;margin:8px 0 12px}
+h2{font-size:27px;letter-spacing:-.02em;margin:40px 0 14px}
+h3{font-size:19px;margin:22px 0 8px}
+p{margin:8px 0 14px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.pill{border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:999px;padding:6px 11px;color:var(--muted);font-size:12px}
+.callout{margin:18px 0;padding:18px 20px;border:1px solid rgba(105,219,255,.25);border-left:4px solid var(--cyan);border-radius:11px;background:rgba(105,219,255,.05)}
+.callout.ok{border-left-color:var(--green);background:rgba(148,231,122,.045)}
+.callout.warn{border-left-color:var(--amber);background:rgba(255,209,102,.045)}
+.callout.bad{border-left-color:var(--red);background:rgba(255,126,142,.045)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.card{grid-column:span 6;border:1px solid var(--line);border-radius:14px;padding:20px;background:linear-gradient(180deg,rgba(17,33,47,.94),rgba(13,24,35,.94))}
+.card.third{grid-column:span 4}.card.full{grid-column:1/-1}
+.metric{font-size:28px;font-weight:850;letter-spacing:-.03em}.label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+table{width:100%;border-collapse:collapse;border:1px solid var(--line);background:rgba(13,24,35,.93)}
+th,td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+th{background:rgba(255,255,255,.03);color:#cfe4f2;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+tr:last-child td{border-bottom:0}
+code,pre{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+code{background:var(--code);border:1px solid rgba(255,255,255,.06);padding:2px 5px;border-radius:5px;color:#d7edf8}
+pre{white-space:pre-wrap;background:var(--code);border:1px solid var(--line);border-radius:12px;padding:17px;overflow:auto;color:#dbeaf3}
+.keep{color:var(--green);font-weight:800}.later{color:var(--amber);font-weight:800}.no{color:var(--red);font-weight:800}.strong{color:var(--violet);font-weight:800}
+ul,ol{padding-left:22px}li{margin:5px 0}
+a{color:var(--cyan)}
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+.copybtn{position:sticky;top:10px;float:right;margin:12px 12px -52px 0;z-index:4;cursor:pointer;padding:8px 11px;border-radius:9px;border:1px solid var(--line);background:#142536;color:var(--text);font-weight:700}
+@media(max-width:820px){main{width:min(100% - 22px,1220px)}.hero{padding:25px 21px}.card,.card.third{grid-column:1/-1}table{display:block;overflow:auto}}
+</style></head><body><main>
+<section class="hero">
+<div class="eyebrow">HX-Infrastructure · Claude Code / Craig Execution Handoff</div>
+<h1>Craig's First Mission: Audit & Correct hxs-4 Ollama</h1>
+<p>Full source-grounded audit of the existing hxs-4 Ollama implementation, followed by bounded reversible Ollama-specific remediation where evidence proves a correction is warranted.</p>
+<div class="meta">
+<span class="pill">Audit first</span>
+<span class="pill">Corrections evidence-driven</span>
+<span class="pill">Source matched</span>
+<span class="pill">GPU isolation mandatory</span>
+<span class="pill">Silent truncation mandatory test</span>
+<span class="pill">No automatic upgrade</span>
+<span class="pill">No driver changes</span>
+<span class="pill">No network exposure</span>
+<span class="pill">No Ansible</span>
+</div>
+</section>
+<div class="callout warn"><strong>Critical distinction:</strong> prior commissioning proves the runtime worked. It does not prove the current effective configuration is normalized, still source-correct, or optimal. This audit must be capable of finding defects.</div>
+<h2>Execution prompt</h2>
+<button class="copybtn" onclick="(function(btn){var t=document.getElementById('prompt').innerText;function done(ok){btn.textContent=ok?'Copied':'Copy failed — select the text manually';setTimeout(function(){btn.textContent='Copy prompt'},2500)}if(!navigator.clipboard||!navigator.clipboard.writeText){done(false);return}navigator.clipboard.writeText(t).then(function(){done(true)},function(){done(false)})})(this)">Copy prompt</button>
+<pre id="prompt">You are Claude Code operating in the canonical HX-Infrastructure repository.
+
+PRIMARY EXECUTION SPECIALIST
+Use Agent Craig (`capability_id: model-serving-ollama`) as the Ollama SME for this workstream.
+
+MISSION
+
+Perform a COMPLETE SOURCE-GROUNDED AUDIT of the existing Ollama implementation on hxs-4.
+
+The goal is not to prove that Ollama still runs. The goal is to determine whether the hxs-4 Ollama installation and configuration are correct, current, minimal, safe for the accepted HX role, and consistent with the exact installed Ollama source.
+
+EXPECT CONFIGURATION CORRECTIONS TO BE POSSIBLE.
+DO NOT INVENT THEM.
+EARN EACH CORRECTION FROM EVIDENCE.
+
+Once an Ollama-specific correction is proven necessary or strongly justified, this workstream MAY apply it if:
+- it is reversible;
+- it remains inside Ollama service/model configuration;
+- the current owner/HX authority permits that class of change;
+- pre-change state is captured;
+- rollback is explicit;
+- post-change verification proves the intended property and no material regression.
+
+THIS WORKSTREAM DOES NOT AUTHORIZE:
+- GPU driver/toolkit changes;
+- host reboot;
+- use of the reserved 16 GB GPU;
+- LAN/public Ollama exposure;
+- OmniRoute changes;
+- server-role/registry changes;
+- model replacement;
+- storage-layout redesign;
+- an Ollama version upgrade unless separately authorized;
+- Ansible.
+
+SOURCE EVIDENCE
+
+Uploaded Ollama source snapshot:
+- archive SHA-256:
+  e7d05dd02814e8bedd7d99b5ee8110c27d356c6ad5997f15c4690e4d5abc6851
+- archive source commit:
+  39df91c9826b3c0c83677f75cd230d8848d287c3
+- official release identity:
+  v0.32.11
+
+Known prior hxs-4 commissioning evidence:
+- Ollama 0.32.9
+- Qwen3.5-9B Q4_K_M
+- model digest previously recorded as 6488c96fa5fa
+- 8 GB GPU intended for the workload
+- 16 GB GPU reserved
+- local runtime accepted
+- HX API/tool validation accepted
+- Claude Code NOT qualified due context/overflow behavior
+
+At execution time:
+RE-VERIFY EVERYTHING.
+Do not assume the host is still on 0.32.9.
+
+LOCAL OLLAMA SOURCE
+
+Repository-relative source:
+  governance/operations/ollama/ollama-main
+
+Use repository-relative routing first.
+
+PHASE 0 — REPOSITORY / AUTHORITY PREFLIGHT
+
+Read current:
+- root AGENTS.md
+- CLAUDE.md
+- `.specify/memory/constitution.md`
+- `knowledge/instructions.md`
+- SERVER-REGISTRY.md
+- current runtime acceptance policy/decisions
+- current hxs-4 discovery / driver / configuration records
+- governance actions/issues relevant to hxs-4, Ollama, silent truncation, runtime acceptance
+- current OmniRoute decision only to understand the network boundary
+- Craig&#x27;s current agent contract
+- prior hxs-4 Qwen/Ollama commissioning report
+- current runtime acceptance workload/test records
+
+Do not let historical commissioning evidence override current live state.
+
+If registry/workload authority conflicts remain, RECORD them.
+Do not rewrite the registry in this workstream.
+
+PHASE 1 — SOURCE IDENTITY MATRIX
+
+Fingerprint local Ollama source:
+
+  git -C &lt;ollama-source&gt; status --short
+  git -C &lt;ollama-source&gt; rev-parse HEAD
+  git -C &lt;ollama-source&gt; describe --tags --always --dirty
+  git -C &lt;ollama-source&gt; remote -v
+
+On hxs-4:
+
+  ollama --version
+  curl -fsS http://127.0.0.1:11434/api/version
+
+Construct:
+
+INSTALLED VERSION
+MATCHING INSTALLED TAG / COMMIT
+LOCAL CHECKOUT HEAD
+UPLOADED SOURCE IDENTITY
+CURRENT OFFICIAL STABLE RELEASE
+
+If installed version != local HEAD:
+use installed-version tag/source for all behavioral claims.
+
+Review high-value diffs from installed version to current stable:
+- scripts/install.sh
+- envconfig/config.go
+- server/sched.go
+- server/routes.go
+- anthropic/anthropic.go
+- api/types.go
+- discover/
+- relevant release notes/tests
+
+No upgrade yet.
+
+PHASE 2 — FULL HOST / GPU FOUNDATION SNAPSHOT
+
+Capture:
+
+  hostnamectl
+  cat /etc/os-release
+  uname -a
+  uptime
+  systemctl --failed
+
+  nvidia-smi -L
+  nvidia-smi
+  nvidia-smi topo -m || true
+
+  free -h
+  swapon --show
+  df -h
+
+  journalctl -k --no-pager | grep -Ei &#x27;NVRM|Xid|nvidia|oom&#x27; | tail -250
+
+Verify:
+- actual 8 GB GPU identity/UUID
+- actual reserved 16 GB GPU identity/UUID
+- current driver health
+- no current Xid/NVRM problem that would contaminate the audit
+
+Do NOT install CUDA toolkit because nvcc is absent.
+Do NOT change drivers.
+
+If GPU foundation is unhealthy:
+  BLOCKED — GPU FOUNDATION
+and stop before configuration mutation.
+
+PHASE 3 — RECONSTRUCT EFFECTIVE OLLAMA SERVICE
+
+Capture:
+
+  command -v ollama
+  readlink -f &quot;$(command -v ollama)&quot; || true
+  ollama --version
+
+  systemctl status ollama --no-pager
+  systemctl cat ollama
+  systemctl show ollama \
+    -p User -p Group -p Environment -p FragmentPath -p DropInPaths \
+    -p ExecStart -p Restart -p WorkingDirectory
+
+  find /etc/systemd/system/ollama.service.d -maxdepth 1 -type f -print -exec sed -n &#x27;1,220p&#x27; {} \; 2&gt;/dev/null
+
+  ps -ef | grep -E &#x27;[o]llama|[l]lama&#x27;
+  ss -lntp | grep 11434 || true
+
+  journalctl -u ollama -n 500 --no-pager
+
+Record the COMPLETE effective Ollama environment — but REDACT secret-bearing Environment and
+drop-in values before writing anything to the transcript. Any Environment or drop-in value that
+carries a token, password, key, or registry credential (for example a registry auth token or an
+HF/API credential) must be recorded as REDACTED with its key name kept, never its value.
+Non-sensitive configuration (OLLAMA_HOST, OLLAMA_MODELS, OLLAMA_CONTEXT_LENGTH,
+OLLAMA_NUM_PARALLEL, and similar) is captured in full. Apply the same redaction rule wherever
+drop-in contents and the "COMPLETE effective Ollama environment" are recorded.
+
+Explicitly inspect for:
+- OLLAMA_HOST
+- OLLAMA_MODELS
+- OLLAMA_CONTEXT_LENGTH
+- OLLAMA_NUM_PARALLEL
+- OLLAMA_MAX_LOADED_MODELS
+- OLLAMA_MAX_QUEUE
+- OLLAMA_KEEP_ALIVE
+- OLLAMA_DEBUG
+- OLLAMA_DEBUG_LOG_REQUESTS
+- OLLAMA_FLASH_ATTENTION
+- OLLAMA_KV_CACHE_TYPE
+- OLLAMA_VULKAN
+- GGML_VK_VISIBLE_DEVICES
+- CUDA_VISIBLE_DEVICES
+- OLLAMA_NO_CLOUD
+- OLLAMA_GPU_OVERHEAD
+- LLAMA_ARG_FIT
+- LLAMA_ARG_FIT_TARGET
+- OLLAMA_LLM_LIBRARY
+- any unexpected variables
+
+Do not expose credentials or secret material.
+
+PHASE 4 — CONFIGURATION SOURCE RECONCILIATION
+
+For EACH effective Ollama setting:
+- locate the exact installed-version source definition;
+- record default;
+- record actual effective value;
+- explain its current behavior;
+- classify:
+
+  KEEP — PROVEN
+  CORRECT — REQUIRED
+  CORRECT — RECOMMENDED
+  RETEST AFTER VERSION CHANGE
+  DEFER — IMPLEMENTATION ORDER
+  OWNER / ARCHITECTURE DECISION
+  NOT APPLICABLE
+
+No unclassified configuration.
+
+PHASE 5 — KNOWN CORRECTION QUESTIONS
+
+These are questions, not pre-decided edits.
+
+A. DEBUG
+If OLLAMA_DEBUG=1 remains enabled:
+- retain current logs/evidence;
+- determine whether ongoing debug is needed;
+- if not, classify removal as a correction.
+
+B. GPU UUID
+Verify CUDA_VISIBLE_DEVICES still uses the intended 8 GB GPU UUID.
+If index-based or absent:
+- correction candidate.
+
+C. VULKAN
+Prior hxs-4 evidence found Vulkan re-enumerated both GPUs.
+
+Verify installed-version source/docs for:
+- OLLAMA_VULKAN
+- GGML_VK_VISIBLE_DEVICES
+
+If current config includes:
+  OLLAMA_VULKAN=0
+  GGML_VK_VISIBLE_DEVICES=999
+
+then:
+- do not remove isolation blindly;
+- recognize `999` as non-canonical compared with documented disable form `-1`;
+- determine whether the second variable is redundant when Vulkan is disabled;
+- any simplification requires restart + proof that the reserved 16 GB GPU is absent.
+
+D. CLOUD
+Evaluate:
+  OLLAMA_NO_CLOUD=1
+
+Given hxs-4&#x27;s accepted local utility role, determine whether fail-closed disabling of remote inference/web-search features is appropriate.
+
+If applied:
+- verify local model list/show/chat/tool behavior remains correct.
+
+E. FLASH ATTENTION
+Prior measured hxs-4 evidence found FlashAttention counterproductive for this model/workload.
+
+If enabled:
+- do not assume benefit;
+- either retest under the exact current version or disable if the prior evidence remains valid.
+
+F. PARALLELISM
+Inspect current Qwen3.5 scheduler source.
+It may force num_parallel=1 even if configured higher.
+
+Still evaluate whether explicit:
+  OLLAMA_NUM_PARALLEL=1
+should remain as host policy.
+
+G. MAX LOADED MODELS
+Given the prior overlapping-runner incident:
+  OLLAMA_MAX_LOADED_MODELS=1
+is strongly expected to remain.
+
+But do not treat it as sufficient protection.
+Context-ladder work MUST explicitly unload and prove the card clear.
+
+H. KEEP ALIVE
+Record effective/default keep-alive.
+Do not change casually.
+Make explicit unload part of all context-change tests.
+
+I. CONTEXT
+Do not automatically shrink 65536.
+
+Reconstruct measured tradeoff:
+- 16K: 100% GPU, faster
+- 32K/64K: offload/slower
+- 64K: larger safety margin before overflow
+- &gt; real limit: previously unsafe silent truncation
+
+Installed/current source:
+- fixed OLLAMA_CONTEXT_LENGTH disables automatic context selection
+- per-request/model num_ctx can override
+
+Produce recommendation:
+- fixed 64K
+- automatic context
+- explicit per-workload/per-request profile
+- another bounded design
+
+Do NOT change global context unless the evidence and current authorized clients make the safer configuration clear.
+
+J. THINKING
+Verify accepted utility/tool client path disables thinking when not required.
+Treat this primarily as request/profile policy, not necessarily a daemon setting.
+
+PHASE 6 — MODEL / STORE AUDIT
+
+Capture:
+
+  ollama list
+  ollama ps
+  curl -fsS http://127.0.0.1:11434/api/ps
+
+For Qwen:
+  ollama show qwen3.5:9b-q4_K_M
+
+Also call `/api/show` and retain structured JSON.
+
+Verify:
+- exact tag
+- resolved digest
+- architecture
+- quantization
+- capabilities
+- model context
+- model store path
+- ownership/permissions
+- free disk
+- unexpected stale models/blobs only as informational evidence
+
+Do not prune/delete models in this audit unless separately authorized.
+
+PHASE 7 — GPU/BACKEND ISOLATION TEST
+
+Before load:
+- explicitly unload running models;
+- prove target GPU clear;
+- prove reserved 16 GB GPU clear/unchanged.
+
+Start the accepted Qwen workload.
+
+Capture together:
+- request result
+- ollama ps
+- /api/ps
+- nvidia-smi
+- process tree
+- Ollama logs
+
+PASS requires:
+- intended 8 GB GPU used as expected;
+- reserved 16 GB GPU not used by Ollama;
+- no hidden multi-GPU spread;
+- no unexpected CPU fallback at the tested context.
+
+If current isolation fails:
+  FAIL — GPU ISOLATION
+and correct Ollama visibility settings before continuing.
+
+PHASE 8 — SAFE CONTEXT / CAPACITY RE-CHARACTERIZATION
+
+DO NOT repeat the old harness mistake.
+
+For each selected context:
+1. unload model;
+2. confirm no runner remains;
+3. confirm GPU memory is clear;
+4. configure/request ONE context;
+5. load;
+6. run fixed prompt;
+7. capture evidence;
+8. unload before next rung.
+
+Candidate rungs:
+  4096
+  8192
+  16384
+  32768
+  65536
+
+Stop on instability.
+No automatic attempt beyond 65536.
+
+Record:
+- context
+- GPU/CPU split
+- VRAM
+- RAM
+- prompt-eval rate
+- generation rate
+- load time
+- errors
+- whether flash attention is on/off
+
+Do not reboot on failure without explicit owner authorization.
+If GPU context wedges:
+  STOP — REBOOT REQUIRED
+and report.
+
+PHASE 9 — PROTOCOL / CLIENT SURFACE
+
+Retest accepted local paths:
+- native API
+- OpenAI compatibility
+- Anthropic Messages
+- streaming
+- tool call
+- tool result continuation
+- malformed request
+- cancel/recovery
+- thinking disabled
+
+Record version/context/processor split for every behavioral result.
+
+PHASE 10 — TRUNCATION / FAIL-CLOSED AUDIT
+
+This is mandatory and must be able to fail.
+
+A. NATIVE OLLAMA CHAT
+Test:
+1. within-window request
+2. deliberately over-window request with default `truncate`
+3. deliberately over-window request with `&quot;truncate&quot;: false`
+
+The over-window `truncate=false` construction must fail/refuse rather than silently discard required beginning content.
+
+B. ANTHROPIC `/v1/messages`
+Use a deliberately over-limit request with a unique sentinel fact near the portion likely to be discarded.
+
+Observe:
+- HTTP status
+- prompt_eval_count / observable processing
+- answer
+- logs
+
+PASS for safe overflow requires a loud refusal/error or deterministic fronting-layer refusal.
+
+If it silently discards content and answers:
+  FAIL — SILENT TRUNCATION
+
+Do NOT restore Claude Code qualification.
+
+C. CURRENT-VERSION COMPARISON
+If installed runtime is upgraded in a later separately authorized workstream, rerun this exact construction.
+
+Do not accept release notes as proof.
+
+PHASE 11 — CONTROLLED OLLAMA CONFIG CORRECTIONS
+
+After the audit matrix exists, apply only authorized Ollama-specific corrections.
+
+For EACH change:
+
+BEFORE
+- copy/snapshot unit/drop-in
+- record checksum
+- record effective env
+- record rollback command
+- record current acceptance evidence touched by the change
+
+CHANGE
+- make one logical change
+- daemon-reload if needed
+- restart Ollama if needed
+
+AFTER
+- prove effective env
+- prove bind unchanged
+- prove GPU isolation
+- prove model residency
+- run directly affected acceptance tests
+- record result
+
+If a correction regresses another accepted property:
+  ROLLBACK
+  classify:
+    CORRECTION REJECTED
+
+Potential corrections include:
+- remove stale debug;
+- normalize redundant/non-canonical Vulkan visibility while retaining actual isolation;
+- add OLLAMA_NO_CLOUD=1 if accepted as local-runtime policy;
+- remove unintended FlashAttention;
+- correct unsupported/misspelled/dead env vars;
+- correct model-store or service ownership drift;
+- correct Ollama-specific concurrency/load settings.
+
+A VERSION UPGRADE IS NOT AN AUTOMATIC CORRECTION.
+Recommend separately unless current owner explicitly authorizes it during this run.
+
+PHASE 12 — NETWORK BOUNDARY
+
+Verify Ollama remains loopback-only unless current HX authority explicitly says otherwise.
+
+Do not set:
+  OLLAMA_HOST=0.0.0.0
+
+Do not interpret OLLAMA_AUTH as permission to expose local Ollama directly.
+
+Network-consumable inference belongs behind the accepted HX traffic-plane design.
+
+PHASE 13 — RUNTIME GATE INTEGRITY
+
+Inspect current HX runtime acceptance/gate scripts.
+
+Current repository reconnaissance previously found stale DS4-era schema assumptions.
+
+Do not call a green invariant suite sufficient unless the actual Qwen/Ollama gate path executes against the current workload schema.
+
+Required outcome:
+- identify exact stale tests/scripts;
+- produce/implement the minimal Ollama-specific schema/gate repair if current repository authority permits;
+- include at least one known-failing test;
+- otherwise hand a precise repair packet to QA.
+
+Craig does not self-certify final acceptance.
+
+PHASE 14 — AS-BUILT EVIDENCE
+
+Produce a complete proposed hxs-4 Ollama configuration snapshot.
+
+If current owner/lifecycle authority now requires:
+  servers/hxs-4/configuration.md
+then update/create it through the normal governed path.
+
+If the experiment-vs-role ruling remains unresolved:
+- do not decide it silently;
+- provide the exact proposed content;
+- mark:
+  OWNER DECISION — AS-BUILT CLASSIFICATION
+
+Never rewrite discovery.md as configured state.
+
+PHASE 15 — FINAL AUDIT REPORT
+
+Produce polished dark-mode HTML using current HX filename/location rules.
+
+Required sections:
+1. executive verdict;
+2. source/version matrix;
+3. host/GPU foundation;
+4. complete effective systemd/Ollama config;
+5. configuration classification matrix;
+6. pre/post corrections;
+7. GPU isolation proof;
+8. model identity/store;
+9. context/performance matrix;
+10. API/protocol results;
+11. truncation/fail-closed result;
+12. current Claude Code qualification status;
+13. upgrade recommendation;
+14. runtime-gate integrity;
+15. as-built status;
+16. rollback evidence;
+17. owner/architecture decisions;
+18. exact files/commands;
+19. PASS/FAIL/BLOCKED/DEFERRED counts.
+
+FINAL STATUS VOCABULARY
+
+CRAIG HXS-4 AUDIT:
+  PASS — CLEAN BASELINE
+  PASS — CORRECTED BASELINE
+  FAIL — CONFIGURATION
+  FAIL — GPU ISOLATION
+  FAIL — SILENT TRUNCATION
+  BLOCKED — GPU FOUNDATION
+  BLOCKED — AUTHORITY
+  BLOCKED — REBOOT REQUIRED
+
+OLLAMA RUNTIME:
+  OPERATIONAL — LOCAL UTILITY
+  OPERATIONAL — HX VALIDATION
+  NETWORK — NOT GRANTED / DEFERRED
+  CLAUDE CODE — NOT QUALIFIED / QUALIFIED
+
+Do not collapse these states.
+
+DEFINITION OF DONE
+
+Craig&#x27;s first mission is complete only when:
+- the installed Ollama version is source-matched;
+- every effective Ollama setting is classified;
+- GPU isolation is freshly proven;
+- accepted model identity/residency is freshly proven;
+- context/performance behavior is re-characterized safely where needed;
+- the silent-truncation construction is rerun;
+- every applied correction has rollback + post-change proof;
+- stale gate/tooling mismatches are identified or repaired;
+- the as-built evidence question is explicitly resolved or handed to the owner;
+- independent QA/runtime acceptance receives a clean evidence packet.
+
+A running service is not the definition of done.
+</pre>
+<footer>Companion files: <code>hx-ollama-reconnaissance-and-agent-craig-hxs4-audit_gpt-5.6-sol_20260815_0228.html</code> and updated <code>craig-ollama-specialist.md</code>.</footer>
+</main></body></html>

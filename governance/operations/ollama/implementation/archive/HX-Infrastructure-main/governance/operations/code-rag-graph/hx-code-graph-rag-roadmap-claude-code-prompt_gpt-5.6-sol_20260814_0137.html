@@ -1,0 +1,370 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HX Code-Graph-RAG Roadmap Claude Code Prompt</title><style>
+:root{
+ --bg:#071019;--panel:#0d1823;--panel2:#11212f;--text:#e9f1f7;--muted:#9dafbe;
+ --line:#263b4d;--cyan:#69dbff;--green:#94e77a;--amber:#ffd166;--red:#ff7e8e;
+ --violet:#c4a4ff;--code:#06131c;--shadow:0 18px 48px rgba(0,0,0,.32);
+}
+*{box-sizing:border-box}
+body{margin:0;background:
+ radial-gradient(circle at 10% -5%,rgba(105,219,255,.11),transparent 28%),
+ radial-gradient(circle at 90% 0%,rgba(196,164,255,.08),transparent 24%),var(--bg);
+ color:var(--text);font:15px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{width:min(1180px,calc(100% - 34px));margin:auto;padding:34px 0 80px}
+.hero{background:linear-gradient(145deg,rgba(17,33,47,.98),rgba(8,20,30,.98));
+ border:1px solid var(--line);border-radius:18px;padding:34px 36px;box-shadow:var(--shadow)}
+.eyebrow{color:var(--cyan);font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.15em}
+h1{font-size:clamp(36px,5.2vw,58px);line-height:1.02;letter-spacing:-.04em;margin:8px 0 12px}
+h2{font-size:27px;letter-spacing:-.02em;margin:40px 0 14px}
+h3{font-size:19px;margin:20px 0 8px}
+p{margin:8px 0 14px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.pill{border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:999px;padding:6px 11px;color:var(--muted);font-size:12px}
+.callout{margin:18px 0;padding:18px 20px;border:1px solid rgba(105,219,255,.25);border-left:4px solid var(--cyan);border-radius:11px;background:rgba(105,219,255,.05)}
+.callout.ok{border-left-color:var(--green);background:rgba(148,231,122,.045)}
+.callout.warn{border-left-color:var(--amber);background:rgba(255,209,102,.045)}
+.callout.bad{border-left-color:var(--red);background:rgba(255,126,142,.045)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.card{grid-column:span 6;border:1px solid var(--line);border-radius:14px;padding:20px;background:linear-gradient(180deg,rgba(17,33,47,.94),rgba(13,24,35,.94))}
+.card.third{grid-column:span 4}.card.full{grid-column:1/-1}
+.metric{font-size:30px;font-weight:850;letter-spacing:-.03em}.label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+table{width:100%;border-collapse:collapse;border:1px solid var(--line);background:rgba(13,24,35,.93)}
+th,td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+th{background:rgba(255,255,255,.03);color:#cfe4f2;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+tr:last-child td{border-bottom:0}
+code,pre{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+code{background:var(--code);border:1px solid rgba(255,255,255,.06);padding:2px 5px;border-radius:5px;color:#d7edf8}
+pre{white-space:pre-wrap;background:var(--code);border:1px solid var(--line);border-radius:12px;padding:17px;overflow:auto;color:#dbeaf3}
+.keep{color:var(--green);font-weight:800}.later{color:var(--amber);font-weight:800}.no{color:var(--red);font-weight:800}.strong{color:var(--violet);font-weight:800}
+ul,ol{padding-left:22px}li{margin:5px 0}
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+.copybtn{position:sticky;top:10px;float:right;margin:12px 12px -52px 0;z-index:4;cursor:pointer;padding:8px 11px;border-radius:9px;border:1px solid var(--line);background:#142536;color:var(--text);font-weight:700}
+@media(max-width:820px){main{width:min(100% - 22px,1180px)}.hero{padding:25px 21px}.card,.card.third{grid-column:1/-1}table{display:block;overflow:auto}}
+</style></head><body><main>
+<section class="hero">
+<div class="eyebrow">HX-Infrastructure · Claude Code Handoff</div>
+<h1>Code-Graph-RAG Roadmap Integration</h1>
+<p>Repository-first prompt for placing Code-Graph-RAG on the HX roadmap as a future source-code intelligence plane, preserving LightRAG and deferring live deployment until a read-only pilot is explicitly approved.</p>
+<div class="meta">
+<span class="pill">Roadmap only</span>
+<span class="pill">No live deployment</span>
+<span class="pill">jcode + OmniRoute pilot corpus</span>
+<span class="pill">Read-only MCP gate</span>
+<span class="pill">Prepared by GPT-5.6 Sol</span>
+</div>
+</section>
+<div class="callout"><strong>Stop after roadmap/spec reconciliation.</strong> The next synchronization point is approval of the offline jcode/OmniRoute pilot.</div>
+<h2>Claude Code execution prompt</h2>
+<button class="copybtn" onclick="navigator.clipboard.writeText(document.getElementById('prompt').innerText)">Copy prompt</button>
+<pre id="prompt">You are Claude Code operating in the canonical HX-Infrastructure repository.
+
+MISSION
+Record Code-Graph-RAG on the HX roadmap as a FUTURE CODE INTELLIGENCE PLANE and prepare a bounded pilot specification.
+
+THIS IS NOT A LIVE DEPLOYMENT TASK.
+
+Do not install, deploy or run Code-Graph-RAG infrastructure unless a later explicit owner decision authorizes the pilot.
+
+SOURCE SNAPSHOT
+Reviewed Code-Graph-RAG snapshot:
+version: 0.0.630
+archive SHA-256:
+b321a631e74ab4d5e9046e2574ab2321ec93c26ddf30205a2ac70261230dc92a
+
+ARCHITECTURE DECISION
+
+Code-Graph-RAG:
+- goes on HX roadmap
+- role = CODE INTELLIGENCE PLANE
+- does NOT replace LightRAG
+- does NOT become an editing/execution harness
+- does NOT become an agent framework
+- does NOT become repository/governance authority
+
+LightRAG:
+- remains document/governance/decision/history knowledge layer
+
+Code-Graph-RAG:
+- source-code structure
+- calls
+- imports
+- interfaces/inheritance
+- references
+- resource I/O
+- data flow
+- structural code search
+
+CURRENT HX-INFRASTRUCTURE FIT
+Current supplied HX snapshot is overwhelmingly Markdown.
+Therefore:
+DO NOT use current HX-Infrastructure repo as the primary Code-Graph-RAG value benchmark.
+
+INITIAL PILOT CORPUS
+Use:
+1. jcode
+2. OmniRoute
+
+These repos are code-heavy and already deeply reviewed manually, providing ground-truth questions.
+
+ROADMAP WORK ONLY
+
+PHASE 0 — REPOSITORY RECONCILIATION
+Read current HX roadmap/planning/architecture authority.
+Add Code-Graph-RAG in the appropriate roadmap location as:
+  FUTURE / PROPOSED
+not:
+  AS-BUILT
+not:
+  ACTIVE SERVICE
+
+Preserve truth-state distinctions.
+
+Record:
+- purpose
+- non-goals
+- pilot prerequisites
+- adoption gate
+- relationship to LightRAG
+- relationship to Claude Code / jcode / OmniRoute
+
+Do not invent a host placement.
+
+PHASE 1 — CODE INTELLIGENCE PLANE SPEC
+
+Create a target-state specification with this boundary:
+
+HX GOVERNANCE
+  AGENTS / DOX / skills / controls
+
+EXECUTION
+  Claude Code + jcode
+
+CODE INTELLIGENCE
+  Code-Graph-RAG
+
+DOCUMENT KNOWLEDGE
+  LightRAG
+
+TRAFFIC
+  OmniRoute
+
+INFERENCE
+  Ollama / vLLM
+
+Code-Graph-RAG must remain a read/query intelligence service in the HX design.
+
+PHASE 2 — MCP TOOL BOUNDARY
+
+Reviewed snapshot exposes tools including:
+- list_projects
+- delete_project
+- wipe_database
+- index_repository
+- update_repository
+- query_code_graph
+- get_code_snippet
+- semantic_search
+- structural_search
+- flow_verdict
+- surgical_replace_code
+- read_file
+- write_file
+- list_directory
+- structural_replace
+- ask_agent
+
+HX initial agent-exposed ALLOW candidates:
+- query_code_graph
+- get_code_snippet
+- structural_search
+- flow_verdict
+- list_projects
+
+LATER:
+- semantic_search
+
+SERVICE/ADMIN ONLY:
+- index_repository
+- update_repository
+
+DO NOT EXPOSE TO AGENTS:
+- delete_project
+- wipe_database
+- write_file
+- surgical_replace_code
+- structural_replace
+- ask_agent
+
+Investigate whether current upstream now has a server-side read-only/tool-allowlist mode.
+
+Preferred solution families:
+A. upstream read-only MCP profile
+C. shared HX deterministic policy layer
+
+Do not default to an HX fork.
+
+This is an ADOPTION GATE:
+CGR cannot become an approved persistent HX MCP service until intelligence-only exposure is deterministic.
+
+PHASE 3 — PILOT BENCHMARK SPEC
+
+Design, do not execute yet.
+
+Corpus A: jcode
+Known-answer questions:
+- where does pre_tool fail open?
+- which errors cause fail-open?
+- what calls the hook path?
+- what initializes memory?
+- what config controls memory?
+- where are swarm coordinators created?
+- how do workers report back?
+
+Corpus B: OmniRoute
+Known-answer questions:
+- where are Ollama/vLLM providers registered?
+- how do provider routes resolve?
+- which translation code handles tool calls/results?
+- where are orphaned/missing tool results repaired?
+- what configuration controls SSRF?
+- where are provider health/circuit breaker decisions made?
+
+For each benchmark record:
+- graph answer
+- source locations returned
+- whether the answer matches known manual-review ground truth
+- files/tokens required by agent
+- time-to-answer
+- false positives
+- false negatives
+- UNKNOWN behavior
+
+PHASE 4 — GRAPH-ONLY FIRST
+
+Initial pilot architecture:
+- Code-Graph-RAG
+- Memgraph
+- NO Qdrant/Milvus
+- NO embeddings
+- NO nested ask_agent
+- NO editing tools
+
+Goal:
+prove AST/structural/call/data-flow value first.
+
+Do not add semantic embeddings before structural value is measured.
+
+PHASE 5 — AGENT CONSUMERS
+
+Pilot consumers:
+- Claude Code
+- jcode
+
+Both should query the same Code-Graph-RAG intelligence service.
+
+Do not modify either harness to make Code-Graph-RAG authoritative.
+
+Compare:
+- whether graph queries reduce manual source navigation
+- whether answers improve architecture review
+- whether known-answer tasks require fewer file reads
+- whether both clients interpret graph evidence correctly
+
+PHASE 6 — SECURITY / EXTERNAL REPO SAFETY
+
+Document language-specific indexing risks.
+
+Critical reviewed example:
+C# hybrid/Roslyn modes may invoke dotnet restore/MSBuild/source generators.
+
+For untrusted external C# repositories:
+prefer Tree-sitter-only mode unless compiler execution is explicitly authorized.
+
+No external repository gets execution privileges merely because it is being indexed.
+
+PHASE 7 — PROJECT / WORKTREE POLICY
+
+CGR project identity includes resolved repository path.
+
+Therefore:
+- canonical worktrees should be indexed intentionally
+- temporary/throwaway worktrees should not be automatically indexed
+- duplicate near-identical graph projects should be avoided
+
+Document canonical-project naming/retention policy for a future pilot.
+
+PHASE 8 — FUTURE SEMANTIC AUGMENTATION
+
+Only if graph-only pilot succeeds:
+evaluate:
+- semantic_search
+- Qdrant or Milvus
+- local embedding model vs approved OpenAI-compatible endpoint
+- OmniRoute path if appropriate
+- incremental benefit over graph-only search
+
+Require evidence that embeddings add value before adding the second storage plane.
+
+PHASE 9 — ROADMAP MILESTONES
+
+Record:
+R0 Roadmap architecture decision
+R1 Offline source pilot on jcode + OmniRoute
+R2 Read-only MCP access from Claude Code + jcode
+R3 Optional semantic/vector augmentation
+R4 Incremental/live update benchmark
+R5 Adoption for code-heavy HX backend/frontend/service repositories
+Later security/data-flow/code-smell workflows
+
+Do not schedule physical deployment dates unless current HX roadmap requires them.
+
+PHASE 10 — TESTS / INVARIANTS
+
+Add repository invariants where appropriate:
+- Code-Graph-RAG is PROPOSED/FUTURE, not AS-BUILT
+- LightRAG remains a distinct knowledge layer
+- CGR is not an editing authority
+- CGR is not an agent framework
+- agent-exposed target toolset is intelligence-only
+- delete/wipe/write/replace/ask_agent are not part of approved initial HX surface
+- no host placement invented
+- no Ansible introduced
+- no current runtime/OmniRoute/jcode architecture displaced
+
+DELIVERABLES
+
+1. Roadmap/architecture entry.
+2. Code Intelligence Plane target-state specification.
+3. Code-Graph-RAG pilot benchmark specification.
+4. Tool-exposure/adoption-gate specification.
+5. Any appropriate invariants/tests.
+6. Polished dark-mode HTML completion report.
+
+FINAL REPORT MUST STATE
+
+DECISION:
+CODE-GRAPH-RAG PLACED ON HX ROADMAP.
+
+ROLE:
+FUTURE CODE INTELLIGENCE PLANE.
+
+LIGHTRAG:
+RETAINED.
+NOT REPLACED.
+
+CURRENT HX-INFRASTRUCTURE:
+NOT THE PRIMARY PILOT CORPUS DUE TO MARKDOWN-DOMINANT CONTENT.
+
+FIRST PILOT CORPUS:
+JCODE + OMNIROUTE.
+
+LIVE DEPLOYMENT:
+NOT AUTHORIZED BY THIS WORKSTREAM.
+
+ADOPTION GATE:
+DETERMINISTIC READ-ONLY / INTELLIGENCE-ONLY MCP EXPOSURE.
+
+NEXT DECISION:
+After roadmap reconciliation, synchronize with owner before authorizing the offline jcode/OmniRoute pilot.
+</pre>
+<footer>Companion architecture decision: <code>hx-code-graph-rag-roadmap-architecture-decision_gpt-5.6-sol_20260814_0137.html</code>.</footer>
+</main></body></html>

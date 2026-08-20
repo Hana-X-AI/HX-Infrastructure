@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>HX-Infrastructure — Proposed Technology Stack & Architecture Diagrams</title>
+  <style>
+    :root {
+      --bg: #070c16;
+      --panel: #0f172a;
+      --panel2: #162035;
+      --panel-hover: #1c2b48;
+      --line: #243552;
+      --line-bright: #3b537d;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --dim: #64748b;
+      --blue: #38bdf8;
+      --blue-bg: rgba(56, 189, 248, 0.1);
+      --cyan: #22d3ee;
+      --cyan-bg: rgba(34, 211, 238, 0.1);
+      --green: #34d399;
+      --green-bg: rgba(52, 211, 153, 0.1);
+      --amber: #fbbf24;
+      --amber-bg: rgba(251, 191, 36, 0.1);
+      --red: #fb7185;
+      --red-bg: rgba(251, 113, 133, 0.1);
+      --violet: #c084fc;
+      --violet-bg: rgba(192, 132, 252, 0.1);
+      --shadow: 0 20px 40px -15px rgba(0,0,0,0.5);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 85% 0%, #172a49 0%, transparent 40%),
+                  radial-gradient(circle at 10% 30%, #1e1b4b 0%, transparent 35%),
+                  linear-gradient(180deg, #070c16 0%, #0c1424 100%);
+      color: var(--text);
+      font: 15px/1.65 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .wrap {
+      max-width: 1240px;
+      margin: auto;
+      padding: 48px 24px 96px;
+    }
+    .eyebrow {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: var(--cyan);
+      font-weight: 800;
+    }
+    .hero { padding: 24px 0 16px; }
+    h1 {
+      font-size: 42px;
+      line-height: 1.12;
+      margin: 12px 0 16px;
+      color: #ffffff;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: 24px;
+      margin-top: 52px;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h2 .section-num {
+      color: var(--blue);
+      font-size: 18px;
+      font-family: ui-monospace, monospace;
+    }
+    h3 {
+      font-size: 17px;
+      color: #e2e8f0;
+      margin: 0 0 8px;
+      font-weight: 700;
+    }
+    .lede {
+      font-size: 18px;
+      color: #cbd5e1;
+      max-width: 980px;
+      line-height: 1.6;
+    }
+    .meta, .callout, .card, .stack-card, .diagram-container {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+    }
+    .meta, .callout { padding: 18px 22px; margin: 20px 0; }
+    .callout { border-left: 4px solid var(--cyan); }
+    .verdict { border-left-color: var(--green); }
+    .warn { border-left-color: var(--amber); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+    .card { padding: 20px; }
+    .score {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--blue);
+      line-height: 1;
+      margin-bottom: 6px;
+      font-family: ui-monospace, monospace;
+    }
+    .layer {
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      gap: 16px;
+      margin: 18px 0;
+    }
+    .layer-name {
+      border-radius: 12px;
+      padding: 18px 16px;
+      font-weight: 800;
+      background: linear-gradient(145deg, #16253e, #0e1728);
+      border: 1px solid #283e63;
+      color: #e2e8f0;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .layer-num {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--cyan);
+      font-family: ui-monospace, monospace;
+    }
+    .stack-card { padding: 20px 24px; }
+    .chips { margin: 10px 0 14px; }
+    .chip, .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 10px;
+      margin: 3px 6px 3px 0;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .foundation { color: var(--green); border-color: rgba(52, 211, 153, 0.4); background: var(--green-bg); }
+    .proposed { color: var(--blue); border-color: rgba(56, 189, 248, 0.4); background: var(--blue-bg); }
+    .conditional { color: var(--amber); border-color: rgba(251, 191, 36, 0.4); background: var(--amber-bg); }
+    .roadmap { color: var(--violet); border-color: rgba(192, 132, 252, 0.4); background: var(--violet-bg); }
+    .deferred { color: #94a3b8; border-color: #475569; background: rgba(148, 163, 184, 0.08); }
+    .out { color: var(--red); border-color: rgba(251, 113, 133, 0.4); background: var(--red-bg); }
+    .role { color: var(--cyan); background: rgba(34, 211, 238, 0.08); border-color: rgba(34, 211, 238, 0.25); }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--panel);
+      margin: 20px 0;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 12px 16px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--panel2);
+      color: #e2e8f0;
+      font-weight: 700;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    code {
+      background: #090e18;
+      border: 1px solid var(--line-bright);
+      border-radius: 5px;
+      padding: 2px 6px;
+      color: var(--blue);
+      font-family: ui-monospace, monospace;
+      font-size: 13px;
+    }
+    ul, ol { padding-left: 24px; }
+    li { margin: 6px 0; }
+    .muted { color: var(--muted); }
+    .small { font-size: 13px; color: var(--muted); }
+    .principle { border-top: 4px solid var(--blue); }
+    .no { border-top: 4px solid var(--red); }
+
+    /* Professional Vector Diagram Containers */
+    .diagram-container {
+      padding: 28px 24px;
+      margin: 28px 0 36px;
+      overflow-x: auto;
+      background: linear-gradient(180deg, #0d1526 0%, #090e19 100%);
+      border: 1px solid var(--line-bright);
+    }
+    .diagram-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .diagram-tag {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--cyan);
+      font-family: ui-monospace, monospace;
+    }
+    .diagram-svg-wrap {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      min-width: 820px;
+    }
+    .diagram-svg-wrap svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    @media (max-width: 820px) {
+      h1 { font-size: 32px; }
+      .layer { grid-template-columns: 1fr; }
+      .diagram-container { padding: 18px 12px; }
+      .wrap { padding: 28px 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">Hana-X AI · HX-Infrastructure · Phase 3 Regroup</div>
+    <h1>Proposed Technology Stack & Visual Architecture Models</h1>
+    <p class="lede">A technology-only view of the HX platform: what belongs in the stack, the role each component plays, how the layers relate, and which choices remain conditional. Incorporates full architectural diagrams for all nine platform planes, data flows, and ownership boundaries.</p>
+  </section>
+
+  <div class="meta">
+    <b>Status:</b> PROPOSED TRUE-NORTH STACK · <b>Date:</b> 2026-08-15 · <b>Revised:</b> 2026-08-17<br>
+    <b>Scope:</b> Development, testing, and demonstrations; self-hosted; full-stack capability valued above production-scale optimization.<br>
+    <b>Evidence Basis:</b> Current owner decisions, consolidated repository, fleet architecture v0.3, runtime acceptance evidence, service designs, joint reconnaissance, and Granite Docling reconnaissance.
+  </div>
+
+  <div class="callout verdict">
+    <strong>Executive Conclusion.</strong> HX should be a governed, self-hosted AI application platform—not merely a cluster of model servers. Its center is nine deliberately separated planes: governance and execution control; systems foundation; edge and traffic; AI inference; retrieval and knowledge; agents, memory, and MCP; data and state; experience and automation; and observability and recovery. The stack is coherent when each technology owns one clear job and does not quietly become a second authority for routing, memory, execution, or truth.
+  </div>
+
+  <div class="grid">
+    <div class="card"><div class="score">9</div><b>Platform Planes</b><div class="muted">Clear ownership boundaries</div></div>
+    <div class="card"><div class="score">2</div><b>Inference Runtimes</b><div class="muted">vLLM and Ollama, used differently</div></div>
+    <div class="card"><div class="score">1</div><b>Traffic Authority</b><div class="muted">OmniRoute, not competing gateways</div></div>
+    <div class="card"><div class="score">0</div><b>Ansible / K8s Requirements</b><div class="muted">Native Bash/SSH & systemd isolation</div></div>
+  </div>
+
+  <!-- DIAGRAM 1: TOP-LEVEL 9-PLANE TOPOLOGY -->
+  <h2><span class="section-num">01</span> Platform Architecture & Nine Planes</h2>
+  <p class="muted">High-level architectural topology showing the complete 9-plane platform hierarchy, component roles, and boundaries.</p>
+
+  <div class="diagram-container">
+    <div class="diagram-header">
+      <div>
+        <div class="diagram-tag">Architecture Diagram 01</div>
+        <h3>HX Nine-Plane Platform Topology</h3>
+      </div>
+      <span class="status proposed">True-North Core</span>
+    </div>
+    <div class="diagram-svg-wrap">
+      <svg viewBox="0 0 1000 680" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="bgPill" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#142138"/><stop offset="100%" stop-color="#0e1728"/></linearGradient>
+          <linearGradient id="blueGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0284c7"/><stop offset="100%" stop-color="#0369a1"/></linearGradient>
+          <linearGradient id="greenGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#059669"/><stop offset="100%" stop-color="#047857"/></linearGradient>
+          <filter id="cardShadow" x="-5%" y="-5%" width="110%" height="115%"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.5"/></filter>
+        </defs>
+
+        <!-- PLANE 1 & 2: GOVERNANCE & FOUNDATION -->
+        <rect x="20" y="20" width="960" height="90" rx="12" fill="#0d172b" stroke="#253a5e" stroke-width="1.5" filter="url(#cardShadow)"/>
+        <rect x="20" y="20" width="180" height="90" rx="12" fill="#132742" stroke="#2c4d7d"/>
+        <text x="35" y="52" fill="#38bdf8" font-family="Inter, sans-serif" font-weight="800" font-size="12" letter-spacing="1">TIER I · GOVERNANCE</text>
+        <text x="35" y="76" fill="#ffffff" font-family="Inter, sans-serif" font-weight="700" font-size="15">Planes 1 &amp; 2</text>
+        
+        <rect x="215" y="35" width="355" height="60" rx="8" fill="#11223b" stroke="#10b981" stroke-width="1"/>
+        <text x="230" y="58" fill="#34d399" font-family="Inter, sans-serif" font-weight="700" font-size="13">Plane 1 · Governance &amp; Execution Control</text>
+        <text x="230" y="78" fill="#94a3b8" font-family="Inter, sans-serif" font-size="12">Git/GitHub · sdd-core · Claude Code · Fail-Closed Hooks</text>
+
+        <rect x="585" y="35" width="380" height="60" rx="8" fill="#11223b" stroke="#10b981" stroke-width="1"/>
+        <text x="600" y="58" fill="#34d399" font-family="Inter, sans-serif" font-weight="700" font-size="13">Plane 2 · Systems Foundation &amp; Fleet Ops</text>
+        <text x="600" y="78" fill="#94a3b8" font-family="Inter, sans-serif" font-size="12">Ubuntu Server · systemd · venvs · Bash/SSH/SCP · chrony</text>
+
+        <!-- PLANE 3 & 8: INGRESS & EXPERIENCE -->
+        <rect x="20" y="130" width="960" height="120" rx="12" fill="#0d172b" stroke="#253a5e" stroke-width="1.5" filter="url(#cardShadow)"/>
+        <rect x="20" y="130" width="180" height="120" rx="12" fill="#132742" stroke="#2c4d7d"/>
+        <text x="35" y="170" fill="#38bdf8" font-family="Inter, sans-serif" font-weight="800" font-size="12" letter-spacing="1">TIER II · INGRESS</text>
+        <text x="35" y="196" fill="#ffffff" font-family="Inter, sans-serif" font-weight="700" font-size="15">Planes 3 &amp; 8</text>
+
+        <rect x="215" y="148" width="355" height="84" rx="8" fill="#11223b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="230" y="174" fill="#38bdf8" font-family="Inter, sans-serif" font-weight="700" font-size="13">Plane 3 · Edge &amp; Model Traffic Plane</text>
+        <text x="230" y="195" fill="#f1f5f9" font-family="Inter, sans-serif" font-size="12"><tspan font-weight="700">NGINX:</tspan> TLS, Web Ingress &amp; Reverse Proxy</text>
+        <text x="230" y="214" fill="#f1f5f9" font-family="Inter, sans-serif" font-size="12"><tspan font-weight="700">OmniRoute:</tspan> Model Registry, Policy &amp; Mediation</text>
+
+        <rect x="585" y="148" width="380" height="84" rx="8" fill="#11223b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="600" y="174" fill="#38bdf8" font-family="Inter, sans-serif" font-weight="700" font-size="13">Plane 8 · Experience &amp; Automation</text>
+        <text x="600" y="195" fill="#f1f5f9" font-family="Inter, sans-serif" font-size="12"><tspan font-weight="700">Open WebUI:</tspan> Primary Chat &amp; Test Surface</text>
+        <text x="600" y="214" fill="#f1f5f9" font-family="Inter, sans-serif" font-size="12"><tspan font-weight="700">CopilotKit / AG-UI:</tspan> Custom UI · <tspan font-weight="700">n8n:</tspan> Workflows</text>
+
+        <!-- PLANE 6: AGENTS, MEMORY & MCP -->
+        <rect x="20" y="270" width="960" height="110" rx="12" fill="#0d172b" stroke="#253a5e" stroke-width="1.5" filter="url(#cardShadow)"/>
+        <rect x="20" y="270" width="180" height="110" rx="12" fill="#132742" stroke="#2c4d7d"/>
+        <text x="35" y="310" fill="#38bdf8" font-family="Inter, sans-serif" font-weight="800" font-size="12" letter-spacing="1">TIER III · AGENTS</text>
+        <text x="35" y="336" fill="#ffffff" font-family="Inter, sans-serif" font-weight="700" font-size="15">Plane 6</text>
+
+        <rect x="215" y="285" width="235" height="80" rx="8" fill="#152744" stroke="#38bdf8" stroke-width="1"/>
+        <text x="228" y="310" fill="#38bdf8" font-family="Inter, sans-serif" font-weight="700" font-size="13">LangGraph Orchestrator</text>
+        <text x="228" y="332" fill="#cbd5e1" font-family="Inter, sans-serif" font-size="12">Stateful Agent Graphs</text>
+        <text x="228" y="350" fill="#94a3b8" font-family="Inter, sans-serif" font-size="11">PostgreSQL Checkpointer</text>
+
+        <rect x="465" y="285" width="245" height="80" rx="8" fill="#152744" stroke="#34d399" stroke-width="1.5"/>
+        <text x="478" y="310" fill="#34d399" font-family="Inter, sans-serif" font-weight="700" font-size="13">Mem0 Memory Service</text>
+        <text x="478" y="332" fill="#cbd5e1" font-family="Inter, sans-serif" font-size="12">Durable User/Agent Memory</text>
+        <text x="478" y="350" fill="#34d399" font-family="Inter, sans-serif" font-size="11">In by Default (Own Storage)</text>
+
+        <rect x="725" y="285" width="240" height="80" rx="8" fill="#152744" stroke="#38bdf8" stroke-width="1"/>
+        <text x="738" y="310" fill="#38bdf8" font-family="Inter, sans-serif" font-weight="700" font-size="13">FastMCP Tool Layer</text>
+        <text x="738" y="332" fill="#cbd5e1" font-family="Inter, sans-serif" font-size="12">Streamable HTTP Tools</text>
+        <text x="738" y="350" fill="#94a3b8" font-family="Inter, sans-serif" font-size="11">Docling / Search / Ops MCP</text>
+
+        <!-- PLANE 4 & 5: INFERENCE & KNOWLEDGE -->
+        <rect x="20" y="400" width="960" height="130" rx="12" fill="#0d172b" stroke="#253a5e" stroke-width="1.5" filter="url(#cardShadow)"/>
+        <rect x="20" y="400" width="180" height="130" rx="12" fill="#132742" stroke="#2c4d7d"/>
+        <text x="35" y="445" fill="#38bdf8" font-family="Inter, sans-serif" font-weight="800" font-size="12" letter-spacing="1">TIER IV · CORE AI</text>
+        <text x="35" y="471" fill="#ffffff" font-family="Inter, sans-serif" font-weight="700" font-size="15">Planes 4 &amp; 5</text>
+
+        <rect x="215" y="415" width="355" height="100" rx="8" fill="#11223b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="230" y="438" fill="#38bdf8" font-family="Inter, sans-serif" font-weight="700" font-size="13">Plane 4 · Dual AI Inference Runtimes</text>
+        <text x="230" y="460" fill="#f1f5f9" font-family="Inter, sans-serif" font-size="12"><tspan font-weight="700">vLLM:</tspan> Strategic High-Throughput / Batch Serving</text>
+        <text x="230" y="480" fill="#f1f5f9" font-family="Inter, sans-serif" font-size="12"><tspan font-weight="700">Ollama:</tspan> Bounded Local Utility / Eval (Loopback-Only)</text>
+        <text x="230" y="500" fill="#94a3b8" font-family="Inter, sans-serif" font-size="11">Models: Qwen Family (Core) + gpt-oss (Tools)</text>
+
+        <rect x="585" y="415" width="380" height="100" rx="8" fill="#11223b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="600" y="438" fill="#38bdf8" font-family="Inter, sans-serif" font-weight="700" font-size="13">Plane 5 · Retrieval &amp; Knowledge Planes</text>
+        <text x="600" y="460" fill="#f1f5f9" font-family="Inter, sans-serif" font-size="12"><tspan font-weight="700">Docling + Granite 258M VLM:</tspan> Complex Scan Recovery</text>
+        <text x="600" y="480" fill="#f1f5f9" font-family="Inter, sans-serif" font-size="12"><tspan font-weight="700">TEI / Infinity:</tspan> BGE-M3 / Nomic + BGE Reranker</text>
+        <text x="600" y="500" fill="#f1f5f9" font-family="Inter, sans-serif" font-size="12"><tspan font-weight="700">Stores:</tspan> Qdrant (Vectors) + LightRAG (Graph Knowledge)</text>
+
+        <!-- PLANE 7 & 9: DATA & OBSERVABILITY -->
+        <rect x="20" y="550" width="960" height="100" rx="12" fill="#0d172b" stroke="#253a5e" stroke-width="1.5" filter="url(#cardShadow)"/>
+        <rect x="20" y="550" width="180" height="100" rx="12" fill="#132742" stroke="#2c4d7d"/>
+        <text x="35" y="590" fill="#38bdf8" font-family="Inter, sans-serif" font-weight="800" font-size="12" letter-spacing="1">TIER V · STATE &amp; OPS</text>
+        <text x="35" y="616" fill="#ffffff" font-family="Inter, sans-serif" font-weight="700" font-size="15">Planes 7 &amp; 9</text>
+
+        <rect x="215" y="565" width="355" height="70" rx="8" fill="#11223b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="230" y="588" fill="#38bdf8" font-family="Inter, sans-serif" font-weight="700" font-size="13">Plane 7 · Data &amp; State Authority</text>
+        <text x="230" y="610" fill="#cbd5e1" font-family="Inter, sans-serif" font-size="12"><tspan font-weight="700">PostgreSQL:</tspan> Durable App State &amp; Schemas</text>
+        <text x="230" y="628" fill="#94a3b8" font-family="Inter, sans-serif" font-size="11"><tspan font-weight="700">Redis:</tspan> Ephemeral Cache · <tspan font-weight="700">SQLite:</tspan> Narrow Local Only</text>
+
+        <rect x="585" y="565" width="380" height="70" rx="8" fill="#11223b" stroke="#38bdf8" stroke-width="1"/>
+        <text x="600" y="588" fill="#38bdf8" font-family="Inter, sans-serif" font-weight="700" font-size="13">Plane 9 · Observability &amp; Recovery</text>
+        <text x="600" y="610" fill="#cbd5e1" font-family="Inter, sans-serif" font-size="12"><tspan font-weight="700">Prometheus + DCGM Exporter:</tspan> Host &amp; GPU Metrics</text>
+        <text x="600" y="628" fill="#94a3b8" font-family="Inter, sans-serif" font-size="11"><tspan font-weight="700">Loki:</tspan> Centralized Logs · <tspan font-weight="700">Grafana:</tspan> Dashboards</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- HOW TO READ -->
+  <h2><span class="section-num">02</span> How to Read the Stack</h2>
+  <p><span class="status foundation">FOUNDATIONAL / DECIDED</span> is an owner-ratified direction or durable project standard. <span class="status proposed">PROPOSED CORE</span> belongs in the target platform; an item marked <b>IN BY DEFAULT</b> remains in the architecture unless a materially superior replacement or evidence-based exclusion emerges. <span class="status conditional">CONDITIONAL</span> is a real stack need with an unresolved product, model, or configuration choice. <span class="status roadmap">ROADMAP</span> has credible value but should not be treated as current platform authority. <span class="status deferred">DEFERRED</span> is intentionally later. <span class="status out">OUT / SUPERSEDED</span> should not appear as target-state architecture.</p>
+
+  <!-- PRINCIPLES -->
+  <h2><span class="section-num">03</span> True-North Architecture Principles</h2>
+  <div class="grid">
+    <div class="card principle"><h3>One authority per concern</h3><p>One traffic plane, one durable-memory authority, one registry/governance truth, and one execution-control model. Integration must not create shadow authorities.</p></div>
+    <div class="card principle"><h3>Capability before placement</h3><p>Define the service contract and accepted use first. Hardware placement, deployment order, and optimization follow later.</p></div>
+    <div class="card principle"><h3>Evidence-bounded acceptance</h3><p>A runtime is accepted for a specific client, task, context envelope, and access path—not “accepted” in the abstract.</p></div>
+    <div class="card principle"><h3>Open interfaces, replaceable components</h3><p>Prefer OpenAI-compatible model APIs, MCP for tools, PostgreSQL/Redis/Qdrant for standard data roles, and contracts that permit components to change without redesigning the platform.</p></div>
+    <div class="card principle"><h3>Native, observable operations</h3><p>Linux services, isolated environments, explicit configuration, native Bash/SSH automation, tests, logs, and reproducible evidence are the baseline.</p></div>
+    <div class="card principle"><h3>Dev/test realism without production theater</h3><p>Exercise the complete stack and meaningful controls, but avoid premature HA, orchestration complexity, and a broad hardening program before the platform works.</p></div>
+  </div>
+
+  <!-- DIAGRAM 2: FUNCTIONAL FLOWS -->
+  <h2><span class="section-num">04</span> Three Core Functional Execution Flows</h2>
+  <p class="muted">End-to-end execution paths showing how requests, knowledge, and capabilities flow across platform planes.</p>
+
+  <!-- FLOW A -->
+  <div class="diagram-container">
+    <div class="diagram-header">
+      <div>
+        <div class="diagram-tag">Flow Diagram 02A</div>
+        <h3>Interactive Human &amp; Agent Request Pipeline</h3>
+      </div>
+      <span class="status proposed">Runtime Flow</span>
+    </div>
+    <div class="diagram-svg-wrap">
+      <svg viewBox="0 0 960 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#38bdf8"/></marker>
+        </defs>
+        <!-- Nodes -->
+        <g transform="translate(10, 30)">
+          <!-- Node 1 -->
+          <rect x="0" y="30" width="130" height="90" rx="8" fill="#132742" stroke="#38bdf8" stroke-width="1.5"/>
+          <text x="65" y="65" fill="#38bdf8" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Human / User</text>
+          <text x="65" y="85" fill="#94a3b8" font-family="Inter" font-size="11" text-anchor="middle">Browser / API</text>
+
+          <!-- Arrow 1 -->
+          <path d="M130 75 L160 75" stroke="#38bdf8" stroke-width="2" marker-end="url(#arr)"/>
+
+          <!-- Node 2 -->
+          <rect x="165" y="30" width="120" height="90" rx="8" fill="#132742" stroke="#38bdf8" stroke-width="1.5"/>
+          <text x="225" y="65" fill="#38bdf8" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">NGINX Edge</text>
+          <text x="225" y="85" fill="#94a3b8" font-family="Inter" font-size="11" text-anchor="middle">TLS / Ingress</text>
+
+          <!-- Arrow 2 -->
+          <path d="M285 75 L315 75" stroke="#38bdf8" stroke-width="2" marker-end="url(#arr)"/>
+
+          <!-- Node 3 -->
+          <rect x="320" y="30" width="130" height="90" rx="8" fill="#132742" stroke="#38bdf8" stroke-width="1.5"/>
+          <text x="385" y="65" fill="#38bdf8" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Open WebUI</text>
+          <text x="385" y="85" fill="#94a3b8" font-family="Inter" font-size="11" text-anchor="middle">CopilotKit / AG-UI</text>
+
+          <!-- Arrow 3 -->
+          <path d="M450 75 L480 75" stroke="#38bdf8" stroke-width="2" marker-end="url(#arr)"/>
+
+          <!-- Node 4 -->
+          <rect x="485" y="15" width="145" height="120" rx="8" fill="#173154" stroke="#34d399" stroke-width="2"/>
+          <text x="557" y="45" fill="#34d399" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">LangGraph Engine</text>
+          <text x="557" y="68" fill="#cbd5e1" font-family="Inter" font-size="11" text-anchor="middle">State Orchestration</text>
+          <text x="557" y="90" fill="#38bdf8" font-family="Inter" font-size="10" text-anchor="middle">↔ Mem0 (Memory)</text>
+          <text x="557" y="110" fill="#94a3b8" font-family="Inter" font-size="10" text-anchor="middle">↔ PostgreSQL (Checkpts)</text>
+
+          <!-- Arrow 4 -->
+          <path d="M630 75 L660 75" stroke="#38bdf8" stroke-width="2" marker-end="url(#arr)"/>
+
+          <!-- Node 5 -->
+          <rect x="665" y="30" width="135" height="90" rx="8" fill="#173154" stroke="#38bdf8" stroke-width="2"/>
+          <text x="732" y="65" fill="#38bdf8" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">OmniRoute</text>
+          <text x="732" y="85" fill="#94a3b8" font-family="Inter" font-size="11" text-anchor="middle">Traffic Authority</text>
+
+          <!-- Arrow 5 -->
+          <path d="M800 75 L830 75" stroke="#38bdf8" stroke-width="2" marker-end="url(#arr)"/>
+
+          <!-- Node 6 -->
+          <rect x="835" y="30" width="115" height="90" rx="8" fill="#132742" stroke="#38bdf8" stroke-width="1.5"/>
+          <text x="892" y="65" fill="#38bdf8" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">vLLM / Ollama</text>
+          <text x="892" y="85" fill="#94a3b8" font-family="Inter" font-size="11" text-anchor="middle">Model Inference</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- FLOW B -->
+  <div class="diagram-container">
+    <div class="diagram-header">
+      <div>
+        <div class="diagram-tag">Flow Diagram 02B</div>
+        <h3>Knowledge Ingestion &amp; Hybrid Retrieval Pipeline</h3>
+      </div>
+      <span class="status conditional">Granite Docling 258M + LightRAG</span>
+    </div>
+    <div class="diagram-svg-wrap">
+      <svg viewBox="0 0 960 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(10, 30)">
+          <!-- Ingest -->
+          <rect x="0" y="25" width="135" height="100" rx="8" fill="#132742" stroke="#38bdf8" stroke-width="1.5"/>
+          <text x="67" y="55" fill="#38bdf8" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Raw Documents</text>
+          <text x="67" y="75" fill="#94a3b8" font-family="Inter" font-size="11" text-anchor="middle">PDFs, Scans, Web</text>
+          <text x="67" y="95" fill="#94a3b8" font-family="Inter" font-size="11" text-anchor="middle">Complex Tables</text>
+
+          <path d="M135 75 L165 75" stroke="#38bdf8" stroke-width="2"/>
+
+          <!-- Docling / Crawl4AI -->
+          <rect x="170" y="15" width="175" height="120" rx="8" fill="#173154" stroke="#fbbf24" stroke-width="2"/>
+          <text x="257" y="45" fill="#fbbf24" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Docling + Granite 258M</text>
+          <text x="257" y="68" fill="#cbd5e1" font-family="Inter" font-size="11" text-anchor="middle">Preferred Embedded VLM</text>
+          <text x="257" y="88" fill="#94a3b8" font-family="Inter" font-size="10" text-anchor="middle">DocTags Structure Check</text>
+          <text x="257" y="108" fill="#38bdf8" font-family="Inter" font-size="10" text-anchor="middle">Crawl4AI (Web Ingest)</text>
+
+          <path d="M345 75 L375 75" stroke="#38bdf8" stroke-width="2"/>
+
+          <!-- TEI / Infinity -->
+          <rect x="380" y="25" width="150" height="100" rx="8" fill="#132742" stroke="#38bdf8" stroke-width="1.5"/>
+          <text x="455" y="55" fill="#38bdf8" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">TEI or Infinity</text>
+          <text x="455" y="75" fill="#cbd5e1" font-family="Inter" font-size="11" text-anchor="middle">BGE-M3 / Nomic</text>
+          <text x="455" y="95" fill="#94a3b8" font-family="Inter" font-size="11" text-anchor="middle">BGE Reranker</text>
+
+          <path d="M530 75 L560 75" stroke="#38bdf8" stroke-width="2"/>
+
+          <!-- Stores -->
+          <rect x="565" y="15" width="190" height="120" rx="8" fill="#173154" stroke="#38bdf8" stroke-width="2"/>
+          <text x="660" y="45" fill="#38bdf8" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Dual Knowledge Stores</text>
+          <text x="660" y="70" fill="#f1f5f9" font-family="Inter" font-size="11" text-anchor="middle"><tspan font-weight="700">Qdrant:</tspan> Vector Store</text>
+          <text x="660" y="90" fill="#f1f5f9" font-family="Inter" font-size="11" text-anchor="middle"><tspan font-weight="700">LightRAG:</tspan> Entity Graph</text>
+          <text x="660" y="112" fill="#c084fc" font-family="Inter" font-size="10" text-anchor="middle">+ Code-Graph-RAG (Roadmap)</text>
+
+          <path d="M755 75 L785 75" stroke="#38bdf8" stroke-width="2"/>
+
+          <!-- Context -->
+          <rect x="790" y="25" width="145" height="100" rx="8" fill="#132742" stroke="#34d399" stroke-width="1.5"/>
+          <text x="862" y="65" fill="#34d399" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Agent Context</text>
+          <text x="862" y="88" fill="#94a3b8" font-family="Inter" font-size="11" text-anchor="middle">Governed Envelope</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- FLOW C -->
+  <div class="diagram-container">
+    <div class="diagram-header">
+      <div>
+        <div class="diagram-tag">Flow Diagram 02C</div>
+        <h3>Governed Capability &amp; FastMCP Tool Execution</h3>
+      </div>
+      <span class="status proposed">FastMCP Protocol</span>
+    </div>
+    <div class="diagram-svg-wrap">
+      <svg viewBox="0 0 960 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(10, 20)">
+          <rect x="0" y="25" width="180" height="90" rx="8" fill="#132742" stroke="#38bdf8" stroke-width="1.5"/>
+          <text x="90" y="60" fill="#38bdf8" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Platform Capabilities</text>
+          <text x="90" y="80" fill="#94a3b8" font-family="Inter" font-size="11" text-anchor="middle">Docling · Crawl · Search · Ops</text>
+
+          <path d="M180 70 L230 70" stroke="#38bdf8" stroke-width="2"/>
+
+          <rect x="235" y="15" width="220" height="110" rx="8" fill="#173154" stroke="#38bdf8" stroke-width="2"/>
+          <text x="345" y="45" fill="#38bdf8" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">FastMCP Server Boundary</text>
+          <text x="345" y="68" fill="#cbd5e1" font-family="Inter" font-size="11" text-anchor="middle">Streamable HTTP Transport</text>
+          <text x="345" y="88" fill="#94a3b8" font-family="Inter" font-size="11" text-anchor="middle">Strict Capability Contracts</text>
+
+          <path d="M455 70 L505 70" stroke="#38bdf8" stroke-width="2"/>
+
+          <rect x="510" y="25" width="190" height="90" rx="8" fill="#132742" stroke="#34d399" stroke-width="1.5"/>
+          <text x="605" y="60" fill="#34d399" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Authorized Consumers</text>
+          <text x="605" y="80" fill="#94a3b8" font-family="Inter" font-size="11" text-anchor="middle">LangGraph · Claude Code</text>
+
+          <path d="M700 70 L750 70" stroke="#38bdf8" stroke-width="2"/>
+
+          <rect x="755" y="25" width="165" height="90" rx="8" fill="#132742" stroke="#38bdf8" stroke-width="1.5"/>
+          <text x="837" y="60" fill="#38bdf8" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Audited Result</text>
+          <text x="837" y="80" fill="#94a3b8" font-family="Inter" font-size="11" text-anchor="middle">Tamper-Evident Logs</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- DIAGRAM 3: OWNERSHIP BOUNDARY MATRIX -->
+  <h2><span class="section-num">05</span> Critical Ownership Boundaries</h2>
+  <p class="muted">Strict demarcation ensuring no shadow authorities emerge across routing, state, memory, or governance.</p>
+
+  <div class="diagram-container">
+    <div class="diagram-header">
+      <div>
+        <div class="diagram-tag">Boundary Diagram 03</div>
+        <h3>One Authority Per Concern Boundary Map</h3>
+      </div>
+      <span class="status foundation">Enforced Rule</span>
+    </div>
+    <div class="diagram-svg-wrap">
+      <svg viewBox="0 0 960 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(10, 10)">
+          <!-- Row 1 -->
+          <rect x="0" y="10" width="280" height="50" rx="6" fill="#132742" stroke="#253a5e"/>
+          <text x="140" y="40" fill="#ffffff" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Project Truth &amp; Decisions</text>
+
+          <rect x="295" y="10" width="310" height="50" rx="6" fill="#112c22" stroke="#10b981"/>
+          <text x="450" y="40" fill="#34d399" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Owner Rulings + Git sdd-core Specs</text>
+
+          <rect x="620" y="10" width="320" height="50" rx="6" fill="#2d1319" stroke="#fb7185"/>
+          <text x="780" y="40" fill="#fb7185" font-family="Inter" font-size="11" text-anchor="middle">x AI Agent outputs, Transcripts, HTML</text>
+
+          <!-- Row 2 -->
+          <rect x="0" y="70" width="280" height="50" rx="6" fill="#132742" stroke="#253a5e"/>
+          <text x="140" y="100" fill="#ffffff" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Model Traffic Authority</text>
+
+          <rect x="295" y="70" width="310" height="50" rx="6" fill="#112c22" stroke="#10b981"/>
+          <text x="450" y="100" fill="#34d399" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">OmniRoute Registry &amp; Gateway</text>
+
+          <rect x="620" y="70" width="320" height="50" rx="6" fill="#2d1319" stroke="#fb7185"/>
+          <text x="780" y="100" fill="#fb7185" font-family="Inter" font-size="11" text-anchor="middle">x NGINX, LangGraph, LiteLLM, Raw LAN</text>
+
+          <!-- Row 3 -->
+          <rect x="0" y="130" width="280" height="50" rx="6" fill="#132742" stroke="#253a5e"/>
+          <text x="140" y="160" fill="#ffffff" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Agent Orchestration State</text>
+
+          <rect x="295" y="130" width="310" height="50" rx="6" fill="#112c22" stroke="#10b981"/>
+          <text x="450" y="160" fill="#34d399" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">LangGraph + PostgreSQL Checkpoints</text>
+
+          <rect x="620" y="130" width="320" height="50" rx="6" fill="#2d1319" stroke="#fb7185"/>
+          <text x="780" y="160" fill="#fb7185" font-family="Inter" font-size="11" text-anchor="middle">x Mem0, Redis, UI Sessions, MCP</text>
+
+          <!-- Row 4 -->
+          <rect x="0" y="190" width="280" height="50" rx="6" fill="#132742" stroke="#253a5e"/>
+          <text x="140" y="220" fill="#ffffff" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Durable User/Agent Memory</text>
+
+          <rect x="295" y="190" width="310" height="50" rx="6" fill="#112c22" stroke="#10b981"/>
+          <text x="450" y="220" fill="#34d399" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Mem0 Service (In by Default)</text>
+
+          <rect x="620" y="190" width="320" height="50" rx="6" fill="#2d1319" stroke="#fb7185"/>
+          <text x="780" y="220" fill="#fb7185" font-family="Inter" font-size="11" text-anchor="middle">x LangGraph Object Store, LightRAG</text>
+
+          <!-- Row 5 -->
+          <rect x="0" y="250" width="280" height="50" rx="6" fill="#132742" stroke="#253a5e"/>
+          <text x="140" y="280" fill="#ffffff" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Domain &amp; Document Knowledge</text>
+
+          <rect x="295" y="250" width="310" height="50" rx="6" fill="#112c22" stroke="#10b981"/>
+          <text x="450" y="280" fill="#34d399" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">LightRAG + Governed Qdrant</text>
+
+          <rect x="620" y="250" width="320" height="50" rx="6" fill="#2d1319" stroke="#fb7185"/>
+          <text x="780" y="280" fill="#fb7185" font-family="Inter" font-size="11" text-anchor="middle">x Mem0, Code-Graph-RAG</text>
+
+          <!-- Row 6 -->
+          <rect x="0" y="310" width="280" height="50" rx="6" fill="#132742" stroke="#253a5e"/>
+          <text x="140" y="340" fill="#ffffff" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Tool Capability Exposure</text>
+
+          <rect x="295" y="310" width="310" height="50" rx="6" fill="#112c22" stroke="#10b981"/>
+          <text x="450" y="340" fill="#34d399" font-family="Inter" font-weight="700" font-size="12" text-anchor="middle">Contracted FastMCP Services</text>
+
+          <rect x="620" y="310" width="320" height="50" rx="6" fill="#2d1319" stroke="#fb7185"/>
+          <text x="780" y="340" fill="#fb7185" font-family="Inter" font-size="11" text-anchor="middle">x Unbounded Shell, Casual Inline Tools</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- PLANE DETAILS 1-9 -->
+  <h2><span class="section-num">06</span> Platform Plane Specifications</h2>
+
+  <div class="layer">
+    <div class="layer-name"><span class="layer-num">Plane 01</span>Governance &amp; Execution Control</div>
+    <div class="stack-card">
+      <h3>Git-centered, specification-driven operating system for the project</h3>
+      <div class="chips">
+        <span class="status foundation">FOUNDATIONAL</span>
+        <span class="chip role">Git + GitHub</span>
+        <span class="chip role">sdd-core pattern</span>
+        <span class="chip role">Markdown authorities</span>
+        <span class="chip role">dark-mode HTML reviews</span>
+        <span class="chip role">Claude Code</span>
+        <span class="chip role">agents · skills · hooks</span>
+      </div>
+      <p><b>Role:</b> Hold architectural truth, decisions, contracts, policies, evidence, tests, actions, issues, and lessons; route AI agents to the correct authority; enforce boundaries before commands are executed.</p>
+      <p><b>Proposed shape:</b> Repository-native specifications and governance remain authoritative; human reviews are rendered as polished HTML. Claude Code is the primary AI execution environment, augmented by specialist agents, reusable skills, and fail-closed hooks. Git history and tests provide provenance.</p>
+      <p><b>Boundary:</b> AI tooling may propose and execute authorized work; it may not redefine owner decisions, silently widen acceptance, or mutate servers during planning.</p>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-name"><span class="layer-num">Plane 02</span>Systems Foundation</div>
+    <div class="stack-card">
+      <h3>Simple, inspectable Linux service foundation</h3>
+      <div class="chips">
+        <span class="status foundation">FOUNDATIONAL</span>
+        <span class="chip role">Ubuntu Server</span>
+        <span class="chip role">systemd</span>
+        <span class="chip role">Python virtual environments</span>
+        <span class="chip role">Bash + SSH/SCP</span>
+        <span class="chip role">PowerShell control scripts</span>
+        <span class="chip role">chrony</span>
+        <span class="chip role">local DNS/FQDN</span>
+      </div>
+      <p><b>Role:</b> Provide the common operating substrate, service lifecycle, time, naming, secure operator access, and repeatable fleet administration.</p>
+      <p><b>Operating model:</b> One isolated environment per Python service; one explicit systemd unit per long-running service; absolute interpreter paths; native configuration and logs. The validated fleet-control baseline is Bash over SSH/SCP with explicit host mapping and verification modes.</p>
+      <p><b>Boundary:</b> This is deliberately not an Ansible stack and does not require Docker, Kubernetes, or another orchestration authority.</p>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-name"><span class="layer-num">Plane 03</span>Edge &amp; Traffic</div>
+    <div class="stack-card">
+      <h3>Separate human ingress from model-traffic authority</h3>
+      <div class="chips">
+        <span class="status proposed">PROPOSED CORE</span>
+        <span class="chip role">NGINX</span>
+        <span class="chip role">OmniRoute</span>
+        <span class="chip role">OpenAI-compatible APIs</span>
+        <span class="status out">LiteLLM SUPERSEDED</span>
+      </div>
+      <p><b>NGINX role:</b> User-facing reverse proxy, TLS termination, path routing, and controlled ingress. It is the web edge, not the model-routing brain.</p>
+      <p><b>OmniRoute role:</b> The narrow, governed AI traffic plane—model endpoint registry, routing, policy, access mediation, and observability for model calls. It should become the only approved path for remote consumption of otherwise local runtimes.</p>
+      <p><b>Boundary:</b> OmniRoute routes traffic; it does not own agent orchestration, durable memory, model acceptance, or general MCP execution. LiteLLM remains historical/reference evidence and must not survive as a competing target gateway.</p>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-name"><span class="layer-num">Plane 04</span>AI Inference</div>
+    <div class="stack-card">
+      <h3>Two runtimes with intentionally different jobs</h3>
+      <div class="chips">
+        <span class="status proposed">PROPOSED CORE</span>
+        <span class="chip role">vLLM</span>
+        <span class="chip role">Ollama</span>
+        <span class="chip role">Hugging Face ecosystem</span>
+        <span class="chip role">Qwen family</span>
+        <span class="chip role">gpt-oss family</span>
+      </div>
+      <p><b>vLLM role:</b> Strategic high-throughput and higher-context serving for primary reasoning, coding, and agent models through an OpenAI-compatible surface. Preferred where explicit context enforcement, batching, tensor parallelism, and production-style serving behavior matter.</p>
+      <p><b>Ollama role:</b> Bounded local utility inference, rapid model evaluation, and simple loopback services. Complementary to vLLM, not a universal backend. The measured Qwen3.5-9B workload is accepted only for bounded local use and explicitly refused as a Claude Code backend.</p>
+      <p><b>Model layer:</b> Qwen remains the primary family for reasoning, coding, and utility roles; gpt-oss remains a candidate for agent/tool execution.</p>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-name"><span class="layer-num">Plane 05</span>Retrieval &amp; Knowledge</div>
+    <div class="stack-card">
+      <h3>Document knowledge, vector search, graph retrieval, and code intelligence remain distinct</h3>
+      <div class="chips">
+        <span class="status proposed">PROPOSED CORE</span>
+        <span class="chip role">Qdrant</span>
+        <span class="chip role">LightRAG</span>
+        <span class="chip role">Docling + Granite Docling 258M</span>
+        <span class="status conditional">ADOPT WITH LIMITS</span>
+        <span class="chip role">Crawl4AI</span>
+        <span class="status conditional">TEI or Infinity</span>
+        <span class="chip role">BGE-M3 / Nomic</span>
+        <span class="chip role">BGE reranker</span>
+        <span class="status roadmap">Code-Graph-RAG</span>
+      </div>
+      <p><b>Qdrant role:</b> Vector storage and similarity search for governed collections. Collection ownership and embedding dimensions must be frozen before first ingest.</p>
+      <p><b>LightRAG role:</b> Human, document, governance, and domain knowledge retrieval with graph-enhanced context.</p>
+      <p><b>Docling + Granite Docling role:</b> High-quality PDF and document parsing. Granite Docling 258M is HX's preferred embedded Docling VLM for scans, complex reading order, tables, equations, and code. The conventional Docling pipeline remains the operational fallback for clean born-digital material.</p>
+      <p><b>Granite Docling acceptance:</b> <code>ADOPT WITH LIMITS</code>. Pin model revision, prefetch artifacts, validate DocTags, bound page time/retries, and measure fidelity/performance.</p>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-name"><span class="layer-num">Plane 06</span>Agents, Memory &amp; MCP</div>
+    <div class="stack-card">
+      <h3>Orchestration, durable memory, and tool exposure are separate capabilities</h3>
+      <div class="chips">
+        <span class="status proposed">PROPOSED CORE</span>
+        <span class="chip role">LangGraph</span>
+        <span class="chip role">FastMCP</span>
+        <span class="chip role">custom Hana-X MCP services</span>
+        <span class="status proposed">Mem0 · IN BY DEFAULT</span>
+        <span class="chip role">Streamable HTTP</span>
+      </div>
+      <p><b>LangGraph role:</b> Stateful workflow and agent orchestration, durable checkpoints, structured human interrupts, resumability, and capability composition.</p>
+      <p><b>FastMCP role:</b> Standard implementation framework for exposing governed Hana-X capabilities through MCP (document conversion, crawling, retrieval, infra intelligence).</p>
+      <p><b>Mem0 role:</b> Proposed-core durable user/agent memory service with its own storage, retention, and deletion boundary. In by default. Must not duplicate LangGraph checkpoints or LightRAG knowledge.</p>
+      <p><b>Boundary:</b> LangGraph owns orchestration state; Mem0 owns durable user/agent memory; LightRAG owns domain knowledge; FastMCP exposes tools; OmniRoute owns model traffic.</p>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-name"><span class="layer-num">Plane 07</span>Data &amp; State</div>
+    <div class="stack-card">
+      <h3>Durable relational state, fast ephemeral state, and narrowly scoped local state</h3>
+      <div class="chips">
+        <span class="status proposed">PROPOSED CORE</span>
+        <span class="chip role">PostgreSQL</span>
+        <span class="chip role">Redis</span>
+        <span class="status conditional">SQLite — narrow use only</span>
+      </div>
+      <p><b>PostgreSQL role:</b> Platform state, identities, configuration, audit, service-owned schemas, and durable LangGraph checkpoints.</p>
+      <p><b>Redis role:</b> Cache, queues, pub/sub, sessions, and short-lived coordination—not authoritative durable state.</p>
+      <p><b>SQLite role:</b> Permitted only for genuinely local, low-concurrency, service-owned history where portability is valuable.</p>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-name"><span class="layer-num">Plane 08</span>Experience &amp; Automation</div>
+    <div class="stack-card">
+      <h3>Human interface, agent-aware UI, and workflow automation</h3>
+      <div class="chips">
+        <span class="status proposed">PROPOSED CORE</span>
+        <span class="chip role">Open WebUI</span>
+        <span class="chip role">CopilotKit</span>
+        <span class="chip role">AG-UI</span>
+        <span class="chip role">n8n</span>
+      </div>
+      <p><b>Open WebUI role:</b> Primary ready-made chat and model interaction surface for development, testing, and demos.</p>
+      <p><b>CopilotKit + AG-UI role:</b> Custom agent-aware application experiences, streaming state/events, and embedded copilots.</p>
+      <p><b>n8n role:</b> Deterministic workflow automation and external-system integration.</p>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-name"><span class="layer-num">Plane 09</span>Observability &amp; Recovery</div>
+    <div class="stack-card">
+      <h3>Metrics, dashboards, logs, exporters, and tested recovery</h3>
+      <div class="chips">
+        <span class="status proposed">PROPOSED CORE</span>
+        <span class="chip role">Prometheus</span>
+        <span class="chip role">Grafana</span>
+        <span class="chip role">Loki</span>
+        <span class="chip role">node_exporter</span>
+        <span class="chip role">DCGM exporter</span>
+        <span class="status conditional">backup/snapshot tooling</span>
+      </div>
+      <p><b>Role:</b> Collect host, GPU, service, model, and application telemetry; retain searchable logs; verify backups and restores.</p>
+    </div>
+  </div>
+
+  <!-- DEVELOPER TOOLCHAIN -->
+  <h2><span class="section-num">07</span> Developer &amp; Code-Intelligence Toolchain</h2>
+  <table>
+    <thead><tr><th>Technology</th><th>Status</th><th>Perceived Role</th><th>Boundary</th></tr></thead>
+    <tbody>
+      <tr><td><b>Claude Code</b></td><td><span class="status foundation">FOUNDATIONAL</span></td><td>Primary AI-assisted repository and infrastructure engineering environment; specialist-agent coordination; contract-driven execution.</td><td>Governed by repository authorities and hooks; not an autonomous source of owner decisions.</td></tr>
+      <tr><td><b>jcode</b></td><td><span class="status conditional">PILOT / LIKELY ADOPT</span></td><td>Complement Claude Code with a full-profile local development agent and evaluated memory behavior.</td><td>Must retain fail-closed HX controls; no immediate HX fork.</td></tr>
+      <tr><td><b>Code-Graph-RAG</b></td><td><span class="status roadmap">ROADMAP</span></td><td>Read-only code intelligence plane for structural repository questions and validation.</td><td>Not the execution plane, not LightRAG replacement.</td></tr>
+      <tr><td><b>GitHub</b></td><td><span class="status foundation">FOUNDATIONAL</span></td><td>Canonical remote source, branch protection, collaboration, traceability, and recovery.</td><td>Repository state remains governed.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- WHAT IS NOT IN STACK -->
+  <h2><span class="section-num">08</span> Explicitly Excluded &amp; Superseded Technologies</h2>
+  <div class="grid">
+    <div class="card no"><h3>Ansible</h3><p><span class="status out">PERMANENTLY OUT</span></p><p>Native Bash/SSH is the validated fleet-control baseline. Do not retain Ansible in plans, agents, procedures, or compatibility language.</p></div>
+    <div class="card no"><h3>LiteLLM as target gateway</h3><p><span class="status out">SUPERSEDED</span></p><p>OmniRoute is the proposed traffic-plane authority; running both as peers creates routing and policy ambiguity.</p></div>
+    <div class="card no"><h3>Kubernetes</h3><p><span class="status out">NOT JUSTIFIED</span></p><p>The dev/test/demo environment does not presently need a cluster scheduler, HA control plane, or a second operational substrate.</p></div>
+    <div class="card no"><h3>Docker as platform dependency</h3><p><span class="status out">NOT REQUIRED</span></p><p>Current HX direction favors bare-metal services with virtualenv and systemd isolation.</p></div>
+    <div class="card no"><h3>Direct network-exposed Ollama</h3><p><span class="status out">REFUSED</span></p><p>Ollama’s local endpoint remains loopback-only. Remote use must traverse the governed traffic plane.</p></div>
+    <div class="card no"><h3>Premature production machinery</h3><p><span class="status deferred">DEFERRED</span></p><p>Broad HA, multi-tenancy, service mesh, and exhaustive hardening are not current prerequisites.</p></div>
+  </div>
+
+  <!-- DECISIONS OPEN -->
+  <h2><span class="section-num">09</span> Decisions Still Open (Non-Blocking)</h2>
+  <table>
+    <thead><tr><th>Decision</th><th>Current Position</th><th>Evidence Needed</th></tr></thead>
+    <tbody>
+      <tr><td>Exact primary models</td><td>Qwen-led portfolio with gpt-oss candidate</td><td>Release availability, license, quality, context, VRAM residency, throughput, client acceptance.</td></tr>
+      <tr><td>Embedding serving runtime</td><td>TEI or Infinity</td><td>Model support, rerank API compatibility, batching, GPU use, operational simplicity.</td></tr>
+      <tr><td>Embedding model and dimension</td><td>BGE-M3 or Nomic candidates</td><td>Corpus evaluation, retrieval quality, dimension freeze before first ingest.</td></tr>
+      <tr><td>LangGraph topology</td><td>Orchestration framework; service design parked</td><td>Resolution of failed review conditions, state schema, resume behavior.</td></tr>
+      <tr><td>Mem0 replacement or exclusion</td><td>Mem0 in by default</td><td>Demonstrable material superior replacement or significant architecture/security conflict.</td></tr>
+      <tr><td>OmniRoute loopback fronting</td><td>Policy settled; mechanism open</td><td>Full-stack threat boundary, access model, and measured behavior.</td></tr>
+      <tr><td>Backup/snapshot tool</td><td>Required capability; product open</td><td>Data inventory, RPO/RTO goals, target medium, restore test evidence.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- TRUE NORTH STATEMENT -->
+  <h2><span class="section-num">10</span> Recommended True-North Statement</h2>
+  <div class="callout">
+    <strong>HX-Infrastructure is a self-hosted, specification-governed AI platform for development, testing, and demonstrations.</strong> It uses native Linux services and Bash/SSH operations; NGINX for TLS termination, path routing, and controlled human ingress; OmniRoute for governed model traffic; vLLM and Ollama for distinct inference classes; LangGraph for orchestration; Mem0 for durable user/agent memory; FastMCP for bounded capability exposure; PostgreSQL, Redis, and Qdrant for clearly separated state roles; LightRAG, Docling with Granite Docling 258M as its preferred embedded VLM, Crawl4AI, and purpose-built embedding/rerank serving for knowledge workflows; Open WebUI plus CopilotKit/AG-UI for user experience; n8n for deterministic automation; and Prometheus, Grafana, and Loki for operational visibility. Claude Code, jcode, and future read-only code intelligence support the engineering process under repository-enforced authority.
+  </div>
+
+</main>
+</body>
+</html>

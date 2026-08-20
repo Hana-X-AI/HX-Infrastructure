@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>HX-Ai-Infrastructure — Document Registry and Current Execution Authority</title>
+  <style>
+    :root{--bg:#07101d;--panel:#101b2d;--panel2:#14243c;--line:#29415f;--text:#edf4ff;--muted:#9eb1ca;--cyan:#41d9ff;--mint:#60e6b6;--amber:#ffd06a;--red:#ff8494;--purple:#b8a0ff}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 88% -8%,#1d456f 0,transparent 30%),var(--bg);color:var(--text);font:15px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}main{max-width:1240px;margin:auto;padding:52px 26px 80px}.eyebrow{color:var(--cyan);font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}h1{font-size:clamp(38px,6vw,68px);line-height:1.02;margin:12px 0 18px;max-width:1050px}h2{font-size:26px;margin:46px 0 16px}h3{font-size:18px;margin:0 0 8px}.lead{max-width:980px;color:#cbd8eb;font-size:19px}.truth{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:15px}.card{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:20px}.verdict{grid-column:span 12;border-color:#2d826d;background:linear-gradient(135deg,#10372f,#111d30)}.verdict strong{display:block;color:var(--mint);font-size:25px;margin:7px 0}.metric{grid-column:span 3}.metric b{display:block;color:var(--mint);font-size:27px}.metric span{color:var(--muted)}.wide{grid-column:span 8}.narrow{grid-column:span 4}.tag{display:inline-block;border:1px solid currentColor;border-radius:999px;padding:2px 9px;font-size:11px;font-weight:850;white-space:nowrap}.active{color:var(--mint)}.queued{color:var(--amber)}.reference{color:var(--cyan)}.historical{color:var(--muted)}.stop{color:var(--red)}.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:11px}.node{background:#0b1524;border:1px solid var(--line);border-radius:13px;padding:16px;position:relative}.node:not(:last-child):after{content:'→';position:absolute;right:-12px;top:40%;z-index:2;color:var(--cyan);font-size:20px}.node small{display:block;color:var(--cyan);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.09em}.node b{display:block;margin-top:5px}.node p{color:var(--muted);margin:7px 0 0}.now{border-color:#2d826d;box-shadow:0 0 0 1px #2d826d inset}.pending{border-color:#80672b}.callout{background:#241f14;border-left:4px solid var(--amber);padding:15px 18px;border-radius:0 12px 12px 0}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;background:#0c1626;min-width:930px}th,td{text-align:left;vertical-align:top;padding:12px 13px;border-bottom:1px solid #223751}th{background:#14243b;color:var(--cyan);position:sticky;top:0}tr:last-child td{border-bottom:0}code{background:#07111f;color:#b9f2ff;padding:2px 5px;border-radius:5px}.sequence{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.step{background:#0b1524;border:1px solid var(--line);border-radius:13px;padding:15px}.step b{color:var(--cyan);font-size:22px;display:block}.step strong{display:block}.step p{color:var(--muted);margin:.45em 0 0}.outline li{margin:.48em 0}.sources{color:var(--muted)}footer{margin-top:48px;border-top:1px solid var(--line);padding-top:18px;color:var(--muted)}@media(max-width:900px){.metric,.wide,.narrow{grid-column:span 12}.flow,.sequence{grid-template-columns:1fr}.node:not(:last-child):after{content:'↓';right:50%;top:auto;bottom:-20px}}
+  </style>
+</head>
+<body><main>
+  <div class="eyebrow">CAIO alignment packet · ChatGPT · 18 August 2026</div>
+  <h1>HX-Ai-Infrastructure Document Registry</h1>
+  <p class="lead">One source map for what we created, why it exists, what is current, what has been superseded, and which document controls the next action.</p>
+  <p class="truth"><b>Truth state:</b> reconstructed from the current conversation, retained artifacts, the validated reference repository and its Git history. Kimi's new repository output has not yet been received or accepted.</p>
+
+  <section class="grid" style="margin-top:28px">
+    <div class="card verdict"><span class="tag active">CURRENT ANSWER</span><strong>Kimi is following the HX-Ai-Infrastructure repository bootstrap prompt now.</strong><p>That prompt governs the present repository-build operation. It does not supersede owner decisions, accepted ADRs, the queued provider-configuration prompt, or the later HXS-1 execution runbook.</p></div>
+    <div class="card metric"><b>13</b><span>registered artifact groups</span></div>
+    <div class="card metric"><b>1</b><span>active execution prompt</span></div>
+    <div class="card metric"><b>2</b><span>later execution gates</span></div>
+    <div class="card metric"><b>0</b><span>accepted new-repo results yet</span></div>
+  </section>
+
+  <h2>Which document controls which layer?</h2>
+  <div class="flow" role="img" aria-label="Current document control stack from owner direction through repository build, provider setup, HXS-1 execution and retained evidence">
+    <div class="node"><small>Authority</small><b>Owner decisions + constitution</b><p>highest control layer</p></div>
+    <div class="node now"><small>Active now</small><b>Repository bootstrap prompt</b><p>Kimi creates HX-Ai-Infrastructure</p></div>
+    <div class="node pending"><small>Queued</small><b>Provider implementation prompt</b><p>Kimi + DeepSeek profiles on hxs-cp</p></div>
+    <div class="node pending"><small>Runtime next</small><b>HXS-1 MVP-1 runbook</b><p>Ollama + Qwen first message</p></div>
+    <div class="node"><small>Acceptance</small><b>Tessa + governance</b><p>independent verdict and evidence</p></div>
+  </div>
+
+  <div class="callout" style="margin-top:18px"><b>Important distinction.</b> Reports explain decisions. ADRs and accepted specifications govern. Prompts instruct a bounded operation. Runbooks execute a mission. Archives preserve evidence. “Newest file” is therefore not the same as “highest authority.”</div>
+
+  <h2>Executive document registry</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>ID</th><th>Document</th><th>Purpose</th><th>Current disposition</th><th>How we use it now</th></tr></thead>
+    <tbody>
+      <tr><td>001</td><td>HX Agentic SDLC Strategic Pivot</td><td>Established sdd-core and Meta-Agent direction.</td><td><span class="tag historical">HISTORICAL CONTEXT</span></td><td>Background only; newer owner decisions and ADRs control.</td></tr>
+      <tr><td>002</td><td>Qwen3.8-27B Ollama Deployment Deep Dive<br><code>codex_20260817_1524…</code></td><td>Broad research on install, optimization, fine-tuning, storage and fleet rollout.</td><td><span class="tag stop">SUPERSEDED FOR EXECUTION</span></td><td>Research source only. Do not execute its programme plan.</td></tr>
+      <tr><td>003</td><td>Agent Library Reconnaissance<br><code>hx-agent-library-reconnaissance…</code></td><td>Defined <code>library/</code> as the local advisory knowledge plane.</td><td><span class="tag active">ADOPTED · NARROW ROLE</span></td><td>Current library architecture; rename references to HX-Ai-Infrastructure.</td></tr>
+      <tr><td>004</td><td>Owner Revision Directive<br><code>Pasted markdown(1).md</code></td><td>Established the eight-hour HXS-1 MVP and binary critical-path rule.</td><td><span class="tag active">ACCEPTED OWNER AUTHORITY</span></td><td>Controls runtime scope unless a newer owner instruction overrides it.</td></tr>
+      <tr><td>005</td><td>HX-Infrastructure source archive<br><code>HX-Infrastructure-main (4).zip</code></td><td>Supplied legacy/current material for selective mining.</td><td><span class="tag reference">REFERENCE ONLY</span></td><td>Mine facts and patterns; do not copy its structure or authority wholesale.</td></tr>
+      <tr><td>006</td><td>Kimi Claude Code configuration snapshot<br><code>Pasted markdown(2).md</code></td><td>Supplied vendor configuration guidance.</td><td><span class="tag reference">SOURCE REFERENCE</span></td><td>Use only through the reconciled provider ADR and implementation prompt.</td></tr>
+      <tr><td>007</td><td>Repository Baseline and Deployment Readiness Review<br><code>codex_20260818_1115…</code></td><td>Explained and validated the HX-Ai-Platform reference repository.</td><td><span class="tag historical">CURRENT FOR OLD SNAPSHOT</span></td><td>Reference evidence until the new repository has its own accepted report.</td></tr>
+      <tr><td>008</td><td>Claude Code Provider Architecture<br><code>chatgpt_20260818_1135…</code></td><td>Explains Kimi execution, DeepSeek Pro validation and provider isolation.</td><td><span class="tag active">CURRENT DECISION EXPLANATION</span></td><td>Migrate into the new repository with identity corrected.</td></tr>
+      <tr><td>009</td><td>ADR-0001 through ADR-0004</td><td>Govern agent flow, critical path, HXS-1 locks and provider routing.</td><td><span class="tag active">CURRENT GOVERNANCE</span></td><td>Preserve substance; update repository identity during controlled migration.</td></tr>
+      <tr><td>010</td><td>Claude Code Provider Implementation Prompt<br><code>implementation-prompt.md</code></td><td>Configures two isolated provider profiles and twelve acceptance controls.</td><td><span class="tag queued">READY · NOT AUTHORIZED</span></td><td>Run on hxs-cp only after new-repository acceptance and explicit owner authorization.</td></tr>
+      <tr><td>011</td><td>HXS-1 MVP-1 Specification + Runbook</td><td>Executes the eight-hour Ollama/Qwen first-message mission.</td><td><span class="tag queued">READY FOR LATER EXECUTION</span></td><td>Runtime authority after repository and provider prerequisites pass.</td></tr>
+      <tr><td>012</td><td>HX-Ai-Infrastructure Repository Bootstrap Prompt</td><td>Directs Kimi through GitHub Copilot to create the new repository baseline and library.</td><td><span class="tag active">ACTIVE NOW</span></td><td>This is the document Kimi is following.</td></tr>
+      <tr><td>013</td><td>HX-Ai-Platform Bootstrap Repository Package<br><code>HX-Ai-Platform-bootstrap-20260818.zip</code></td><td>Validated reference implementation at Git commit <code>fd51573</code>.</td><td><span class="tag reference">REFERENCE BASELINE</span></td><td>Compare and selectively migrate; do not declare it the new repository.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>Latest document: repository bootstrap prompt</h2>
+  <section class="grid">
+    <div class="card wide"><h3>What it directs Kimi to create</h3><ol class="outline"><li>Professional repository identity: <code>HX-Ai-Infrastructure</code>.</li><li>sdd-core constitution, Meta-Agent and bounded specialist contracts.</li><li>Governance, operations, registries, reports and specification templates.</li><li>A root <code>library/</code> with one technology directory per approved operations domain.</li><li>hxs-cp and HXS-1 through HXS-4 platform/server/evidence boundaries.</li><li>Bash/SSH orchestration only; Ansible excluded.</li><li>Deterministic repository validation and truthful status language.</li></ol></div>
+    <div class="card narrow"><h3>Review warning</h3><span class="tag queued">MUST CHECK</span><p>The prompt asked Kimi to create foundational governance documents. Previously approved content may be adopted. Any new policy or decision invented by Kimi must be marked <code>DRAFT — REQUIRES OWNER APPROVAL</code> and cannot silently become authority.</p></div>
+  </section>
+
+  <h2>What happens next</h2>
+  <div class="sequence" role="img" aria-label="Five-step path from Kimi repository completion to HXS-1 acceptance">
+    <div class="step"><b>01</b><strong>Receive</strong><p>Kimi tree, diff, tests, Git status and completion report.</p></div>
+    <div class="step"><b>02</b><strong>Validate</strong><p>Independent review against the exact bootstrap prompt.</p></div>
+    <div class="step"><b>03</b><strong>Adopt</strong><p>Declare the new repo canonical and migrate current decisions/specs.</p></div>
+    <div class="step"><b>04</b><strong>Configure</strong><p>Run the provider prompt on hxs-cp after owner authorization.</p></div>
+    <div class="step"><b>05</b><strong>Execute</strong><p>Run HXS-1 MVP-1 and require Tessa PASS.</p></div>
+  </div>
+
+  <h2>Immediate handoff requested from Kimi</h2>
+  <div class="callout"><b>Do not start another workstream yet.</b> When Kimi finishes, collect: repository URL and branch, commit ID, complete tree, created/changed file list, validation output, <code>git status</code>, explicit list of governance documents authored, and confirmation that no provider or server configuration occurred. That packet is the next item for independent review.</div>
+
+  <h2>Open alignment items</h2>
+  <section class="grid">
+    <div class="card wide"><h3>No decision required now</h3><p>The next action is already determined: finish and validate the repository baseline. Provider configuration and HXS-1 execution remain queued behind that gate.</p></div>
+    <div class="card narrow"><h3>Retention gap</h3><p>The exact repository-bootstrap prompt currently exists in the chat transcript. Capture it and Kimi's completion response in the new repository before declaring the baseline accepted.</p></div>
+  </section>
+
+  <p class="sources"><b>Evidence basis:</b> current conversation; supplied archive SHA-256 <code>5dd124e1…26779</code>; owner directive <code>4b7779e6…5e55</code>; Kimi snapshot <code>a27e0f13…d2e9</code>; validated reference repository Git history through <code>fd51573</code>; retained report and prompt artifacts.</p>
+  <footer>Prepared for the Hana-X CAIO. This registry records authority and sequence; it does not claim that HX-Ai-Infrastructure, provider profiles or HXS-1 runtime are accepted or deployed.</footer>
+</main></body>
+</html>

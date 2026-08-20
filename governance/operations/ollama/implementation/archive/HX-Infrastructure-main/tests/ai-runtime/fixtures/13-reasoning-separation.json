@@ -1,0 +1,16 @@
+{
+  "id": "F13",
+  "capability": "RT-16",
+  "evidence_class": "A",
+  "api_style": "openai-chat",
+  "description": "Reasoning field does not leak into final answer content.",
+  "sse": [
+    "data: {\"choices\":[{\"delta\":{\"reasoning_content\":\"internal chain\"}}]}",
+    "data: {\"choices\":[{\"delta\":{\"content\":\"FIXTURE ANSWER\"}}]}",
+    "data: [DONE]"
+  ],
+  "expect": {
+    "answer_content": "FIXTURE ANSWER",
+    "reasoning_excluded_from_answer": true
+  }
+}

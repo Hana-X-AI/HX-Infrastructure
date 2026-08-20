@@ -1,0 +1,35 @@
+{
+  "id": "F05",
+  "capability": "RT-06",
+  "evidence_class": "A",
+  "api_style": "openai-chat",
+  "description": "Tool schema transmits and round-trips without mutation.",
+  "request": {
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "hx_read_registry",
+          "description": "Read the server registry",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "host": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "host"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "expect": {
+    "tool_name": "hx_read_registry",
+    "required": [
+      "host"
+    ]
+  }
+}

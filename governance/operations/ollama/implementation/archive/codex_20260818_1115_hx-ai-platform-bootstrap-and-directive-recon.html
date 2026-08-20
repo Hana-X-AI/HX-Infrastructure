@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HX-Ai-Platform — Bootstrap &amp; Directive Recon</title>
+  <style>
+    :root{--ink:#eaf2ff;--muted:#9caec7;--panel:#101a2b;--panel2:#14233a;--line:#2a3f5f;--cyan:#41d9ff;--mint:#5ee6b4;--amber:#ffcc66;--red:#ff7d8e;--bg:#07101d}
+    *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 82% 0,#17335a 0,transparent 28%),var(--bg);color:var(--ink);font:15px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+    main{max-width:1180px;margin:auto;padding:56px 28px 80px}.eyebrow{letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);font-weight:800;font-size:12px}h1{font-size:clamp(38px,7vw,78px);line-height:.96;margin:12px 0 22px;max-width:940px}h2{font-size:25px;margin:42px 0 16px}h3{font-size:17px;margin:0 0 8px}.lead{color:#c5d4e9;font-size:19px;max-width:860px}.stamp{color:var(--muted);margin-top:22px}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.card{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:20px}.metric{grid-column:span 3}.metric b{font-size:30px;display:block;color:var(--mint)}.metric span{color:var(--muted)}.verdict{grid-column:span 12;border-color:#2a7968;background:linear-gradient(135deg,#10352e,#101a2b)}.verdict strong{color:var(--mint);font-size:24px}.flow{display:flex;gap:9px;align-items:stretch;overflow:auto;padding-bottom:4px}.node{min-width:145px;flex:1;background:#0b1525;border:1px solid var(--line);border-radius:12px;padding:16px}.node small{display:block;color:var(--cyan);text-transform:uppercase;letter-spacing:.08em}.arrow{align-self:center;color:var(--cyan);font-size:24px}.bar{height:12px;background:#08111f;border-radius:99px;overflow:hidden;margin-top:10px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--mint));width:100%}.bar.pending i{width:0}.two{grid-column:span 6}.wide{grid-column:span 8}.narrow{grid-column:span 4}table{width:100%;border-collapse:collapse;background:#0d1727;border:1px solid var(--line);border-radius:14px;overflow:hidden}th,td{text-align:left;vertical-align:top;padding:13px 14px;border-bottom:1px solid #223650}th{color:var(--cyan);background:#13223a}tr:last-child td{border-bottom:0}.tag{display:inline-block;border:1px solid currentColor;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:800}.pass{color:var(--mint)}.warn{color:var(--amber)}.stop{color:var(--red)}code{color:#b9f3ff;background:#08111f;padding:2px 5px;border-radius:5px}.tree{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre;overflow:auto;color:#cfe3ff;margin:0}.callout{border-left:4px solid var(--amber);padding:12px 16px;background:#231e13;border-radius:0 10px 10px 0}.sources a{color:var(--cyan)}footer{margin-top:50px;color:var(--muted);border-top:1px solid var(--line);padding-top:20px}@media(max-width:800px){.metric,.two,.wide,.narrow{grid-column:span 12}.flow{flex-direction:column}.arrow{transform:rotate(90deg)}}
+  </style>
+</head>
+<body><main>
+  <div class="eyebrow">Evidence-first reconnaissance · 18 August 2026</div>
+  <h1>HX-Ai-Platform is locally stood up.</h1>
+  <p class="lead">The supplied directive is adopted as the HXS-1 MVP-1 execution authority, with a minimal five-agent control plane, a source-governed local technology library, an exact Ollama/Qwen runbook, and an independent acceptance gate.</p>
+  <p class="stamp">Truth boundary: repository bootstrapped and validated locally. No command has been executed on HXS-1. No remote GitHub repository has been created.</p>
+
+  <section class="grid" style="margin-top:30px">
+    <div class="card verdict"><span class="tag pass">VERDICT · ADOPT WITH TARGETED REFINEMENTS</span><br><strong>The directive is internally coherent and executable.</strong><p>The latest owner instruction promotes repository bootstrap from backlog to first-order work. All remaining non-critical work stays flat in backlog.</p></div>
+    <div class="card metric"><b>5</b><span>active agent contracts</span></div>
+    <div class="card metric"><b>4</b><span>MVP technology libraries</span></div>
+    <div class="card metric"><b>1</b><span>active mission specification</span></div>
+    <div class="card metric"><b>8h</b><span>execution envelope retained</span></div>
+  </section>
+
+  <h2>Human control flow</h2>
+  <div class="flow" role="img" aria-label="Owner intent flows through Meta-Agent, Owen, Craig, Quincy, Tessa, and governance">
+    <div class="node"><small>Authority</small><b>Owner intent</b><p>scope and locks</p></div><div class="arrow">→</div>
+    <div class="node"><small>Control</small><b>sdd-core / Meta-Agent</b><p>route and gate</p></div><div class="arrow">→</div>
+    <div class="node"><small>Execution</small><b>Owen → Craig → Quincy</b><p>host, runtime, model</p></div><div class="arrow">→</div>
+    <div class="node"><small>Independence</small><b>Tessa</b><p>PASS or FAIL only</p></div><div class="arrow">→</div>
+    <div class="node"><small>Retention</small><b>Governance</b><p>decision + evidence</p></div>
+  </div>
+
+  <h2>What the evidence confirmed</h2>
+  <table>
+    <thead><tr><th>Claim</th><th>Finding</th><th>Disposition</th></tr></thead>
+    <tbody>
+      <tr><td>Exact Qwen artifact</td><td><code>qwen3.8:27b-q4_K_M</code>, short digest <code>25b843619e94</code>, about 18 GB.</td><td><span class="tag pass">LOCKED</span></td></tr>
+      <tr><td>Bare <code>27b</code> tag</td><td>Its manifest adds <code>draft_num_predict=4</code>; it is the MTP variant and not the baseline.</td><td><span class="tag pass">EXCLUDED</span></td></tr>
+      <tr><td>Ollama floor and pin</td><td>The model config requires Ollama 0.32.12+. MVP-1 pins current stable <code>v0.32.14</code> / commit <code>d67ad834…</code>.</td><td><span class="tag pass">LOCKED</span></td></tr>
+      <tr><td>Thinking behavior</td><td>Unset Qwen3.8 thinking receives very-high guidance upstream. The request therefore sets native <code>think: "medium"</code>.</td><td><span class="tag pass">EXPLICIT</span></td></tr>
+      <tr><td>GPU selection</td><td>Official Ollama guidance prefers UUIDs because numeric CUDA ordering can vary. Runtime configuration uses both discovered UUIDs.</td><td><span class="tag pass">LOCKED</span></td></tr>
+      <tr><td>Context</td><td>The directive required an explicit value but did not choose one. MVP-1 adopts <code>8192</code> as a deliberate, measurable starting envelope.</td><td><span class="tag warn">REFINED</span></td></tr>
+      <tr><td>NVFP4 note</td><td>A non-critical digest statement in the directive does not match the current Ollama registry page. NVFP4 is excluded, so this does not affect MVP-1.</td><td><span class="tag warn">BACKLOG ONLY</span></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Repository architecture</h2>
+  <section class="grid">
+    <div class="card wide"><pre class="tree">HX-Ai-Platform/
+├── .specify/memory/       constitutional rules
+├── .claude/agents/        5 active agent contracts
+├── governance/            decisions, policy, registries, reports
+├── knowledge/             authority and retrieval routing
+├── library/               local technology knowledge + source locks
+├── platform/              HXS-CP automation + HXS-1 runtime templates
+├── servers/hxs-1/         discovered facts, targets, evidence routing
+├── specs/001-...-mvp1/    spec → plan → tasks → runbook → acceptance
+├── evidence/hxs-1/mvp-1/  execution proof
+└── tests/repository/       deterministic repository gate</pre></div>
+    <div class="card narrow"><h3>Knowledge pattern</h3><p><code>library/technologies/&lt;slug&gt;/</code> is the reusable unit for every active technology.</p><p>Each unit carries a manifest, source lock, curated guidance, and optional local source material. Source truth stays advisory beneath owner and governance authority.</p></div>
+  </section>
+
+  <h2>MVP-1 state and guardrails</h2>
+  <section class="grid">
+    <div class="card two"><h3>Repository</h3><span class="tag pass">VALIDATED</span><div class="bar"><i></i></div><p>Structure, exact agent count, Bash syntax, model tag, digest, context, and thinking lock pass the local validator.</p></div>
+    <div class="card two"><h3>HXS-1 runtime</h3><span class="tag warn">NOT EXECUTED</span><div class="bar pending"><i></i></div><p>The runbook begins with read-only identity checks. The NVMe step refuses root, partitions, mounts, or existing signatures before formatting.</p></div>
+  </section>
+  <div class="flow" style="margin-top:16px">
+    <div class="node"><small>1</small><b>Preflight</b><p>host, driver, UUID, PCIe</p></div><div class="arrow">→</div>
+    <div class="node"><small>2</small><b>Storage</b><p>serial-resolved NVMe</p></div><div class="arrow">→</div>
+    <div class="node"><small>3</small><b>Runtime</b><p>Ollama v0.32.14</p></div><div class="arrow">→</div>
+    <div class="node"><small>4</small><b>Artifact</b><p>exact digest</p></div><div class="arrow">→</div>
+    <div class="node"><small>5</small><b>Gate</b><p>391 + GPU + Tessa</p></div>
+  </div>
+
+  <h2>Critical refinements made during review</h2>
+  <table>
+    <thead><tr><th>Refinement</th><th>Why it matters</th></tr></thead>
+    <tbody>
+      <tr><td>Partition lookup is scoped to the serial-resolved target disk.</td><td>Avoids reliance on whether <code>lsblk</code> renders <code>PKNAME</code> as a basename or full path.</td></tr>
+      <tr><td>The smoke gate requires <code>391</code>.</td><td>“Non-empty content” is not enough to establish a coherent answer to the deterministic prompt.</td></tr>
+      <tr><td>Truth states distinguish proposed, observed, and validated.</td><td>Prevents repository intent from being presented as an HXS-1 as-built fact.</td></tr>
+      <tr><td>Only mission-critical libraries and agents are active.</td><td>Preserves the owner’s two-way test: first-message dependency or backlog.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>What is deliberately not done</h2>
+  <div class="callout"><b>Stop boundary:</b> no SSH execution, disk formatting, driver modification, model pull, service installation, GitHub organization selection, or remote push occurred. LM Studio, fine-tuning, hardening, backup, fleet repeatability, MTP A/B and benchmarking remain backlog items until MVP-1 evidence exists.</div>
+
+  <h2>Sources and provenance</h2>
+  <div class="card sources">
+    <p><b>Owner-supplied:</b> <code>Pasted markdown(1).md</code> SHA-256 <code>4b7779e6…e85e55</code>; <code>HX-Infrastructure-main (4).zip</code> SHA-256 <code>5dd124e1…26779</code>.</p>
+    <p><b>Official upstream:</b> <a href="https://ollama.com/library/qwen3.8:27b-q4_K_M">Qwen3.8 27B Q4_K_M model page</a> · <a href="https://registry.ollama.ai/v2/library/qwen3.8/manifests/27b-q4_K_M">registry manifest</a> · <a href="https://github.com/ollama/ollama/releases/tag/v0.32.14">Ollama v0.32.14 release</a> · <a href="https://docs.ollama.com/linux">Linux install</a> · <a href="https://docs.ollama.com/gpu">GPU guidance</a> · <a href="https://docs.ollama.com/capabilities/thinking">thinking controls</a> · <a href="https://docs.ollama.com/context-length">context guidance</a>.</p>
+  </div>
+
+  <footer>Generated for the HX-Ai-Platform bootstrap gate. Owner direction remains the highest authority. The next irreversible action is HXS-1 storage initialization and must occur only through the reviewed runbook.</footer>
+</main></body>
+</html>

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>HX Agent Relay — Governed Work Exchange Architecture</title>
+  <style>
+    :root{--bg:#071019;--panel:#0d1925;--text:#e8f0f7;--muted:#9db0c2;--line:#263a4d;--cyan:#55d8ff;--green:#55e6a5;--amber:#ffc968;--red:#ff7c88}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top right,#102b42 0,#071019 42%);color:var(--text);font:15px/1.58 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}main{max-width:1160px;margin:auto;padding:46px 28px 80px}
+    .eyebrow{color:var(--cyan);text-transform:uppercase;letter-spacing:.15em;font-size:12px;font-weight:800}h1{margin:.3rem 0 .8rem;font-size:clamp(32px,5vw,58px);line-height:1.02;letter-spacing:-.035em}h2{margin:42px 0 14px;font-size:25px}h3{margin:20px 0 8px;color:#dff7ff}p,li{color:#c6d3df}a{color:var(--cyan)}
+    .subtitle{max-width:850px;color:#b7c9d8;font-size:18px}.meta,.grid,.flow{display:grid;gap:14px}.meta{grid-template-columns:repeat(3,1fr);margin:28px 0}.card,.verdict{background:linear-gradient(145deg,rgba(17,34,53,.96),rgba(10,23,35,.96));border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 18px 48px rgba(0,0,0,.18)}.verdict{border-left:5px solid var(--green);padding:24px}.verdict strong{color:var(--green)}.k{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}.v{margin-top:5px;font-weight:750}
+    .flow{grid-template-columns:repeat(4,1fr);margin:22px 0}.step{position:relative;background:#0d1b29;border:1px solid #2a465d;border-radius:12px;padding:18px;min-height:108px}.step:not(:last-child)::after{content:'→';position:absolute;right:-13px;top:39px;color:var(--cyan);font-size:23px}.step b{display:block;color:#fff;margin-bottom:5px}
+    table{width:100%;border-collapse:collapse;margin:16px 0 24px;background:rgba(11,24,36,.7)}th,td{border:1px solid var(--line);padding:11px 12px;text-align:left;vertical-align:top}th{background:#14283b;color:#e9f8ff}td{color:#c5d4df}.adopt,.ok{color:var(--green);font-weight:800}.reject,.no{color:var(--red);font-weight:800}.defer,.wait{color:var(--amber);font-weight:800}
+    code,.code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#c3f3ff}.code{background:#050b11;border:1px solid #23384b;border-radius:12px;padding:16px;overflow:auto}.grid.two{grid-template-columns:repeat(2,1fr)}.phase{border-left:3px solid var(--cyan);padding-left:15px;margin:20px 0}footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+    @media(max-width:800px){.meta,.grid.two,.flow{grid-template-columns:1fr}.step:not(:last-child)::after{content:'↓';right:auto;left:50%;top:auto;bottom:-19px}}
+  </style>
+</head>
+<body><main>
+  <div class="eyebrow">Hana-X · Architecture Decision Packet</div>
+  <h1>HX Agent Relay</h1>
+  <p class="subtitle">A governed work exchange that replaces manual prompt and report copying across ChatGPT, GitHub, <code>hxs-cp</code>, and Claude Code—while keeping execution local and provider-neutral.</p>
+  <div class="meta"><div class="card"><div class="k">Status</div><div class="v">Recommended for owner acceptance</div></div><div class="card"><div class="k">Prepared by</div><div class="v">ChatGPT · Chief of Staff</div></div><div class="card"><div class="k">Date</div><div class="v">18 August 2026</div></div></div>
+  <div class="verdict"><strong>Executive verdict:</strong> Adopt a GitHub-backed, locally executed HX Agent Relay. GitHub carries governed work orders and reviewable results. <code>hxs-cp</code> remains the execution authority. Google Drive remains a human collaboration and source-intake plane—not the agent command bus.</div>
+
+  <h2>Target operating flow</h2>
+  <div class="flow"><div class="step"><b>1 · Owner intent</b>ChatGPT prepares a structured work order.</div><div class="step"><b>2 · Immutable task</b>The relay snapshots and hashes the approved task.</div><div class="step"><b>3 · Local execution</b>Kimi or DeepSeek runs after the library gate.</div><div class="step"><b>4 · Evidence</b>Reports return through a branch and Tessa validation.</div></div>
+  <div class="code">hx-task start 42 --provider deepseek</div>
+
+  <h2>The real problem</h2>
+  <p>Clipboard transfer carries owner authority, scope, context, instructions, and evidence at the same time. Layered addenda can therefore create drift even when the model remains operational. The answer is not a better clipboard; it is a governed task identity with an immutable snapshot and retained output.</p>
+  <div class="grid two"><div class="card"><h3>Current risk</h3><ul><li>Prompts can be reformatted or truncated.</li><li>Addenda can conflict with the mission.</li><li>Approval and execution blur together.</li><li>No exact task hash reaches Tessa.</li><li>Results must be manually carried back.</li></ul></div><div class="card"><h3>Required outcome</h3><ul><li>One authoritative task packet.</li><li>Provider-neutral execution.</li><li>Local library gate and individual receipt.</li><li>Automatic attempt and evidence capture.</li><li>Separate implementation and validation.</li></ul></div></div>
+
+  <h2>Option assessment</h2>
+  <table><thead><tr><th>Option</th><th>Provider fit</th><th>Local</th><th>Governance</th><th>Disposition</th></tr></thead><tbody>
+    <tr><td>Termius SFTP + file reference</td><td>Strong</td><td>Yes</td><td>Moderate</td><td class="adopt">Immediate bridge</td></tr>
+    <tr><td>Google Drive synchronization</td><td>Separate authentication</td><td>Yes</td><td>Weak as command plane</td><td class="defer">Human/source plane</td></tr>
+    <tr><td>Claude Remote Control</td><td>Custom base URL unsupported</td><td>Yes</td><td>Moderate</td><td class="reject">Reject</td></tr>
+    <tr><td>Claude Channels</td><td>Anthropic auth; preview</td><td>Yes</td><td>Immature</td><td class="defer">Reference only</td></tr>
+    <tr><td>Claude Code GitHub Actions</td><td>Custom providers undocumented</td><td>No by default</td><td>Strong for repo tasks</td><td class="defer">Future repo-only</td></tr>
+    <tr><td>Self-hosted runner on hxs-cp</td><td>Possible</td><td>Yes</td><td>High blast radius</td><td class="reject">Reject</td></tr>
+    <tr><td>GitHub work order + local relay</td><td>Strong</td><td>Yes</td><td>Strong</td><td class="adopt">Adopt</td></tr>
+    <tr><td>Custom Agent SDK service</td><td>Pilot required</td><td>Yes</td><td>Strong</td><td class="defer">Roadmap</td></tr>
+  </tbody></table>
+
+  <h2>Why the shortcuts fail</h2>
+  <div class="grid two"><div class="card"><h3>Remote Control</h3><p>Disabled when <code>ANTHROPIC_BASE_URL</code> points away from <code>api.anthropic.com</code>; incompatible with the Kimi and DeepSeek launchers.</p></div><div class="card"><h3>Channels</h3><p>Research preview, Anthropic authentication, and a new sender authority. No immutable task or report.</p></div><div class="card"><h3>Drive as command bus</h3><p>Mutable and separately authenticated. It bypasses source locks and local receipts unless imported first.</p></div><div class="card"><h3>Self-hosted Actions</h3><p>Repository-driven code would execute on the control plane. GitHub warns about persistent compromise risk.</p></div></div>
+
+  <h2>Recommended architecture</h2>
+  <div class="flow"><div class="step"><b>Work order</b>Validated issue with task, agent, provider, authority, libraries, acceptance, and owner state.</div><div class="step"><b>Snapshot</b>Normalized local task and SHA-256 under the attempt evidence path.</div><div class="step"><b>Relay</b><code>hx-task</code> enforces preflight, receipts, provider selection, permissions, and capture.</div><div class="step"><b>Return</b>Report, evidence, reviewed branch, and separate Tessa request.</div></div>
+  <div class="grid two"><div class="card"><h3>Immutable attempt</h3><code>evidence/&lt;host&gt;/&lt;mission&gt;/&lt;attempt-id&gt;/</code><ul><li>task-packet.md</li><li>task-packet.json</li><li>task-packet.sha256</li><li>preflight.json</li><li>session/</li></ul></div><div class="card"><h3>Retained report</h3><code>governance/reports/agent-runs/&lt;agent&gt;/&lt;attempt&gt;/</code><ul><li>report.md</li><li>report.html</li><li>manifest.yaml</li><li>library-read-receipt.yaml</li></ul></div></div>
+
+  <h2>Local control surface</h2>
+  <p>Begin with bounded Bash in <code>platform/_shared/bash/</code>. The relay verifies owner state, snapshots and hashes the task, creates the attempt, requires the library receipt, selects the isolated provider launcher, captures structured output, and blocks unauthorized stage advancement.</p>
+  <div class="code">hx-task inspect &lt;issue&gt;<br>hx-task plan &lt;issue&gt; --provider &lt;kimi|deepseek&gt;<br>hx-task start &lt;issue&gt; --provider &lt;kimi|deepseek&gt;<br>hx-task status &lt;attempt-id&gt;<br>hx-task validate &lt;attempt-id&gt; --provider &lt;validator&gt;</div>
+  <p>Use Claude Code hooks at session start, prompt submission, pre-tool use, subagent start, task completion, stop, failure, and session end. Hooks are defense in depth; the outer relay independently enforces the critical gates.</p>
+
+  <h2>Provider compatibility</h2>
+  <table><thead><tr><th>Capability</th><th>State</th><th>Meaning</th></tr></thead><tbody><tr><td>DeepSeek interactive lane</td><td class="ok">VERIFIED</td><td>Works through the custom endpoint.</td></tr><tr><td>Kimi configuration</td><td class="wait">BLOCKED UPSTREAM</td><td>Configuration retained; incident prevents acceptance.</td></tr><tr><td>Claude Code <code>-p</code></td><td class="wait">PILOT REQUIRED</td><td>Official capability verified; provider behavior is not.</td></tr><tr><td>Remote Control</td><td class="no">INCOMPATIBLE</td><td>Custom base URLs are explicitly unsupported.</td></tr><tr><td>ChatGPT GitHub writes</td><td class="wait">NOT VERIFIED</td><td>Connect and permission-test before adoption.</td></tr></tbody></table>
+
+  <h2>Phased adoption</h2>
+  <div class="phase"><h3>Phase 0 · Finish the foundation</h3><p>Do not interrupt the current bootstrap. Record this architecture as proposed only.</p></div>
+  <div class="phase"><h3>Phase 1 · File-based relay</h3><p>Named task packets, Termius SFTP, one-line <code>@file</code>, and a read-only <code>-p</code> pilot.</p></div>
+  <div class="phase"><h3>Phase 2 · GitHub work orders</h3><p>Issue form, least-privilege API identity, actor validation, immutable snapshot, and human-triggered start.</p></div>
+  <div class="phase"><h3>Phase 3 · Reports and Tessa</h3><p>Enforced report completion, reviewed result branch, and separate non-mutating validation.</p></div>
+  <div class="phase"><h3>Phase 4 · ChatGPT console</h3><p>Connect and permission-test GitHub; ChatGPT prepares work orders and reviews results while owner approval remains explicit.</p></div>
+  <div class="phase"><h3>Phase 5 · Optional SDK</h3><p>Consider the Agent SDK only after the CLI relay proves a real asynchronous need.</p></div>
+
+  <h2>Trust boundaries</h2>
+  <ul><li>Provider credentials stay in existing mode-0600 profiles outside Git.</li><li>The relay calls provider launchers but never parses credential files.</li><li>The SSH key carries Git; issue access gets separate least privilege.</li><li>Pilot with a repository-scoped token; target a GitHub App with one-hour installation tokens.</li><li>An <code>hx:approved</code> label never replaces an approved human actor.</li></ul>
+
+  <h2>Acceptance standard</h2>
+  <div class="grid two"><div class="card"><h3>Must prove</h3><ul><li>Unapproved tasks are rejected.</li><li>Edits cannot alter a running attempt.</li><li>Every agent has its own receipt.</li><li>Missing reports block completion.</li><li>Provider failure cannot become success.</li><li>Tessa cannot mutate implementation.</li></ul></div><div class="card"><h3>Must not introduce</h3><ul><li>Broad Drive access for models.</li><li>Provider keys in GitHub or logs.</li><li>Automatic execution on issue creation.</li><li>Self-hosted Actions on hxs-cp.</li><li>Automatic merge or stage authority.</li><li>A second source of truth.</li></ul></div></div>
+
+  <h2>Proposed standing decision</h2>
+  <div class="verdict"><strong>PROPOSED HX-SD-006 — Agent Work Exchange Standard</strong><br>GitHub is the governed HX agent work-order and review exchange. <code>hxs-cp</code> is the local execution authority. Agents execute immutable, hashed task snapshots against the local governed library and return retained reports and evidence. External collaboration systems may supply approved source material but do not replace the repository library, execution gate, or owner authority.</div>
+
+  <h2>Primary sources</h2>
+  <ul><li><a href="https://code.claude.com/docs/en/headless">Claude Code programmatic usage</a></li><li><a href="https://code.claude.com/docs/en/hooks">Claude Code hooks</a></li><li><a href="https://code.claude.com/docs/en/agent-sdk/overview">Claude Agent SDK</a></li><li><a href="https://code.claude.com/docs/en/remote-control">Remote Control</a></li><li><a href="https://code.claude.com/docs/en/channels">Channels</a></li><li><a href="https://code.claude.com/docs/en/github-actions">GitHub Actions</a></li><li><a href="https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms">GitHub Issue Forms</a></li><li><a href="https://docs.github.com/en/actions/reference/security/secure-use">GitHub Actions secure use</a></li><li><a href="https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-as-a-github-app-installation">GitHub App authentication</a></li></ul>
+  <footer>HX-Ai-Platform · Architecture decision packet · ChatGPT · 2026-08-18<br>This report recommends an architecture. It does not authorize implementation, host changes, credentials, commits, pushes, merges, or agent execution.</footer>
+</main></body></html>

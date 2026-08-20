@@ -1,0 +1,196 @@
+schema_version: 1
+registry_id: hx-ai-infrastructure-document-registry
+generated_at: 2026-08-18T12:17:00+07:00
+prepared_by: ChatGPT
+truth_state: reconstructed_from_current_conversation_retained_files_and_repository
+repository_target: HX-Ai-Infrastructure
+
+authority_precedence:
+  - current_explicit_owner_decision
+  - constitution
+  - accepted_specifications_and_decisions
+  - canonical_registries
+  - current_measured_evidence
+  - locked_official_sources
+  - local_library_knowledge
+  - historical_reports_prompts_and_session_records
+
+current_control_stack:
+  active_now:
+    id: doc-012
+    title: HX-Ai-Infrastructure repository bootstrap prompt
+    state: ACTIVE_EXECUTION_INSTRUCTION
+    location: current_chat_transcript
+    executor: Kimi K3 through GitHub Copilot
+    scope: create and validate the new repository baseline only
+    warning: governance content not already owner-approved must remain draft pending review
+  governing_architecture:
+    id: doc-009
+    title: Accepted architecture decision set ADR-0001 through ADR-0004
+    state: CURRENT_GOVERNANCE_REFERENCE_PENDING_MIGRATION
+  queued_after_repository_acceptance:
+    id: doc-010
+    title: Claude Code implementation prompt — HX isolated provider profiles
+    state: READY_BUT_NOT_AUTHORIZED
+  runtime_after_provider_acceptance:
+    id: doc-011
+    title: HXS-1 Qwen3.8-27B Ollama MVP-1 specification and runbook
+    state: READY_FOR_LATER_EXECUTION
+
+documents:
+  - id: doc-001
+    title: HX Agentic SDLC Strategic Pivot
+    path: prior-artifacts/HX-Infrastructure/codex_20260816_1242_hx-agentic-sdlc-strategic-pivot-report.html
+    sha256: f3d4e613e1342b421360cf445117e8361c63cd5e8907f1e390a752320360798d
+    artifact_type: historical_strategy_report
+    purpose: established the sdd-core and Meta-Agent strategic direction
+    state: HISTORICAL_CONTEXT
+    current_use: background only; later owner decisions and accepted ADRs govern execution
+
+  - id: doc-002
+    title: HX Qwen3.8-27B on Ollama deployment deep dive
+    paths:
+      - codex_20260817_1524_hx-qwen38-27b-ollama-deployment-deep-dive.html
+      - codex_20260817_1524_hx-qwen38-27b-ollama-deployment-deep-dive.md
+    sha256_html: 6cd0cec4feb9d6bae28e36774648280e1d2a4ff0beaa2f5e1c829940e9cbb079
+    sha256_markdown: e498c26e0c0b89b04a59f8fb92a64295586e61e71a3b590e343b913eafb3d45c
+    artifact_type: research_and_proposed_plan
+    purpose: researched Ollama, Qwen, storage, optimization, fine-tuning and fleet deployment
+    state: SUPERSEDED_FOR_EXECUTION
+    superseded_by:
+      - doc-004
+      - doc-011
+    current_use: source analysis only; do not execute its broader programme plan
+
+  - id: doc-003
+    title: HX-AI-Platform Agent Library Reconnaissance
+    paths:
+      - hx-agent-library-reconnaissance-report_codex_20260817_1641.html
+      - hx-agent-library-reconnaissance-report_codex_20260817_1641.md
+    sha256_html: 293a3b058528959054e7a00eb7d55d452bc2509bab461708c304d5c6b2185eb1
+    sha256_markdown: c841606d0231ef49441dad6c1d7d7da735b0c98c55480721e79bf0f1386c8b7c
+    artifact_type: architecture_reconnaissance
+    purpose: defined the root local library as an advisory knowledge plane subordinate to governance
+    state: ADOPTED_NARROW_ROLE
+    current_use: library architecture authority; adapt repository-name references to HX-Ai-Infrastructure
+
+  - id: doc-004
+    title: Revision directive — HX Qwen3.8-27B on Ollama runbook
+    path: upload/Pasted markdown(1).md
+    sha256: 4b7779e60723d6f1a8946e06c00f3bf39040e9dbab29876e759a1b7117e85e55
+    artifact_type: owner_directive
+    purpose: narrowed the mission to an eight-hour HXS-1 MVP-1 and established the binary critical-path rule
+    state: ACCEPTED_OWNER_AUTHORITY
+    current_use: governs runtime scope unless superseded by a newer explicit owner decision
+
+  - id: doc-005
+    title: HX-Infrastructure source archive
+    path: upload/HX-Infrastructure-main (4).zip
+    sha256: 5dd124e1b5a391fc102ab553fb9bc05eece57e73190283dbfe5e060736d26779
+    artifact_type: supplied_source_snapshot
+    purpose: legacy/current source mining for governance, operations, fleet facts and agent patterns
+    state: REFERENCE_ONLY
+    current_use: mine selectively; do not copy stale structure, environment state or authority wholesale
+
+  - id: doc-006
+    title: Kimi Claude Code configuration snapshot
+    path: upload/Pasted markdown(2).md
+    sha256: a27e0f13d294bdfa37ce03ab125561721cfed5d239e4a46477f859fe4ec9d2e9
+    artifact_type: owner_supplied_vendor_snapshot
+    purpose: supplied Kimi endpoint, model and Claude Code configuration guidance
+    state: SOURCE_REFERENCE
+    current_use: reconciled by doc-008 and doc-010; do not apply directly
+
+  - id: doc-007
+    title: Repository Baseline and Deployment Readiness Review
+    path: HX-Ai-Platform/governance/reports/codex_20260818_1115_hx-ai-platform-bootstrap-and-directive-recon.html
+    sha256: 1d8119cb37af82daf25ad7afbcd2535cd7b878ffa87b29e6ca41de8962587c42
+    artifact_type: executive_repository_report
+    purpose: documented the validated HX-Ai-Platform reference baseline and HXS-1 mission controls
+    state: CURRENT_FOR_REFERENCE_SNAPSHOT_ONLY
+    current_use: evidence for the old-name reference repository; replace after HX-Ai-Infrastructure acceptance
+
+  - id: doc-008
+    title: Hana-X Claude Code Provider Architecture — Kimi K3 and DeepSeek V4
+    path: HX-Ai-Platform/governance/reports/chatgpt_20260818_1135_claude-code-provider-architecture-recon.html
+    sha256: 169e164096629b7cd82569bd58962f31b70ee04ef1f51f6eec4e406bf937ed71
+    artifact_type: executive_architecture_decision_packet
+    purpose: documented Kimi execution, DeepSeek Pro validation, Flash bounded-work and process isolation
+    state: CURRENT_DECISION_EXPLANATION
+    current_use: migrate into the new repository with identity references updated
+
+  - id: doc-009
+    title: Accepted architecture decision set ADR-0001 through ADR-0004
+    paths:
+      - HX-Ai-Platform/governance/decisions/0001-agentic-control-flow.md
+      - HX-Ai-Platform/governance/decisions/0002-critical-path-and-mvp-ladder.md
+      - HX-Ai-Platform/governance/decisions/0003-hxs1-mvp1-runtime-locks.md
+      - HX-Ai-Platform/governance/decisions/0004-claude-code-provider-isolation.md
+    artifact_type: accepted_governance
+    purpose: controls agent flow, MVP discipline, HXS-1 runtime locks and provider isolation
+    state: CURRENT_GOVERNANCE_REFERENCE_PENDING_MIGRATION
+    current_use: substantive authority below current owner direction; update repository identity without changing decisions
+
+  - id: doc-010
+    title: Claude Code implementation prompt — HX isolated provider profiles
+    path: HX-Ai-Platform/governance/operations/claude-code/implementation-prompt.md
+    sha256: 6326a3e6b1b81b03a35e3a68a7ae926d8437f0ffc8290bd88051122129522949
+    artifact_type: execution_prompt
+    purpose: configures fail-closed Kimi and DeepSeek profiles on hxs-cp and runs twelve acceptance gates
+    state: READY_BUT_NOT_AUTHORIZED
+    current_use: execute only after the new repository baseline is independently accepted and the owner says configure
+
+  - id: doc-011
+    title: HXS-1 Qwen3.8-27B Ollama MVP-1 specification and runbook
+    paths:
+      - HX-Ai-Platform/specs/001-hxs1-qwen38-ollama-mvp1/spec.md
+      - HX-Ai-Platform/specs/001-hxs1-qwen38-ollama-mvp1/plan.md
+      - HX-Ai-Platform/specs/001-hxs1-qwen38-ollama-mvp1/tasks.md
+      - HX-Ai-Platform/specs/001-hxs1-qwen38-ollama-mvp1/runbook.md
+      - HX-Ai-Platform/specs/001-hxs1-qwen38-ollama-mvp1/acceptance.md
+    artifact_type: accepted_runtime_specification
+    purpose: performs the eight-hour HXS-1 Ollama and Qwen first-message mission
+    state: READY_FOR_LATER_EXECUTION
+    current_use: active runtime authority after repository and provider prerequisites pass
+
+  - id: doc-012
+    title: HX-Ai-Infrastructure repository bootstrap prompt
+    path: current_chat_transcript
+    artifact_type: active_execution_prompt
+    purpose: directs Kimi through GitHub Copilot to create the new professional repository structure and technology library
+    state: ACTIVE_EXECUTION_INSTRUCTION
+    current_use: this is the document being followed now
+    retention_action: capture the exact prompt and Kimi completion report in the new repository evidence before acceptance
+
+  - id: doc-013
+    title: HX-Ai-Platform bootstrap repository package
+    path: HX-Ai-Platform-bootstrap-20260818.zip
+    sha256: b823d3112dd29ff1534828465393365f12086da40f04745234e00693d695f430
+    artifact_type: reference_repository_snapshot
+    purpose: retained validated reference implementation at commit fd51573
+    state: REFERENCE_BASELINE
+    current_use: compare and selectively migrate into HX-Ai-Infrastructure; it does not become the new repository automatically
+
+next_sequence:
+  - order: 1
+    action: receive Kimi repository tree, validation output, Git diff/status and completion report
+    gate: no deployment or provider configuration occurred
+  - order: 2
+    action: independently validate HX-Ai-Infrastructure against doc-012
+    gate: new governance is approved content or clearly marked draft; no invented facts
+  - order: 3
+    action: adopt the new repository as canonical and migrate doc-009, doc-008, doc-010 and doc-011 with corrected repository identity
+    gate: owner accepts the repository baseline
+  - order: 4
+    action: execute doc-010 on hxs-cp only after explicit owner authorization
+    gate: all twelve provider controls pass and Tessa records the consolidated verdict
+  - order: 5
+    action: execute doc-011 for HXS-1
+    gate: one coherent Qwen response and Tessa PASS
+
+open_items:
+  - exact doc-012 prompt is currently retained only in the chat transcript
+  - Kimi output has not yet been received or independently validated
+  - new repository has not yet been declared canonical
+  - provider profiles are not configured or accepted
+  - HXS-1 has not been modified from this workstream

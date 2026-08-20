@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA CUDA and Driver Requirements for hxs-1 Model Serving</title>
+<style>
+  :root{
+    color-scheme: light;
+    --surface-1:#fcfcfb; --page:#f9f9f7;
+    --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#898781;
+    --grid:#e1e0d9; --baseline:#c3c2b7; --border:rgba(11,11,11,0.10);
+    --series-1:#2a78d6; --series-2:#eb6834; --series-3:#1baf7a;
+    --st-good:#0ca30c; --st-warning:#fab219; --st-serious:#ec835a; --st-critical:#d03b3b;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --surface-1:#1a1a19; --page:#0d0d0d;
+      --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#898781;
+      --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,0.10);
+      --series-1:#3987e5; --series-2:#d95926; --series-3:#199e70;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--text-primary);
+       font:16px/1.62 system-ui,-apple-system,"Segoe UI",sans-serif;}
+  .wrap{max-width:940px;margin:0 auto;padding:48px 24px 96px}
+  h1{font-size:27px;line-height:1.26;margin:0 0 18px;letter-spacing:-.012em;
+     padding-bottom:20px;border-bottom:1px solid var(--grid)}
+  h2{font-size:20px;margin:46px 0 12px;padding-top:20px;
+     border-top:1px solid var(--grid);letter-spacing:-.01em}
+  h3{font-size:15.5px;margin:28px 0 8px}
+  h4{font-size:14px;margin:20px 0 6px;color:var(--text-secondary);
+     text-transform:uppercase;letter-spacing:.05em}
+  p{margin:0 0 14px} ul,ol{margin:0 0 14px;padding-left:22px} li{margin:6px 0}
+  li > p{margin:0 0 8px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.8px;
+       background:var(--surface-1);border:1px solid var(--grid);border-radius:4px;padding:1px 5px}
+  pre{background:var(--surface-1);border:1px solid var(--grid);border-radius:8px;
+      padding:14px 16px;overflow-x:auto;font-size:12.8px;line-height:1.6}
+  pre code{background:none;border:none;padding:0;font-size:12.5px}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px;
+        font-variant-numeric:tabular-nums}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--grid);vertical-align:top}
+  th{font-weight:600;color:var(--text-secondary);font-size:12px;
+     text-transform:uppercase;letter-spacing:.05em;font-variant-numeric:normal}
+  tbody tr:hover{background:var(--surface-1)}
+  td code{white-space:nowrap}
+  blockquote{margin:16px 0;padding:12px 18px;border-left:3px solid var(--baseline);
+             color:var(--text-secondary);background:var(--surface-1);border-radius:0 6px 6px 0}
+  blockquote p:last-child{margin:0}
+  hr{border:none;border-top:1px solid var(--grid);margin:34px 0}
+  a{color:var(--series-1)}
+  .meta table{font-size:13.5px;margin:0 0 8px}
+  .meta td{border-bottom:none;padding:3px 12px 3px 0}
+  .meta td:first-child{color:var(--text-muted);width:150px;white-space:nowrap}
+  .meta thead{display:none}
+  .ok{color:var(--st-good);font-weight:600}
+  .no{color:var(--st-critical);font-weight:600}
+  .warn{color:var(--st-warning);font-weight:600}
+  footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--grid);
+         color:var(--text-muted);font-size:12.8px;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>NVIDIA CUDA and Driver Requirements for hxs-1 Model Serving</h1>
+<div class="meta"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Document ID</strong></td>
+<td><code>hx-research_cuda-driver-runtime-requirements-hxs1_vendor_2026-08-17_claude-opus-5</code></td>
+</tr>
+<tr>
+<td><strong>Subject</strong></td>
+<td>NVIDIA driver and CUDA requirements for Ollama and vLLM on hxs-1; installed-state conformance; upgrade headroom</td>
+</tr>
+<tr>
+<td><strong>Evidence tier</strong></td>
+<td><code>vendor</code> — official NVIDIA, vLLM and Ollama documentation, checked against the hxs-1 discovery record</td>
+</tr>
+<tr>
+<td><strong>Author</strong></td>
+<td>Claude (Opus 5)</td>
+</tr>
+<tr>
+<td><strong>Date</strong></td>
+<td>2026-08-17</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Research record. <strong>Not a decision, not an acceptance, not an authorization.</strong></td>
+</tr>
+<tr>
+<td><strong>Relates to</strong></td>
+<td>hxs-1 · <code>act-010</code> (driver-only directive) · <code>tests/ai-runtime/hx-gpu-fit.ps1</code> · <code>governance/policy/nvidia-driver-install-directive.md</code></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>Abstract</h2>
+<p>hxs-1 currently satisfies every published NVIDIA requirement for both candidate inference
+runtimes, and <strong>neither runtime requires the CUDA Toolkit</strong> — a finding that matters because
+<code>act-010</code> explicitly prohibits installing it. Both Ollama and vLLM ship CUDA runtime libraries
+inside their own distribution; the kernel-mode driver is the only NVIDIA dependency, and it is
+already installed and validated on this host.</p>
+<p>Three findings qualify that clean bill of health. The installed driver clears <strong>CUDA 13.0 GA and
+nothing beyond it</strong> — there is no single "13.x floor"; each minor release raises it, and CUDA
+13.1 already requires 590.44.01, putting hxs-1 <strong>one minor version</strong> from a mandatory driver
+upgrade. CUDA 13.0 dropped three GPU generations, raising the effective architecture floor to
+compute capability 7.5. And <code>hx-gpu-fit.ps1</code> carries pre-CUDA-13 thresholds that would return
+<code>PASS</code> for a device the installed runtime can no longer execute at all.</p>
+<hr>
+<h2>1. Installed state on hxs-1</h2>
+<p>Source: <code>servers/hxs-1/discovery.md</code> and <code>servers/hxs-1/driver-results.md</code>. Installed under the
+approved Phase 1 exception recorded in <code>act-010</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Facet</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Driver package</td>
+<td><code>nvidia-driver-580-server-open</code> + <code>nvidia-utils-580-server</code></td>
+</tr>
+<tr>
+<td>Kernel module version</td>
+<td><strong>580.173.02</strong></td>
+</tr>
+<tr>
+<td>CUDA runtime reported</td>
+<td><strong>13.0</strong></td>
+</tr>
+<tr>
+<td>Kernel module flavour</td>
+<td><strong>open</strong> (<code>-open</code> variant)</td>
+</tr>
+<tr>
+<td>GPUs</td>
+<td>2× RTX 4070 Ti SUPER, AD103, PCI <code>10de:2705</code></td>
+</tr>
+<tr>
+<td>Architecture</td>
+<td><strong>Ada Lovelace — compute capability 8.9</strong></td>
+</tr>
+<tr>
+<td>VRAM</td>
+<td>16,376 MiB each, 32,752 MiB total</td>
+</tr>
+<tr>
+<td>OS / kernel</td>
+<td>Ubuntu 24.04.4 LTS noble, kernel 7.0.0-28-generic (HWE)</td>
+</tr>
+<tr>
+<td>CUDA Toolkit (<code>nvcc</code>)</td>
+<td><strong>not installed</strong> — and prohibited by <code>act-010</code></td>
+</tr>
+<tr>
+<td>Container runtime</td>
+<td><strong>not installed</strong> — no Docker, containerd, or podman</td>
+</tr>
+</tbody>
+</table>
+<p><code>act-010</code> is worth quoting because it defines the boundary this document is testing against:</p>
+<blockquote>
+<p>The driver-only directive "explicitly prohibits vLLM, PyTorch, CUDA Toolkit, Python
+environments, Hugging Face tooling, model files, inference services and multi-GPU workload
+configuration."</p>
+</blockquote>
+<hr>
+<h2>2. NVIDIA platform requirements</h2>
+<h3>2.1 Driver floor by CUDA version</h3>
+<p>CUDA applications require a minimum kernel-mode driver. There is <strong>no single "CUDA 13.x
+floor"</strong> — each minor release raises it. On Linux x86_64:</p>
+<table>
+<thead>
+<tr>
+<th>CUDA Toolkit</th>
+<th>Minimum Linux x86_64 driver</th>
+<th>hxs-1 @ 580.173.02</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>13.0 GA</td>
+<td>≥ 580.65.06</td>
+<td><span class="ok">✅</span> PASS</td>
+</tr>
+<tr>
+<td>13.1 GA</td>
+<td>≥ 590.44.01</td>
+<td><span class="no">❌</span> FAIL</td>
+</tr>
+<tr>
+<td>13.1 Update 1</td>
+<td>≥ 590.48.01</td>
+<td><span class="no">❌</span> FAIL</td>
+</tr>
+<tr>
+<td>13.2 GA</td>
+<td>≥ 595.45.04</td>
+<td><span class="no">❌</span> FAIL</td>
+</tr>
+<tr>
+<td>13.2 Update 1</td>
+<td>≥ 595.58.03</td>
+<td><span class="no">❌</span> FAIL</td>
+</tr>
+<tr>
+<td>13.3 GA</td>
+<td>≥ 610.43.02</td>
+<td><span class="no">❌</span> FAIL</td>
+</tr>
+<tr>
+<td>13.3 Update 1</td>
+<td>≥ 610.43.02</td>
+<td><span class="no">❌</span> FAIL</td>
+</tr>
+</tbody>
+</table>
+<p>hxs-1 runs <strong>580.173.02</strong>, which clears <strong>CUDA 13.0 GA only</strong>. The very next minor release
+already requires 590.44.01. The host is <strong>one minor version away</strong> from a mandatory driver
+upgrade, not several.</p>
+<h3>2.2 Backward compatibility</h3>
+<p>The CUDA driver is backward compatible: an application compiled against an earlier CUDA
+version continues to work on later driver releases. Practically, driver 580 runs binaries built
+against CUDA 12.x as well as 13.0.</p>
+<p><strong>This is the fact that removes most version anxiety.</strong> vLLM's default <code>cu129</code> wheel, PyTorch
+<code>cu128</code> builds, and Ollama's bundled runtime all execute correctly on driver 580 without any
+toolkit installation and without matching CUDA versions exactly.</p>
+<h3>2.3 Architectures dropped in CUDA 13.0</h3>
+<blockquote>
+<p>"Removed support for Maxwell, Pascal, and Volta GPUs, corresponding to compute capabilities
+earlier than Turing."</p>
+</blockquote>
+<p><em>Citation note: cite the CUDA 13.0 general "Removed Features / architecture support" section
+rather than a library-specific subsection, so the reference survives audit.</em></p>
+<p>CUDA 13 therefore supports <strong>compute capability 7.5 (Turing) and newer</strong>. Ada at 8.9 is
+unaffected. This also explains why the <code>-open</code> kernel module variant works here — open kernel
+modules require Turing or newer, which Ada satisfies.</p>
+<hr>
+<h2>3. Runtime requirements compared</h2>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Ollama</th>
+<th>vLLM</th>
+<th>hxs-1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Minimum compute capability</td>
+<td>5.0 (5.0–6.2 need driver ≥ 570)</td>
+<td><strong>7.5</strong></td>
+<td><strong>8.9</strong> <span class="ok">✅</span></td>
+</tr>
+<tr>
+<td>Minimum driver</td>
+<td><strong>550</strong></td>
+<td>set by the wheel's CUDA build</td>
+<td><strong>580.173.02</strong> <span class="ok">✅</span></td>
+</tr>
+<tr>
+<td>Prebuilt CUDA targets</td>
+<td>bundled runtime, no separate build</td>
+<td><strong>cu128 · cu129 (default) · cu130</strong></td>
+<td>all three run on driver 580 <span class="ok">✅</span></td>
+</tr>
+<tr>
+<td>CUDA Toolkit required?</td>
+<td><strong>No</strong></td>
+<td><strong>No</strong> — only to build from source</td>
+<td>not installed, not needed <span class="ok">✅</span></td>
+</tr>
+<tr>
+<td>Python required?</td>
+<td>No — single Go binary</td>
+<td>Yes</td>
+<td><code>python3 3.12.3</code> present</td>
+</tr>
+<tr>
+<td>Multi-GPU selection</td>
+<td><code>CUDA_VISIBLE_DEVICES</code>, <strong>UUIDs recommended over indices</strong></td>
+<td><code>CUDA_VISIBLE_DEVICES</code> / TP config</td>
+<td>2 devices, UUIDs <strong>not yet captured</strong></td>
+</tr>
+</tbody>
+</table>
+<h3>3.1 The Toolkit is not required — this is the operationally significant finding</h3>
+<p>Both runtimes distribute their own CUDA runtime libraries. Ollama ships them alongside its Go
+binary; vLLM's prebuilt wheels carry the CUDA runtime and cuBLAS/cuDNN dependencies as Python
+package data. The <code>nvcc</code> compiler and the CUDA Toolkit development headers are needed <strong>only</strong>
+to compile CUDA C++ from source.</p>
+<p>One nuance, stated pre-emptively because this is the document's headline claim: vLLM's
+<code>torch.compile</code> path uses Triton, which does need a <code>ptxas</code>/<code>nvcc</code> binary — but that too arrives
+as a <strong>pip wheel</strong> (<code>nvidia-cuda-nvcc-cu13</code>), not from the system CUDA Toolkit. A CUDA compiler
+may therefore be present inside the Python environment. It is not the prohibited package, and it
+installs nothing system-wide.</p>
+<p>Consequence: a future implementation phase on hxs-1 can install and run either runtime
+<strong>without violating <code>act-010</code>'s Toolkit prohibition</strong>. The prohibition is not a blocker; it
+was never load-bearing for the serving path. It would only become one if HX chose to build
+vLLM from source — which the vLLM documentation reserves for modifying its C++/CUDA code.</p>
+<h3>3.2 Ollama's UUID guidance corroborates <code>iss-013</code></h3>
+<p>Ollama's current documentation recommends setting <code>CUDA_VISIBLE_DEVICES</code> to device <strong>UUIDs</strong>
+(from <code>nvidia-smi -L</code>) rather than numeric indices. This is independent upstream confirmation
+of what HX established the hard way in <code>iss-013</code> — <em>"indexes reorder across reboots"</em> — and it
+reinforces the outstanding gap that <strong>hxs-1's GPU UUIDs have never been captured</strong>.</p>
+<hr>
+<h2>4. Findings</h2>
+<h3>F1 — The driver clears CUDA 13.0 only, and the next minor already breaks it</h3>
+<p>580.173.02 satisfies CUDA 13.0 GA (≥ 580.65.06) and nothing beyond it. <strong>CUDA 13.1 already
+requires 590.44.01</strong>, and 13.3 requires 610.43.02. If any required wheel is built against a
+13.x minor above 13.0, hxs-1 needs a driver upgrade first.</p>
+<p>This is a materially tighter constraint than "sits on the floor" suggests — the gap is one
+minor version, not a comfortable margin.</p>
+<p>That is not a small operation on this host. <code>INFRASTRUCTURE-CONTRACT.md</code> §14 lists "kernel or
+driver changes" as a high-impact change requiring inspection, backup, validation, and rollback
+planning. And the discovery record notes hxs-1 has <strong>no baseboard management controller or
+out-of-band management interface</strong>, so a driver change that breaks the graphics stack requires
+physical access to recover.</p>
+<p><strong>Implication:</strong> treat driver version as a pinned dependency with a stated upgrade path, not as
+something to bump opportunistically. Prefer wheels targeting cu128/cu129/cu130 while on 580.</p>
+<h3>F2 — <code>hx-gpu-fit.ps1</code> carries pre-CUDA-13 floors and can return a false PASS</h3>
+<p>The gate enforces:</p>
+<pre><code>min_driver_version       = 531
+min_compute_capability   = 5.0
+</code></pre>
+<p>Both predate CUDA 13.0. On a host whose installed runtime is CUDA 13.0, a device at compute
+capability 5.0–7.0 <strong>cannot execute at all</strong>, yet the gate would return <code>PASS</code> for it. Driver
+531 likewise cannot run any CUDA 13 application.</p>
+<p>This does not affect hxs-1 — 8.9 and 580 clear every threshold — but it is a false-<code>PASS</code> path
+in a harness whose stated purpose is to refuse false passes:</p>
+<blockquote>
+<p>"Never use <code>PASS</code> for a property the test could not actually disprove."</p>
+</blockquote>
+<p><strong>Suggested correction:</strong> raise to <code>min_compute_capability = 7.5</code> and <code>min_driver_version = 580</code>,
+with a comment naming CUDA 13.0's architecture removal as the reason, and ideally deriving the
+floor from the host's detected CUDA runtime rather than hardcoding it. Filing this as an issue
+is a Phase 3 action; it requires no host access.</p>
+<h3>F3 — The v0.3 build pin does not apply to hxs-1</h3>
+<p><code>governance/fleet-architecture-v0.3.html</code> records a build-time pin: <em>"vLLM 0.11.x / PyTorch
+cu128 / CUDA 12.8 / driver ≥575, FlashAttention-2 (FA3 unsupported on Blackwell)."</em></p>
+<p>That pin was written for the <strong>Blackwell</strong> hosts — hxs-2, hxs-3 and hxs-4, which carry RTX 5060
+Ti / 5060 cards. hxs-1 is <strong>Ada</strong>, a generation with longer-established kernel support and
+without the Blackwell FlashAttention-3 caveat. Applying the Blackwell pin to hxs-1 would be a
+category error; the document should be read as host-class-specific, and the distinction stated
+explicitly when v0.3 is next reissued.</p>
+<h3>F4 — Residual observations</h3>
+<ul>
+<li><strong>Package variant.</strong> <code>nvidia-driver-580-server-open</code> is the server/datacenter branch with
+  open kernel modules. It is functioning correctly on consumer Ada silicon — both GPUs bound to
+  <code>nvidia</code>, <code>nvidia-smi</code> reporting VRAM — per <code>driver-results.md</code>. Recorded as verified-working,
+  not raised as a concern.</li>
+<li><strong>No container runtime.</strong> Neither Ollama nor vLLM requires one for a bare-metal install. If a
+  containerised deployment is ever chosen, the NVIDIA Container Toolkit becomes an additional
+  dependency — and it is a separate package from the CUDA Toolkit, so <code>act-010</code>'s prohibition
+  would need re-reading against that specific case rather than assumed to cover it.</li>
+<li><strong>Secure Boot is disabled</strong> on hxs-1, so kernel module signing is not a constraint on driver
+  changes. Worth noting because it removes a failure mode that commonly complicates NVIDIA
+  driver upgrades on Ubuntu.</li>
+</ul>
+<hr>
+<h2>5. Conformance summary</h2>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Requirement</th>
+<th>hxs-1</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Compute capability, Ollama</td>
+<td>≥ 5.0</td>
+<td>8.9</td>
+<td><span class="ok">✅</span> PASS</td>
+</tr>
+<tr>
+<td>Compute capability, vLLM</td>
+<td>≥ 7.5</td>
+<td>8.9</td>
+<td><span class="ok">✅</span> PASS</td>
+</tr>
+<tr>
+<td>Compute capability, CUDA 13 runtime</td>
+<td>≥ 7.5</td>
+<td>8.9</td>
+<td><span class="ok">✅</span> PASS</td>
+</tr>
+<tr>
+<td>Driver, Ollama</td>
+<td>≥ 550</td>
+<td>580.173.02</td>
+<td><span class="ok">✅</span> PASS</td>
+</tr>
+<tr>
+<td>Driver, CUDA 13.0 GA</td>
+<td>≥ 580.65.06</td>
+<td>580.173.02</td>
+<td><span class="ok">✅</span> PASS</td>
+</tr>
+<tr>
+<td>Driver, CUDA 13.1 GA and every later minor</td>
+<td>≥ 590.44.01, rising to 610.43.02 at 13.3</td>
+<td>580.173.02</td>
+<td><span class="no">❌</span> <strong>would fail — upgrade needed at the very next minor</strong></td>
+</tr>
+<tr>
+<td>CUDA Toolkit</td>
+<td>not required by either runtime</td>
+<td>not installed</td>
+<td><span class="ok">✅</span> compliant with <code>act-010</code></td>
+</tr>
+<tr>
+<td>Open kernel modules</td>
+<td>Turing or newer</td>
+<td>Ada 8.9</td>
+<td><span class="ok">✅</span> PASS</td>
+</tr>
+<tr>
+<td>GPU UUIDs recorded</td>
+<td>required by <code>hx-gpu-fit.ps1</code></td>
+<td><strong>absent</strong></td>
+<td><span class="no">❌</span> <strong>gate cannot run</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Net:</strong> the platform requirements are met. The blocking item is not CUDA — it is the missing
+device identity, which is a read-only five-minute capture.</p>
+<hr>
+<h2>6. Recommended actions</h2>
+<p>Ordered so that nothing requires authorization it does not have. Items 1–3 are read-only or
+documentation-only and sit fully within Phase 3.</p>
+<ol>
+<li><strong>Capture GPU device identity on hxs-1.</strong> Read-only; unblocks <code>hx-gpu-fit.ps1</code>. Append to
+   <code>driver-results.md</code> rather than editing the immutable <code>discovery.md</code>.
+<pre><code>nvidia-smi --query-gpu=index,uuid,name,memory.total,pci.bus_id,driver_version \
+           --format=csv
+nvidia-smi -L</code></pre>
+<p>While there, settle the ×4 link question with the authoritative source — <code>nvidia-smi</code>'s
+   <code>pcie.link.width.max</code> often reports the <em>device's</em> capability rather than the slot's:</p>
+<pre><code># Derive the bus IDs rather than hardcoding them, and use sudo —
+# unprivileged `lspci -vv` prints "Capabilities: &lt;access denied&gt;" and the
+# LnkCap/LnkSta lines are never emitted, so the grep silently returns nothing.
+# nvidia-smi emits an eight-digit domain (e.g. 00000000:01:00.0); lspci wants
+# the short form, so strip the four leading domain zeros before calling it.
+for BDF in $(nvidia-smi --query-gpu=pci.bus_id --format=csv,noheader \
+             | sed 's/^0000//I'); do
+  echo "== $BDF =="
+  OUT=$(sudo lspci -vvs "$BDF" | grep -E 'LnkCap:|LnkSta:')
+  if [ -z "$OUT" ]; then
+    echo "FATAL: no LnkCap/LnkSta output for $BDF — check sudo and the bus ID" >&2
+  else
+    printf '%s\n' "$OUT"
+  fi
+done</code></pre>
+</li>
+<li>
+<p><strong>File the <code>hx-gpu-fit.ps1</code> floor defect</strong> (F2) in <code>governance/logs/actions-and-issues.md</code>.
+   Repository-side change, no host access.</p>
+</li>
+<li>
+<p><strong>Record the driver-version pin</strong> (F1) as a stated constraint: hxs-1 remains on 580.x, and
+   runtime artifacts must target cu128/cu129/cu130. Re-evaluate only if a required wheel raises
+   the floor, and treat that as a §14 high-impact change.</p>
+</li>
+<li>
+<p><strong>When implementation is authorized,</strong> install neither the CUDA Toolkit nor a container
+   runtime unless a specific requirement emerges. The serving path needs the driver only.</p>
+</li>
+</ol>
+<hr>
+<h2>7. Citation</h2>
+<p><strong>Vendor sources, retrieved 2026-08-17</strong></p>
+<ul>
+<li>NVIDIA CUDA Toolkit Release Notes — driver version table, architecture removals
+  <a href="https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html">https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html</a></li>
+<li>NVIDIA CUDA Compatibility — minor version compatibility and backward compatibility rules
+  <a href="https://docs.nvidia.com/deploy/cuda-compatibility/minor-version-compatibility.html">https://docs.nvidia.com/deploy/cuda-compatibility/minor-version-compatibility.html</a></li>
+<li>NVIDIA Ada GPU Architecture Compatibility Guide
+  <a href="https://docs.nvidia.com/cuda/ada-compatibility-guide/">https://docs.nvidia.com/cuda/ada-compatibility-guide/</a></li>
+<li>vLLM — GPU installation requirements, prebuilt wheel CUDA targets
+  <a href="https://docs.vllm.ai/en/stable/getting_started/installation/gpu/">https://docs.vllm.ai/en/stable/getting_started/installation/gpu/</a></li>
+<li>Ollama — hardware support, compute capability and driver minimums, <code>CUDA_VISIBLE_DEVICES</code>
+  <a href="https://docs.ollama.com/gpu">https://docs.ollama.com/gpu</a></li>
+</ul>
+<p><strong>HX records referenced:</strong> <code>servers/hxs-1/discovery.md</code> · <code>servers/hxs-1/driver-results.md</code> ·
+<code>governance/policy/nvidia-driver-install-directive.md</code> · <code>governance/logs/actions-and-issues.md</code>
+(<code>act-010</code>, <code>iss-013</code>) · <code>governance/fleet-architecture-v0.3.html</code> ·
+<code>INFRASTRUCTURE-CONTRACT.md</code> §14 · <code>tests/ai-runtime/hx-gpu-fit.ps1</code></p>
+<hr>
+<p><em>Prepared by Claude (Opus 5), 2026-08-17. Research record — no authority asserted, no decision
+made, no acceptance granted. Per repository convention, a proposal is not a ruling.</em></p>
+<footer>Generated from the Markdown source of the same name — the pair is published together and must not diverge.<br>Research record — no authority asserted, no decision made.<br>Companion Markdown source: <code>hx-research_cuda-driver-runtime-requirements-hxs1_vendor_2026-08-17_claude-opus-5.md</code></footer>
+</div>
+</body>
+</html>

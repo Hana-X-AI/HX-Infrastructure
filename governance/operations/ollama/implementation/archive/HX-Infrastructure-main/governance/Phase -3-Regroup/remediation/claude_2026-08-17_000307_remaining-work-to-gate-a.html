@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Remaining work to Gate A — HX-Infrastructure Phase 3 · 2026-08-17</title>
+<style>
+:root{--bg:#0d1117;--bg2:#131a23;--panel:#161d27;--line:#26303d;--ink:#e6edf3;--ink2:#aab8c6;--ink3:#7d8b9a;
+--accent:#6ea8fe;--ok:#4ec9a0;--warn:#e3b341;--bad:#f26d6d;--info:#b085f5;
+--mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1060px;margin:0 auto;padding:48px 28px 96px}
+header{border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:36px}
+.eyebrow{font:600 11px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+h1{font-size:29px;line-height:1.22;margin:0 0 14px;font-weight:650;letter-spacing:-.015em}
+.sub{color:var(--ink2);font-size:15px;margin:0}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-top:26px}
+.meta div{background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:11px 13px}
+.meta .k{font:600 10px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px}
+.meta .v{font-size:13.5px;word-break:break-word}
+h2{font-size:22px;margin:52px 0 8px;font-weight:640;border-bottom:1px solid var(--line);padding-bottom:10px}
+h3{font-size:17px;margin:30px 0 10px;font-weight:640}
+p{margin:12px 0}ul,ol{margin:12px 0;padding-left:22px}li{margin:6px 0}
+code{font-family:var(--mono);font-size:.875em;background:#1c2531;border:1px solid var(--line);border-radius:4px;padding:1.5px 5px;color:#c9d6e4}
+pre{background:var(--bg2);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.6;color:#c9d6e4}
+pre code{background:none;border:0;padding:0;white-space:pre}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px}
+th{text-align:left;background:var(--bg2);color:var(--ink2);font-weight:640;font-size:11px;letter-spacing:.07em;text-transform:uppercase;padding:9px 11px;border:1px solid var(--line)}
+td{padding:9px 11px;border:1px solid var(--line);vertical-align:top}
+tbody tr:nth-child(even){background:#111823}
+.tag{display:inline-block;font:650 10px/1.5 var(--mono);letter-spacing:.06em;padding:3px 8px;border-radius:999px;border:1px solid;white-space:nowrap}
+.t-ok{color:var(--ok);border-color:#215c4a;background:#12271f}
+.t-warn{color:var(--warn);border-color:#5c4a1a;background:#241f10}
+.t-bad{color:var(--bad);border-color:#5f2b2b;background:#251414}
+.t-info{color:var(--info);border-color:#453163;background:#1c1728}
+.t-mute{color:var(--ink3);border-color:var(--line);background:#151c26}
+.callout{border:1px solid var(--line);border-left:3px solid var(--accent);background:var(--panel);border-radius:8px;padding:16px 18px;margin:20px 0}
+.callout.bad{border-left-color:var(--bad)}.callout.warn{border-left-color:var(--warn)}.callout.ok{border-left-color:var(--ok)}
+.callout .ct{font:650 11px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;margin-bottom:9px;color:var(--ink3)}
+.callout.bad .ct{color:var(--bad)}.callout.warn .ct{color:var(--warn)}.callout.ok .ct{color:var(--ok)}
+.callout p:first-of-type{margin-top:0}.callout p:last-child{margin-bottom:0}
+.small{font-size:13px;color:var(--ink2)}
+footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--line);color:var(--ink3);font-size:12.5px}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:22px 0}
+.kpi div{background:var(--bg2);border:1px solid var(--line);border-radius:9px;padding:15px}
+.kpi .n{font:650 25px/1 var(--mono);letter-spacing:-.02em}
+.kpi .l{font-size:11.5px;color:var(--ink3);margin-top:7px;line-height:1.45}
+.n-ok{color:var(--ok)}.n-bad{color:var(--bad)}.n-warn{color:var(--warn)}.n-info{color:var(--info)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Roadmap · remaining work · Phase 3</div>
+  <h1>What remains between here and Gate A</h1>
+  <p class="sub">A complete accounting of open work after the eleven items handed to the Claude Code session: what an agent can close, what only the owner can rule, two structural items nobody currently owns, and the gate sequence beyond.</p>
+  <div class="meta">
+    <div><div class="k">Prepared by</div><div class="v">Claude (claude-opus-5), cloud session</div></div>
+    <div><div class="k">Date</div><div class="v">2026-08-17 · 00:03 CDT</div></div>
+    <div><div class="k">Branch tips (origin)</div><div class="v"><code>main</code> efb1a3a · <code>remediation/phase3</code> 1902e0b · <code>docs/…-evidence</code> bfc117e</div></div>
+    <div><div class="k">Local, unpushed</div><div class="v"><code>95f63b6</code>, <code>ba991166</code> on the evidence branch</div></div>
+  </div>
+</header>
+
+<div class="callout warn">
+  <div class="ct">Headline</div>
+  <p><strong>The eleven items in the Claude Code prompt are roughly a third of the distance to Gate A.</strong> The two largest remaining pieces are <strong>P1-06</strong>, which has never been touched, and <strong>branch reconciliation</strong>, which is not assigned to anyone and is not in plan v3.</p>
+  <p>Three things surfaced while compiling this that were not on any list: two commits are unpushed, PR #2 appears not to have picked up the F-01 work, and PR #2 carries <strong>12 unresolved CodeRabbit comments</strong> that are separate from the five reviewed on <code>ba991166</code>.</p>
+</div>
+
+<div class="kpi">
+  <div><div class="n n-warn">11</div><div class="l">Items handed to Claude Code</div></div>
+  <div><div class="n n-bad">6</div><div class="l">Further agent items not in that set</div></div>
+  <div><div class="n n-info">9</div><div class="l">Owner rulings, none delegable</div></div>
+  <div><div class="n n-bad">12</div><div class="l">Unresolved review comments on PR #2</div></div>
+  <div><div class="n n-bad">2</div><div class="l">Structural items with no current owner</div></div>
+  <div><div class="n n-mute">4</div><div class="l">Gates remaining: C-01, A, B, authorization</div></div>
+</div>
+
+<h2>1 · Immediate — three things not on any list</h2>
+
+<h3>1.1 Two commits are local only</h3>
+
+<p><code>origin/docs/phase3-remediation-evidence</code> is at <code>bfc117e</code>. Locally the branch is at <code>ba991166</code>. The LoopX documents commit (<code>95f63b6</code>) and the hard-lock cherry-pick (<code>ba991166</code>) are <strong>unpushed</strong>. Nothing is lost, but the control fix is not published, and any reviewer looking at the remote sees a branch that still carries the pre-hard-lock guard.</p>
+
+<h3>1.2 PR #2 may not have picked up the F-01 work</h3>
+
+<p>The PR page reports head <code>d1ad55d</code> with <strong>3 commits, 42 files</strong>. But <code>origin/remediation/phase3</code> is at <code>1902e0b</code> — five commits, including <code>bfac142</code> (F-01 restore) and <code>1902e0b</code> (citation repair).</p>
+
+<p>A GitHub PR normally follows its head branch, so this is probably a stale render or a caching artifact on my side rather than a real divergence. <strong>Confirm it in the GitHub UI.</strong> If the PR genuinely has not advanced, the F-01 fix is not in the merge candidate and that needs correcting before anything else about PR #2 is decided.</p>
+
+<h3>1.3 PR #2 carries 12 unresolved review comments</h3>
+
+<p>CodeRabbit reports 12 actionable comments and a "moderate merge risk" assessment covering provenance record inconsistencies, directory naming, and lifecycle documentation gaps. <strong>These are separate from the five findings reviewed on <code>ba991166</code></strong> and are not represented anywhere in the eleven-item list.</p>
+
+<p>They should be triaged the same way the five were — verified individually, then merged against existing F-numbers where they overlap rather than tracked twice. Expect real overlap: "directory naming" is almost certainly <code>Phase -3-Regroup</code> and <code>repo review</code>, and "provenance record inconsistencies" is likely the digest drift already handled as item 6.</p>
+
+<h2>2 · The structural item — branch reconciliation</h2>
+
+<p>This is the largest unowned piece of work and it is not in plan v3.</p>
+
+<p>After the cherry-picks, the two branches carry <strong>the same logical changes under different SHAs</strong>:</p>
+
+<pre><code>on remediation/phase3, not on evidence      on evidence, not on remediation
+  8ec683b  apply Phase 3 controls    ≡ ba991166 (local)
+  bfac142  restore F-01              ≡ 367ca55
+  1902e0b  citation repair           ≡ bfc117e
+  d1ad55d  correct v3 digest         — no twin; item 6 fixes the content by hand
+                                        8e83f73  Phase 3 evidence
+                                        0669c23  Meta-Agent + schemas
+                                        1260cf7  Meta-Agent corrections
+                                        95f63b6  LoopX (local)</code></pre>
+
+<p><strong>The evidence branch is now effectively a content superset of the remediation branch</strong> — yet PR #2 merges the <em>remediation</em> branch into <code>main</code>, so the Meta-Agent architecture, the canonical schemas and the LoopX contracts are not in the merge candidate at all.</p>
+
+<h3>Options</h3>
+
+<table>
+  <thead><tr><th>Option</th><th>Shape</th><th>Trade-off</th></tr></thead>
+  <tbody>
+    <tr><td><strong>A · Two PRs, remediation first</strong></td><td>Land PR #2, then a second PR from the evidence branch</td><td>Keeps PR #2's review history and its size. But the second PR carries three duplicate-content commits into <code>main</code>, and the two PRs overlap on files.</td></tr>
+    <tr><td><strong>B · Merge evidence into remediation, one PR</strong> <span class="tag t-ok">recommended</span></td><td>Merge <code>docs/…-evidence</code> → <code>remediation/phase3</code>, resolve the duplicates on the feature branch, then PR #2 lands everything</td><td>Duplicates resolve where mistakes are cheap; <code>main</code> sees one clean merge; PR #2 stays the single integration point. Cost: PR #2 grows well beyond 42 files, and its 12 comments must be cleared alongside the new content.</td></tr>
+    <tr><td><strong>C · Re-point PR #2 at the evidence branch</strong></td><td>Abandon <code>remediation/phase3</code> as the merge source</td><td>Simplest resulting history. But it discards PR #2's review trail and the 12 comments would need re-raising against the new head.</td></tr>
+  </tbody>
+</table>
+
+<p><strong>Lean: B.</strong> Resolving duplicate history inside a feature branch is materially safer than doing it against <code>main</code>, and it keeps one integration point. If the resulting PR size is unacceptable, fall back to A and merge the evidence branch second — but then explicitly verify that the duplicate-content commits produce no net change rather than assuming it.</p>
+
+<p><strong>This is an owner or architect decision, not an agent one.</strong> It should be ruled before either branch goes near <code>main</code>.</p>
+
+<h2>3 · What the eleven items close</h2>
+
+<p>Mapped to plan v3 identifiers, so the roadmap and the plan stay reconciled.</p>
+
+<table>
+  <thead><tr><th>Items</th><th>Closes</th></tr></thead>
+  <tbody>
+    <tr><td>1 — run the suite, verify pre-flight</td><td>Confirms the hard-lock landed; no plan ID</td></tr>
+    <tr><td>2 (CR-5), 3 (F-03), 4 (CR-1/F-04)</td><td><strong>P1-02</strong> residual defects — the guard and its regression coverage</td></tr>
+    <tr><td>5, 6 (CR-4), 7 (CR-2)</td><td>Record hygiene; no plan ID</td></tr>
+    <tr><td>8 (CR-3/F-06)</td><td><strong>P1-04</strong> — hook-installer idempotency and hook count</td></tr>
+    <tr><td>9 (F-02)</td><td><strong>P1-01</strong> — the remaining lifecycle-truth surfaces</td></tr>
+    <tr><td>10 — workstation paths</td><td>Partly <strong>P3-01</strong>; raises an owner question on historical records</td></tr>
+    <tr><td>11 (F-05)</td><td><strong>P1-03</strong> — the corrupted AI-runtime contract</td></tr>
+  </tbody>
+</table>
+
+<h2>4 · Agent-doable work <em>not</em> in the eleven</h2>
+
+<table>
+  <thead><tr><th>ID</th><th>Work</th><th>State</th></tr></thead>
+  <tbody>
+    <tr><td><strong>P1-06</strong></td><td>Quarantine the DS4-era runtime-gate family — <code>hx-capacity-gate.ps1</code>, <code>hx-gpu-fit.ps1</code>, <code>hx-workload-commission.ps1</code>. Add static schema and fixture validation; prove dynamic targeting against ≥2 fixtures. No operational commissioning path.</td><td><span class="tag t-bad">never touched</span> — a full P1 task, the largest remaining agent item</td></tr>
+    <tr><td><strong>P2-02</strong></td><td>Tracker ID-parity regeneration and rebuild of the human governance pages</td><td><span class="tag t-warn">partial</span></td></tr>
+    <tr><td><strong>P2-06</strong></td><td>Restore the canonical suite path. Still <code>tests/remediation-tests-restored.ps1</code>; the canonical <code>remediation-tests.ps1</code> is blocked by <code>iss-010</code>, the Norton quarantine, which must be revalidated first</td><td><span class="tag t-bad">not started</span></td></tr>
+    <tr><td><strong>P3-01</strong></td><td>Version-stamp the current normative baselines</td><td><span class="tag t-bad">not started</span></td></tr>
+    <tr><td><strong>iss-020</strong></td><td>Record the hook-channel control gap: PreToolUse hooks constrain one editing channel, not the repository. <code>iss-019</code> is the last used ID, so 020 is free — re-check at time of use</td><td><span class="tag t-bad">not recorded</span></td></tr>
+    <tr><td>—</td><td>Trailing newlines on the two committed LoopX documents</td><td><span class="tag t-mute">trivial</span></td></tr>
+  </tbody>
+</table>
+
+<h2>5 · Owner rulings — nine, none delegable</h2>
+
+<table>
+  <thead><tr><th>ID</th><th>Decision</th><th>Gates</th></tr></thead>
+  <tbody>
+    <tr><td><strong>P-D0</strong></td><td>Name the future implementation phase, or keep TBD</td><td>Roadmap; Gate B input</td></tr>
+    <tr><td><strong>P1-05</strong></td><td>What governs hxs-4. <code>SERVER-REGISTRY.md</code> says Qwen2.5-3B; <code>governance/policy/runtime-acceptance-decisions.md</code> says Qwen3.5-9B. <strong>Two authority-tier documents disagree</strong></td><td>Blocks registry reconciliation; Gate A</td></tr>
+    <tr><td><strong>P2-01</strong></td><td>Disposition of <code>risk-001</code>/<code>risk-002</code>. Both expiry triggers have fired; both still read <code>accepted</code></td><td>Gate A</td></tr>
+    <tr><td><strong>P2-02</strong></td><td>Status of <code>act-015</code> and <code>iss-016</code></td><td>Gate A</td></tr>
+    <tr><td><strong>P2-03</strong></td><td>OmniRoute charter scope — charter only in Phase 3, topology deferred</td><td>Gate B</td></tr>
+    <tr><td><strong>P2-04</strong></td><td>Whether the hxs-4 commissioning owes an as-built record, and in which governed file</td><td>Gate A</td></tr>
+    <tr><td><strong>P3-03</strong></td><td>Repository maturity and licence posture. Public repository, no <code>LICENSE</code> file — all rights reserved by default</td><td>Gate A</td></tr>
+    <tr><td><strong>Ruling 10</strong></td><td>Disposition of the 18 never-added artifacts under <code>governance/operations/</code></td><td>Not gating; raised 2026-08-15</td></tr>
+    <tr><td><strong>C-02</strong></td><td>Approve the reconciled baseline and roadmap — closes Phase 3</td><td>Gate B</td></tr>
+  </tbody>
+</table>
+
+<p>A tenth is now added by §2: <strong>the branch reconciliation strategy</strong>.</p>
+
+<h2>6 · The gate sequence</h2>
+
+<ol>
+  <li><strong>C-01 — preservation gate.</strong> Do-no-harm: discovery records and the resolved-ledger hash unchanged, invariant suite green. Cannot pass while F-01's consequences are open; runs at close.</li>
+  <li><strong>Gate A — remediation baseline complete.</strong> All P1 tasks pass their failable exit gates; P2-02, P2-05 and P2-06 done; the expired-risk, tracker and hxs-4 rulings recorded; C-01 green.</li>
+  <li><strong>Gate B — transition readiness.</strong> OmniRoute charter, P-F1 design spec, hxs-4 authority ruling, recon synthesis and P-D0 recorded; C-02 signed. <strong>Opens the Transition Stage — does not authorize implementation.</strong></li>
+  <li><strong>Implementation authorization.</strong> A separate, explicit owner act, only after the Transition Stage completes. Closing Phase 3 never implies it.</li>
+</ol>
+
+<h2>7 · Recommended sequence</h2>
+
+<ol>
+  <li><strong>Push the two local commits</strong> and confirm PR #2's actual head in the GitHub UI (§1.1, §1.2).</li>
+  <li><strong>Rule the branch strategy</strong> (§2). Everything downstream depends on which branch is the merge candidate, and doing this late means redoing work.</li>
+  <li><strong>Claude Code works items 1–4</strong> — the guard and its tests. Highest value, and item 3 (F-03) is the cheapest open finding in the project.</li>
+  <li><strong>Triage PR #2's 12 comments</strong> against the existing F-numbers before adding them as new work.</li>
+  <li><strong>Items 5–8</strong>, then <strong>P1-06</strong> — the largest remaining agent task, and it should not be left until last.</li>
+  <li><strong>Items 9–11</strong> and the remaining P2/P3 items.</li>
+  <li><strong>Owner rulings</strong> in parallel throughout — several gate Gate A and none depend on agent work.</li>
+  <li><strong>C-01</strong>, then <strong>Gate A</strong>.</li>
+</ol>
+
+<h2>8 · Not in plan v3, and still worth doing</h2>
+
+<div class="callout">
+  <div class="ct">Recommendation carried forward</div>
+  <p><strong>Continuous integration.</strong> Every guarantee in this project is a manual run on one workstation. The regression suite, the P1-01 scanner and the validation records are all single manual executions; nothing re-runs them on push.</p>
+  <p>A reference-integrity check alone — every <code>governance/…</code> path cited in Markdown or HTML resolves to a file that exists — <strong>would have caught F-01 at the moment <code>52b76f9</code> was pushed</strong>, before any of the last three days of work. A filename-standards lint would have caught <code>craig(1).md</code>, <code>That may be LoopX's strongest strat.md</code> and <code>phase Phase -2</code> before they entered the tree.</p>
+  <p>This is Transition Stage work, not Phase 3 — adding CI is new capability, not tightening. It belongs in the Gate B input set, and P-F1's design should account for it, because the authorization record that replaces the hard lock will have the same channel problem unless it is enforced at commit or CI time.</p>
+</div>
+
+<h2>9 · Honest estimate</h2>
+
+<p>The eleven items are perhaps a third of the distance to Gate A by effort. The remainder splits roughly into: P1-06 as a single substantial task; the branch reconciliation and PR #2 comment backlog as an unknown that could be small or could be the largest item here depending on §1.2; the P2/P3 remainder as mostly small edits; and the nine owner rulings, which are fast to make but have been open for days and are now gating.</p>
+
+<p>The rulings are the cheapest schedule risk to retire. Several require no agent work at all and three of them gate Gate A directly.</p>
+
+<hr>
+
+<p class="small"><strong>Method.</strong> Branch tips, divergence counts and commit equivalences read from a fresh fetch of the public repository. <code>P1-06</code> and <code>P2-06</code> state established by listing <code>tests/ai-runtime/</code> and <code>tests/</code> at the evidence branch tip. Next free tracker ID read from <code>governance/logs/actions-and-issues.md</code>. PR #2 state fetched from GitHub; the head-commit discrepancy in §1.2 is reported as observed and flagged for confirmation rather than asserted as fact. Local unpushed state inferred from the difference between the remote tip and the commits reported by the owner's console — worth confirming with <code>git status -sb</code>.</p>
+
+<p class="small"><strong>Authority.</strong> Planning record. Asserts no as-built change and authorizes no server work. Phase 3 remains planning, decisions, and control-correction that only tightens.</p>
+
+<footer>
+claude_2026-08-17_000307_remaining-work-to-gate-a · Claude (claude-opus-5) · roadmap record
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,252 @@
+<title>HX Fleet — Research &amp; Validation vs Candidate v0.1</title>
+<style>
+  :root {
+    --ground:#fbfbf9; --surface:#f2f3f0; --raised:#ffffff; --ink:#1b1f1d;
+    --muted:#6b726e; --faint:#949b96; --line:#dde0db; --line-firm:#c3c8c1;
+    --accent:#0f6e5c; --accent-wash:#e6f0ec; --signal:#b4531a; --signal-wash:#fbeee4;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --step-0:0.9375rem; --step--1:0.8125rem; --step--2:0.6875rem;
+    --step-1:1.125rem; --step-2:1.5rem; --step-3:2.125rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ground:#141917; --surface:#1b211e; --raised:#1f2724; --ink:#e8ebe8;
+      --muted:#97a09b; --faint:#6f7873; --line:#2b342f; --line-firm:#3c4740;
+      --accent:#4fbfa3; --accent-wash:#16302a; --signal:#e08a4c; --signal-wash:#33251a; }
+  }
+  :root[data-theme="dark"]{ --ground:#141917;--surface:#1b211e;--raised:#1f2724;--ink:#e8ebe8;--muted:#97a09b;--faint:#6f7873;--line:#2b342f;--line-firm:#3c4740;--accent:#4fbfa3;--accent-wash:#16302a;--signal:#e08a4c;--signal-wash:#33251a;}
+  :root[data-theme="light"]{ --ground:#fbfbf9;--surface:#f2f3f0;--raised:#ffffff;--ink:#1b1f1d;--muted:#6b726e;--faint:#949b96;--line:#dde0db;--line-firm:#c3c8c1;--accent:#0f6e5c;--accent-wash:#e6f0ec;--signal:#b4531a;--signal-wash:#fbeee4;}
+  :root{color-scheme:light;} @media (prefers-color-scheme:dark){:root{color-scheme:dark;}}
+  :root[data-theme="dark"]{color-scheme:dark;} :root[data-theme="light"]{color-scheme:light;}
+
+  body { margin:0; padding:clamp(1.5rem,4vw,3.5rem) clamp(1rem,4vw,2rem) 5rem; background:var(--ground); color:var(--ink); font-family:var(--sans); font-size:var(--step-0); line-height:1.55; -webkit-text-size-adjust:100%; }
+  .page { max-width:1200px; margin:0 auto; display:flex; flex-direction:column; gap:2.5rem; }
+  .eyebrow { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.14em; color:var(--accent); margin:0; }
+  .masthead { display:flex; flex-direction:column; gap:0.75rem; }
+  .nav { display:flex; gap:1.1rem; flex-wrap:wrap; align-items:center; font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.1em; }
+  .nav a { color:var(--muted); text-decoration:none; border-bottom:1px solid transparent; padding-bottom:2px; }
+  .nav a:hover { color:var(--accent); border-bottom-color:var(--accent); }
+  .nav a[aria-current="page"] { color:var(--accent); border-bottom-color:var(--accent); }
+  .masthead-top { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .toggle { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.09em; color:var(--muted); background:var(--surface); border:1px solid var(--line-firm); border-radius:2px; padding:0.4rem 0.75rem; cursor:pointer; }
+  .toggle:hover { color:var(--accent); border-color:var(--accent); }
+  .masthead h1 { font-size:var(--step-3); line-height:1.08; letter-spacing:-0.02em; font-weight:650; margin:0; text-wrap:balance; }
+  .masthead p { margin:0; max-width:70ch; color:var(--muted); }
+
+  .strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:3px; overflow:hidden; }
+  .cell { background:var(--surface); padding:0.85rem 1rem; display:flex; flex-direction:column; gap:0.15rem; }
+  .cell dt { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); }
+  .cell dd { margin:0; font-size:var(--step-1); font-weight:600; font-variant-numeric:tabular-nums; }
+
+  .standing { background:var(--surface); border-left:2px solid var(--signal); padding:1rem 1.15rem; display:flex; flex-direction:column; gap:0.6rem; font-size:var(--step--1); }
+  .standing p { margin:0; max-width:84ch; color:var(--muted); }
+  .standing strong { color:var(--ink); font-weight:620; }
+  .standing ol { margin:0.2rem 0 0; padding-left:1.3rem; display:flex; flex-direction:column; gap:0.5rem; max-width:84ch; }
+  .standing li { color:var(--muted); }
+  .standing li strong { color:var(--ink); }
+
+  section { display:flex; flex-direction:column; gap:0.85rem; }
+  h2 { font-size:var(--step-2); letter-spacing:-0.015em; font-weight:620; margin:0; text-wrap:balance; }
+  h2 .n { font-family:var(--mono); font-size:var(--step-0); color:var(--accent); margin-right:0.5rem; }
+  .lede { margin:0; color:var(--muted); max-width:80ch; font-size:var(--step--1); }
+
+  .tablewrap { overflow-x:auto; border:1px solid var(--line); border-radius:3px; background:var(--raised); }
+  table { border-collapse:collapse; width:100%; font-size:var(--step--1); }
+  thead th { position:sticky; top:0; z-index:2; background:var(--surface); border-bottom:1px solid var(--line-firm); font-family:var(--mono); font-size:var(--step--2); font-weight:600; text-transform:uppercase; letter-spacing:0.09em; color:var(--muted); text-align:left; padding:0.7rem 0.85rem; white-space:nowrap; }
+  tbody td { padding:0.65rem 0.85rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:last-child td { border-bottom:none; }
+  td.assume { font-weight:600; min-width:12rem; }
+
+  .badge { font-family:var(--mono); font-size:var(--step--2); font-weight:700; text-transform:uppercase; letter-spacing:0.05em; padding:0.12em 0.5em; border-radius:2px; white-space:nowrap; display:inline-block; }
+  .badge.ok { color:var(--accent); background:var(--accent-wash); }
+  .badge.caveat { color:var(--signal); background:var(--signal-wash); }
+  .badge.risk { color:var(--ground); background:var(--signal); }
+
+  .srcline { font-size:var(--step--2); color:var(--faint); font-family:var(--mono); word-break:break-all; }
+  .srcline a { color:var(--faint); }
+
+  code { font-family:var(--mono); font-size:0.92em; background:var(--surface); padding:0.05em 0.32em; border-radius:2px; }
+  footer { border-top:1px solid var(--line); padding-top:1rem; font-size:var(--step--2); color:var(--faint); }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important;} }
+</style>
+<div class="page">
+
+  <header class="masthead">
+    <div class="masthead-top">
+      <nav class="nav">
+        <a href="https://claude.ai/code/artifact/09f4465a-1924-40c5-b352-cbe19926100d">Governance</a>
+        <a href="https://claude.ai/code/artifact/130cf301-c270-4851-a1e5-eb9ed8586074">Fleet inventory</a>
+        <a href="https://claude.ai/code/artifact/1a0858b2-4e47-4111-b4c2-12005ee67ed4">Architecture v0.3</a>
+        <a href="https://claude.ai/code/artifact/01a9f2ed-02d1-4491-9cab-07934be22dd1">v0.1 frozen</a>
+        <a href="https://claude.ai/code/artifact/c16b4563-b9d4-4c17-9961-46329fe4faac" aria-current="page">Validation</a>
+        <a href="https://claude.ai/code/artifact/1af2b128-6708-4e55-949d-d38cc293f67a">Recommendations</a>
+        <a href="https://claude.ai/code/artifact/4062f99f-e8d4-44ba-aae2-74472bde91f5">Actions &amp; issues</a>
+        <a href="https://claude.ai/code/artifact/9325f481-90f0-4439-9fa0-e8f48d629ff4">Lessons learned</a>
+        <a href="https://claude.ai/code/artifact/ac6d1ab7-8dae-436d-94f1-80bfbb99d467">Standards</a>
+      </nav>
+      <p class="eyebrow">HX-Alignment &middot; Validation pass &middot; against Candidate v0.1</p>
+      <button type="button" class="toggle" id="theme-toggle">Dark mode</button>
+    </div>
+    <h1>Research &amp; Validation Findings</h1>
+    <p>
+      Six focused threads checked the frozen <strong>Architecture Candidate v0.1</strong> against
+      current (August 2026) runtime behavior and compatibility &mdash; to validate the mapping, not
+      redesign it. The verdict: <strong>the architecture holds.</strong> Nothing forces a
+      re-layout. The pass did surface seven concrete corrections to fold into a <code>v0.2</code>
+      before the roadmap &mdash; one of them (LiteLLM's datastore) is a real blocker if left as-is.
+    </p>
+  </header>
+
+  <dl class="strip">
+    <div class="cell"><dt>Threads</dt><dd>6</dd></div>
+    <div class="cell"><dt>Assumptions checked</dt><dd>31</dd></div>
+    <div class="cell"><dt>Validated</dt><dd>17</dd></div>
+    <div class="cell"><dt>Caveats</dt><dd>10</dd></div>
+    <div class="cell"><dt>Risks</dt><dd>4</dd></div>
+    <div class="cell"><dt>Changes for v0.2</dt><dd>7</dd></div>
+  </dl>
+
+  <div class="standing">
+    <p><strong>Changes to fold into v0.2</strong> &mdash; ordered by how much they bite. None of these move a workload to a different host; they change <em>how</em> a host's service is configured.</p>
+    <ol>
+      <li><span class="badge risk">blocker</span> &nbsp;<strong>LiteLLM needs PostgreSQL, not SQLite.</strong> LiteLLM's schema is Postgres-only; pointing it at SQLite hangs the proxy on startup. Its virtual-key, spend, and rate-limit features simply don't work without Postgres. Point <code>hxs-8</code>'s LiteLLM at the existing <code>hxs-9</code> Postgres (a dedicated <code>litellm</code> database). The spec's &ldquo;LiteLLM + SQLite&rdquo; is not viable.</li>
+      <li><span class="badge caveat">revisit</span> &nbsp;<strong>gpt-oss-20b fits a single 16&nbsp;GB card.</strong> Its MXFP4 weights are ~13&nbsp;GB. The TP=2 decision on <code>hxs-3</code> still works, but it buys lower latency at a PCIe cost with little upside &mdash; the original Option&nbsp;B (one card for gpt-oss, second card free for experimental inference) is fully viable. Worth re-confirming now that we know it fits on one.</li>
+      <li><span class="badge caveat">tune</span> &nbsp;<strong>Coder-32B is on the slowest platform.</strong> <code>hxs-2</code> is the 2014 PCIe-3 host, and a TP=2 32B does an all-reduce every layer &mdash; PCIe is the bottleneck there. It fits, but cap <code>--max-model-len</code> ~16&ndash;24K and expect PCIe-limited decode. If either big model should sit on the one PCIe-4 host (<code>hxs-1</code>), it's the coder, not the reasoning model &mdash; a topology question for v0.2.</li>
+      <li><span class="badge caveat">serve-with</span> &nbsp;<strong>Embeddings + reranker via TEI/Infinity, not vLLM.</strong> On <code>hxs-4</code>'s 8&nbsp;GB card, run Text-Embeddings-Inference (or Infinity) &mdash; purpose-built, lighter, dynamic batching &mdash; rather than vLLM for BGE-M3 / Nomic / bge-reranker.</li>
+      <li><span class="badge risk">guardrail</span> &nbsp;<strong>LightRAG storage is immutable after first ingest.</strong> The backend choice and the embedding model + <code>EMBEDDING_DIM</code> are frozen once documents are indexed; a dimension mismatch silently corrupts the store. Pin the embedding model and dimension, and validate one round-trip, before any bulk ingest.</li>
+      <li><span class="badge caveat">note</span> &nbsp;<strong>Mem0 specifics.</strong> Mem0 OSS keeps history in SQLite (Postgres-for-history isn't native), needs its <em>own</em> Qdrant collection distinct from RAG, and its graph memory is now Platform-only (removed from OSS). Our graph lives in LightRAG anyway, so this is fine &mdash; just don't plan on Mem0 graph memory self-hosted.</li>
+      <li><span class="badge risk">harden</span> &nbsp;<strong>MCP servers are unauthenticated by default.</strong> Docling / Crawl4AI / n8n / Mem0 / FastMCP servers ship no auth and bind <code>0.0.0.0</code>. Standardize on Streamable HTTP and front every networked MCP server with a reverse proxy enforcing a bearer token / mTLS + Origin allow-list, bound to the LAN interface.</li>
+    </ol>
+  </div>
+
+  <section>
+    <h2><span class="n">01</span>GPU serving &amp; model fit</h2>
+    <p class="lede">Verdict: the fit holds, with a toolchain pin and two topology nuances. Critically, no tensor-parallel group mixes GPU generations &mdash; hxs-1 is an Ada pair, hxs-2 and hxs-3 are Blackwell pairs, hxs-4 never pools &mdash; so the &ldquo;don't mix arches in one TP group&rdquo; rule is already satisfied.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Assumption</th><th>Finding</th><th>Verdict</th><th>Recommendation</th></tr></thead>
+      <tbody>
+        <tr><td class="assume">Blackwell (RTX 50-series) works on vLLM</td><td>Needs vLLM ≥0.11.x, PyTorch 2.9+cu128, CUDA 12.8, driver ≥575; FlashAttention-3 unsupported on Blackwell.</td><td><span class="badge caveat">caveat</span></td><td>Pin the cu128 vLLM build fleet-wide; force <code>VLLM_FLASH_ATTN_VERSION=2</code>.</td></tr>
+        <tr><td class="assume">TP=2 across consumer GPUs, no NVLink, incl. a PCIe-3 host</td><td>Works; all-reduce every layer makes the interconnect the bottleneck. PCIe-3 (hxs-2) is the worst case.</td><td><span class="badge caveat">caveat</span></td><td>Use TP only when a model can't fit one card; verify lanes with <code>nvidia-smi topo -m</code>.</td></tr>
+        <tr><td class="assume">gpt-oss-20b needs both cards (TP=2)</td><td>MXFP4 weights ~13&nbsp;GB &mdash; fits a <em>single</em> 16&nbsp;GB card with room for long context.</td><td><span class="badge ok">validated</span></td><td>TP=2 optional; TP=1 frees the second card. Revisit the closed decision (change #2).</td></tr>
+        <tr><td class="assume">Coder-32B Int4 fits TP=2 on 2×16&nbsp;GB</td><td>Weights ~17.5&ndash;19&nbsp;GB → needs both cards; ~13&nbsp;GB left for KV. Fits, context-constrained; worst on PCIe-3.</td><td><span class="badge caveat">caveat</span></td><td>Cap <code>--max-model-len</code> ~16&ndash;24K; consider hxs-1 (PCIe-4) for the coder (change #3).</td></tr>
+        <tr><td class="assume">27B dense 4-bit on the 4070 Ti SUPER pair</td><td>~14&ndash;16&nbsp;GB weights + KV across 32&nbsp;GB; more headroom than the 32B.</td><td><span class="badge ok">validated</span></td><td>Budget ~24&ndash;32K context; benchmark TP=1 vs TP=2 at launch.</td></tr>
+        <tr><td class="assume">Embeddings + reranker on the 8&nbsp;GB card via vLLM</td><td>All run, but TEI / Infinity are lighter and purpose-built for embeddings + rerank.</td><td><span class="badge ok">validated</span></td><td>Use TEI or Infinity, not vLLM, for these (change #4).</td></tr>
+      </tbody>
+    </table></div>
+    <p class="srcline">Sources: vLLM parallelism &amp; gpt-oss recipe docs, vLLM Blackwell issue #35432, Qwen2.5-Coder-32B-AWQ card, TEI self-host guide.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>LightRAG + Qdrant</h2>
+    <p class="lede">Verdict: the integration is real and first-class. The name is <strong>LightRAG</strong> (HKUDS) &mdash; &ldquo;LiteRAG&rdquo; is a misnomer; standardize on LightRAG in v0.2. One process guardrail carries real risk.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Assumption</th><th>Finding</th><th>Verdict</th><th>Recommendation</th></tr></thead>
+      <tbody>
+        <tr><td class="assume">Qdrant is a supported LightRAG vector backend</td><td>First-class (<code>QdrantVectorDBStorage</code>). Storage is 4 pluggable layers: vector, graph, KV, doc-status.</td><td><span class="badge ok">validated</span></td><td>Set <code>LIGHTRAG_VECTOR_STORAGE=QdrantVectorDBStorage</code> + <code>QDRANT_URL</code> at first launch.</td></tr>
+        <tr><td class="assume">LightRAG can use vLLM/LiteLLM endpoints</td><td>Native: <code>LLM_BINDING=openai</code> + <code>EMBEDDING_BINDING=openai</code> pointed at any <code>/v1</code> base URL.</td><td><span class="badge ok">validated</span></td><td>Route both through LiteLLM for one auth/observability seam.</td></tr>
+        <tr><td class="assume">No dedicated graph DB needed on hxs-3</td><td>NetworkX default works; whole graph loads into RAM. Neo4j only needed at large scale.</td><td><span class="badge caveat">caveat</span></td><td>NetworkX fine for 66&nbsp;GB RAM dev/test; plan a Neo4j swap only if the graph grows large.</td></tr>
+        <tr><td class="assume">Remote Qdrant (hxs-4) over the LAN is normal</td><td>Standard client/server; REST 6333 / gRPC 6334.</td><td><span class="badge ok">validated</span></td><td>Use gRPC + API key on the private LAN; keep latency low (query hot path).</td></tr>
+        <tr><td class="assume">Safe to start ingesting</td><td>Backend choice + embedding dim are <em>immutable after first ingest</em>; dim mismatches corrupt the store (recurring bug class).</td><td><span class="badge risk">risk</span></td><td>Pin version, embedding model &amp; <code>EMBEDDING_DIM</code>; validate a round-trip before bulk load (change #5).</td></tr>
+      </tbody>
+    </table></div>
+    <p class="srcline">Sources: HKUDS/LightRAG env.example &amp; API-server docs, LightRAG issue #2233 (dimension mismatch), LiteLLM vLLM provider docs.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>LiteLLM routing &amp; datastore</h2>
+    <p class="lede">Verdict: routing is exactly as assumed &mdash; but the datastore assumption is wrong and blocking. This is the one correction that must land before anything depends on the gateway.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Assumption</th><th>Finding</th><th>Verdict</th><th>Recommendation</th></tr></thead>
+      <tbody>
+        <tr><td class="assume">Routes to multiple vLLM backends w/ LB + fallback</td><td>Native: one <code>model_name</code> alias, N <code>model_list</code> entries, Router load-balances + fallbacks.</td><td><span class="badge ok">validated</span></td><td>Set <code>rpm</code> per backend so shuffle respects capacity; add a fallback map.</td></tr>
+        <tr><td class="assume">SQLite backs keys / spend / rate-limits</td><td>Schema is Postgres-only; <code>sqlite://</code> hangs the migration and the proxy never binds. Key features require Postgres.</td><td><span class="badge risk">risk</span></td><td>Point <code>DATABASE_URL</code> at the hxs-9 Postgres (dedicated <code>litellm</code> DB). No SQLite (change #1).</td></tr>
+        <tr><td class="assume">Open WebUI + LangGraph share one base URL</td><td>Standard; both treat LiteLLM as an OpenAI endpoint.</td><td><span class="badge ok">validated</span></td><td>Issue a separate virtual key per client for cost attribution.</td></tr>
+        <tr><td class="assume">Embeddings + rerank proxy through LiteLLM</td><td><code>/embeddings</code> full; <code>/rerank</code> first-class but Cohere-shaped, not OpenAI-native.</td><td><span class="badge ok">validated</span></td><td>Front the reranker as a LiteLLM rerank model; clients call <code>/v1/rerank</code>.</td></tr>
+        <tr><td class="assume">One LiteLLM node is fine for dev/test</td><td>Functional SPOF + throughput bottleneck; Redis only needed if scaling past one instance.</td><td><span class="badge caveat">caveat</span></td><td>Accept SPOF; run multiple uvicorn workers; add Redis only if you scale out.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="srcline">Sources: LiteLLM load_balancing / routing / db_info / prod docs, LiteLLM issue #30328 (SQLite hang), /rerank docs.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span>Bare-metal venv isolation</h2>
+    <p class="lede">Verdict: the no-Docker, one-venv-per-service approach is sound &mdash; cross-service Python conflicts are structurally impossible. The only shared surfaces are the NVIDIA driver, GPU VRAM, and a few root-level system libs.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Assumption</th><th>Finding</th><th>Verdict</th><th>Recommendation</th></tr></thead>
+      <tbody>
+        <tr><td class="assume">venvs resolve torch/CUDA/pydantic clashes</td><td>Correct &mdash; private <code>site-packages</code> each. All five apps are pydantic-v2 native in 2026; vLLM is the strict one within its own venv.</td><td><span class="badge ok">validated</span></td><td>Keep vLLM in a venv alone; lock every venv with <code>uv pip compile</code>.</td></tr>
+        <tr><td class="assume">Driver shared, CUDA runtime per-venv</td><td>torch <code>cuXXX</code> wheels bundle the runtime; only the kernel driver is shared and must meet the newest runtime's floor. Real contention is VRAM.</td><td><span class="badge caveat">caveat</span></td><td>Install one recent driver ≥ newest floor; set <code>CUDA_VISIBLE_DEVICES</code> + cap util per systemd unit.</td></tr>
+        <tr><td class="assume">systemd manages venv services</td><td>Standard: absolute venv interpreter in <code>ExecStart</code>, <code>EnvironmentFile</code>, <code>Restart=on-failure</code>.</td><td><span class="badge ok">validated</span></td><td>One unit per service; secrets + <code>CUDA_VISIBLE_DEVICES</code> via <code>EnvironmentFile</code>.</td></tr>
+        <tr><td class="assume">Usually-Docker services install natively</td><td>Qdrant (Rust binary) and n8n (<code>npm i -g</code>) first-class; Open WebUI native works but has a fat dep tree.</td><td><span class="badge caveat">caveat</span></td><td>Give Open WebUI its own venv, pin Python 3.11.</td></tr>
+        <tr><td class="assume">Crawl4AI headless browser on bare metal</td><td>Chromium bundles into the venv, but needs root <code>apt</code> libs (<code>playwright install-deps</code>) &mdash; the one thing a venv can't self-contain.</td><td><span class="badge caveat">caveat</span></td><td>Run <code>playwright install-deps</code> at provisioning; browser under a non-root user.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="srcline">Sources: vLLM install / torch pin docs, NVIDIA CUDA compatibility guide, Qdrant install docs, Playwright browser docs.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span>Mem0 + LangGraph persistence</h2>
+    <p class="lede">Verdict: LangGraph persistence maps cleanly onto our Postgres/Redis; Mem0 has three specifics to know, none of which move it off <code>hxs-11</code>.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Assumption</th><th>Finding</th><th>Verdict</th><th>Recommendation</th></tr></thead>
+      <tbody>
+        <tr><td class="assume">Mem0 reuses Qdrant + Postgres</td><td>Needs vector store + LLM + embedder. Qdrant ✔ (own collection). History is SQLite by default; Postgres-for-history is not native.</td><td><span class="badge caveat">caveat</span></td><td>Dedicated Mem0 Qdrant collection; keep SQLite history on a durable/backed-up path.</td></tr>
+        <tr><td class="assume">Mem0 graph memory available self-hosted</td><td>Removed from OSS &mdash; now Platform-only; graph DB drivers dropped.</td><td><span class="badge risk">risk</span></td><td>Don't rely on Mem0 graph memory; our graph is LightRAG. Pin an old release only if truly needed (change #6).</td></tr>
+        <tr><td class="assume">LangGraph uses our Postgres/Redis for state</td><td>Confirmed: Postgres (durable checkpoints), Redis (production checkpointer), SQLite (dev).</td><td><span class="badge ok">validated</span></td><td>Postgres as system-of-record; set <code>LANGGRAPH_STRICT_MSGPACK=true</code> (SQLi→RCE advisory).</td></tr>
+        <tr><td class="assume">Mem0 + LangGraph co-locate on hxs-11</td><td>No hard conflict; both pull LangChain-family deps &mdash; version skew is the hazard.</td><td><span class="badge caveat">caveat</span></td><td>One pinned venv; lock <code>pydantic</code>, <code>langchain-core</code>, <code>qdrant-client</code>.</td></tr>
+        <tr><td class="assume">Both use LiteLLM for model calls</td><td>Mem0 needs LLM + embedder; LangGraph framework needs neither intrinsically (agent nodes do).</td><td><span class="badge ok">validated</span></td><td>Route Mem0's LLM + embedder and agent LLMs via LiteLLM→vLLM.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="srcline">Sources: Mem0 configuration &amp; graph-memory migration docs, Mem0 issue #5354, LangGraph checkpoint-postgres reference, Redis LangGraph 0.1.0, LangGraph checkpointer CVE research.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">06</span>MCP exposure</h2>
+    <p class="lede">Verdict: the transport and agent-integration paths are validated; the security posture is the risk. Every networked MCP server must be fronted, not exposed bare.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Assumption</th><th>Finding</th><th>Verdict</th><th>Recommendation</th></tr></thead>
+      <tbody>
+        <tr><td class="assume">Streamable HTTP for cross-host MCP; SSE deprecated</td><td>Correct &mdash; spec (2025-11-25) defines stdio + Streamable HTTP; legacy HTTP+SSE is deprecated.</td><td><span class="badge ok">validated</span></td><td>Standardize networked servers on Streamable HTTP (single <code>/mcp</code>).</td></tr>
+        <tr><td class="assume">FastMCP authors + serves over HTTP</td><td>Standard; <code>mcp.run(transport="http")</code> is an ASGI app served by uvicorn.</td><td><span class="badge ok">validated</span></td><td>Each server a uvicorn/systemd service behind nginx; not the dev loop.</td></tr>
+        <tr><td class="assume">LangGraph consumes MCP tools</td><td><code>langchain-mcp-adapters</code> <code>MultiServerMCPClient</code> → LangChain tools → OpenAI tool-calling.</td><td><span class="badge ok">validated</span></td><td>Pin the adapter; centralize server URLs in one client config.</td></tr>
+        <tr><td class="assume">Docling / Crawl4AI / n8n / Mem0 MCP servers exist w/ HTTP</td><td>Docling ✔ (official, streamable-http), n8n ✔; Crawl4AI = community forks; Mem0/OpenMemory = mostly SSE.</td><td><span class="badge caveat">caveat</span></td><td>Pin exact versions; wrap SSE-only servers behind a gateway.</td></tr>
+        <tr><td class="assume">LAN exposure is safe</td><td>Servers ship no auth and bind <code>0.0.0.0</code>; spec requires Origin validation + auth.</td><td><span class="badge risk">risk</span></td><td>Reverse proxy w/ bearer/mTLS + Origin allow-list; bind to the LAN iface (change #7).</td></tr>
+      </tbody>
+    </table></div>
+    <p class="srcline">Sources: MCP transports spec 2025-11-25, FastMCP deployment docs, langchain-mcp-adapters, docling-mcp, n8n-mcp HTTP setup, OpenMemory MCP.</p>
+  </section>
+
+  <section>
+    <h2>Where this leaves us</h2>
+    <p class="lede">
+      Candidate v0.1 survives validation intact &mdash; every host keeps its role. The seven changes
+      above are configuration and sequencing corrections, not a re-layout. The natural next move is a
+      small <code>v0.2</code> that folds them in (most importantly, LiteLLM&nbsp;→&nbsp;Postgres), after
+      which the phased roadmap &mdash; foundation → platform services → inference → retrieval/RAG →
+      agents/MCP → applications → test/demo → hardening &mdash; can be written with each phase backed
+      by what was validated here.
+    </p>
+  </section>
+
+  <footer>
+    HX-Alignment &middot; Research &amp; validation vs Architecture Candidate v0.1 &middot; compiled 2026-08-13 &middot;
+    findings reflect current library/runtime behavior as of the research date and should be re-checked at build time.
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  var media = window.matchMedia('(prefers-color-scheme: dark)');
+  function stored(v){ try{ if(v===undefined) return localStorage.getItem('hx-theme'); localStorage.setItem('hx-theme', v);}catch(e){} return null; }
+  function active(){ var e=root.getAttribute('data-theme'); if(e==='dark'||e==='light') return e; return media.matches?'dark':'light'; }
+  function relabel(){ var n=active()==='dark'?'light':'dark'; btn.textContent=n==='dark'?'Dark mode':'Light mode'; btn.setAttribute('aria-label','Switch to '+n+' mode'); }
+  var s=stored(); if(s==='dark'||s==='light') root.setAttribute('data-theme', s); relabel();
+  btn.addEventListener('click', function(){ var n=active()==='dark'?'light':'dark'; root.setAttribute('data-theme', n); stored(n); relabel(); });
+  if(typeof media.addEventListener==='function') media.addEventListener('change', relabel);
+  if(typeof MutationObserver==='function') new MutationObserver(relabel).observe(root,{attributes:true,attributeFilter:['data-theme']});
+})();
+</script>

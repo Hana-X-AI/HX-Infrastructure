@@ -1,0 +1,590 @@
+<title>HX Fleet — Tech-Stack Alignment</title>
+<style>
+  :root {
+    --ground:   #fbfbf9;
+    --surface:  #f2f3f0;
+    --raised:   #ffffff;
+    --ink:      #1b1f1d;
+    --muted:    #6b726e;
+    --faint:    #949b96;
+    --line:     #dde0db;
+    --line-firm:#c3c8c1;
+    --accent:   #0f6e5c;
+    --accent-wash: #e6f0ec;
+    --signal:   #b4531a;
+    --signal-wash: #fbeee4;
+
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+    --step-0: 0.9375rem;
+    --step--1: 0.8125rem;
+    --step--2: 0.6875rem;
+    --step-1: 1.125rem;
+    --step-2: 1.5rem;
+    --step-3: 2.125rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground:   #141917;
+      --surface:  #1b211e;
+      --raised:   #1f2724;
+      --ink:      #e8ebe8;
+      --muted:    #97a09b;
+      --faint:    #6f7873;
+      --line:     #2b342f;
+      --line-firm:#3c4740;
+      --accent:   #4fbfa3;
+      --accent-wash: #16302a;
+      --signal:   #e08a4c;
+      --signal-wash: #33251a;
+    }
+  }
+  :root[data-theme="dark"] {
+      --ground:#141917; --surface:#1b211e; --raised:#1f2724; --ink:#e8ebe8;
+      --muted:#97a09b; --faint:#6f7873; --line:#2b342f; --line-firm:#3c4740;
+      --accent:#4fbfa3; --accent-wash:#16302a; --signal:#e08a4c; --signal-wash:#33251a;
+  }
+  :root[data-theme="light"] {
+      --ground:#fbfbf9; --surface:#f2f3f0; --raised:#ffffff; --ink:#1b1f1d;
+      --muted:#6b726e; --faint:#949b96; --line:#dde0db; --line-firm:#c3c8c1;
+      --accent:#0f6e5c; --accent-wash:#e6f0ec; --signal:#b4531a; --signal-wash:#fbeee4;
+  }
+
+  :root { color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root { color-scheme: dark; } }
+  :root[data-theme="dark"]  { color-scheme: dark; }
+  :root[data-theme="light"] { color-scheme: light; }
+
+  body {
+    margin: 0;
+    padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 4vw, 2rem) 5rem;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: var(--step-0);
+    line-height: 1.55;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .page { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 2.5rem; }
+
+  .eyebrow {
+    font-family: var(--mono); font-size: var(--step--2); text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--accent); margin: 0;
+  }
+
+  .masthead { display: flex; flex-direction: column; gap: 0.75rem; }
+  .nav { display:flex; gap:1.1rem; flex-wrap:wrap; align-items:center; font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.1em; }
+  .nav a { color:var(--muted); text-decoration:none; border-bottom:1px solid transparent; padding-bottom:2px; }
+  .nav a:hover { color:var(--accent); border-bottom-color:var(--accent); }
+  .nav a[aria-current="page"] { color:var(--accent); border-bottom-color:var(--accent); }
+  .masthead-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .toggle {
+    font-family: var(--mono); font-size: var(--step--2); text-transform: uppercase;
+    letter-spacing: 0.09em; color: var(--muted); background: var(--surface);
+    border: 1px solid var(--line-firm); border-radius: 2px; padding: 0.4rem 0.75rem; cursor: pointer;
+    transition: color 120ms ease, border-color 120ms ease;
+  }
+  .toggle:hover { color: var(--accent); border-color: var(--accent); }
+  .masthead h1 { font-size: var(--step-3); line-height: 1.08; letter-spacing: -0.02em; font-weight: 650; margin: 0; text-wrap: balance; }
+  .masthead p { margin: 0; max-width: 68ch; color: var(--muted); }
+
+  .strip {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 3px; overflow: hidden;
+  }
+  .cell { background: var(--surface); padding: 0.85rem 1rem; display: flex; flex-direction: column; gap: 0.15rem; }
+  .cell dt { font-family: var(--mono); font-size: var(--step--2); text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+  .cell dd { margin: 0; font-size: var(--step-1); font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+  .standing {
+    background: var(--surface); border-left: 2px solid var(--accent); padding: 1rem 1.15rem;
+    display: flex; flex-direction: column; gap: 0.6rem; font-size: var(--step--1);
+  }
+  .standing p { margin: 0; max-width: 82ch; color: var(--muted); }
+  .standing strong { color: var(--ink); font-weight: 620; }
+
+  section { display: flex; flex-direction: column; gap: 0.85rem; }
+  h2 { font-size: var(--step-2); letter-spacing: -0.015em; font-weight: 620; margin: 0; text-wrap: balance; }
+  .lede { margin: 0; color: var(--muted); max-width: 78ch; font-size: var(--step--1); }
+
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 3px; background: var(--raised); }
+  table { border-collapse: collapse; width: 100%; font-size: var(--step--1); }
+  thead th {
+    position: sticky; top: 0; z-index: 2; background: var(--surface); border-bottom: 1px solid var(--line-firm);
+    font-family: var(--mono); font-size: var(--step--2); font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.09em; color: var(--muted); text-align: left; padding: 0.7rem 0.85rem; white-space: nowrap;
+  }
+  tbody td { padding: 0.65rem 0.85rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+
+  tr.band th {
+    position: static; background: var(--accent-wash); color: var(--ink);
+    border-top: 1px solid var(--line-firm); border-bottom: 1px solid var(--line-firm);
+    letter-spacing: 0.11em; padding: 0.5rem 0.85rem;
+  }
+  tr.band .count { color: var(--muted); font-weight: 500; }
+
+  td.host { font-family: var(--mono); font-weight: 620; white-space: nowrap; border-left: 3px solid transparent; }
+  tr.tier-gpu td.host { border-left-color: var(--accent); }
+  tr.tier-cpu td.host { border-left-color: var(--line-firm); }
+  tr.tier-cp  td.host { border-left-color: var(--faint); }
+  tr.tier-cp  td { color: var(--muted); }
+  tr.tier-free td.host { border-left-color: var(--signal); }
+  tr.tier-free td { color: var(--muted); }
+
+  td.mono { font-family: var(--mono); white-space: nowrap; }
+  td.vram { font-family: var(--mono); text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .qual { display: block; color: var(--muted); font-size: 0.86em; line-height: 1.4; margin-top: 0.15rem; }
+  .mark { color: var(--signal); font-weight: 600; }
+  .ok { color: var(--accent); font-weight: 600; }
+  .tbd { color: var(--signal); font-weight: 600; }
+
+  .findings { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 3px; overflow: hidden; }
+  .finding { background: var(--raised); padding: 1rem 1.15rem; display: flex; flex-direction: column; gap: 0.35rem; }
+  .finding h3 { margin: 0; font-size: var(--step-0); font-weight: 620; letter-spacing: -0.005em; }
+  .finding p { margin: 0; font-size: var(--step--1); color: var(--muted); }
+  .finding.flagged h3 { color: var(--signal); }
+  .finding.settled h3 { color: var(--accent); }
+
+  .sources { display: flex; flex-direction: column; gap: 0.4rem; font-size: var(--step--1); color: var(--muted); }
+  .sources div { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .sources span:first-child { font-family: var(--mono); font-size: var(--step--2); text-transform: uppercase; letter-spacing: 0.09em; color: var(--faint); min-width: 8.5rem; }
+
+  code { font-family: var(--mono); font-size: 0.92em; background: var(--surface); padding: 0.05em 0.32em; border-radius: 2px; }
+  footer { border-top: 1px solid var(--line); padding-top: 1rem; font-size: var(--step--2); color: var(--faint); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+<div class="page">
+
+  <header class="masthead">
+    <div class="masthead-top">
+      <nav class="nav">
+        <a href="https://claude.ai/code/artifact/09f4465a-1924-40c5-b352-cbe19926100d">Governance</a>
+        <a href="https://claude.ai/code/artifact/130cf301-c270-4851-a1e5-eb9ed8586074">Fleet inventory</a>
+        <a href="https://claude.ai/code/artifact/1a0858b2-4e47-4111-b4c2-12005ee67ed4">Architecture v0.3</a>
+        <a href="https://claude.ai/code/artifact/01a9f2ed-02d1-4491-9cab-07934be22dd1" aria-current="page">v0.1 frozen</a>
+        <a href="https://claude.ai/code/artifact/c16b4563-b9d4-4c17-9961-46329fe4faac">Validation</a>
+        <a href="https://claude.ai/code/artifact/1af2b128-6708-4e55-949d-d38cc293f67a">Recommendations</a>
+        <a href="https://claude.ai/code/artifact/4062f99f-e8d4-44ba-aae2-74472bde91f5">Actions &amp; issues</a>
+        <a href="https://claude.ai/code/artifact/9325f481-90f0-4439-9fa0-e8f48d629ff4">Lessons learned</a>
+        <a href="https://claude.ai/code/artifact/ac6d1ab7-8dae-436d-94f1-80bfbb99d467">Standards</a>
+      </nav>
+      <p class="eyebrow">HX-Alignment &middot; Architecture Candidate v0.1 &middot; frozen 2026-08-13</p>
+      <button type="button" class="toggle" id="theme-toggle">Dark mode</button>
+    </div>
+    <h1>Tech-Stack Alignment &mdash; Hana-X on the Real Fleet</h1>
+    <p>
+      The Hana-X Solutions Architecture, mapped onto the fifteen physical hosts the fleet
+      actually has. Placements are constrained by the hardware inventory: <strong>four</strong>
+      GPU hosts (not thirteen), a <strong>16&nbsp;GB</strong> ceiling per graphics card, and the
+      control-plane laptop's limits. This is a <strong>development and test environment</strong>
+      &mdash; single-tenant, low concurrency, no production user base hammering it &mdash; so single
+      instances without failover are appropriate by design. The software stack is unchanged from the
+      spec; what changes is where each piece runs and how it is isolated. This mapping is frozen as
+      <strong>Architecture Candidate v0.1</strong> &mdash; a baseline for a focused
+      research/validation pass, not a final design. <code>SERVER-REGISTRY.md</code> remains
+      authoritative on hardware.
+    </p>
+  </header>
+
+  <dl class="strip">
+    <div class="cell"><dt>Environment</dt><dd>Dev / Test</dd></div>
+    <div class="cell"><dt>GPU hosts</dt><dd>4</dd></div>
+    <div class="cell"><dt>CPU hosts</dt><dd>11</dd></div>
+    <div class="cell"><dt>Control plane</dt><dd>hxs-cp &middot; empty</dd></div>
+    <div class="cell"><dt>Total VRAM</dt><dd>122,458 MiB</dd></div>
+    <div class="cell"><dt>Model roles</dt><dd>6</dd></div>
+  </dl>
+
+  <div class="standing">
+    <p>
+      <strong>What was corrected.</strong> The original spec assigned GPU-accelerated vLLM
+      inference to Servers 3&ndash;9 (seven hosts) and described 13 GPU workers. The fleet has
+      only <strong>four</strong> GPU hosts &mdash; <code>hxs-1</code> through <code>hxs-4</code>.
+      All model serving is consolidated onto those four, and the CPU hosts carry the data,
+      gateway, orchestration, ingestion and frontend layers.
+    </p>
+    <p>
+      <strong>The GPU hosts each hold a distinct AI function.</strong> <code>hxs-1</code> is the
+      reasoning flagship, <code>hxs-2</code> is coding, <code>hxs-3</code> is the
+      <em>agent-intelligence node</em> &mdash; agent execution plus the LightRAG graph and
+      experimentation headroom &mdash; and <code>hxs-4</code> is the <em>retrieval &amp; utility
+      node</em>, co-locating Qdrant with the embedding and rerank models. Qdrant and LightRAG used
+      to sit on CPU hosts; moving them beside the GPUs that feed them freed <code>hxs-10</code>,
+      which now serves the web frontends.
+    </p>
+    <p>
+      <strong>The control plane runs nothing.</strong> <code>hxs-cp</code> is a Wi-Fi-only laptop
+      with 15.8&nbsp;GB of soldered RAM &mdash; the fleet's most fragile node. It keeps the
+      control-plane <em>designation</em> only; <strong>no services run on it.</strong> Its spec
+      services move onto reliable wired fleet hosts (NGINX ingress on <code>hxs-5</code>, the
+      LiteLLM gateway on <code>hxs-8</code>, platform state on <code>hxs-9</code>). The laptop is
+      just the operator's terminal for reaching the fleet.
+    </p>
+    <p>
+      <strong>Isolation is per-service virtual environments.</strong> Per the no-Docker mandate,
+      every Python service runs bare-metal in its <em>own</em> dedicated virtualenv &mdash; vLLM,
+      Docling, Crawl4AI, LangGraph, Mem0 and the MCP servers each get an isolated environment so
+      their conflicting dependencies never collide on a shared host.
+    </p>
+    <p>
+      <strong>Sized for dev and test, not production.</strong> One instance of each model and a
+      <em>single</em> Qdrant is exactly right here &mdash; with no large user base hammering the
+      platform, failover and horizontal scale are deliberately out of scope. Some CPU/RAM/storage
+      contention on shared nodes (e.g. Qdrant beside the utility models on <code>hxs-4</code>) is
+      acceptable, since maximum throughput is not the goal.
+    </p>
+  </div>
+
+  <section>
+    <h2>GPU serving tier &mdash; the four GPU hosts</h2>
+    <p class="lede">
+      <code>hxs-1</code> and <code>hxs-2</code> pool their matched card pairs via
+      tensor-parallelism into a single ~32&nbsp;GB unit per model. <code>hxs-3</code> now pools its
+      matched pair the same way (TP=2, decided).
+      <code>hxs-4</code>'s pair is mismatched (16&nbsp;GB + 8&nbsp;GB), so it never pools &mdash;
+      its cards are independent slots. Note that <code>hxs-3</code> and <code>hxs-4</code> also host
+      data services (LightRAG and Qdrant respectively) on their CPU/RAM/NVMe, beside the models
+      that feed them.
+    </p>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Host</th>
+            <th scope="col">GPUs / VRAM</th>
+            <th scope="col">Platform &amp; storage</th>
+            <th scope="col">Assigned role</th>
+            <th scope="col">GPU config</th>
+            <th scope="col">Fit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="tier-gpu">
+            <td class="host">hxs-1</td>
+            <td class="vram">32,752 MiB<span class="qual">2 &times; RTX 4070 Ti SUPER, matched</span></td>
+            <td>PCIe 4, Ultra 9 285K<span class="qual">128 GB RAM, 14.5 TB</span></td>
+            <td>Deep reasoning &amp; synthesis<span class="qual">Qwen 3.8 27B (unreleased &mdash; slot reserved)</span></td>
+            <td class="mono">TP&nbsp;=&nbsp;2, 4-bit<span class="qual">~14 GB weights + KV</span></td>
+            <td><span class="ok">fits</span></td>
+          </tr>
+          <tr class="tier-gpu">
+            <td class="host">hxs-2</td>
+            <td class="vram">32,622 MiB<span class="qual">2 &times; RTX 5060 Ti, matched</span></td>
+            <td>PCIe 3, i7-5960X<span class="qual"><span class="mark">2014 platform</span>, 66 GB</span></td>
+            <td>Coding<span class="qual">Qwen2.5-Coder-32B</span></td>
+            <td class="mono">TP&nbsp;=&nbsp;2, AWQ Int4<span class="qual">~18&ndash;20 GB weights + KV</span></td>
+            <td><span class="ok">fits, tight</span></td>
+          </tr>
+          <tr class="tier-gpu">
+            <td class="host">hxs-3</td>
+            <td class="vram">32,622 MiB<span class="qual">2 &times; RTX 5060 Ti 16 GB, matched</span></td>
+            <td>i7-5960X, 66 GB<span class="qual">3.6 TB NVMe root; <span class="mark">1.8 TB SATA SSD unallocated</span></span></td>
+            <td>Agent intelligence node<span class="qual">Agent execution + graph retrieval + experimentation. gpt-oss-20b (agent/tool exec); LightRAG / LiteRAG graph &amp; retrieval processing and working memory on the 66 GB CPU/RAM; 1.8 TB SSD is the candidate device for graph data, working datasets, caches &amp; intermediate processing</span></td>
+            <td class="mono">TP&nbsp;=&nbsp;2<span class="qual">gpt-oss pooled across both cards for maximum context (decided)</span></td>
+            <td><span class="ok">fits</span></td>
+          </tr>
+          <tr class="tier-gpu">
+            <td class="host">hxs-4</td>
+            <td class="vram">24,462 MiB<span class="qual">RTX 5060 Ti 16 GB + RTX 5060 8 GB, <span class="mark">mismatched</span></span></td>
+            <td>i7-14700F, 32 GB<span class="qual">931.5 GB NVMe root; <span class="mark">476.9 GB NVMe unallocated &rarr; Qdrant</span></span></td>
+            <td>Retrieval &amp; AI utility node<span class="qual">Qdrant + Qdrant Web-UI (on the dedicated 476.9 GB NVMe); 16 GB card: Qwen2.5-3B query-expansion / small utility LLM (+ Llama-3.2-3B chat); 8 GB card: BGE-M3 / Nomic-Embed embeddings + BGE-Reranker-v2-m3. Co-locates embed &rarr; store &rarr; rerank.</span></td>
+            <td class="mono">2 single-GPU<span class="qual">independent slots, no TP across the mismatched pair</span></td>
+            <td><span class="ok">fits</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Model menu &mdash; what actually fits</h2>
+    <p class="lede">
+      Six model roles cover the pipeline in the spec's Flows A and B. Every large model is 4-bit
+      quantized; a 32B model at half-byte-per-weight is ~16&nbsp;GB of weights, which exceeds a
+      single 16&nbsp;GB card and forces tensor-parallelism across a host's two GPUs. (Qdrant and
+      LightRAG are data services, not models &mdash; see the tier tables.)
+    </p>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Model</th>
+            <th scope="col">Role in pipeline</th>
+            <th scope="col">Host</th>
+            <th scope="col">GPUs</th>
+            <th scope="col">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">Qwen 3.8 27B</td>
+            <td>Deep reasoning, multi-agent synthesis (Flow B)</td>
+            <td class="mono">hxs-1</td>
+            <td class="mono">2 (TP)</td>
+            <td>Unreleased at time of writing &mdash; slot sized for a 27B dense model at 4-bit. Confirm quant &amp; VRAM at launch.</td>
+          </tr>
+          <tr>
+            <td class="mono">gpt-oss-20b</td>
+            <td>Tool execution &amp; MCP calls (Flow B)</td>
+            <td class="mono">hxs-3</td>
+            <td class="mono">2 (TP)</td>
+            <td>Mixture-of-experts (21B / 3.6B active), <span class="mark">not dense</span>. Native MXFP4 ~13 GB, pooled across both cards (TP=2) for maximum tool-calling context.</td>
+          </tr>
+          <tr>
+            <td class="mono">Qwen2.5-Coder-32B</td>
+            <td>Code generation &amp; review</td>
+            <td class="mono">hxs-2</td>
+            <td class="mono">2 (TP)</td>
+            <td>AWQ / GPTQ Int4. Full precision is ~71 GB &mdash; impossible here; 4-bit + both cards is the only path.</td>
+          </tr>
+          <tr>
+            <td class="mono">Qwen2.5-3B (+ Llama-3.2-3B)</td>
+            <td>Query expansion &amp; light utility / chat (Flow B)</td>
+            <td class="mono">hxs-4 &middot; 16 GB card</td>
+            <td class="mono">1</td>
+            <td>Small utility models on hxs-4's 16 GB card; both fit alongside each other.</td>
+          </tr>
+          <tr>
+            <td class="mono">BGE-M3 / Nomic-Embed-Text</td>
+            <td>Embedding generation (Flow A)</td>
+            <td class="mono">hxs-4 &middot; 8 GB card</td>
+            <td class="mono">1</td>
+            <td>Sub-billion parameter; ~2 GB each. Feeds Qdrant on the same host.</td>
+          </tr>
+          <tr>
+            <td class="mono">BGE-Reranker-v2-m3</td>
+            <td>Context-precision reranking (Flow B)</td>
+            <td class="mono">hxs-4 &middot; 8 GB card</td>
+            <td class="mono">1</td>
+            <td>Co-resident with the embedders on the 8 GB card &mdash; all three fit.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>CPU service tier &mdash; the eleven small-form-factor hosts</h2>
+    <p class="lede">
+      Everything that is not GPU inference, placed by matching workload to hardware. The
+      user-facing edge is split across three nodes &mdash; NGINX ingress on <code>hxs-5</code>, the
+      LiteLLM API gateway on <code>hxs-8</code>, and the web frontends (Open WebUI + CopilotKit /
+      AG-UI) on <code>hxs-10</code>. The RAM-sensitive CPU services (Postgres + Redis, Docling, the
+      LangGraph runtime) sit on 32&nbsp;GB hosts; the three 16&nbsp;GB hosts carry only light work
+      &mdash; crawling, MCP services, and the LiteLLM gateway. FastMCP has its own home off the dev
+      box.
+    </p>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Host</th>
+            <th scope="col">Spec</th>
+            <th scope="col">Role</th>
+            <th scope="col">Software (each in its own virtualenv)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="tier-cpu">
+            <td class="host">hxs-5</td>
+            <td class="mono">i5-7500 &middot; 32 GB</td>
+            <td>Edge / ingress</td>
+            <td>NGINX &mdash; user-facing reverse proxy, TLS termination, path routing. Operator / bastion access.</td>
+          </tr>
+          <tr class="tier-cpu">
+            <td class="host">hxs-6</td>
+            <td class="mono">i5-8500T 6c &middot; <span class="mark">16 GB</span></td>
+            <td>Ingestion &mdash; crawling</td>
+            <td>Crawl4AI (+ MCP) &mdash; web scraping &amp; cleaning; I/O-bound, comfortable on 16 GB</td>
+          </tr>
+          <tr class="tier-cpu">
+            <td class="host">hxs-7</td>
+            <td class="mono">i5-8500T 6c &middot; <span class="mark">16 GB</span></td>
+            <td>MCP services</td>
+            <td>FastMCP SDK runtime + deployed custom Hana-X MCP servers &mdash; lightweight processes, own home off the dev box</td>
+          </tr>
+          <tr class="tier-cpu">
+            <td class="host">hxs-8</td>
+            <td class="mono">i5-9400T &middot; 16 GB &middot; 477 GB</td>
+            <td>API gateway &amp; control</td>
+            <td>LiteLLM gateway (+ SQLite) &mdash; OpenAI-compatible routing across the vLLM hosts, API-key management, cost tracking, rate limiting; service registry; global config. <span class="qual">477 GB disk now spare capacity.</span></td>
+          </tr>
+          <tr class="tier-cpu">
+            <td class="host">hxs-9</td>
+            <td class="mono">i5-7500 &middot; 32 GB</td>
+            <td>State services</td>
+            <td>PostgreSQL (identities, RBAC, audit, config) + Redis (cache, pub/sub, task queues, sessions) &mdash; complementary, co-located</td>
+          </tr>
+          <tr class="tier-cpu">
+            <td class="host">hxs-10</td>
+            <td class="mono">i5-7500 &middot; 32 GB</td>
+            <td>Web application</td>
+            <td>Open WebUI &mdash; primary chat interface &mdash; plus deployed CopilotKit / AG-UI frontends. <span class="qual">Host freed when Qdrant &amp; LightRAG moved to the GPU tier.</span></td>
+          </tr>
+          <tr class="tier-cpu">
+            <td class="host">hxs-11</td>
+            <td class="mono">i5-7500 &middot; 32 GB</td>
+            <td>Agent runtime</td>
+            <td>LangGraph orchestration engine, Mem0 memory (+ MCP) &mdash; kept separate from the hxs-3 agent-intelligence node</td>
+          </tr>
+          <tr class="tier-cpu">
+            <td class="host">hxs-12</td>
+            <td class="mono">i5-7500 &middot; 32 GB</td>
+            <td>Ingestion &mdash; parsing</td>
+            <td>Docling (+ MCP) &mdash; PDF/office layout parsing; 32 GB for large-document headroom</td>
+          </tr>
+          <tr class="tier-cpu">
+            <td class="host">hxs-13</td>
+            <td class="mono">i5-6500 <span class="mark">Skylake</span> &middot; 32 GB</td>
+            <td>Automation</td>
+            <td>n8n workflow automation (+ MCP)</td>
+          </tr>
+          <tr class="tier-cpu">
+            <td class="host">hxs-14</td>
+            <td class="mono">i5-7500 &middot; 32 GB</td>
+            <td>Development &mdash; <code>hxs-dev</code></td>
+            <td>Prompt engineering, LangGraph graph development, CopilotKit / AG-UI client dev, API integration &mdash; consumes remote model &amp; MCP services</td>
+          </tr>
+          <tr class="tier-cpu">
+            <td class="host">hxs-15</td>
+            <td class="mono">i5-7500 &middot; 32 GB &middot; <span class="mark">no VT-x</span></td>
+            <td>Test &amp; integration &mdash; <code>hxs-test</code></td>
+            <td>QA, regression, integration testing, agent-workflow validation, automated benchmarks</td>
+          </tr>
+          <tr class="tier-cp">
+            <td class="host">hxs-cp</td>
+            <td class="mono">laptop &middot; 15.8 GB &middot; Wi-Fi</td>
+            <td>Control plane &mdash; designation only<span class="qual">not a fleet member, nothing runs here</span></td>
+            <td>No services. Operator's terminal for reaching the fleet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Crosswalk &mdash; spec's logical names to physical hosts</h2>
+    <p class="lede">
+      The original spec used logical labels (<code>hxs-dev</code>, <code>hxs-test</code>,
+      &ldquo;Servers 3&ndash;15&rdquo;). This is how those map to the real inventory hosts.
+    </p>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th scope="col">Spec label</th><th scope="col">Original intent</th><th scope="col">Physical host(s)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">hxs-cp</td><td>Control plane (designation only)</td><td class="mono">Nothing runs on it &mdash; spec services on hxs-5 (ingress) / hxs-8 (gateway) / hxs-9 (state)</td></tr>
+          <tr><td class="mono">hxs-dev (Server 1)</td><td>Development workspace</td><td class="mono">hxs-14</td></tr>
+          <tr><td class="mono">hxs-test (Server 2)</td><td>Testing, integration, benchmarks</td><td class="mono">hxs-15</td></tr>
+          <tr><td class="mono">Servers 3&ndash;5</td><td>Qwen reasoning (3 GPU nodes)</td><td class="mono">hxs-1 (consolidated to 1 host)</td></tr>
+          <tr><td class="mono">Servers 6&ndash;7</td><td>GPT-OSS agent exec (2 GPU nodes)</td><td class="mono">hxs-3 (agent-intelligence node; GPU topology TBD)</td></tr>
+          <tr><td class="mono">Server 8</td><td>Coding &amp; chat models</td><td class="mono">hxs-2 (coder) + hxs-4 16 GB card (utility/chat)</td></tr>
+          <tr><td class="mono">Server 9</td><td>Embeddings &amp; reranker</td><td class="mono">hxs-4 &middot; 8 GB card</td></tr>
+          <tr><td class="mono">LiteRAG / LightRAG</td><td>Graph retrieval engine</td><td class="mono">hxs-3 (co-located with agent execution)</td></tr>
+          <tr><td class="mono">Qdrant + Web-UI</td><td>Vector DB &amp; dashboard</td><td class="mono">hxs-4 (dedicated 476.9 GB NVMe)</td></tr>
+          <tr><td class="mono">LiteLLM (+ SQLite)</td><td>Unified model API gateway</td><td class="mono">hxs-8</td></tr>
+          <tr><td class="mono">Open WebUI / frontends</td><td>Human-facing web apps</td><td class="mono">hxs-10</td></tr>
+          <tr><td class="mono">NGINX</td><td>Ingress / reverse proxy / TLS</td><td class="mono">hxs-5 (edge)</td></tr>
+          <tr><td class="mono">Postgres + Redis</td><td>Platform state &amp; cache</td><td class="mono">hxs-9 (shared state node)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Notes &amp; open items</h2>
+    <div class="findings">
+      <div class="finding settled">
+        <h3>hxs-3 GPU topology &mdash; closed</h3>
+        <p>Decided: gpt-oss-20b uses <strong>both cards at TP=2</strong> for maximum tool-calling context. The single-card alternative (leaving one GPU free for experimental inference) is set aside.</p>
+      </div>
+      <div class="finding flagged">
+        <h3>Qwen 3.8 27B is unreleased</h3>
+        <p>Its slot on <code>hxs-1</code> is sized for a 27B dense model at 4-bit (~14 GB weights, fits 32 GB with room for context). If it ships as MoE, larger, or needs a specific quant, re-confirm the fit on launch day before committing the host.</p>
+      </div>
+      <div class="finding">
+        <h3>No dedicated monitoring node</h3>
+        <p>Observability &amp; backup was dropped by decision for this dev/test environment; <code>hxs-8</code> now runs the LiteLLM gateway instead. That host's 477 GB disk is left as spare capacity &mdash; the natural place to reinstate metrics, logs, or snapshots later if wanted.</p>
+      </div>
+      <div class="finding settled">
+        <h3>Retrieval co-located with its models</h3>
+        <p>Qdrant now sits on <code>hxs-4</code> beside the embedding and rerank models it serves, on a dedicated 476.9 GB NVMe &mdash; embed &rarr; store &rarr; rerank on one host. LightRAG sits on <code>hxs-3</code> beside agent execution, with the 1.8 TB SSD as its graph-data device. Both GPU hosts have ample RAM (32 / 66 GB) for these services.</p>
+      </div>
+      <div class="finding settled">
+        <h3>Control plane runs nothing</h3>
+        <p>Per direction, <code>hxs-cp</code> holds the control-plane designation but runs no services: ingress on <code>hxs-5</code>, gateway on <code>hxs-8</code>, state on <code>hxs-9</code>. The laptop is the operator's terminal &mdash; removing the fleet's biggest single point of failure.</p>
+      </div>
+      <div class="finding settled">
+        <h3>Isolation via per-service virtualenvs</h3>
+        <p>No Docker. Each Python service gets its own virtualenv, so vLLM, Docling, Crawl4AI, LangGraph and Mem0 never share a dependency tree. Residual caveat: a venv isolates Python packages but not the host NVIDIA driver &mdash; where two GPU services share a host, pin them to compatible CUDA/torch wheels.</p>
+      </div>
+      <div class="finding settled">
+        <h3>No redundancy &mdash; by design</h3>
+        <p>One instance of each model and one Qdrant, each on its own host, with no failover. For a single-tenant dev/test environment that is the intended trade-off, not a gap &mdash; capacity goes to coverage, not high availability.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Sources</h2>
+    <div class="sources">
+      <div><span>Hardware</span><span>HX Fleet Server Inventory &mdash; <code>hxs-1</code> &hellip; <code>hxs-15</code>, <code>SERVER-REGISTRY.md</code></span></div>
+      <div><span>Stack</span><span>Hana-X Solutions Architecture Specification (sections 1&ndash;7)</span></div>
+      <div><span>Model sizing</span><span>vLLM recipes &amp; vendor model cards for gpt-oss-20b, Qwen2.5-Coder-32B, BGE-M3 / reranker (Aug 2026)</span></div>
+    </div>
+  </section>
+
+  <footer>
+    HX-Alignment &middot; Architecture Candidate v0.1 (frozen baseline) &middot; dev / test &middot; compiled 2026-08-13 &middot;
+    hardware per <code>SERVER-REGISTRY.md</code>.
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById('theme-toggle');
+  if (!btn) { return; }
+  var media = window.matchMedia('(prefers-color-scheme: dark)');
+  function stored(value) {
+    try {
+      if (value === undefined) { return localStorage.getItem('hx-theme'); }
+      localStorage.setItem('hx-theme', value);
+    } catch (e) {}
+    return null;
+  }
+  function active() {
+    var explicit = root.getAttribute('data-theme');
+    if (explicit === 'dark' || explicit === 'light') { return explicit; }
+    return media.matches ? 'dark' : 'light';
+  }
+  function relabel() {
+    var next = active() === 'dark' ? 'light' : 'dark';
+    btn.textContent = next === 'dark' ? 'Dark mode' : 'Light mode';
+    btn.setAttribute('aria-label', 'Switch to ' + next + ' mode');
+  }
+  var saved = stored();
+  if (saved === 'dark' || saved === 'light') { root.setAttribute('data-theme', saved); }
+  relabel();
+  btn.addEventListener('click', function () {
+    var next = active() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    stored(next);
+    relabel();
+  });
+  if (typeof media.addEventListener === 'function') { media.addEventListener('change', relabel); }
+  if (typeof MutationObserver === 'function') {
+    new MutationObserver(relabel).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  }
+})();
+</script>

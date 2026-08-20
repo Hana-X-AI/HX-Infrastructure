@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HX-Infrastructure Agent Skills Integration & Migration Brief</title>
+<style>
+:root {
+  --bg: #081018;
+  --panel: #0d1722;
+  --panel2: #101d2a;
+  --text: #e7eef6;
+  --muted: #9fb0c2;
+  --line: #263849;
+  --accent: #64d8ff;
+  --accent2: #9fe870;
+  --warn: #ffd166;
+  --danger: #ff7b8a;
+  --code: #07131d;
+  --shadow: 0 12px 40px rgba(0,0,0,.28);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 12% -5%, rgba(100,216,255,.10), transparent 30%),
+    radial-gradient(circle at 90% 0%, rgba(159,232,112,.07), transparent 24%),
+    var(--bg);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.55;
+}
+main { width: min(1180px, calc(100% - 36px)); margin: 0 auto; padding: 36px 0 70px; }
+.hero {
+  padding: 34px 36px;
+  background: linear-gradient(145deg, rgba(16,29,42,.96), rgba(9,21,31,.96));
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+}
+.eyebrow { color: var(--accent); text-transform: uppercase; letter-spacing: .14em; font-size: 12px; font-weight: 800; }
+h1 { margin: 8px 0 12px; font-size: clamp(34px, 5vw, 56px); line-height: 1.03; letter-spacing: -.035em; }
+h2 { margin: 38px 0 14px; font-size: 26px; letter-spacing: -.015em; }
+h3 { margin: 22px 0 8px; font-size: 19px; }
+p { margin: 8px 0 14px; }
+a { color: var(--accent); }
+.meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.pill { border: 1px solid var(--line); background: rgba(255,255,255,.025); color: var(--muted); border-radius: 999px; padding: 7px 11px; font-size: 12px; }
+.pill.good { color: var(--accent2); border-color: rgba(159,232,112,.35); }
+.pill.warn { color: var(--warn); border-color: rgba(255,209,102,.35); }
+.grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
+.card {
+  grid-column: span 6;
+  padding: 20px;
+  background: linear-gradient(180deg, rgba(16,29,42,.92), rgba(13,23,34,.92));
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.card.full { grid-column: 1 / -1; }
+.card.third { grid-column: span 4; }
+.card h3 { margin-top: 0; }
+.callout {
+  margin: 18px 0;
+  padding: 18px 20px;
+  background: rgba(100,216,255,.055);
+  border: 1px solid rgba(100,216,255,.25);
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
+}
+.callout.warn { background: rgba(255,209,102,.05); border-color: rgba(255,209,102,.24); border-left-color: var(--warn); }
+.callout.danger { background: rgba(255,123,138,.05); border-color: rgba(255,123,138,.24); border-left-color: var(--danger); }
+table { width: 100%; border-collapse: collapse; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: rgba(13,23,34,.9); }
+th, td { padding: 12px 13px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+th { color: #cfe6f5; background: rgba(255,255,255,.03); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+td { font-size: 14px; }
+tr:last-child td { border-bottom: 0; }
+code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+code { background: var(--code); border: 1px solid rgba(255,255,255,.06); padding: 2px 5px; border-radius: 5px; color: #cae8f7; }
+pre {
+  white-space: pre-wrap;
+  background: var(--code);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+  overflow: auto;
+  color: #dceaf3;
+}
+ul, ol { padding-left: 22px; }
+li { margin: 5px 0; }
+.checklist { list-style: none; padding-left: 0; }
+.checklist li::before { content: "□"; color: var(--accent2); display: inline-block; width: 1.3em; font-weight: 800; }
+.flow { display:flex; flex-wrap:wrap; align-items:center; gap:9px; margin: 14px 0 6px; }
+.node { padding: 9px 11px; border:1px solid var(--line); border-radius:10px; background:var(--panel2); font-size:13px; }
+.arrow { color: var(--accent); font-weight:800; }
+.small { font-size: 13px; color: var(--muted); }
+.section-tag { color: var(--accent2); font-weight: 750; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+footer { margin-top: 48px; color: var(--muted); font-size: 12px; padding-top: 20px; border-top: 1px solid var(--line); }
+@media (max-width: 800px) {
+  main { width: min(100% - 22px, 1180px); padding-top: 18px; }
+  .hero { padding: 24px 20px; }
+  .card, .card.third { grid-column: 1 / -1; }
+  table { display:block; overflow-x:auto; }
+}
+@media print {
+  :root { --bg:#fff; --panel:#fff; --panel2:#fff; --text:#101820; --muted:#4d5d6d; --line:#cdd6df; --accent:#006b8f; --accent2:#477a16; --warn:#8a6100; --danger:#a00022; --code:#f4f6f8; }
+  body { background:#fff; }
+  .hero, .card { box-shadow:none; }
+}
+</style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <div class="eyebrow">HX-Infrastructure · Implementation Handoff</div>
+    <h1>Agent Skills Integration &amp; Migration Brief</h1>
+    <p>This brief converts the review of <strong>addyosmani/agent-skills</strong> into an HX-native implementation direction. The objective is to mine useful mechanisms, workflows, and specialist-agent patterns into the existing HX repository without importing a competing lifecycle or control plane.</p>
+    <div class="meta">
+      <span class="pill good">Decision: proceed with selective adoption</span>
+      <span class="pill warn">Status: target-state implementation brief</span>
+      <span class="pill">As-built: not asserted</span>
+      <span class="pill">Prepared by: GPT-5.6 Sol</span>
+      <span class="pill">2026-08-13 17:35 America/Panama</span>
+    </div>
+  </section>
+
+  <div class="callout">
+    <strong>Executive decision.</strong> Treat the upstream repository as a <em>source library</em>, not as a package to install wholesale. Preserve <code>sdd-core</code> and the HX repository's existing governance as the single execution backbone. Transform selected upstream concepts into HX-native skills, references, agents, and validation gates.
+  </div>
+
+  <h2>1. Authority and non-negotiable constraints</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="section-tag">Control plane</div>
+      <h3>Keep one authoritative workflow</h3>
+      <ul>
+        <li><code>.specify/memory/constitution.md</code> remains the global governance authority.</li>
+        <li><code>knowledge/instructions.md</code> remains the local repository/context router.</li>
+        <li>Do not introduce a second SDD lifecycle, task schema, meta-router, or parallel governance hierarchy.</li>
+        <li>Internal agent/source material may remain Markdown; human review artifacts should be polished HTML.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="section-tag">Infrastructure orchestration</div>
+      <h3>Preserve the proven native fleet model</h3>
+      <ul>
+        <li><strong>Ansible is permanently out of scope.</strong> Remove or revise stale references rather than reintroducing it.</li>
+        <li>The validated Bash/SSH fan-out pattern from <code>hxs-cp</code> remains the baseline for simple fleet control.</li>
+        <li>Skills may improve planning, validation, documentation, and script quality; they must not silently replace the orchestration model.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="section-tag">Truth model</div>
+      <h3>Do not manufacture current state</h3>
+      <ul>
+        <li>Distinguish <strong>TARGET-STATE</strong>, <strong>AS-BUILT</strong>, <strong>DISCOVERED</strong>, <strong>PROPOSED</strong>, and <strong>LEGACY/HISTORICAL</strong>.</li>
+        <li>Migration artifacts must never elevate polished target-state prose into proof that a service is installed or configured.</li>
+        <li>Runtime evidence and authoritative host/service configuration remain the source of truth after implementation.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="section-tag">Scope control</div>
+      <h3>Keep deferred work deferred</h3>
+      <ul>
+        <li>Do not let skills work reopen deep MCP exposure/security-hardening work before the core platform is operational.</li>
+        <li>Observability-specific implementation remains a later workstream tied to the reserved spare server.</li>
+        <li>Performance matters, but this development/test/demo environment is not being optimized at the expense of simplicity and full-stack coverage.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>2. Source snapshot reviewed</h2>
+  <p>The uploaded archive contains <strong>24 skill entrypoints</strong> under <code>skills/*/SKILL.md</code>, plus repository-level documentation, personas, commands, shared references, hooks, evaluation material, and validation utilities.</p>
+  <table>
+    <tr><th>Source</th><th>Reference</th></tr>
+    <tr><td>Upstream repository</td><td><a href="https://github.com/addyosmani/agent-skills">github.com/addyosmani/agent-skills</a></td></tr>
+    <tr><td>Uploaded ZIP</td><td><code>agent-skills-main.zip</code></td></tr>
+    <tr><td>ZIP SHA-256</td><td><code>6d305c0c515f11223810032562a80b0615f8fe951cded34db227385449b6055a</code></td></tr>
+    <tr><td>Archive inventory</td><td>262 files, 24 <code>SKILL.md</code> entrypoints</td></tr>
+    <tr><td>License</td><td>MIT; retain appropriate copyright/permission notice for copied or substantially reused material.</td></tr>
+  </table>
+
+  <h2>3. Adoption decision by skill</h2>
+  <table>
+    <tr><th>Skill</th><th>Decision</th><th>HX treatment</th></tr>
+    <tr><td><strong>context-engineering</strong></td><td>Adapt now</td><td>Map its context hierarchy to HX authority: constitution → knowledge router → scoped project/server/service sources → runtime evidence.</td></tr>
+    <tr><td><strong>source-driven-development</strong></td><td>Adapt now</td><td>Formalize “do not guess”: detect versions, prefer authoritative docs, record evidence, and separate verified facts from inference.</td></tr>
+    <tr><td><strong>doubt-driven-development</strong></td><td>Adapt now</td><td>Use fresh-context adversarial review for consequential claims and changes; preserve a bounded claim → challenge → reconcile → stop cycle.</td></tr>
+    <tr><td><strong>planning-and-task-breakdown</strong></td><td>Mine heavily</td><td>Keep dependency graphs, explicit acceptance criteria, verification gates, and risk-first ordering. Do not adopt upstream <code>tasks/plan.md</code>/<code>tasks/todo.md</code> as a competing schema unless those paths already align with HX.</td></tr>
+    <tr><td><strong>documentation-and-adrs</strong></td><td>Adapt now</td><td>Strengthen ADRs, decision rationale, authority labeling, and separation of target-state from as-built state.</td></tr>
+    <tr><td><strong>deprecation-and-migration</strong></td><td>Adapt now</td><td>Use to mine legacy knowledge, retain rationale, remove zombie/stale configuration, and prohibit blind copying of old environment state.</td></tr>
+    <tr><td><strong>git-workflow-and-versioning</strong></td><td>Selective</td><td>Use atomic, recoverable changes during repository convergence; do not enforce arbitrary software-centric sizing rules where infrastructure/docs differ.</td></tr>
+    <tr><td><strong>interview-me</strong></td><td>Mine behavior</td><td>Preserve “surface uncertainty instead of guessing,” but use the HX convention of concise question groups of no more than three.</td></tr>
+    <tr><td><strong>incremental-implementation</strong></td><td>Later</td><td>When implementation begins, prove one host/service slice before fleet expansion.</td></tr>
+    <tr><td><strong>debugging-and-error-recovery</strong></td><td>Later</td><td>Adapt reproduce → localize → reduce → fix → guard to distributed infrastructure and services.</td></tr>
+    <tr><td><strong>observability-and-instrumentation</strong></td><td>Park</td><td>Mine later when the observability server/workstream is activated.</td></tr>
+    <tr><td><strong>security-and-hardening</strong></td><td>Park</td><td>Do not make it a current platform-up blocker; defer detailed hardening while retaining obvious baseline safety controls.</td></tr>
+    <tr><td><strong>spec-driven-development</strong></td><td>Do not import unchanged</td><td>Conceptually aligned, structurally redundant with <code>sdd-core</code>. Mine mechanics only.</td></tr>
+    <tr><td><strong>using-agent-skills</strong></td><td>Do not import</td><td>Would create an unnecessary top-level router/lifecycle competing with HX governance.</td></tr>
+    <tr><td>Remaining application-oriented skills</td><td>Situational</td><td>Keep as reference material and activate only when an HX workstream genuinely needs them.</td></tr>
+  </table>
+
+  <h2>4. HX-native capability set to synthesize</h2>
+  <div class="grid">
+    <div class="card third"><h3>HX Context Engineering</h3><p>Teach agents how to resolve authority, load only relevant context, and avoid stale or cross-environment leakage.</p></div>
+    <div class="card third"><h3>HX Source-Driven Research</h3><p>Require version-aware authoritative research for unstable infrastructure/tooling facts and explicit evidence for recommendations.</p></div>
+    <div class="card third"><h3>HX Adversarial Validation</h3><p>Formalize independent fresh-context review of material claims, architecture choices, migration decisions, and risky implementation steps.</p></div>
+    <div class="card third"><h3>HX Planning &amp; Gates</h3><p>Dependency-first phases with entry criteria, exit criteria, verification evidence, rollback considerations, and bounded scope.</p></div>
+    <div class="card third"><h3>HX Architecture Decisions &amp; Authority</h3><p>Capture why decisions were made and tag documents/configuration with explicit authority/state semantics.</p></div>
+    <div class="card third"><h3>HX Legacy Migration</h3><p>Mine legacy knowledge without importing stale environment state; transform useful service knowledge into the current repository model.</p></div>
+  </div>
+
+  <h2>5. Agent/persona pattern to retain</h2>
+  <p>The upstream distinction is valuable: <strong>skills = how</strong>, <strong>personas/agents = who</strong>, and the coordinating session/workflow = <strong>when/orchestration</strong>. HX should retain narrow specialist agents and keep synthesis in the main coordinating layer.</p>
+  <div class="flow" aria-label="agent orchestration model">
+    <span class="node">HX coordinating agent / operator</span><span class="arrow">→</span>
+    <span class="node">independent specialist reviewers</span><span class="arrow">→</span>
+    <span class="node">evidence-backed reports</span><span class="arrow">→</span>
+    <span class="node">single reconciliation / merge</span>
+  </div>
+  <div class="callout warn">
+    <strong>Do not create meta-orchestrator personas.</strong> Specialists should not recursively spawn or route to other specialists. Parallelism is appropriate only for independent investigations whose outputs can be reconciled centrally.
+  </div>
+
+  <h2>6. File-by-file migration method</h2>
+  <p>Claude Code should build a migration manifest before changing the repository. Each candidate source file or section should be classified rather than copied blindly.</p>
+  <table>
+    <tr><th>Manifest field</th><th>Required content</th></tr>
+    <tr><td>Upstream source</td><td>Exact file path and relevant section.</td></tr>
+    <tr><td>Capability extracted</td><td>The reusable mechanism, rule, template, workflow, or agent behavior being retained.</td></tr>
+    <tr><td>HX disposition</td><td><strong>ADOPT</strong>, <strong>ADAPT</strong>, <strong>MINE-REFERENCE</strong>, <strong>DEFER</strong>, or <strong>REJECT</strong>.</td></tr>
+    <tr><td>Conflict analysis</td><td>Any collision with <code>sdd-core</code>, HX governance, current repository conventions, or the Bash/SSH orchestration baseline.</td></tr>
+    <tr><td>Target location</td><td>Existing canonical HX location discovered from the repository. Do not invent a parallel hierarchy.</td></tr>
+    <tr><td>Transformation notes</td><td>Specific wording/path/workflow changes needed to become HX-native.</td></tr>
+    <tr><td>Provenance/license</td><td>Record substantial reuse and preserve MIT attribution where required.</td></tr>
+    <tr><td>Validation</td><td>How to prove the migrated capability works and does not create contradictory authority.</td></tr>
+  </table>
+
+  <h2>7. Execution sequence</h2>
+  <div class="grid">
+    <div class="card full">
+      <h3>Phase 0 — Preflight and authority discovery</h3>
+      <ol>
+        <li>Read the current HX constitution, repository instructions, skill/agent directories, validation tooling, and the latest merge/migration material.</li>
+        <li>Identify the actual current canonical locations for skills, specialist agents, references, validation rules, and human-facing documentation.</li>
+        <li>Search for stale references to Ansible, obsolete orchestration patterns, legacy task schemas, or competing SDD routers relevant to this integration.</li>
+        <li>Do not modify anything until the authority map and conflicts are explicit.</li>
+      </ol>
+      <p><strong>Gate:</strong> repository authority map completed; no target paths guessed.</p>
+    </div>
+
+    <div class="card full">
+      <h3>Phase 1 — Build the migration manifest</h3>
+      <ol>
+        <li>Inventory the six priority skills plus upstream <code>docs/agents.md</code> and relevant adoption guidance.</li>
+        <li>Classify each useful section using ADOPT / ADAPT / MINE-REFERENCE / DEFER / REJECT.</li>
+        <li>Explicitly record why <code>spec-driven-development</code> and <code>using-agent-skills</code> are not imported as governing frameworks.</li>
+        <li>Identify reusable shared references that priority skills depend on, so no broken external references are introduced.</li>
+      </ol>
+      <p><strong>Gate:</strong> every proposed migrated element has a target, rationale, conflict check, and validation method.</p>
+    </div>
+
+    <div class="card full">
+      <h3>Phase 2 — Implement HX-native skill/reference content</h3>
+      <ol>
+        <li>Create or update HX-native capabilities using the repository's established skill format.</li>
+        <li>Rewrite paths, terminology, assumptions, and examples around HX infrastructure—not generic application development.</li>
+        <li>Keep core skill entrypoints lean; place substantial domain knowledge in references loaded only when needed.</li>
+        <li>Encode explicit authority/state labels and the “verified vs inferred” distinction where relevant.</li>
+      </ol>
+      <p><strong>Gate:</strong> no imported skill creates a second control plane; no unresolved upstream path references remain.</p>
+    </div>
+
+    <div class="card full">
+      <h3>Phase 3 — Reconcile specialist agents</h3>
+      <ol>
+        <li>Compare current HX specialist agents against useful upstream persona patterns.</li>
+        <li>Retain broad specialist capability but keep activation lean and purpose-specific.</li>
+        <li>Ensure specialists produce bounded evidence/review outputs and do not recursively orchestrate other agents.</li>
+        <li>Use parallel fan-out only where investigations are independent.</li>
+      </ol>
+      <p><strong>Gate:</strong> one coordinating layer; no routing-only persona; agent responsibilities are non-overlapping enough to justify their existence.</p>
+    </div>
+
+    <div class="card full">
+      <h3>Phase 4 — Repository cleanup and controls</h3>
+      <ol>
+        <li>Remove or revise stale Ansible references encountered in touched scope.</li>
+        <li>Remove obsolete paths/instructions that would conflict with the new HX-native skills.</li>
+        <li>Rebuild validators or controls only from current authoritative data; do not carry forward stale environment assumptions.</li>
+        <li>Add provenance/attribution for substantially reused MIT-licensed content.</li>
+      </ol>
+      <p><strong>Gate:</strong> no contradictory instructions, no broken references, no legacy mechanism presented as current.</p>
+    </div>
+
+    <div class="card full">
+      <h3>Phase 5 — Validation and handoff</h3>
+      <ol>
+        <li>Run repository-native validation/linting for skills, agents, links, and references.</li>
+        <li>Perform a clean-context review: can a fresh agent determine the correct authority order and choose the right HX capability without loading the whole skills catalog?</li>
+        <li>Run adversarial checks for false current-state assertions, implicit Ansible reintroduction, competing lifecycle schemas, and unbounded hardening/observability scope.</li>
+        <li>Produce a concise human-facing HTML completion report with changed files, decisions, rejected material, residual risks, and follow-up candidates.</li>
+      </ol>
+      <p><strong>Gate:</strong> all critical conflicts resolved; surviving deferred items are explicitly parked rather than silently omitted.</p>
+    </div>
+  </div>
+
+  <h2>8. Acceptance criteria</h2>
+  <ul class="checklist">
+    <li><code>sdd-core</code> remains the sole execution/governance backbone.</li>
+    <li>No wholesale import of the 24-skill upstream lifecycle.</li>
+    <li>No <code>using-agent-skills</code> meta-router added as an HX authority.</li>
+    <li>No upstream <code>tasks/plan.md</code>/<code>tasks/todo.md</code> convention introduced unless it already matches current HX canonical structure.</li>
+    <li>Six priority capabilities are represented in HX-native form or deliberately consolidated where duplication would be harmful.</li>
+    <li>Specialist agents are capability-first, independently useful, leanly activated, and non-recursive.</li>
+    <li>Ansible remains absent from future-facing procedures and orchestration recommendations.</li>
+    <li>Target-state and as-built/current-state claims remain clearly separated.</li>
+    <li>Substantial upstream reuse includes appropriate MIT provenance/attribution.</li>
+    <li>All new references resolve locally; no skill depends on missing upstream repo-relative shared files.</li>
+    <li>Validation demonstrates that a fresh agent can navigate HX authority correctly without context flooding.</li>
+    <li>A dark-mode HTML completion report records final changes and any deferred follow-up work.</li>
+  </ul>
+
+  <h2>9. Explicit non-goals</h2>
+  <div class="callout danger">
+    <ul>
+      <li>Do not redesign HX around the upstream repository.</li>
+      <li>Do not add Ansible.</li>
+      <li>Do not convert this effort into a security-hardening or MCP-exposure project.</li>
+      <li>Do not bring the observability workstream forward merely because an upstream observability skill exists.</li>
+      <li>Do not copy legacy or upstream environment assumptions into current authoritative state.</li>
+      <li>Do not create a general-purpose meta-agent whose primary purpose is routing other agents.</li>
+    </ul>
+  </div>
+
+  <h2>10. Expected deliverables from Claude Code</h2>
+  <ol>
+    <li><strong>Migration manifest</strong> mapping exact upstream sections to HX dispositions and targets.</li>
+    <li><strong>HX-native skill/reference changes</strong> implementing the selected capabilities within existing repository conventions.</li>
+    <li><strong>Specialist-agent reconciliation</strong> where upstream persona patterns materially improve existing HX agents.</li>
+    <li><strong>Repository cleanup</strong> for touched stale/conflicting references, especially Ansible and competing lifecycle/router assumptions.</li>
+    <li><strong>Validation evidence</strong> showing clean authority, valid references, bounded activation, and no false as-built assertions.</li>
+    <li><strong>Human-facing completion report</strong> in dark-mode HTML.</li>
+  </ol>
+
+  <footer>
+    Prepared for HX-Infrastructure. Source snapshot reviewed: <code>agent-skills-main.zip</code>, SHA-256 <code>6d305c0c515f11223810032562a80b0615f8fe951cded34db227385449b6055a</code>. This document is a target-state implementation brief and does not assert that any described migration has already been performed.
+  </footer>
+</main>
+</body>
+</html>

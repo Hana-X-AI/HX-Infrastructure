@@ -1,0 +1,40 @@
+{
+  "id": "F03",
+  "capability": "RT-04",
+  "evidence_class": "A",
+  "api_style": "openai-chat",
+  "description": "Non-streaming chat completion parses to assistant content.",
+  "request": {
+    "model": "hx-test-model",
+    "messages": [
+      {
+        "role": "user",
+        "content": "ping"
+      }
+    ]
+  },
+  "response": {
+    "id": "chatcmpl-1",
+    "object": "chat.completion",
+    "choices": [
+      {
+        "index": 0,
+        "finish_reason": "stop",
+        "message": {
+          "role": "assistant",
+          "content": "FIXTURE RESPONSE - NOT MODEL OUTPUT"
+        }
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1,
+      "completion_tokens": 6,
+      "total_tokens": 7
+    }
+  },
+  "expect": {
+    "json_path": "choices.0.message.role",
+    "equals": "assistant",
+    "finish_reason": "stop"
+  }
+}

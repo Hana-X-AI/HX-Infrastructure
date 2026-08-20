@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HX-Infrastructure Repository Reconnaissance</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1015;--panel:#121a22;--panel2:#17212b;--line:#2a3948;--text:#e8eef4;--muted:#9eb0bf;--blue:#6fc6ff;--cyan:#63e6d2;--green:#71d99a;--amber:#f5c46b;--red:#ff7d87;--violet:#c6a7ff;--code:#0a0f14}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 85% 0,#172b3d 0,transparent 34%),var(--bg);color:var(--text);font:15px/1.58 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}main{max-width:1240px;margin:auto;padding:48px 30px 80px}h1{font-size:clamp(2.25rem,5vw,4.5rem);line-height:1.02;letter-spacing:-.045em;margin:.35rem 0 1rem}h2{font-size:1.75rem;margin:3.2rem 0 1rem;border-bottom:1px solid var(--line);padding-bottom:.55rem}h3{font-size:1.14rem;margin:1.6rem 0 .55rem;color:#fff}p{max-width:98ch}.eyebrow{color:var(--cyan);font-weight:750;text-transform:uppercase;letter-spacing:.13em;font-size:.76rem}.lede{font-size:1.12rem;color:#cbd7e0;max-width:92ch}.meta,.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.card{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px}.card .n{font-size:2rem;font-weight:800;line-height:1;color:#fff}.card .k{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;margin-top:7px}.verdict{border-left:5px solid var(--amber);background:#241d12;padding:18px 20px;border-radius:8px;margin:24px 0}.good{border-left-color:var(--green);background:#102319}.bad{border-left-color:var(--red);background:#28151a}.info{border-left-color:var(--blue);background:#10202d}.pill{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.72rem;font-weight:800;letter-spacing:.04em;border:1px solid currentColor}.p-red{color:var(--red)}.p-amber{color:var(--amber)}.p-green{color:var(--green)}.p-blue{color:var(--blue)}.p-violet{color:var(--violet)}table{width:100%;border-collapse:separate;border-spacing:0;margin:14px 0 24px;border:1px solid var(--line);border-radius:10px;overflow:hidden}th,td{text-align:left;vertical-align:top;padding:11px 12px;border-bottom:1px solid var(--line)}th{background:#1a2631;color:#fff;font-size:.76rem;text-transform:uppercase;letter-spacing:.07em}tr:last-child td{border-bottom:0}tr:nth-child(even) td{background:rgba(255,255,255,.018)}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:var(--code);border:1px solid #23313d;border-radius:5px;padding:.12rem .34rem;color:#bce8ff;font-size:.9em}pre{background:var(--code);border:1px solid var(--line);padding:16px;border-radius:10px;overflow:auto;color:#cae6f5}ul,ol{padding-left:1.35rem}li{margin:.32rem 0}.finding{margin:16px 0;padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}.finding h3{margin:0 0 8px}.evidence{color:var(--muted);font-size:.88rem}.truth{display:grid;grid-template-columns:170px 1fr;gap:8px 18px}.truth dt{color:var(--cyan);font-weight:750}.truth dd{margin:0 0 8px}.small{font-size:.86rem;color:var(--muted)}a{color:var(--blue)}footer{margin-top:55px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted)}@media(max-width:720px){main{padding:28px 16px 55px}.truth{grid-template-columns:1fr}.truth dd{margin-bottom:16px}table{display:block;overflow-x:auto}}
+</style>
+</head>
+<body><main>
+<div class="eyebrow">HX-Infrastructure · evidence-first repository reconnaissance</div>
+<h1>The repository is valuable, but its control truth has drifted.</h1>
+<p class="lede">The supplied snapshot contains a strong evidence culture, a well-documented fleet, disciplined source-of-truth concepts, and several hard-earned operational controls. It is not ready to serve as an unquestioned execution baseline for the next phase. Multiple authoritative documents, hooks, tests, registry entries, and human-facing pages disagree about lifecycle state, active architecture, and what has actually been implemented.</p>
+
+<div class="verdict"><strong>Disposition: RECONCILE BEFORE PHASE 3 / NEXT IMPLEMENTATION.</strong> Preserve the repository and its proven methods. Do not rebuild it wholesale. Run a focused truth-reconciliation pass before new platform construction so that the next phase begins from one lifecycle, one registry interpretation, one runtime contract, and one current architecture.</div>
+
+<div style="background:#3a1418;border:3px solid #ff7d87;border-radius:12px;padding:20px 24px;margin:24px 0;text-align:center"><p style="color:#ff7d87;font-size:1.4rem;font-weight:900;margin:0 0 8px;letter-spacing:.04em">SUPERSEDED PHASE MODEL</p><p style="color:#e8eef4;margin:0;font-size:1rem"><strong>“RECONCILE BEFORE PHASE 3” reflects the obsolete phase model.</strong> Under the owner-ratified model in <code>GOALS-AND-OBJECTIVES.md</code>, Phase 3 is the reconciliation phase and server implementation is deferred to a later owner-authorized phase. This report remains dated reconnaissance evidence.</p></div>
+
+<section class="meta">
+  <div class="card"><div class="n">234</div><div class="k">Files in archive</div></div>
+  <div class="card"><div class="n">304</div><div class="k">ZIP entries</div></div>
+  <div class="card"><div class="n">6.50 MB</div><div class="k">Extracted file bytes</div></div>
+  <div class="card"><div class="n">37</div><div class="k">Actions + issues</div></div>
+  <div class="card"><div class="n">33</div><div class="k">Lessons learned</div></div>
+  <div class="card"><div class="n">15 + CP</div><div class="k">Managed fleet + control plane</div></div>
+</section>
+
+<h2>1. Review mandate and evidence basis</h2>
+<p>This is a static, source-first reconnaissance of the uploaded archive. No repository code was trusted or executed as an application. Safe parsing and syntax checks were used where they could not mutate source or infrastructure.</p>
+<table><thead><tr><th>Evidence item</th><th>Result</th></tr></thead><tbody>
+<tr><td>Uploaded artifact</td><td><code>HX-Infrastructure-main (2).zip</code></td></tr>
+<tr><td>Archive SHA-256</td><td><code>db09e94f8ef19539f00e6fc26b2e91c9d1f968cc413d5cba9efe0040e1bf7919</code></td></tr>
+<tr><td>Archive health</td><td>ZIP CRC test passed; no unsafe archive paths; no symbolic links.</td></tr>
+<tr><td>Content inventory</td><td>99 Markdown, 71 HTML, 25 PowerShell, 25 JSON, 4 JSONL, 4 JavaScript, 2 shell, 4 other files.</td></tr>
+<tr><td>Repository provenance limitation</td><td>The archive contains no <code>.git</code> directory. It self-reports <code>main @ 97cfd6c</code> in <code>start-up/session-resume.md</code>, but that commit, branch topology, clean-tree claim, and remote state cannot be independently verified from this artifact.</td></tr>
+<tr><td>Current upstream comparison</td><td>The intended remote is identified historically as <code>Hana-X-AI/HX-Infrastructure</code>, but the supplied archive is the only authoritative source available in this review. No claim is made that it matches the current remote tip.</td></tr>
+</tbody></table>
+
+<h3>Inspection coverage</h3>
+<p>The review covered the root authority chain; all three <code>AGENTS.md</code> contracts; the fleet registry and 15 discovery records; service designs; governance policies, logs, reports, provenance ledgers, and generated pages; Claude hooks, skills, settings, and packaged mirror; AI-runtime profiles, workload, fixtures, gates, and invariant suite; infrastructure design; server record structure; and repository build utilities. Large historical HTML reports and JSONL ledgers were inventoried and sampled by role, identity, hash, references, and current-authority impact rather than treated as current policy.</p>
+
+<h2>2. What the repository actually is</h2>
+<p>HX-Infrastructure is primarily an evidence and governance repository with executable guardrails—not an infrastructure-as-code codebase. Roughly 73% of files are Markdown or HTML. Its core job is to preserve fleet facts, owner decisions, service target designs, acceptance evidence, operational lessons, and agent controls before server implementation.</p>
+<div class="grid">
+<div class="card"><h3>Authority plane</h3><p><code>GOALS-AND-OBJECTIVES.md</code>, <code>INFRASTRUCTURE-CONTRACT.md</code>, <code>SERVER-REGISTRY.md</code>, policy files, and owner decisions.</p></div>
+<div class="card"><h3>Evidence plane</h3><p>Discovery records, driver results, workload measurements, provenance ledgers, review verdicts, and action/issue closeouts.</p></div>
+<div class="card"><h3>Control plane</h3><p>Claude hooks, skills, capability contracts, permissions, phase guards, and regression suites.</p></div>
+<div class="card"><h3>Design plane</h3><p>Fleet architecture, control-server design, Docling target design, parked LangGraph design, OmniRoute and future code-intelligence decisions.</p></div>
+</div>
+
+<h3>Fleet placement captured in the registry</h3>
+<table><thead><tr><th>Plane / workload</th><th>Host placement</th><th>Truth state in snapshot</th></tr></thead><tbody>
+<tr><td>Deep reasoning / reserved future model</td><td>hxs-1</td><td>Role approved; Qwen 3.8 27B slot marked unreleased/reserved.</td></tr>
+<tr><td>Coding</td><td>hxs-2</td><td>Qwen2.5-Coder-32B planned.</td></tr>
+<tr><td>Agent intelligence + retrieval</td><td>hxs-3</td><td>gpt-oss-20b + LightRAG planned.</td></tr>
+<tr><td>Retrieval / utility inference</td><td>hxs-4</td><td>Registry and commissioned Qwen3.5 workload conflict.</td></tr>
+<tr><td>Ingress, crawling, MCP, gateway</td><td>hxs-5 through hxs-8</td><td>hxs-8 still names LiteLLM while target decisions name OmniRoute.</td></tr>
+<tr><td>State, web, orchestration</td><td>hxs-9 through hxs-11</td><td>LangGraph design parked; state dependencies partly defined.</td></tr>
+<tr><td>Parsing, automation, dev, QA</td><td>hxs-12 through hxs-15</td><td>Roles approved; Docling target design exists; no server configuration records.</td></tr>
+<tr><td>Fleet control</td><td>hxs-cp</td><td>Deliberately outside the 15-row registry; control-server target design exists.</td></tr>
+</tbody></table>
+
+<h2>3. The good: capabilities worth preserving</h2>
+<div class="finding"><h3><span class="pill p-green">STRONG</span> Evidence-first operating culture</h3><p>The repository repeatedly separates discovery, configuration, validation, and acceptance. It records why a conclusion was reached, what disproved an attractive hypothesis, and which evidence class supports a claim. The 33 lessons learned are unusually concrete and operational.</p><p class="evidence">Evidence: <code>GOALS-AND-OBJECTIVES.md</code>; <code>governance/logs/lessons-learned.md</code>; <code>governance/policy/ai-runtime-acceptance-contract.md</code> sections that remain intact.</p></div>
+<div class="finding"><h3><span class="pill p-green">STRONG</span> Fleet discovery is comprehensive and comparable</h3><p>Fifteen server discovery records exist and are marked complete. The registry contains approved roles, hardware summaries, FQDNs, and lifecycle state. Discovery records preserve as-found evidence and explicitly separate later driver changes.</p><p class="evidence">Evidence: 15 <code>servers/hxs-*/discovery.md</code> records; registry claims 15/15; consistent section template; zero actual per-server <code>configuration.md</code> files.</p></div>
+<div class="finding"><h3><span class="pill p-green">STRONG</span> Proven migration/distillation method</h3><p>The legacy-mining workflow has a pinned source ledger, per-row provenance, separate-context capability review, secret discipline, and a valuable distinction between method success and design acceptance. The resolved ledger hash matches the pinned value.</p><p class="evidence">Verified <code>manifestv3.1resolved.jsonl</code> SHA-256: <code>64eb356f5b22d39c4705e2babb48a16fe6a20e3fa4d5747cba6ed7516c64cd59</code>.</p></div>
+<div class="finding"><h3><span class="pill p-green">STRONG</span> Active and packaged hooks are synchronized</h3><p>All eight active PowerShell hook files are byte-identical to their packaged copies. All 25 JSON files parse. Both shell scripts and all four JavaScript utilities pass syntax checks.</p><p class="evidence">Static verification only. PowerShell runtime execution was unavailable in the review environment and is not claimed.</p></div>
+<div class="finding"><h3><span class="pill p-green">STRONG</span> Authority boundaries are conceptually mature</h3><p>Docling is kept as parsing rather than retrieval; LightRAG owns retrieval; Mem0 owns durable memory; LangGraph is an orchestrator rather than memory, retrieval, routing, or MCP authority; OmniRoute is intended as the traffic plane. Those boundaries are the right architectural direction even where implementation details remain unsettled.</p></div>
+
+<h2>4. The bad and the ugly: material findings</h2>
+<p>Severity below reflects potential impact on the next phase, not criticism of the work that produced the repository.</p>
+
+<div class="finding"><h3><span class="pill p-red">HIGH</span> F-01 — The authoritative AI runtime contract is visibly corrupted</h3><p><code>governance/policy/ai-runtime-acceptance-contract.md</code> contains an incomplete profile row, dangling backticks, missing project names, broken provenance sentences, an unfinished non-adoption bullet, and sentence fragments. <code>tests/ai-runtime/README.md</code> contains related provenance corruption. The damage is consistent with the repository’s own warning against regex-based term removal.</p><ul><li>Line 126 begins <code>| ` live later</code>.</li><li>Line 128 says the experimental classification applies to <code>`</code> with no workload name.</li><li>Line 164 ends <code>It does not adopt `</code>.</li><li>Lines 170–184 contain broken snapshot, upstream, license, author, and runtime descriptions.</li></ul><p><strong>Impact:</strong> a policy file used by tests and future runtime decisions cannot be treated as semantically authoritative until restored from a known-good source and re-reviewed.</p></div>
+
+<div class="finding"><h3><span class="pill p-red">HIGH</span> F-02 — The repository enforces two incompatible lifecycle models</h3><p><code>GOALS-AND-OBJECTIVES.md</code> and <code>SERVER-REGISTRY.md</code> define Phase 2 as repository consolidation and Phase 3 as server implementation. <code>README.md</code>, <code>CLAUDE.md</code>, <code>servers/AGENTS.md</code>, and the final suggested step in <code>start-up/session-resume.md</code> still describe Phase 2 as server configuration.</p><p><strong>Impact:</strong> agents can follow the closest instruction file and reach a different conclusion about whether server mutation is authorized.</p></div>
+
+<div class="finding"><h3><span class="pill p-red">HIGH</span> F-03 — The phase guard releases configuration controls too early under the current constitution</h3><p><code>hx-phase1-guard.ps1</code> stops guarding when the registry’s Phase 2 status is <code>READY</code>, <code>IN PROGRESS</code>, or <code>COMPLETE</code>. Its regression suite explicitly proves that <code>READY</code> releases package installation and other mutations. But Phase 2 now means consolidation; server mutation belongs to Phase 3.</p><p><strong>Impact:</strong> the code faithfully enforces the old lifecycle, not the current one. This is a control/authority mismatch, not a documentation typo.</p></div>
+
+<div class="finding"><h3><span class="pill p-red">HIGH</span> F-04 — Two principal runtime gates do not match the only workload schema</h3><p><code>hx-capacity-gate.ps1</code> and <code>hx-workload-commission.ps1</code> expect fields such as <code>execution_modes</code>, <code>capacity_gate_result</code>, <code>storage_gate</code>, <code>model_acquisition</code>, <code>server</code>, and <code>revision</code>. None exists in <code>qwen35-9b-ollama.json</code>. The scripts retain DS4/SSD-streaming assumptions while the only workload is an Ollama Qwen3.5 commissioning record.</p><p><strong>Impact:</strong> the named gate/commissioning commands are not credible for the current workload. The 22-invariant suite checks for source substrings and file presence but does not validate schema compatibility or execute these paths. A green invariant run could coexist with unusable gates—exactly the P-A failure pattern the repository says it prevents.</p></div>
+
+<div class="finding"><h3><span class="pill p-red">HIGH</span> F-05 — Current architecture and the fleet registry disagree in two load-bearing places</h3><ol><li>The registry assigns LiteLLM to hxs-8/hxs-9, while owner decisions say LiteLLM is superseded by OmniRoute.</li><li>The registry assigns hxs-4 Qwen2.5-3B plus embeddings/reranking, while runtime acceptance records a commissioned Qwen3.5-9B on the 8 GB GPU. <code>iss-017</code> correctly records this as unruled.</li></ol><p><strong>Impact:</strong> the registry is the placement authority, yet current service designs must work around known stale assignments. Foundational architecture cannot safely build on both interpretations.</p></div>
+
+<div class="finding"><h3><span class="pill p-red">HIGH</span> F-06 — A real host mutation lacks its required as-built configuration authority</h3><p>hxs-4 was commissioned with Ollama and Qwen3.5-9B, including a systemd configuration and model acquisition, but there are no per-server <code>configuration.md</code> records anywhere. Evidence exists in the workload JSON, operational HTML report, and action log, but the repository contract says <code>configuration.md</code> is the as-built authority after implementation.</p><p><strong>Impact:</strong> the repository’s strongest documentation invariant—discovery versus configured state—is not actually complete for its first live AI runtime.</p></div>
+
+<div class="finding"><h3><span class="pill p-amber">MEDIUM · ADJUSTED</span> F-07 — Two accepted risks have passed their own review trigger <span class="pill p-violet">X · adjusted</span></h3><p><code>risk-001</code> and <code>risk-002</code> remain <code>accepted</code>, but each expires for review at the Phase 1 gate or before Phase 2. Phase 1 is complete and Phase 2 opened. The risk register therefore violates its own acceptance window.</p><p><strong>Severity rationale:</strong> the original HIGH rating is superseded by the joint brief's MEDIUM rating. F-07 concerns stale decisions about bootstrap credential strength and local credential-file permissions; it is not evidence of a live credential disclosure or a tracked secret value. The expired review triggers still require an explicit owner ruling, not silent continuation.</p></div>
+
+<div class="finding"><h3><span class="pill p-amber">MEDIUM</span> F-08 — “DS4 removed everywhere” is false, and removal likely caused policy damage</h3><p><code>start-up/session-resume.md</code> says DS4 was removed everywhere with zero references. The snapshot retains extensive DS4 material in <code>governance/operations/hxs3-workload-placement.md</code>, runtime prompts/reports, and log history. Some historical mentions are legitimate, but the absolute zero-reference claim is false. More importantly, the broken AI runtime contract and README appear to contain holes where a project identity was removed without repairing the surrounding prose.</p></div>
+
+<div class="finding"><h3><span class="pill p-amber">MEDIUM</span> F-09 — Human-facing action/issue HTML is stale</h3><p>The Markdown tracker contains 18 actions and 19 issues. <code>governance/actions-and-issues.html</code> contains only 13 actions and 12 issues; it omits <code>act-014</code> through <code>act-018</code> and <code>iss-013</code> through <code>iss-019</code>. The standalone site copy inherits the stale state. The lessons-learned HTML does include all 33 lesson IDs.</p><p><strong>Impact:</strong> the preferred human-facing view hides the entire Qwen/LangGraph/acceptance phase—the exact material needed for regrouping.</p></div>
+
+<div class="finding"><h3><span class="pill p-amber">MEDIUM</span> F-10 — Governance routing points to paths that no longer own the records</h3><p><code>governance/AGENTS.md</code> says it owns <code>governance/actions-and-issues.md</code>, <code>governance/lessons-learned.md</code>, and <code>governance/risk-acceptances.md</code>. Actual authorities live under <code>governance/logs/</code> and <code>governance/policy/</code>. The root README also directs readers to a nonexistent root-level <code>actions-and-issues.md</code>.</p><p><strong>Impact:</strong> agents following local routing can edit or search the wrong locations.</p></div>
+
+<div class="finding"><h3><span class="pill p-amber">MEDIUM</span> F-11 — Phase 2 says both “consolidation done” and “READY / not begun”</h3><p>The session handoff begins with “repository consolidation is DONE,” yet the registry and handoff report Phase 2 <code>READY</code>, and a later line says it is “not begun.” Because the snapshot lacks Git metadata, the final consolidated commit claim cannot be verified independently.</p></div>
+
+<div class="finding"><h3><span class="pill p-amber">MEDIUM</span> F-12 — The action/issue register needs adjudication, not just formatting</h3><p>Nine entries remain active: six open and three backlog. <code>act-015</code> remains open although its own closeout says the migration method was validated and the pilot purpose completed; the LangGraph design failure is already carried separately by <code>iss-019</code>. <code>iss-016</code> is an evidence-backed refusal rather than an unexplained defect and needs an owner decision on whether to close as “not supported by design,” backlog it, or keep it open. <code>iss-010</code>, <code>iss-011</code>, <code>iss-015</code>, and <code>iss-017</code> remain substantively valid.</p></div>
+
+<div class="finding"><h3><span class="pill p-amber">MEDIUM</span> F-13 — OmniRoute is a decision artifact, not yet a governed service capability</h3><p>The repository contains OmniRoute architecture and prompt HTML, but no <code>services/omniroute/service.md</code> and no OmniRoute capability contract under <code>.claude/agents/</code>. LangGraph explicitly says no gateway contract exists. Yet OmniRoute is already the only authorized remote path to hxs-4 inference.</p><p><strong>Impact:</strong> a load-bearing traffic plane is simultaneously “final” in policy and undefined in the repository’s service/SME authority model.</p></div>
+
+<div class="finding"><h3><span class="pill p-amber">MEDIUM</span> F-14 — The canonical regression-suite path is still absent</h3><p>The archive contains <code>tests/remediation-tests-restored.ps1</code>, while <code>.claude/AGENTS.md</code> requires <code>tests/remediation-tests.ps1</code>. <code>iss-010</code> documents the Norton lock and reboot remediation. This is correctly tracked, but it means the documented verification command is not executable from the snapshot as written.</p></div>
+
+<div class="finding"><h3><span class="pill p-blue">LOW / CONTEXT</span> F-15 — Repository maturity files are intentionally sparse</h3><p>There is no LICENSE, SECURITY, CONTRIBUTING, CHANGELOG, ROADMAP, CI workflow, or conventional package manifest. For a governance-focused private infrastructure repository this is not automatically a defect. However, <code>risk-003</code> explicitly accepts public visibility; public reuse rights and contribution/security reporting are therefore undefined. Decide deliberately rather than importing generic open-source ceremony.</p></div>
+
+<h2>5. Action, issue, risk, and lesson reconciliation</h2>
+<h3>Tracker status</h3>
+<table><thead><tr><th>State</th><th>Count</th><th>IDs / observation</th></tr></thead><tbody>
+<tr><td>Done</td><td>14</td><td>Completed actions.</td></tr>
+<tr><td>Resolved</td><td>13</td><td>Resolved issues plus one action using “resolved.”</td></tr>
+<tr><td>Closed, not required</td><td>1</td><td><code>act-008</code>; valid outcome but outside the documented status vocabulary.</td></tr>
+<tr><td>Open</td><td>6</td><td><code>iss-010</code>, <code>iss-011</code>, <code>iss-015</code>, <code>iss-016</code>, <code>act-015</code>, <code>iss-017</code>.</td></tr>
+<tr><td>Backlog</td><td>3</td><td><code>act-011</code>, <code>iss-001</code>, <code>iss-019</code>.</td></tr>
+</tbody></table>
+
+<h3>Recommended adjudication queue</h3>
+<table><thead><tr><th>Record</th><th>Evidence-based recommendation</th><th>Owner decision?</th></tr></thead><tbody>
+<tr><td><code>act-015</code></td><td>Close as done for the pilot/method objective. Keep LangGraph design corrections in <code>iss-019</code>.</td><td>Yes, status authority.</td></tr>
+<tr><td><code>iss-016</code></td><td>Classify as a durable “not supported / not accepted” decision unless Claude Code qualification is still an intended roadmap outcome.</td><td>Yes.</td></tr>
+<tr><td><code>iss-010</code></td><td>Retain open until reboot, canonical rename, and passing suite evidence.</td><td>No new architecture decision.</td></tr>
+<tr><td><code>iss-011</code></td><td>Retain open or deliberately backlog; requires human BIOS action.</td><td>Scheduling only.</td></tr>
+<tr><td><code>iss-015</code></td><td>Retain open. Silent truncation is a real safety/fidelity defect affecting any over-limit client.</td><td>Runtime strategy decision later.</td></tr>
+<tr><td><code>iss-017</code></td><td>Retain open until hxs-4 workload authority and OmniRoute loopback-fronting mechanism are ruled and measured.</td><td>Yes, foundational.</td></tr>
+<tr><td><code>act-011</code> + <code>iss-001</code></td><td>Keep linked until router reboot proves automatic persistence; consolidate closeout evidence when settled.</td><td>No, unless the stock firmware fails.</td></tr>
+<tr><td><code>iss-019</code></td><td>Keep backlog. It is a bounded implementation-correction list, not a blocker to general regrouping.</td><td>Scheduling later.</td></tr>
+</tbody></table>
+
+<h3>Lessons learned assessment</h3>
+<p>The 33 lessons are one of the repository’s best assets. They cover test failability, host identity, evidence provenance, hardware diagnosis, source authority, transport behavior, secret-safe reporting, and the danger of unscoped comparative claims. They should be retained, not rewritten. The regroup should add only genuinely new generalized lessons:</p>
+<ul><li><strong>Schema compatibility is a gate:</strong> source-text assertions do not prove a gate can consume the current workload definition.</li><li><strong>Lifecycle changes are cross-cutting migrations:</strong> renaming Phase 2/3 requires updating contracts, hooks, tests, startup guidance, and generated pages as one atomic change.</li><li><strong>Absolute cleanup claims require repository-wide proof:</strong> “zero references” must be backed by a scoped scan and must distinguish historical references from future-facing authority.</li><li><strong>Generated human views are release artifacts:</strong> a log update is incomplete until its presentation copy is regenerated and checked for ID parity.</li></ul>
+
+<h2>6. Control and test assessment</h2>
+<table><thead><tr><th>Control</th><th>Observed strength</th><th>Material limitation</th></tr></thead><tbody>
+<tr><td>Permanent policy guard</td><td>Ansible command-position matching is narrow and allows inspection references.</td><td>Only one permanent prohibition is encoded; appropriate for current scope.</td></tr>
+<tr><td>Authority edit guard</td><td>Coordinator asks; subagents deny for core authority files.</td><td>Protection is only as correct as the listed authority paths; stale governance routing increases ambiguity.</td></tr>
+<tr><td>Phase guard</td><td>Fails closed when registry missing or Phase 2 blocked; broad mutation categories tested.</td><td>Enforces the retired Phase 2=configuration model and releases on READY.</td></tr>
+<tr><td>Discovery validator</td><td>Required sections, placeholders, and statuses checked.</td><td>Session handoff says registry-driven identity checks remain owed.</td></tr>
+<tr><td>Hook packaging</td><td>8/8 active-package files byte-identical.</td><td><code>apply-hooks.ps1</code> and config-integrity backstop remain listed as owed.</td></tr>
+<tr><td>Remediation suite</td><td>79 explicit assertions plus loop-generated cases; broad coverage intent.</td><td>Cannot be run by documented canonical filename in snapshot; PowerShell unavailable here, so no pass claim is made.</td></tr>
+<tr><td>Runtime invariant suite</td><td>22 static invariants preserve acceptance decisions and separation.</td><td>Several invariants inspect strings rather than behavior; no workload-schema compatibility test.</td></tr>
+<tr><td>Runtime acceptance fixtures</td><td>17 JSON fixtures; offline evidence classes are carefully separated.</td><td>README examples are incomplete, and corrupted provenance/contract text weakens the authority chain.</td></tr>
+</tbody></table>
+
+<h3>Reproducible checks completed</h3>
+<ul><li>ZIP CRC: pass.</li><li>Unsafe archive paths: 0.</li><li>JSON parse failures: 0 of 25.</li><li>Shell syntax failures: 0 of 2.</li><li>JavaScript syntax failures: 0 of 4.</li><li>Active/package hook byte differences: 0 of 8.</li><li>Pinned resolved-ledger hash: match.</li><li>Generic scan for private keys, GitHub token shapes, AWS access-key shapes, and long credential assignments: no hits. This is not a substitute for scanning unreachable Git history, which the archive does not include.</li></ul>
+
+<h2>7. Authority map: true north for the regroup</h2>
+<dl class="truth">
+<dt>Constitution</dt><dd><code>GOALS-AND-OBJECTIVES.md</code> should own phase meaning and project success.</dd>
+<dt>Infrastructure rules</dt><dd><code>INFRASTRUCTURE-CONTRACT.md</code> should own network, host, access, persistence, and mutation constraints.</dd>
+<dt>Fleet placement</dt><dd><code>SERVER-REGISTRY.md</code> should own current approved roles and workload placement. Proposed architecture must not silently override it.</dd>
+<dt>As-found state</dt><dd><code>servers/&lt;host&gt;/discovery.md</code> remains immutable historical evidence.</dd>
+<dt>As-built state</dt><dd><code>servers/&lt;host&gt;/configuration.md</code> must exist for every implemented host change that constitutes role configuration.</dd>
+<dt>Runtime acceptance</dt><dd><code>runtime-acceptance-decisions.md</code> owns accepted uses and refusals; the repaired engine-neutral contract defines evaluation semantics.</dd>
+<dt>Service target design</dt><dd><code>services/&lt;service&gt;/service.md</code> owns target-state design only after review status is explicit.</dd>
+<dt>Operational work</dt><dd><code>governance/logs/actions-and-issues.md</code> is the only routine tracker.</dd>
+<dt>Risk posture</dt><dd><code>governance/policy/risk-acceptances.md</code> owns accepted scope and expiry.</dd>
+<dt>Historical evidence</dt><dd><code>legacy/2025</code> and reports remain evidence, not current authority.</dd>
+</dl>
+
+<h2>8. Recommended regroup sequence</h2>
+<p>This is a planning recommendation, not authorization to edit the repository or deploy infrastructure.</p>
+<ol>
+<li><strong>Freeze execution authority for the regroup.</strong> Continue planning and review, but do not start new server implementation until the lifecycle and runtime contract are coherent.</li>
+<li><strong>Restore corrupted source from known-good history.</strong> Recover the AI runtime contract and README from the last intact commit or reconstruct them from accepted decisions with explicit review. Do not repair by guessing missing names.</li>
+<li><strong>Ratify one lifecycle.</strong> Decide the current status of repository consolidation and define the next phase. Then update the constitution, README, CLAUDE instructions, registry vocabulary, server contract, startup handoff, hooks, and regression tests atomically.</li>
+<li><strong>Reconcile the registry.</strong> Rule hxs-4’s durable workload, replace or annotate LiteLLM entries with the approved OmniRoute target state, and clearly separate approved placement from commissioned exceptions.</li>
+<li><strong>Establish OmniRoute as a governed plane.</strong> Create the service/authority contract only after confirming its exact narrow role and loopback-fronting mechanism. Preserve the rule: traffic plane, not memory, agent, or governance authority.</li>
+<li><strong>Repair runtime gates against the current schema.</strong> Either adapt the gate/commission scripts to the Qwen workload schema or archive the stale DS4-era gate family. Add a known-failing schema-compatibility test.</li>
+<li><strong>Request the owner's hxs-4 as-built ruling.</strong> Ask whether the commissioned exception requires a <code>configuration.md</code>. No configuration record may be owed until the later implementation phase; do not create one unless the owner records that ruling.</li>
+<li><strong>Adjudicate logs and risks.</strong> Close or reclassify <code>act-015</code>/<code>iss-016</code>, review expired <code>risk-001</code>/<code>risk-002</code>, preserve valid open issues, and normalize only statuses that genuinely need it.</li>
+<li><strong>Regenerate human-facing governance.</strong> Require ID parity between Markdown and HTML and make the dark/night presentation the default for regroup artifacts.</li>
+<li><strong>Run the full verification suite on the authoritative checkout.</strong> Use a Windows/PowerShell-capable environment, restore the canonical remediation filename after reboot, verify Git commit/branch state, and retain the run evidence.</li>
+<li><strong>Owner synchronization gate.</strong> Review the repaired baseline together before selecting the first next-phase implementation package.</li>
+</ol>
+
+<h2>9. Proposed decision agenda for Jarvis</h2>
+<table><thead><tr><th>Decision</th><th>Why it is foundational</th><th>Recommended starting position</th></tr></thead><tbody>
+<tr><td>What is the current phase?</td><td>Every guard and authorization derives from it.</td><td>Record consolidation as complete if the authoritative Git checkout proves it; define regroup as a deliberate planning gate before server implementation.</td></tr>
+<tr><td>What owns hxs-4?</td><td>The registry and accepted runtime disagree.</td><td>Choose one durable role/workload envelope; treat Qwen3.5 commissioning as as-built evidence, not an implicit registry rewrite.</td></tr>
+<tr><td>What exactly is OmniRoute?</td><td>It is already the only approved remote inference path.</td><td>AI traffic plane only. Define the loopback bridge, authentication boundary, and measured acceptance before network-consumable status is granted.</td></tr>
+<tr><td>What is the first implementation target?</td><td>Prevents multiple partially defined planes from starting together.</td><td>Select only after truth repair; prefer a bounded foundational dependency with known-answer gates.</td></tr>
+<tr><td>What remains parked?</td><td>Protects focus.</td><td>LangGraph correction backlog, deep MCP exposure/security work, observability spare-server design, and code-intelligence roadmap remain non-blocking unless intentionally scheduled.</td></tr>
+</tbody></table>
+
+<h2>10. Reconnaissance quality checklist</h2>
+<table><thead><tr><th>Required question</th><th>Answer</th><th>Evidence / qualification</th></tr></thead><tbody>
+<tr><td>Actual supplied source inspected?</td><td><span class="pill p-green">YES</span></td><td>Safe extraction, archive hash, file inventory, direct source inspection.</td></tr>
+<tr><td>Current upstream verified?</td><td><span class="pill p-amber">LIMITED</span></td><td>The subject is the user’s repository snapshot. The archive lacks Git metadata; current remote parity cannot be proven. This limitation is explicit.</td></tr>
+<tr><td>Compared against actual target architecture?</td><td><span class="pill p-green">YES</span></td><td>Registry, host discovery, service designs, runtime decisions, and owner rulings reconciled.</td></tr>
+<tr><td>Gross mismatches surfaced early?</td><td><span class="pill p-green">YES</span></td><td>Lifecycle, registry, runtime schema, control, and risk-state mismatches prioritized.</td></tr>
+<tr><td>Tests and privileged/control paths inspected?</td><td><span class="pill p-green">YES</span></td><td>Hooks, settings, package mirror, regression suite, runtime gates, workload, fixtures, invariants.</td></tr>
+<tr><td>Authority collisions identified?</td><td><span class="pill p-green">YES</span></td><td>Registry vs runtime, LiteLLM vs OmniRoute, Phase 2 vs Phase 3, design vs as-built.</td></tr>
+<tr><td>Technology quality separated from fit?</td><td><span class="pill p-green">YES</span></td><td>Strong method/evidence culture preserved while current baseline is held for reconciliation.</td></tr>
+<tr><td>Alternatives considered?</td><td><span class="pill p-green">YES</span></td><td>Wholesale rebuild rejected; preserve-and-reconcile recommended; parked items remain parked.</td></tr>
+<tr><td>Pilot defined where justified?</td><td><span class="pill p-blue">NOT YET</span></td><td>No new pilot is justified until owner synchronization and baseline repair.</td></tr>
+<tr><td>Synchronization checkpoint preserved?</td><td><span class="pill p-green">YES</span></td><td>No implementation authorized; decision agenda provided.</td></tr>
+<tr><td>Claims reproducible?</td><td><span class="pill p-green">YES</span></td><td>Hashes, counts, IDs, file paths, and static verification results recorded.</td></tr>
+<tr><td>Decision-grade artifact produced?</td><td><span class="pill p-green">YES</span></td><td>Findings, evidence, impact, disposition, and regroup sequence are explicit.</td></tr>
+</tbody></table>
+
+<div class="verdict info"><strong>Bottom line.</strong> HX-Infrastructure should be carried forward, not discarded. Its deepest strengths—evidence discipline, fleet discovery, provenance, owner authority, narrow capability boundaries, and failability principles—are exactly what the next phase needs. The immediate job is to make the repository obey those principles consistently before it becomes the execution backbone for the next build phase.</div>
+
+<footer>
+<p><strong>Prepared by:</strong> Codex / GPT-5.6-sol · <strong>Date:</strong> 2026-08-15 01:30 EDT</p>
+<p><strong>Truth state:</strong> RECONNAISSANCE FINDINGS — source snapshot review; no implementation authorization. Historical reports were treated as evidence, not current authority.</p>
+</footer>
+</main></body></html>

@@ -1,0 +1,271 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HX LangGraph Post-Recon Position and Order Dependency Decision</title><style>
+:root{
+ --bg:#071019;--panel:#0d1823;--panel2:#11212f;--text:#e9f1f7;--muted:#9dafbe;
+ --line:#263b4d;--cyan:#69dbff;--green:#94e77a;--amber:#ffd166;--red:#ff7e8e;
+ --violet:#c4a4ff;--code:#06131c;--shadow:0 18px 48px rgba(0,0,0,.32);
+}
+*{box-sizing:border-box}
+body{margin:0;background:
+ radial-gradient(circle at 10% -5%,rgba(105,219,255,.11),transparent 28%),
+ radial-gradient(circle at 90% 0%,rgba(196,164,255,.08),transparent 24%),var(--bg);
+ color:var(--text);font:15px/1.62 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{width:min(1200px,calc(100% - 34px));margin:auto;padding:34px 0 82px}
+.hero{background:linear-gradient(145deg,rgba(17,33,47,.98),rgba(8,20,30,.98));
+ border:1px solid var(--line);border-radius:18px;padding:34px 36px;box-shadow:var(--shadow)}
+.eyebrow{color:var(--cyan);font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.15em}
+h1{font-size:clamp(36px,5.2vw,58px);line-height:1.02;letter-spacing:-.04em;margin:8px 0 12px}
+h2{font-size:27px;letter-spacing:-.02em;margin:40px 0 14px}
+h3{font-size:19px;margin:22px 0 8px}
+p{margin:8px 0 14px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.pill{border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:999px;padding:6px 11px;color:var(--muted);font-size:12px}
+.callout{margin:18px 0;padding:18px 20px;border:1px solid rgba(105,219,255,.25);border-left:4px solid var(--cyan);border-radius:11px;background:rgba(105,219,255,.05)}
+.callout.ok{border-left-color:var(--green);background:rgba(148,231,122,.045)}
+.callout.warn{border-left-color:var(--amber);background:rgba(255,209,102,.045)}
+.callout.bad{border-left-color:var(--red);background:rgba(255,126,142,.045)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.card{grid-column:span 6;border:1px solid var(--line);border-radius:14px;padding:20px;background:linear-gradient(180deg,rgba(17,33,47,.94),rgba(13,24,35,.94))}
+.card.third{grid-column:span 4}.card.full{grid-column:1/-1}
+.metric{font-size:28px;font-weight:850;letter-spacing:-.03em}.label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+table{width:100%;border-collapse:collapse;border:1px solid var(--line);background:rgba(13,24,35,.93)}
+th,td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+th{background:rgba(255,255,255,.03);color:#cfe4f2;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+tr:last-child td{border-bottom:0}
+code,pre{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+code{background:var(--code);border:1px solid rgba(255,255,255,.06);padding:2px 5px;border-radius:5px;color:#d7edf8}
+pre{white-space:pre-wrap;background:var(--code);border:1px solid var(--line);border-radius:12px;padding:17px;overflow:auto;color:#dbeaf3}
+.keep{color:var(--green);font-weight:800}.later{color:var(--amber);font-weight:800}.no{color:var(--red);font-weight:800}.strong{color:var(--violet);font-weight:800}
+ul,ol{padding-left:22px}li{margin:5px 0}
+a{color:var(--cyan)}
+.small{color:var(--muted);font-size:13px}
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+.copybtn{position:sticky;top:10px;float:right;margin:12px 12px -52px 0;z-index:4;cursor:pointer;padding:8px 11px;border-radius:9px;border:1px solid var(--line);background:#142536;color:var(--text);font-weight:700}
+@media(max-width:820px){main{width:min(100% - 22px,1200px)}.hero{padding:25px 21px}.card,.card.third{grid-column:1/-1}table{display:block;overflow:auto}}
+</style></head><body><main>
+<section class="hero">
+<div class="eyebrow">HX-Infrastructure · Architecture / Process Decision</div>
+<h1>LangGraph After Recon: Proven Method, Deferred Design, Order-Aware Installation</h1>
+<p>Freezes the post-capability-review position for LangGraph and clarifies how OmniRoute, FastMCP, PostgreSQL and future stack sequencing affect installation and integration acceptance.</p>
+<div class="meta">
+<span class="pill">Migration methodology: ACCEPTED / PROVEN</span>
+<span class="pill">LangGraph service design: NOT YET ACCEPTED</span>
+<span class="pill">LangGraph core: selected technology, install later in final sequence</span>
+<span class="pill">Agent Server: deferred</span>
+<span class="pill">OmniRoute: traffic-plane contract</span>
+<span class="pill">MCP dependency: order-dependent</span>
+<span class="pill">Implementation order: NOT YET FROZEN</span>
+<span class="pill">Prepared by GPT-5.6 Sol</span>
+<span class="pill">2026-08-15 01:23 America/Panama</span>
+</div>
+</section>
+
+<div class="callout ok">
+<strong>Owner position adopted.</strong> Capability reviews are complete for now. HX will continue reconnaissance across the remaining stack before deciding implementation order. LangGraph will be installed and verified when that order places it in sequence. The migration methodology is accepted as proven; the service design will be authored and accepted later, with the benefit of the completed stack reconnaissance.
+</div>
+
+<h2>1. What is now decided</h2>
+<table>
+<tr><th>Item</th><th>Current state</th><th>Meaning</th></tr>
+<tr><td>LangGraph migration/distillation methodology</td><td class="keep">ACCEPTED — PROVEN</td><td>The second pilot proved that provenance controls, separate-context review, source verification and falsifiable gates find real design defects before infrastructure mutation.</td></tr>
+<tr><td>LangGraph technology fit</td><td class="keep">SELECTED — NARROW CORE ROLE</td><td>Use embedded open-source LangGraph core for workflow orchestration/state; do not infer that the standalone Agent Server is selected.</td></tr>
+<tr><td>LangGraph service design</td><td class="later">DEFERRED</td><td>The existing draft remains valuable evidence but is not the final HX design. Final design comes after whole-stack reconnaissance and implementation-order reasoning.</td></tr>
+<tr><td>Capability reviews</td><td class="keep">COMPLETE FOR NOW</td><td>No additional SME/capability review cycle is required at this stage.</td></tr>
+<tr><td>Implementation order</td><td class="later">OPEN</td><td>Do not let historical roadmap phase numbers or the order of repository research become implementation order by accident.</td></tr>
+<tr><td>LangGraph installation</td><td class="keep">PLANNED</td><td>Install and verify when LangGraph becomes the active implementation step in the final dependency sequence.</td></tr>
+</table>
+
+<h2>2. The central correction: dependencies are phase-relative</h2>
+<p>The earlier LangGraph distillation report classified the model gateway and MCP tool plane as <code>CURRENT REQUIRED</code> integrations. That was correct relative to the proposed service design being reviewed, but it should not be misread as saying both must already exist before the LangGraph Python package can be installed.</p>
+
+<pre>TECHNOLOGY INSTALLATION
+        ≠
+CORE RUNTIME VERIFICATION
+        ≠
+PERSISTENCE VERIFICATION
+        ≠
+MODEL-INTEGRATION VERIFICATION
+        ≠
+MCP-INTEGRATION VERIFICATION
+        ≠
+FINAL SERVICE ACCEPTANCE</pre>
+
+<p>Each layer has different prerequisites. The implementation order should be derived from those dependency edges after reconnaissance of the complete stack.</p>
+
+<h2>3. FastMCP and the MCP-plane question</h2>
+<div class="callout ok">
+<strong>Yes: if FastMCP is deployed first, it can resolve the LangGraph MCP-plane dependency.</strong> But the dependency is closed by a verified HX MCP-plane contract, not merely by the presence of a <code>fastmcp</code> package or a process answering on a port.
+</div>
+
+<p>Current FastMCP supports network-accessible Streamable HTTP, multi-client service deployment, authentication, server composition, namespacing and proxying. Current LangChain MCP adapters support loading remote HTTP MCP tools into a LangGraph <code>StateGraph</code>. These capabilities make FastMCP a credible implementation substrate for the HX MCP plane.</p>
+
+<h3>FastMCP-first path</h3>
+<pre>FastMCP installed + verified
+        │
+        ▼
+HX MCP-plane contract established
+transport / endpoint / namespace / auth / ownership / evidence
+        │
+        ▼
+LangGraph installed
+        │
+        ▼
+LangGraph MCP adapter integration verified
+        │
+        ▼
+MCP dependency = SATISFIED</pre>
+
+<h3>LangGraph-first path</h3>
+<pre>LangGraph core installed + verified
+        │
+        ├── deterministic graph semantics       PASS
+        ├── checkpoint behavior                 PASS when persistence exists
+        ├── model integration                   LATER if traffic plane not ready
+        └── MCP integration                     LATER if MCP plane not ready
+
+FastMCP deployed later
+        │
+        ▼
+MCP contract + LangGraph integration verification
+        │
+        ▼
+MCP dependency = SATISFIED</pre>
+
+<p>Therefore MCP is not inherently a blocker to <em>core LangGraph installation</em>. It becomes a required gate when the implementation phase claims that LangGraph's MCP-dependent workflow capability is ready.</p>
+
+<h2>4. What counts as an HX MCP-plane contract</h2>
+<table>
+<tr><th>Dimension</th><th>Minimum evidence before calling the dependency satisfied</th></tr>
+<tr><td>Implementation substrate</td><td>Exact FastMCP version/build is pinned and verified.</td></tr>
+<tr><td>Transport</td><td>Streamable HTTP or another explicitly selected MCP transport is documented and tested.</td></tr>
+<tr><td>Endpoint authority</td><td>Authoritative host/name/port/path is recorded from current HX authority.</td></tr>
+<tr><td>Tool namespace</td><td>Tool naming and collision strategy are explicit; composition does not silently overwrite tools.</td></tr>
+<tr><td>Authentication/exposure posture</td><td>Defined for the current dev/test phase. Detailed later hardening may remain deferred by owner decision.</td></tr>
+<tr><td>Ownership</td><td>FastMCP exposes/aggregates tools; it does not become infrastructure or workflow authority.</td></tr>
+<tr><td>LangGraph client</td><td>Exact <code>langchain-mcp-adapters</code> version is pinned and a StateGraph successfully loads/calls the intended tools.</td></tr>
+<tr><td>Failure behavior</td><td>Unavailable/broken downstream MCP servers do not create an incorrectly green integration result.</td></tr>
+<tr><td>Evidence</td><td>Tool discovery, one successful call, one denied/failed call, reconnect/recovery and logs are retained.</td></tr>
+</table>
+
+<h2>5. OmniRoute contract is no longer optional wording</h2>
+<p>The old LangGraph pilot referred to a missing LiteLLM contract. That is superseded by the current HX decision:</p>
+
+<pre>LiteLLM gateway role
+        ↓
+REPLACED
+
+OmniRoute
+        ↓
+HX AI TRAFFIC PLANE</pre>
+
+<p>Any future LangGraph design that needs model inference should depend on the <strong>OmniRoute traffic-plane contract</strong>, not recreate a LiteLLM contract and not bind workflow logic directly to individual Ollama/vLLM hosts unless a direct path exists solely for validation/troubleshooting.</p>
+
+<h2>6. Dependency model for LangGraph installation and verification</h2>
+<table>
+<tr><th>Dependency</th><th>Needed for package/core install?</th><th>Needed for complete capability verification?</th></tr>
+<tr><td>Current HX host baseline + Python service isolation</td><td class="keep">YES</td><td class="keep">YES</td></tr>
+<tr><td>PostgreSQL</td><td>NO for in-memory core smoke</td><td class="keep">YES for production-style durable checkpoint acceptance</td></tr>
+<tr><td>OmniRoute + accepted inference backend</td><td>NO</td><td class="keep">YES for model-integrated LangGraph workflows</td></tr>
+<tr><td>FastMCP / HX MCP plane</td><td>NO</td><td class="later">YES only when claiming MCP-integrated workflow readiness</td></tr>
+<tr><td>Mem0</td><td>NO</td><td>Only for workflows that explicitly use HX durable memory</td></tr>
+<tr><td>LightRAG</td><td>NO</td><td>Only for workflows that explicitly use retrieval knowledge</td></tr>
+<tr><td>Code-Graph-RAG</td><td>NO</td><td>Future optional code-intelligence integration</td></tr>
+<tr><td>jcode / Claude Code</td><td>NO</td><td>Consumers/operators, not LangGraph runtime prerequisites</td></tr>
+</table>
+
+<h2>7. How final implementation order should be chosen</h2>
+<p>Do not choose order from the old phased roadmap because that roadmap predates multiple current architecture decisions, including OmniRoute replacing LiteLLM and the newer jcode/Code-Graph-RAG findings.</p>
+
+<p>After Recon is complete across the stack, construct a dependency DAG and optimize for:</p>
+<ol>
+<li><strong>Foundation dependencies first</strong> — host baselines, storage, service isolation, networking/time/DNS.</li>
+<li><strong>Shared state before dependents where it unlocks meaningful acceptance</strong> — e.g. PostgreSQL before LangGraph persistent-checkpoint acceptance.</li>
+<li><strong>Traffic plane before model-dependent application acceptance</strong> — OmniRoute before claiming remote LangGraph inference capability.</li>
+<li><strong>MCP plane before MCP-dependent integration acceptance</strong> — FastMCP first if it is cheap/logical in the final DAG; otherwise defer only that verification slice.</li>
+<li><strong>Knowledge/memory systems according to actual workflow dependencies</strong>, not because an old diagram placed them earlier.</li>
+<li><strong>Observability at the earliest point where it materially improves validation</strong>, while respecting the dedicated spare-node plan.</li>
+</ol>
+
+<div class="callout warn">
+<strong>Important:</strong> a dependency appearing later in the final order does not invalidate earlier component work. It changes the truth state of a particular verification claim. Use <code>PASS</code>, <code>BLOCKED — DEPENDENCY NOT YET PRESENT</code>, or <code>DEFERRED BY IMPLEMENTATION ORDER</code> rather than inventing substitutes.
+</div>
+
+<h2>8. LangGraph install strategy once its turn arrives</h2>
+<p>The execution handoff should install the <strong>embedded open-source core</strong>, not the standalone Agent Server, and it should verify capability progressively according to whichever dependencies already exist at that point.</p>
+
+<pre>Stage A — host / authority / version preflight
+Stage B — dedicated Python environment
+Stage C — pinned embedded LangGraph core
+Stage D — deterministic no-LLM graph tests
+Stage E — checkpoint security controls
+Stage F — PostgreSQL checkpointer if PostgreSQL is ready
+Stage G — failure-injection / independent-connection persistence tests
+Stage H — OmniRoute model integration if traffic plane is ready
+Stage I — FastMCP integration if MCP plane is ready
+Stage J — evidence + rollback + status classification</pre>
+
+<p>This sequence verifies the technology without prematurely freezing the final orchestration topology or service contract.</p>
+
+<h2>9. Installation-time non-negotiables</h2>
+<ul>
+<li>Resolve the LangGraph host from current <code>SERVER-REGISTRY</code>; do not infer from historical material.</li>
+<li>Dedicated virtual environment/service dependency tree.</li>
+<li>Re-check current official LangGraph release at execution time and pin exact released versions.</li>
+<li>Pin to a reviewed, patched line — this position was verified against LangGraph <strong>1.2.11</strong>; pin that or a later patched release, and require patched versions of every selected checkpoint backend (<code>langgraph-checkpoint</code>, <code>langgraph-checkpoint-postgres</code>, <code>langgraph-checkpoint-sqlite</code>).</li>
+<li>Do not install floating <code>main</code>.</li>
+<li>Do not deploy standalone Agent Server as part of this workstream.</li>
+<li>Do not enable/use LangGraph Store; Mem0 remains the durable cross-thread memory authority.</li>
+<li>Set <code>LANGGRAPH_STRICT_MSGPACK=true</code> for checkpoint deserialization.</li>
+<li>For any manually constructed serializer or checkpointer, pass an explicit <code>allowed_msgpack_modules</code> allowlist to the <code>JsonPlusSerializer</code> constructor rather than relying on the default; do not widen it without a proven need.</li>
+<li>Keep pickle fallback disabled unless explicitly approved for a proven need.</li>
+<li>Evaluate checkpoint encryption before persisted sensitive state is accepted.</li>
+<li>For Postgres, call <code>setup()</code> as a deliberate migration step and prove persistence through an independent connection/session.</li>
+<li>Do not call a config echo a persistence test.</li>
+<li>Do not claim OmniRoute or MCP integration if those planes do not yet exist.</li>
+<li>No Ansible.</li>
+</ul>
+
+<h2>10. Accepted methodology / deferred design</h2>
+<div class="grid">
+<div class="card">
+<div class="label">Migration method</div>
+<div class="metric keep">PROVEN</div>
+<p>No further method pilot is needed now. Reuse the frozen migration pattern and its new rule: a gate must specify a construction that can actually fail.</p>
+</div>
+<div class="card">
+<div class="label">Service design</div>
+<div class="metric later">LATER</div>
+<p>Author the final LangGraph service design after the complete stack Recon and implementation-order decision, using current OmniRoute/FastMCP/knowledge-plane decisions rather than 2025 topology.</p>
+</div>
+</div>
+
+<h2>11. What we deliberately do not decide here</h2>
+<ul>
+<li>The final implementation order of the entire HX stack.</li>
+<li>Whether FastMCP comes before or after LangGraph.</li>
+<li>The final LangGraph orchestration topology.</li>
+<li>The final checkpoint retention/backup numbers.</li>
+<li>The final set of MCP tools exposed to LangGraph.</li>
+<li>The final model/workflow combinations.</li>
+<li>The final service/process topology beyond embedded-core selection.</li>
+</ul>
+
+<h2>12. Final position</h2>
+<div class="callout ok">
+<strong>Proceed with stack reconnaissance, not more LangGraph capability review.</strong><br><br>
+When whole-stack Recon is complete, determine implementation order from the actual dependency graph. When LangGraph's turn arrives, install and verify the embedded core using the companion execution prompt. Integrations that already exist become active acceptance gates; integrations that are later in the sequence remain explicitly deferred and are verified when their turn arrives.
+</div>
+
+<h2>13. Current upstream basis</h2>
+<ul>
+<li><a href="https://docs.langchain.com/oss/python/langgraph/overview">LangGraph OSS overview / install</a></li>
+<li><a href="https://docs.langchain.com/oss/python/langgraph/persistence">LangGraph persistence and serializer guidance</a></li>
+<li><a href="https://reference.langchain.com/python/langgraph.checkpoint.postgres">PostgreSQL checkpointer reference/security</a></li>
+<li><a href="https://gofastmcp.com/deployment/running-server">FastMCP HTTP/Streamable HTTP deployment</a></li>
+<li><a href="https://gofastmcp.com/servers/composition">FastMCP composition/namespacing</a></li>
+<li><a href="https://github.com/langchain-ai/langchain-mcp-adapters">LangChain MCP adapters / StateGraph integration</a></li>
+</ul>
+
+<footer>
+Truth state: architecture/process decision. This artifact does not authorize immediate LangGraph installation and does not freeze whole-stack implementation order. It prepares the installation/verification workstream for execution when LangGraph becomes the active step.
+</footer>
+</main></body></html>

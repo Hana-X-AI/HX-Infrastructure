@@ -1,0 +1,155 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Docling Conversion Topology — DECIDED</title>
+<style>
+:root{--bg:#fff;--panel:#f6f8fa;--panel2:#eef1f4;--bd:#d0d7de;--fg:#1f2328;--dim:#59636e;
+--acc:#0969da;--ok:#1a7f37;--warn:#9a6700;--stop:#cf222e}
+:root[data-theme="dark"]{--bg:#0d1117;--panel:#161b22;--panel2:#1c2129;--bd:#30363d;--fg:#e6edf3;
+--dim:#8b949e;--acc:#58a6ff;--ok:#3fb950;--warn:#d29922;--stop:#f85149}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1117;--panel:#161b22;
+--panel2:#1c2129;--bd:#30363d;--fg:#e6edf3;--dim:#8b949e;--acc:#58a6ff;--ok:#3fb950;--warn:#d29922;--stop:#f85149}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.62 -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:28px 22px 80px}
+header.hero{border:1px solid var(--bd);border-radius:14px;background:var(--panel);padding:22px 24px;margin-bottom:20px}
+.hero h1{margin:0 0 6px;font-size:22px}.hero .sub{color:var(--dim);font-size:14px}
+h2{font-size:17px;margin:28px 0 10px;padding-bottom:8px;border-bottom:1px solid var(--bd)}
+h3{font-size:14.5px;margin:18px 0 6px}
+p{margin:8px 0}
+code{background:var(--panel2);border:1px solid var(--bd);border-radius:5px;padding:1px 5px;font:12.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:8px 0;min-width:560px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--bd);vertical-align:top}
+th{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.5px;background:var(--panel)}
+.callout{border-left:4px solid var(--acc);background:var(--panel);border-radius:0 10px 10px 0;padding:13px 17px;margin:14px 0}
+.callout.stop{border-left-color:var(--stop)}.callout.warn{border-left-color:var(--warn)}
+.callout h3{margin:0 0 5px;font-size:14.5px}
+.callout p{margin:0 0 6px;font-size:13.5px;color:var(--dim)}.callout p:last-child{margin-bottom:0}
+ul.tight{margin:6px 0 0;padding-left:20px;font-size:14px}ul.tight li{margin:5px 0}
+.rec{background:rgba(9,105,218,.08);border:1px solid var(--acc);border-radius:10px;padding:14px 18px;margin:14px 0}
+:root[data-theme="dark"] .rec{background:rgba(88,166,255,.10)}
+.foot{color:var(--dim);font-size:12px;margin-top:34px;border-top:1px solid var(--bd);padding-top:16px}
+#themeToggle{position:fixed;top:14px;right:14px;z-index:99;background:var(--panel);color:var(--fg);
+border:1px solid var(--bd);border-radius:20px;padding:7px 14px;font-size:12.5px;cursor:pointer;font-family:inherit}
+#themeToggle:hover{border-color:var(--acc);color:var(--acc)}
+</style></head><body>
+<button id="themeToggle" type="button">◐ Theme</button>
+<div class="wrap">
+
+<header class="hero">
+<h1>Docling Conversion Topology — DECIDED</h1>
+<div class="sub">Ruled 2026-08-13: <b>remote mode, Docling Serve co-located on hxs-12</b>. The options and their trade-offs are kept below as the record of what was weighed.</div>
+</header>
+
+<div class="callout ok" style="border-left-color:var(--ok)"><h3>RULING &mdash; 2026-08-13</h3>
+<p><b>Remote mode, with Docling Serve co-located on hxs-12.</b> Two units on one host:
+<code>docling-serve</code> parses and owns the native libraries, model weights and parser
+cache; <code>docling-mcp</code> presents the MCP surface with
+<code>conversion_mode=remote</code> and <code>service_url</code> pointed at loopback.
+<code>fallback_to_local</code> stays <code>false</code>, since no local converter is installed.</p>
+<p><b>Correction to this packet’s own analysis.</b> It said co-locating Serve on hxs-12 made
+option B "strictly worse than A". That was overstated. Co-location still delivers lifecycle
+separation — a parser upgrade restarts Serve, not the MCP surface — it is the upstream default
+path, it keeps hxs-12’s registry role accurate because the host still parses, and relocating
+Serve later becomes a <code>service_url</code> change rather than a redesign.</p>
+<p><b>And one advantage the packet missed entirely:</b> <code>docling-serve</code> ships a
+<code>cpu</code> extra resolved against a CPU-only torch index.
+<code>docling-mcp[local]</code> has no equivalent. So the CUDA-wheel hazard flagged against
+option A is not merely mitigated by this ruling — it is designed out, because the parsing
+dependency set is installed from a package that supports a CPU-only build as a first-class
+option.</p>
+<p>Verified 2026-08-13: <code>docling-serve</code> v1.30.0 (released 2026-08-07),
+<code>requires-python &gt;=3.10</code>, uvicorn defaults <code>host 0.0.0.0</code> /
+<code>port 5001</code> — the bind must be overridden to loopback.</p></div>
+
+<div class="callout warn"><h3>First, a correction to how this was framed</h3>
+<p>The prior review described "three conversion modes". The package source says otherwise.
+<code>ConversionMode</code> has exactly <b>two</b> values — <code>remote</code> (the default) and
+<code>local</code>. What gets called hybrid is not a mode at all; it is a separate boolean,
+<code>fallback_to_local</code>, defaulting to <code>false</code>. So you are choosing between
+two modes and one flag, not three modes.</p></div>
+
+<h2>The three options</h2>
+<div class="tw"><table>
+<thead><tr><th>Option</th><th>Configuration</th><th>What lands on hxs-12</th><th>Precondition</th></tr></thead>
+<tbody>
+<tr><td><b>A · Local</b></td><td><code>conversion_mode=local</code> + <code>docling-mcp[local]</code></td><td>Native libraries, model weights, parser cache, and the torch/CUDA wheel chain</td><td>None — hxs-12 already holds the assigned role</td></tr>
+<tr><td><b>B · Remote</b></td><td><code>conversion_mode=remote</code> + <code>service_url</code></td><td>Nothing parsing-related. A thin façade with no model weights</td><td><b>A Docling Serve host that does not exist</b></td></tr>
+<tr><td><b>C · Remote + fallback</b></td><td>B plus <code>fallback_to_local=true</code></td><td>Everything in A, held in reserve</td><td>Same as B, plus A's footprint</td></tr>
+</tbody></table></div>
+
+<h2>What changed since the recommendation to "evaluate B first"</h2>
+<div class="callout stop"><h3>B and C have no host, and co-locating Serve defeats the point</h3>
+<p>No row in <code>SERVER-REGISTRY.md</code> assigns a Docling Serve workload to any server, and
+the ratified fleet map contains no Serve instance. That leaves two routes, and both cost
+something the original recommendation did not price:</p>
+<p><b>Co-locate Serve on hxs-12.</b> The same native libraries and model weights land on the
+same 232.64 GB filesystem, plus a second systemd unit and an HTTP hop. B becomes strictly
+worse than A.</p>
+<p><b>Place Serve elsewhere.</b> Requires a new owner role assignment. Every GPU-less
+candidate in the fleet is a 4–6 core machine, so the CPU parsing cost is relocated, not
+removed. It would also make hxs-12's registry role &mdash; "Ingestion — parsing" &mdash; inaccurate,
+since hxs-12 would no longer parse.</p></div>
+
+<h2>What argues for each</h2>
+
+<h3>A · Local</h3>
+<ul class="tight">
+<li><b>For:</b> no new host, no new service, no network hop. Matches the registry role exactly. Fewest moving parts for a dev/test/demo environment.</li>
+<li><b>Against:</b> couples parsing and MCP lifecycles — a parser upgrade restarts the MCP surface. Pulls the torch/CUDA wheel chain onto a GPU-less host unless torch is deliberately resolved from the CPU-only index. Model weights and cache compete with the OS on a single non-redundant disk.</li>
+</ul>
+
+<h3>B · Remote</h3>
+<ul class="tight">
+<li><b>For:</b> the package's own default. Separates the parsing lifecycle from the MCP lifecycle, which mirrors the roadmap's phase-4 parsing / phase-5 MCP split. Model weights, native libraries and cache live in one parsing service. No container and no GPU implied — Serve installs as a Python package with a CPU path.</li>
+<li><b>Against:</b> requires standing up a service that does not exist, on a host not yet assigned. Introduces a network dependency into every conversion. Two of the settings that would bound that dependency — <code>service_timeout</code> and <code>service_max_retries</code> — are declared in the package but not consumed by the remote client, so a remote conversion cannot currently be bounded through configuration.</li>
+</ul>
+
+<h3>C · Remote with fallback</h3>
+<ul class="tight">
+<li><b>For:</b> survives a Serve outage.</li>
+<li><b>Against:</b> carries A's full dependency footprint, including the GPU wheel chain, purely as a fallback. Two code paths to test and two sets of behaviour to reason about. Resilience a dev/test environment likely does not need.</li>
+</ul>
+
+<div class="rec">
+<h3 style="margin-top:0">Recommendation</h3>
+<p><b>Evaluate B, but decide Serve placement first — it is the real question.</b> B's
+architectural argument is sound and it is upstream's default, but B is not a configuration
+choice: it is a request for a new service on a host you have not assigned. If Serve ends up
+co-located on hxs-12, B delivers none of its benefit and A is the better answer.</p>
+<p>So the decision decomposes:</p>
+<ol style="font-size:14px;margin:6px 0 0">
+<li>Is a separate Docling Serve host available or worth assigning? If <b>no</b> → choose <b>A</b> and accept the lifecycle coupling.</li>
+<li>If <b>yes</b> → choose <b>B</b>, assign the host in the registry, and restate hxs-12's role as MCP façade rather than parsing.</li>
+<li>Choose <b>C</b> only if a Serve outage must not stop parsing — which, for a dev/test/demo environment, is hard to justify against carrying the full local footprint anyway.</li>
+</ol>
+<p style="margin-bottom:0"><b>No option is selected in the design document.</b> It carries
+<code>conversion topology: VERIFICATION REQUIRED</code> and scopes native libraries, model
+artefacts, cache and health conditionally, so it stays correct whichever way you rule.</p>
+</div>
+
+<h2>What the ruling unblocked</h2>
+<div class="tw"><table>
+<thead><tr><th>Blocked item</th><th>Why it waits</th></tr></thead>
+<tbody>
+<tr><td>Native library package names on 24.04</td><td>Only relevant under A or C</td></tr>
+<tr><td>Model-artefact footprint and the cache size bound</td><td>Under B they belong to Serve</td></tr>
+<tr><td>Health check mechanism</td><td>Under B, health means "is Serve reachable" as well as "am I up"</td></tr>
+<tr><td>Dependency set and CPU-only torch resolution</td><td>Not installed at all under B</td></tr>
+<tr><td>Concurrency and memory budget</td><td>Parsing memory is local under A/C, remote under B</td></tr>
+<tr><td>The deployment and multimodal test groups</td><td>They test different things per topology</td></tr>
+</tbody></table></div>
+
+<div class="foot">Ruled 2026-08-13. Verified against <code>docling-project/docling-mcp</code> v3.0.0, tag
+commit <code>7b51926920550c4a2c6e888977b8e38a08bafdbd</code>, and against
+<code>SERVER-REGISTRY.md</code> plus <code>servers/hxs-12/discovery.md</code>. Option B selected with Serve co-located on hxs-12; no infrastructure was contacted.
+<br><strong>NOTE: The “Three options” analysis and recommendation section above are superseded by the owner’s ruling (2026-08-13): remote mode with Docling Serve co-located on hxs-12. Do not use the trade-off analysis as implementation guidance. The ruling is recorded in <code>services/docling-mcp/service.md</code> and in the acceptance report.</strong></div>
+</div>
+<script>
+(function(){var b=document.getElementById('themeToggle'),r=document.documentElement;
+function cur(){var e=r.getAttribute('data-theme');if(e)return e;
+return window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
+function set(t){r.setAttribute('data-theme',t);b.textContent=t==='dark'?'☀ Light':'☾ Dark';}
+set(cur());b.addEventListener('click',function(){set(cur()==='dark'?'light':'dark');});})();
+</script>
+</body></html>

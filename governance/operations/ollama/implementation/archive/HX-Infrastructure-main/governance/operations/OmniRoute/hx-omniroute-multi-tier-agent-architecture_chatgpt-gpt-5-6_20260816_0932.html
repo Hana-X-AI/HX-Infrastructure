@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OmniRoute Multi-Tier AI Agent Architecture</title>
+<style>
+:root{--bg:#081018;--panel:#101b27;--panel2:#142334;--ink:#e9f1f8;--muted:#9fb1c3;--cyan:#4bd5e7;--gold:#f4c95d;--green:#6ee7a8;--red:#ff7b7b;--line:#294057;--violet:#b99cff}
+*{box-sizing:border-box} body{margin:0;background:linear-gradient(145deg,#071019,#0b1520 45%,#101829);color:var(--ink);font:15px/1.55 Inter,Segoe UI,Arial,sans-serif}
+main{max-width:1180px;margin:auto;padding:42px 28px 72px} h1{font-size:42px;line-height:1.08;margin:8px 0 14px} h2{margin:42px 0 15px;font-size:27px;color:#fff;border-bottom:1px solid var(--line);padding-bottom:9px} h3{margin:26px 0 9px;color:var(--cyan)} p{max-width:980px}
+.kicker{color:var(--cyan);text-transform:uppercase;letter-spacing:.16em;font-weight:750}.sub{font-size:18px;color:var(--muted);max-width:900px}.meta{color:var(--muted);font-size:13px}
+.verdict{margin:28px 0;padding:22px 24px;border:1px solid #2f7180;border-left:5px solid var(--cyan);border-radius:10px;background:#0e2029}.verdict strong{color:var(--cyan);font-size:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}.card{background:rgba(16,27,39,.92);border:1px solid var(--line);border-radius:10px;padding:17px}.card h3{margin-top:0}.good{color:var(--green)}.warn{color:var(--gold)}.danger{color:var(--red)}.violet{color:var(--violet)}
+table{width:100%;border-collapse:collapse;margin:14px 0 25px;background:#0e1823;font-size:14px}th,td{text-align:left;vertical-align:top;border:1px solid var(--line);padding:10px 11px}th{background:#142536;color:var(--cyan)}tr:nth-child(even) td{background:#101d2a}
+code{color:#b9e9f0;background:#09141e;padding:1px 5px;border-radius:4px}ul,ol{padding-left:23px}li{margin:5px 0}.pill{display:inline-block;padding:2px 8px;border:1px solid var(--line);border-radius:999px;font-size:12px;color:var(--muted);margin:2px}
+.flow{display:grid;gap:9px;margin:18px 0}.node{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:13px 16px}.arrow{text-align:center;color:var(--cyan);font-size:20px}.note{border-left:3px solid var(--gold);background:#241f12;padding:12px 15px;margin:15px 0;color:#f3e5b5}.risk{border-left:3px solid var(--red);background:#251419;padding:12px 15px;margin:15px 0}.ok{border-left:3px solid var(--green);background:#10231b;padding:12px 15px;margin:15px 0}
+.small{font-size:13px;color:var(--muted)}.footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted)}a{color:#75d9ff}blockquote{margin:15px 0;padding:10px 18px;border-left:4px solid var(--violet);background:#15172a}
+@media(max-width:720px){main{padding:25px 14px}h1{font-size:32px}table{display:block;overflow-x:auto}}
+</style>
+</head>
+<body><main>
+<div class="kicker">HX Infrastructure · Phase 3 Architecture Brief</div>
+<h1>OmniRoute Multi-Tier AI Agent Architecture</h1>
+<p class="sub">Repository reconnaissance, methodology validation, and a scalable operating model for Claude Code, Max, persistent domain stewards, and ephemeral task cells.</p>
+<p class="meta">Prepared 16 August 2026 · Source snapshot: OmniRoute release/v3.8.50 ZIP · Static inspection only; no untrusted repository code executed.</p>
+
+<div class="verdict"><strong>Final recommendation: keep the three tiers—but federate Tier 2.</strong><br>
+Claude Code remains the Meta-Agent. Max remains the single repository coordinator and integration authority. Max is joined at Tier 2 by nine persistent domain stewards whose knowledge and contracts survive across tasks. Tier 3 consists of short-lived, single-purpose task cells. Max alone dispatches work; sub-agents do not recursively spawn more agents.</div>
+
+<h2>Executive assessment</h2>
+<div class="grid">
+<section class="card"><h3 class="good">What is right</h3><p>The proposed separation of intent, repository coordination, and atomic execution is fundamentally sound. It matches OmniRoute’s strong worktree discipline and reduces uncontrolled context mixing.</p></section>
+<section class="card"><h3 class="danger">What would fail</h3><p>A lone Max between Claude and every worker becomes a routing, memory, review, and integration bottleneck. OmniRoute’s cross-cutting request path makes folder-only delegation unsafe.</p></section>
+<section class="card"><h3 class="warn">What changes</h3><p>“Primary Agent” becomes a council led by Max. Persistent means a versioned role contract and maintained knowledge base—not an endlessly accumulating chat context.</p></section>
+<section class="card"><h3 class="violet">Operating principle</h3><p>One dispatcher, one writer per worktree, explicit domain reviewers, independent verification, and every meaningful fix converted into reusable repository knowledge. Every role has a human name; the technical title remains explicit.</p></section>
+</div>
+
+<h2>Evidence from the repository</h2>
+<p>This is not merely a large application. It is a protocol gateway, routing engine, provider abstraction, agent platform, persistence layer, dashboard, desktop application, CLI, embedded-service supervisor, and release system in one repository.</p>
+<table>
+<thead><tr><th>Signal</th><th>Observed</th><th>Architectural implication</th></tr></thead>
+<tbody>
+<tr><td>Archive</td><td>11,527 files; 210.7 MB uncompressed; SHA-256 <code>2b04f4cba777b40ccc2af52ce23e2ffac27f2d8b5bcbd6cef6776b91c96c06e3</code></td><td>Repo-scale coordination requires durable indexing and bounded task contexts.</td></tr>
+<tr><td>Languages</td><td>8,723 TypeScript/TSX files, 1,391 Markdown files, 145 SQL files</td><td>Application, documentation, and database changes need different expertise and validation.</td></tr>
+<tr><td>Application surface</td><td><code>src/app</code> 1,575 files; 728 API and 787 dashboard files</td><td>API and experience work are both first-class domains.</td></tr>
+<tr><td>Core gateway</td><td><code>open-sse</code> 1,491 files across services, executors, handlers, translators, MCP, configuration, and utilities</td><td>Protocol, provider, and routing ownership cannot be collapsed into one generic backend agent.</td></tr>
+<tr><td>Persistence</td><td><code>src/lib</code> 891 files, including 310 database files and many migrations</td><td>Schema evolution and state correctness warrant a dedicated steward.</td></tr>
+<tr><td>Verification</td><td>4,590 test files; 83 check/quality scripts; 24 GitHub workflows; two test ecosystems</td><td>Verification is a domain, not a final prompt appended to implementation.</td></tr>
+<tr><td>Operational surface</td><td>243 <code>bin</code> files, 246 scripts, Electron, Docker/compose/Fly/systemd assets</td><td>CLI, packaging, desktop, and runtime supervision require explicit ownership.</td></tr>
+<tr><td>Cross-domain coupling</td><td>Large import flows between <code>src/app</code>, <code>src/lib</code>, <code>src/shared</code>, and <code>open-sse</code>; documentation reports 91 advisory dependency cycles</td><td>Folder ownership alone is insufficient; change-class reviewer rules are mandatory.</td></tr>
+</tbody></table>
+
+<h2>Step 1 — Methodology validation</h2>
+<h3>Critique of the original three-tier proposal</h3>
+<table>
+<thead><tr><th>Dimension</th><th>Assessment</th><th>Required control</th></tr></thead>
+<tbody>
+<tr><td>Intent separation</td><td class="good">Strong. Claude can maintain user context without carrying implementation detail.</td><td>Claude issues an explicit intent and acceptance envelope, not file-level instructions.</td></tr>
+<tr><td>Central coordination</td><td class="warn">Useful but overloaded if Max alone must know every subsystem.</td><td>Give Max a council of domain stewards and a machine-readable ownership map.</td></tr>
+<tr><td>Atomic execution</td><td class="good">Correct for worktree-isolated changes.</td><td>Each worker receives narrow write scope, hard stops, tests, and a return schema.</td></tr>
+<tr><td>Recursive delegation</td><td class="danger">Unsafe. It obscures authority, ownership, and token/cost budgets.</td><td>Max is the sole dispatcher; Tier-3 agents may request help but may not spawn it.</td></tr>
+<tr><td>Long-lived context</td><td class="danger">Persistent chat sessions eventually become stale and contradictory.</td><td>Persist contracts, maps, decisions, and fix records; start task conversations fresh.</td></tr>
+<tr><td>Integration</td><td class="danger">Multiple agents editing a shared checkout would violate repository rules.</td><td>One task, one confirmed base, one worktree, one branch owner, one writer.</td></tr>
+</tbody></table>
+
+<h3>Alternatives considered</h3>
+<table>
+<thead><tr><th>Model</th><th>Strength</th><th>Failure mode</th><th>Disposition</th></tr></thead>
+<tbody>
+<tr><td>Original 3-tier, Max alone at Tier 2</td><td>Simple authority chain</td><td>Max becomes a knowledge and review choke point</td><td>Modify</td></tr>
+<tr><td>Four-tier hierarchy</td><td>More formal specialization</td><td>Longer chains, slower handoffs, diluted accountability</td><td>Reject as default</td></tr>
+<tr><td>Peer swarm</td><td>High parallelism</td><td>Conflicting edits, ambiguous authority, integration risk</td><td>Reject</td></tr>
+<tr><td>Federated Tier-2 council</td><td>Specialized durable knowledge with one dispatcher</td><td>Requires explicit overlap and escalation rules</td><td class="good">Adopt</td></tr>
+</tbody></table>
+
+<h3>Recommended topology</h3>
+<div class="flow">
+<div class="node"><b>Tier 1 · Claude Code — Meta-Agent</b><br><span class="small">User dialogue, intent shaping, priority, approvals, and final outcome narration.</span></div>
+<div class="arrow">↓</div>
+<div class="node"><b>Tier 2 · Max-led Primary Agent Council</b><br><span class="small">Max dispatches and integrates. Maya, Carson, Riley, Lena, Aisha, Nolan, Sofia, Frank, and Vera maintain domain knowledge, constraints, impact advice, and review authority.</span></div>
+<div class="arrow">↓</div>
+<div class="node"><b>Tier 3 · Ephemeral Task Cells</b><br><span class="small">Sam, Ruth, Will, Brooke, Paul, and Sue are created only for a bounded task, each with a precise functional title.</span></div>
+</div>
+<div class="note"><b>Key distinction:</b> the hierarchy remains three tiers. The federation is within Tier 2; it is not an extra command layer. Max remains the sole task dispatcher and integration authority.</div>
+
+<h2>Step 2 — Persistent primary agent blueprint</h2>
+<p>These agents are persistent as <em>capabilities</em>: each has a versioned charter, ownership map, invariants, runbooks, and curated knowledge. They should not rely on an indefinitely reused conversation.</p>
+<table>
+<thead><tr><th>Agent</th><th>Role</th><th>Owned scope</th><th>Lifecycle</th></tr></thead>
+<tbody>
+<tr><td><b>Max</b></td><td>Chief Repository Steward &amp; Integrator</td><td>Whole-repo map; root configuration; <code>AGENTS.md</code>; task classification; worktree registry; branch ownership; dependency and reviewer selection; integration readiness. Max ordinarily does not implement production changes.</td><td><span class="pill">Persistent Primary</span></td></tr>
+<tr><td><b>Maya</b></td><td>Protocol, Translation &amp; Streaming Steward</td><td><code>src/app/api/v1*</code>, <code>src/sse</code>, <code>open-sse/handlers</code>, <code>translator</code>, <code>transformer</code>, streaming utilities, modality routes. Owns protocol fidelity, tool/reasoning payloads, SSE framing, error semantics.</td><td><span class="pill">Persistent Primary</span></td></tr>
+<tr><td><b>Carson</b></td><td>Routing, Resilience &amp; Policy Steward</td><td><code>open-sse/services</code> routing, auto-combo, combo, compression, quota, fallback; <code>src/domain</code>; rate/admission policy; circuit breaker, connection cooldown, and model lockout behavior.</td><td><span class="pill">Persistent Primary</span></td></tr>
+<tr><td><b>Riley</b></td><td>Provider Integrations &amp; Credential Flow Steward</td><td><code>open-sse/executors</code>; provider registry/config/catalog; <code>src/lib/providers</code>; <code>src/lib/oauth</code>; model discovery and provider assets. Owns upstream contracts, credential paths, capability mapping.</td><td><span class="pill">Persistent Primary</span></td></tr>
+<tr><td><b>Lena</b></td><td>Persistence &amp; State Steward</td><td><code>src/lib/db</code>, migrations, repositories/adapters, backup/restore, durable state transitions. Owns schema compatibility, transactions, migration safety, rollback evidence.</td><td><span class="pill">Persistent Primary</span></td></tr>
+<tr><td><b>Aisha</b></td><td>Security &amp; Privileged Boundaries Steward</td><td>Authentication, authorization, guardrails, compliance/audit, sanitization, outbound URL controls, secrets, <code>src/mitm</code>, proxy/tunnel paths, local-only and process-execution boundaries.</td><td><span class="pill">Persistent Primary</span></td></tr>
+<tr><td><b>Nolan</b></td><td>Agent &amp; Extension Surfaces Steward</td><td>MCP, A2A, cloud agents, memory, skills, agent skills, plugins, ACP/Conductor surfaces. Owns tool contracts, scopes, extension lifecycle, agent interoperability.</td><td><span class="pill">Persistent Primary</span></td></tr>
+<tr><td><b>Sofia</b></td><td>Dashboard, Desktop &amp; Experience Steward</td><td>Dashboard routes, components, hooks, stores, browser clients, Electron, PWA, i18n and accessibility. Owns user workflows and client/server contract use.</td><td><span class="pill">Persistent Primary</span></td></tr>
+<tr><td><b>Frank</b></td><td>CLI, Build, Packaging &amp; Delivery Steward</td><td><code>bin</code>; build/dev/CLI/Docker/ops scripts; Docker, compose, Fly and systemd assets; companion packages; browser pool; embedded-service supervisors/installers.</td><td><span class="pill">Persistent Primary</span></td></tr>
+<tr><td><b>Vera</b></td><td>Quality, Release &amp; Evidence Steward</td><td><code>tests</code>, check/quality scripts, CI workflows, baselines/allowlists, coverage, changelog/release/docs consistency. Vera validates independently and does not author the production fix she certifies.</td><td><span class="pill">Persistent Primary</span></td></tr>
+</tbody></table>
+
+<h3>Why this split fits OmniRoute</h3>
+<ul>
+<li>The request path crosses protocol, policy, providers, security, state, and quality; the primary agents mirror those architectural seams.</li>
+<li>Agent and extension surfaces are large enough to deserve Nolan’s dedicated stewardship rather than being buried inside generic backend ownership.</li>
+<li>CLI, Electron, installers, embedded services, and packaging make Frank’s delivery domain materially different from application engineering.</li>
+<li>Vera is independent because the repository has extensive ratchets and two non-overlapping test runners; “tests passed” must identify which evidence was actually run.</li>
+</ul>
+
+<h2>Mandatory overlap and review matrix</h2>
+<p>Ownership identifies the lead; it does not grant unilateral change authority. These are high-coupling zones.</p>
+<table>
+<thead><tr><th>Change class</th><th>Lead</th><th>Mandatory reviewers</th></tr></thead>
+<tbody>
+<tr><td>Chat core, request/response translation, streaming</td><td>Maya</td><td>Carson, Riley, Aisha, Vera</td></tr>
+<tr><td>Auto/combo/fallback selection and resilience</td><td>Carson</td><td>Maya, Riley, Lena, Vera</td></tr>
+<tr><td>Provider or model integration</td><td>Riley</td><td>Maya, Carson, Aisha, Vera; Sofia if surfaced in UI</td></tr>
+<tr><td>Schema or migration</td><td>Lena</td><td>Affected domain owner, Aisha for sensitive data, Vera</td></tr>
+<tr><td>MCP/A2A/tool mutation</td><td>Nolan</td><td>Aisha, Lena, affected domain owner, Vera</td></tr>
+<tr><td>MITM, tunnel, process spawn, installers</td><td>Aisha or Frank</td><td>Both Aisha and Frank, plus Vera</td></tr>
+<tr><td>Root package/config/lockfile</td><td>Frank</td><td>Vera and Max</td></tr>
+<tr><td>Release, version, changelog, baselines</td><td>Vera</td><td>Max, Frank, affected domain steward</td></tr>
+</tbody></table>
+
+<h2>Ephemeral Tier-3 task cells</h2>
+<table>
+<thead><tr><th>Agent template</th><th>Atomic role</th><th>Write authority</th><th>Exit artifact</th></tr></thead>
+<tbody>
+<tr><td><b>Sam</b></td><td>Scout — read-only impact mapping, dependency tracing, invariant discovery, test selection.</td><td>None</td><td>Evidence map, affected paths, owners, risks, proposed acceptance checks.</td></tr>
+<tr><td><b>Ruth</b></td><td>Reproducer — create the failing test or a repository-approved live validation plan before the fix.</td><td>No task-branch writes. A test or fixture patch may be created only in an isolated reproduction worktree.</td><td>Failure proof, reproduction command, confirmed base identity, patch, and patch hash.</td></tr>
+<tr><td><b>Will</b></td><td>Implementer — implement the smallest approved change inside the assigned worktree.</td><td>Only allowlisted paths</td><td>Patch, test results, assumptions, unresolved risks.</td></tr>
+<tr><td><b>Brooke</b></td><td>Adversarial Reviewer — boundary cases, compatibility, security, failure injection.</td><td>None on writer branch</td><td>Findings ranked by severity and reproducibility.</td></tr>
+<tr><td><b>Paul</b></td><td>Independent Prover — run acceptance evidence and verify claims.</td><td>None; cannot edit tests to make them pass</td><td>Evidence ledger with commands, outputs, and limitations.</td></tr>
+<tr><td><b>Sue</b></td><td>Knowledge Curator — convert the completed fix into durable knowledge.</td><td>Approved documentation/knowledge record only</td><td>Symptom, root cause, rejected hypotheses, fix, regression guard, validation, recurrence signature, reusable lesson.</td></tr>
+</tbody></table>
+<div class="ok"><b>Knowledge is a product of the workflow.</b> OmniRoute’s existing fix history often captures root cause and regression guards well. Sue institutionalizes that strength so future agents retrieve a tested lesson instead of rediscovering the same failure.</div>
+
+<h2>End-to-end task protocol</h2>
+<ol>
+<li><b>Claude establishes intent:</b> desired outcome, user constraints, priority, and approval boundary.</li>
+<li><b>Max classifies:</b> task type, risk, affected domains, lead steward, reviewers, and whether a freeze or owner ruling applies.</li>
+<li><b>Sam maps impact:</b> follows imports and runtime flow, not just folders.</li>
+<li><b>Human/operator confirms base:</b> required by repository rules before worktree creation.</li>
+<li><b>Max issues the task packet:</b> exact scope, hard stops, acceptance commands, and return schema.</li>
+<li><b>Ruth proves the problem:</b> failing-then-passing test, or explicitly documented live validation where the repository permits it. If a test or fixture is needed, she returns a patch against the confirmed base with its hash and failing command; she never edits the task branch.</li>
+<li><b>Max transfers the proof to Will:</b> Max checks the base and patch hash, then authorizes Will to apply the approved reproducer patch in the task worktree. Will reruns the failure before implementation and remains the sole writer on the task branch.</li>
+<li><b>Domain stewards review:</b> required overlaps are enforced.</li>
+<li><b>Brooke challenges and Paul validates:</b> independent from implementation.</li>
+<li><b>Sue records the lesson:</b> evidence becomes searchable operational knowledge.</li>
+<li><b>Max integrates:</b> confirms gates, ownership, branch state, and release constraints.</li>
+<li><b>Claude reports:</b> outcome, evidence, residual risk, and next decision to the user.</li>
+</ol>
+
+<h3>Minimum task packet</h3>
+<table>
+<tbody>
+<tr><th>Identity</th><td>Task ID, intent, operating mode, risk class</td></tr>
+<tr><th>Git isolation</th><td>Confirmed base, worktree, branch owner, sole writer</td></tr>
+<tr><th>Authority</th><td>Lead primary, required reviewers, escalation owner</td></tr>
+<tr><th>Scope</th><td>Allowed paths, protected paths, invariants, known failure</td></tr>
+<tr><th>Evidence</th><td>Acceptance commands, required test runner(s), quality gates, failure-before-fix requirement</td></tr>
+<tr><th>Safety</th><td>Network/credential policy, security boundaries, stop conditions</td></tr>
+<tr><th>Forbidden actions</th><td>No stash/pop; no shared checkout; no foreign worktree/branch/PR; no unapproved base/freeze bypass; no hook/gate bypass; no mutation, movement, symlinking, deletion, or tracking of <code>_tasks</code></td></tr>
+<tr><th>Knowledge</th><td>Required fix record and recurrence signature</td></tr>
+<tr><th>Return contract</th><td>Changed files, evidence, assumptions, unresolved risks, reviewer requests</td></tr>
+</tbody></table>
+
+<h2>Concurrency and authority model</h2>
+<ul>
+<li><b>Max is the sole dispatcher.</b> Workers can request another specialist, but only Max creates or assigns it.</li>
+<li><b>Parallelize reads and independent tests freely;</b> parallelize writes only when scopes and worktrees are disjoint.</li>
+<li><b>One writer owns a task branch.</b> Reviewers report findings; they do not silently edit the writer’s branch.</li>
+<li><b>Cross-domain changes receive one lead.</b> Review ownership does not create co-equal writers.</li>
+<li><b>Security and release stops are blocking.</b> Aisha and Vera can return work to Max; they do not redefine user intent.</li>
+<li><b>Persistent agents do not merge their own advice.</b> Max owns integration; Claude owns user-facing escalation.</li>
+</ul>
+
+<h2>Repository knowledge and control plane</h2>
+<p>If this architecture is approved, add a small versioned control plane rather than relying on prompt folklore:</p>
+<table>
+<thead><tr><th>Proposed artifact</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td><code>.agents/registry.yaml</code></td><td>Primary agent names, charters, owners, lifecycle, and prompt versions.</td></tr>
+<tr><td><code>.agents/ownership.yaml</code></td><td>Lead and review mappings by path and change class.</td></tr>
+<tr><td><code>.agents/task-packet.schema.json</code></td><td>Validates that no worker starts without base, scope, tests, and hard stops.</td></tr>
+<tr><td><code>.agents/invariants/</code></td><td>Protocol, routing, persistence, security, UX, packaging, and release invariants.</td></tr>
+<tr><td><code>.agents/knowledge/fixes/</code></td><td>Sue’s records with structured symptoms, causes, regression guards, and recurrence signatures.</td></tr>
+<tr><td><code>.agents/decisions/</code></td><td>Architecture and owner rulings, with date, evidence, and supersession links.</td></tr>
+<tr><td><code>.agents/verification/</code></td><td>Command matrices for both test runners and the relevant ratchets/checks.</td></tr>
+</tbody></table>
+<div class="risk"><b>Do not assume these already exist.</b> The snapshot’s repository map references <code>.claude/</code> and <code>.agents/</code>, but neither directory is present in the supplied release archive. Reconcile whether they are intentionally excluded, generated, private, or documentation drift before building automation around them.</div>
+
+<h2>Material reconnaissance findings that affect agent governance</h2>
+<ul>
+<li><b>Release identity is not fully closed:</b> the snapshot declares 3.8.50 and its changelog entry is still TBD, while the public releases page currently identifies 3.8.49 as latest. The ZIP contains no Git metadata, so its exact commit cannot be proven from the archive alone.</li>
+<li><b>Documentation has version drift:</b> several architecture documents still identify 3.8.40 while other materials are newer. Agents must cite the implementation source they relied on.</li>
+<li><b>Quality evidence is segmented:</b> Node’s test runner and Vitest are both used. A generic “tests passed” claim is incomplete without commands and coverage of the affected subsystem.</li>
+<li><b>Security must be a standing review domain:</b> prior public security work included command-injection and authorization/guardrail concerns. Privileged paths cannot be treated as ordinary utility code.</li>
+<li><b>Repository rules are unusually explicit:</b> worktree ownership, failing-first regression evidence, no stash/pop, release freeze rules, and the protected <code>_tasks</code> boundary should be injected verbatim into every worker packet.</li>
+<li><b>Provider counts are volatile:</b> current branch-facing documentation has already drifted from the supplied snapshot. Agents should derive current provider capability from canonical registry data, not prose counts.</li>
+</ul>
+
+<h2>Routing examples</h2>
+<table>
+<thead><tr><th>Example request</th><th>Lead path</th><th>Task cell</th></tr></thead>
+<tbody>
+<tr><td>Add a provider with streaming tool calls</td><td>Riley leads; Maya, Carson, Aisha, Vera review</td><td>Sam → Ruth → Will → Brooke → Paul → Sue</td></tr>
+<tr><td>Fix duplicate SSE reasoning chunks</td><td>Maya leads; Carson and Vera review</td><td>Sam traces translation and framing; Ruth captures the failing stream; Will patches narrowly</td></tr>
+<tr><td>Add a durable memory tool to MCP</td><td>Nolan leads; Lena and Aisha mandatory</td><td>Separate schema and tool-contract evidence; security scope review before implementation</td></tr>
+<tr><td>Repair installer command construction</td><td>Frank and Aisha jointly review; one named lead</td><td>Brooke’s adversarial review mandatory; Paul tests shell metacharacter and path cases</td></tr>
+<tr><td>Modify provider health fallback</td><td>Carson leads; Riley, Maya, Lena, Vera review</td><td>Ruth builds failure-injection evidence plus state-transition proof</td></tr>
+</tbody></table>
+
+<h2>Activation sequence</h2>
+<ol>
+<li>Approve names, charters, and Max’s sole-dispatch authority.</li>
+<li>Reconcile missing <code>.agents</code>/<code>.claude</code> material and decide the canonical control-plane location.</li>
+<li>Build the ownership and mandatory-review matrix from imports plus runtime flows.</li>
+<li>Implement the task-packet schema and refuse incomplete dispatches.</li>
+<li>Pilot three contrasting changes: one provider/protocol task, one database/state task, and one security/packaging task.</li>
+<li>Measure review escapes, rework, time-to-context, duplicate investigation, gate coverage, and knowledge reuse.</li>
+<li>Promote the model only after the pilot proves that Max is coordinating rather than rediscovering every domain.</li>
+</ol>
+
+<h2>Success measures</h2>
+<table>
+<thead><tr><th>Measure</th><th>Desired behavior</th></tr></thead>
+<tbody>
+<tr><td>Context acquisition</td><td>Sam’s reconnaissance and the domain packs reduce repeated repo-wide reading per task.</td></tr>
+<tr><td>Ownership precision</td><td>No change begins without a lead and required reviewers.</td></tr>
+<tr><td>Isolation</td><td>Zero shared-checkout or cross-worktree edits.</td></tr>
+<tr><td>Evidence quality</td><td>Every production fix has Ruth’s failure proof and Paul’s named verification commands.</td></tr>
+<tr><td>Review independence</td><td>Paul and Vera do not alter the implementation they certify.</td></tr>
+<tr><td>Knowledge reuse</td><td>Recurring defects retrieve prior Sue records before fresh investigation.</td></tr>
+<tr><td>Max load</td><td>Max spends effort on classification, conflicts, and integration—not re-learning subsystem internals.</td></tr>
+</tbody></table>
+
+<h2>Final recommendation</h2>
+<blockquote>Adopt a three-tier, federated-control model: Claude Code for intent and user authority; Max as the single dispatcher and integrator within a council of nine persistent, human-named domain stewards; and human-named, ephemeral, non-recursive task cells for reconnaissance, reproduction, implementation, adversarial review, proof, and knowledge capture.</blockquote>
+<p>This structure respects the original strategy while removing its main scaling defect. It matches OmniRoute’s actual seams, protects its worktree and evidence rules, and turns the project’s strong documentation and fix history into an operational memory system. The architecture should be piloted before it is automated broadly; the first implementation target is the task packet and ownership map, not a large fleet of autonomous writers.</p>
+
+<h2>Sources and provenance</h2>
+<ul>
+<li>Supplied archive: <code>OmniRoute-release-v3.8.50(1).zip</code>, statically inspected in full at the inventory and architecture level.</li>
+<li>Repository rules and architecture: root <code>AGENTS.md</code>, <code>README.md</code>, <code>package.json</code>, architecture documents, source tree, tests, checks, workflows, migrations, and changelog fragments.</li>
+<li>Current upstream branch: <a href="https://github.com/diegosouzapw/OmniRoute/tree/release/v3.8.50">OmniRoute release/v3.8.50</a>.</li>
+<li>Release status: <a href="https://github.com/diegosouzapw/OmniRoute/releases">OmniRoute releases</a>.</li>
+<li>Security context: <a href="https://github.com/diegosouzapw/OmniRoute/issues/1465">Public security audit issue #1465</a>.</li>
+</ul>
+<p class="small">Limits: this was static reconnaissance. No application services, installers, migrations, or test suites were executed. Current upstream observations are time-sensitive; the supplied ZIP is the authoritative basis for the file counts and architecture mapping in this report.</p>
+
+<div class="footer">HX Infrastructure · OmniRoute agent architecture · Evidence-first reconnaissance</div>
+</main></body></html>

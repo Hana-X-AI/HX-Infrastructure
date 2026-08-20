@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>HX Qwen3.8-27B on Ollama — Deployment Deep Dive</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+  :root{--bg:#071019;--panel:#0e1a26;--panel2:#122334;--ink:#e9f1f7;--muted:#9fb2c3;--cyan:#4bd5e7;--blue:#68a8ff;--green:#6ee7a8;--gold:#f4c95d;--red:#ff8585;--line:#294057;--code:#09141e}
+  *{box-sizing:border-box}html{background:var(--bg);color:var(--ink)}body{max-width:1180px;margin:0 auto;padding:48px 32px 80px;background:linear-gradient(145deg,#071019 0%,#0b1520 55%,#101829 100%);font:16px/1.62 Inter,Segoe UI,Arial,sans-serif}
+  h1{font-size:44px;line-height:1.08;margin:.2em 0 .35em;color:#fff}h2{font-size:29px;margin:2em 0 .65em;padding-bottom:.28em;border-bottom:1px solid var(--line);color:#f7fbff}h3{font-size:21px;margin:1.55em 0 .45em;color:var(--cyan)}h4{color:var(--blue)}
+  p{max-width:1000px}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}strong{color:#fff}blockquote{margin:1.3em 0;padding:12px 18px;border-left:4px solid var(--gold);background:#241f12;color:#f4ead0}
+  table{width:100%;border-collapse:collapse;margin:18px 0 28px;background:var(--panel);font-size:14px}th,td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}th{background:var(--panel2);color:var(--cyan)}tr:nth-child(even) td{background:#101d2a}
+  pre{padding:16px 18px;overflow:auto;border:1px solid var(--line);border-radius:9px;background:var(--code);color:#d7e9f3}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:#b9e9f0;background:var(--code);padding:.12em .3em;border-radius:4px}pre code{padding:0;background:transparent}
+  ul,ol{padding-left:25px}li{margin:.32em 0}hr{border:0;border-top:1px solid var(--line);margin:36px 0}.subtitle{color:var(--muted)}
+  #TOC{margin:28px 0 38px;padding:20px 24px;background:rgba(14,26,38,.94);border:1px solid var(--line);border-left:5px solid var(--cyan);border-radius:10px}#TOC>ul{columns:2;column-gap:36px}#TOC li{break-inside:avoid;font-size:14px}
+  .mermaid{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+  @media(max-width:760px){body{padding:26px 15px}h1{font-size:33px}table{display:block;overflow-x:auto}#TOC>ul{columns:1}}
+  @media print{html,body{background:#fff;color:#111}body{max-width:none}h1,h2,h3,strong{color:#111}table,pre,#TOC{background:#fff}th{background:#eee;color:#111}a{color:#045b73}}
+  </style>
+  <script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({startOnLoad:true,theme:'dark',securityLevel:'strict'});
+  </script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">HX Qwen3.8-27B on Ollama — Deployment Deep Dive</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a
+href="#hx-qwen38-27b-on-ollama--deployment-optimization-adaptation-and-fleet-runbook"
+id="toc-hx-qwen38-27b-on-ollama--deployment-optimization-adaptation-and-fleet-runbook">HX
+Qwen3.8-27B on Ollama — Deployment, Optimization, Adaptation, and Fleet
+Runbook</a>
+<ul>
+<li><a href="#executive-verdict" id="toc-executive-verdict">Executive
+verdict</a></li>
+<li><a href="#what-changed-from-the-prior-hx-position"
+id="toc-what-changed-from-the-prior-hx-position">What changed from the
+prior HX position</a></li>
+<li><a href="#authority-and-ownership"
+id="toc-authority-and-ownership">Authority and ownership</a></li>
+<li><a href="#repository-decision-and-proposed-product-quality-layout"
+id="toc-repository-decision-and-proposed-product-quality-layout">Repository
+decision and proposed product-quality layout</a></li>
+<li><a href="#fleet-deployment-architecture"
+id="toc-fleet-deployment-architecture">Fleet deployment
+architecture</a></li>
+<li><a href="#storage-design" id="toc-storage-design">Storage
+design</a></li>
+<li><a href="#step-by-step-implementation-plan"
+id="toc-step-by-step-implementation-plan">Step-by-step implementation
+plan</a></li>
+<li><a href="#lm-studio--bionic-disposition"
+id="toc-lm-studio--bionic-disposition">LM Studio / Bionic
+disposition</a></li>
+<li><a href="#repeatable-hxs-1-through-hxs-4-pattern"
+id="toc-repeatable-hxs-1-through-hxs-4-pattern">Repeatable HXS-1 through
+HXS-4 pattern</a></li>
+<li><a href="#acceptance-suite" id="toc-acceptance-suite">Acceptance
+suite</a></li>
+<li><a href="#risks-and-reversal-criteria"
+id="toc-risks-and-reversal-criteria">Risks and reversal
+criteria</a></li>
+<li><a href="#what-not-to-do" id="toc-what-not-to-do">What not to
+do</a></li>
+<li><a href="#recommended-owner-decisions"
+id="toc-recommended-owner-decisions">Recommended owner
+decisions</a></li>
+<li><a href="#immediate-next-artifact-after-approval"
+id="toc-immediate-next-artifact-after-approval">Immediate next artifact
+after approval</a></li>
+<li><a href="#source-register" id="toc-source-register">Source
+register</a></li>
+<li><a href="#evidence-states" id="toc-evidence-states">Evidence
+states</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1
+id="hx-qwen38-27b-on-ollama--deployment-optimization-adaptation-and-fleet-runbook">HX
+Qwen3.8-27B on Ollama — Deployment, Optimization, Adaptation, and Fleet
+Runbook</h1>
+<p><strong>Status:</strong> RESEARCH COMPLETE / PROPOSED PLAN — NO HOST,
+REPOSITORY, OR RUNTIME CHANGES AUTHORIZED<br />
+<strong>Prepared:</strong> 2026-08-17 15:24 EDT<br />
+<strong>Author:</strong> Codex (GPT-5.6)<br />
+<strong>Target:</strong> HXS-1, Ubuntu Server 24.04, 2 × NVIDIA RTX 4070
+Ti Super 16 GB, 128 GB system RAM<br />
+<strong>Fleet scope:</strong> Repeatable pattern for HXS-1 through
+HXS-4, each with a distinct approved model</p>
+<h2 id="executive-verdict">Executive verdict</h2>
+<p>Proceed, but split the effort into four governed stages rather than
+treating it as one Ollama install:</p>
+<ol type="1">
+<li><strong>Host readiness:</strong> Owen prepares and proves Ubuntu,
+NVIDIA drivers, PCIe topology, thermals, storage, systemd, and SSH
+control from <code>hxs-cp</code>.</li>
+<li><strong>Runtime deployment:</strong> Craig installs a pinned Ollama
+release, configures local-only service operation and dedicated model
+storage, pulls a pinned Qwen artifact, and proves both GPUs are used
+without CPU spill.</li>
+<li><strong>Runtime/model optimization:</strong> Craig and Quincy
+benchmark quantization, MTP, context, KV-cache precision, thinking mode,
+and workload quality. Tessa independently verifies the evidence.</li>
+<li><strong>Model adaptation:</strong> Quincy leads a separate,
+reversible LoRA/QLoRA pilot only after a baseline and evaluation suite
+exist. Training does not occur “inside Ollama.” The
+adapter/export/import path remains <strong>VERIFICATION
+REQUIRED</strong> for Qwen3.8.</li>
+</ol>
+<p>The recommended first artifact is the explicit, non-MTP
+<code>qwen3.8:27b-q4_K_M</code>, currently shown by Ollama as 18 GB,
+27.3B parameters, Q4_K_M, with a 461M BF16 vision projector and short
+display ID <code>25b843619e94</code>. After that baseline is stable,
+compare the default <code>qwen3.8:27b</code>, which is the MTP-enabled
+Q4_K_M artifact with <code>draft_num_predict: 4</code> and short display
+ID <code>22130167c4c2</code>.</p>
+<p>Do <strong>not</strong> begin with Q8 or BF16. Q8 is 30 GB and BF16
+is 56 GB. On 32 GB aggregate VRAM split across two independent 16 GB
+GPUs, Q8 leaves almost no room for the vision projector, KV cache,
+runtime buffers, and CUDA overhead; BF16 cannot reside fully in VRAM.
+System RAM makes CPU spill possible, not desirable.</p>
+<p>LM Studio Bionic should not be introduced as a second production
+runtime on HXS-1. Bionic is an agent/user experience, not a fine-tuning
+or optimization engine. LM Studio's <code>llmster</code> can run
+headlessly on Linux and exposes useful load controls, but the vendor
+says Ubuntu versions newer than 22 are not well tested for the desktop
+app. Use LM Studio only in an isolated comparison trial, with Ollama
+stopped, distinct storage, a distinct port, and identical
+GGUF/evaluation inputs.</p>
+<h2 id="what-changed-from-the-prior-hx-position">What changed from the
+prior HX position</h2>
+<p>The earlier HX stack-alignment artifact correctly reserved HXS-1 for
+Qwen reasoning but recorded Qwen3.8-27B as unreleased. That statement is
+now superseded. As of 2026-08-17:</p>
+<ul>
+<li>Ollama lists twelve Qwen3.8 tags and shows the 27B artifacts as
+published three days earlier.</li>
+<li>Qwen's official Hugging Face model card identifies a 27B dense,
+native vision-language model under Apache-2.0.</li>
+<li>The model has a native 262,144-token context and is described as
+extensible to 1,000,000 tokens; that is a model capability, not a
+promise that this host can serve those lengths efficiently.</li>
+<li>Thinking is enabled by default; the model card defines
+<code>xhigh</code>, <code>medium</code>, and <code>low</code> reasoning
+effort and supports disabling thinking.</li>
+<li>Qwen recommends dedicated engines such as SGLang, vLLM, or
+TokenSpeed for high-throughput production. Ollama remains appropriate
+here because HX's immediate goal is bounded local inference,
+development, testing, and controlled evaluation—not maximum production
+throughput.</li>
+</ul>
+<h2 id="authority-and-ownership">Authority and ownership</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Responsibility</th>
+<th>Agent</th>
+<th>Decision boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Owner authority, repository creation, phase approval</td>
+<td>Agent Zero through Claude meta-agent</td>
+<td>Neither Owen nor Craig independently creates the canonical
+repository or broadens scope.</td>
+</tr>
+<tr class="even">
+<td>Ubuntu, kernel, packages, systemd, NVIDIA driver, PCIe, storage,
+SSH/SCP fleet control</td>
+<td><strong>Owen</strong></td>
+<td>No Ollama/model configuration and no model acceptance. No
+Ansible.</td>
+</tr>
+<tr class="odd">
+<td>Ollama install, service configuration, model store, runtime
+diagnostics, model pull, runtime rollback</td>
+<td><strong>Craig</strong></td>
+<td>No OS/storage repartitioning, model provenance ruling, or training
+claims. Loopback-only by default.</td>
+</tr>
+<tr class="even">
+<td>Qwen provenance, license, artifact identity, quantization selection,
+dataset/eval design, adaptation disposition</td>
+<td><strong>Quincy</strong></td>
+<td>Does not configure the host or runtime.</td>
+</tr>
+<tr class="odd">
+<td>Independent acceptance, evidence integrity, negative tests,
+regressions</td>
+<td><strong>Tessa</strong></td>
+<td>Must not be the implementer.</td>
+</tr>
+<tr class="even">
+<td>Optional vLLM comparison if Ollama misses accepted requirements</td>
+<td><strong>Victor</strong></td>
+<td>A later evidence-driven comparison, not a parallel default
+install.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="required-agent-structure-correction">Required agent-structure
+correction</h3>
+<p>The existing HX agent definitions include a blocking Knowledge Base
+Review but hard-code a Windows path under
+<code>C:\Users\JarvisRichardson\Desktop\HX-Infrastructure</code>. That
+will fail when the canonical repository becomes
+<code>HX-Ai-Platform</code> on Linux <code>hxs-cp</code>.</p>
+<p>Preserve the gate, but make resolution portable and fail-closed:</p>
+<ol type="1">
+<li>Determine the Git worktree root with
+<code>git rev-parse --show-toplevel</code>.</li>
+<li>Require a repository marker such as <code>.hx-platform-root</code>
+plus the expected repository identity.</li>
+<li>Resolve an agent's knowledge path from a versioned registry, for
+example <code>governance/operations/agents.yaml</code>.</li>
+<li>Verify the required upstream snapshot directory and its recorded
+commit/tag/hash.</li>
+<li>Stop if the repository, mapping, or pinned source is missing,
+ambiguous, or stale.</li>
+</ol>
+<p>This is a portability repair, not a weakening of the agent
+structure.</p>
+<h2
+id="repository-decision-and-proposed-product-quality-layout">Repository
+decision and proposed product-quality layout</h2>
+<p>Create one canonical private repository named exactly
+<strong><code>HX-Ai-Platform</code></strong> in the owner-approved
+enterprise GitHub organization. The organization/remote URL is still an
+owner decision and must not be inferred. Repository creation is a
+meta-agent/repository bootstrap action; Owen and Craig contribute
+bounded files after the repository exists.</p>
+<p>Clone only the canonical repository to <code>hxs-cp</code>. Model
+servers receive reviewed deployment payloads through the validated
+Bash/SSH/SCP fleet-control path; they do not each become competing
+source repositories.</p>
+<pre class="text"><code>HX-Ai-Platform/
+├── .hx-platform-root
+├── .claude/agents/
+│   ├── claude-meta-agent.md
+│   ├── owen-ubuntu-platform.md
+│   ├── craig-ollama.md
+│   ├── quincy-model-portfolio.md
+│   └── tessa-independent-verification.md
+├── .specify/memory/constitution.md
+├── knowledge/instructions.md
+├── governance/
+│   ├── decisions/
+│   ├── policies/
+│   ├── registries/
+│   │   ├── agents.yaml
+│   │   ├── servers.yaml
+│   │   ├── model-assignments.yaml
+│   │   └── upstream-locks.yaml
+│   └── operations/
+│       ├── ubuntu/upstream/&lt;pinned-snapshot&gt;/
+│       ├── ollama/upstream/&lt;pinned-snapshot&gt;/
+│       ├── qwen/upstream/&lt;pinned-snapshot&gt;/
+│       └── lm-studio/upstream/&lt;pinned-snapshot&gt;/
+├── contracts/
+│   ├── host-readiness.schema.json
+│   ├── storage-plan.schema.json
+│   ├── runtime-profile.schema.json
+│   ├── model-lock.schema.json
+│   └── acceptance-evidence.schema.json
+├── platform/
+│   ├── fleet/
+│   │   ├── inventory/hosts/hxs-{1..4}.yaml
+│   │   └── scripts/hx-fleet-control.sh
+│   ├── hosts/hxs-1/
+│   │   ├── desired-state.yaml
+│   │   ├── storage.yaml
+│   │   └── nvidia.yaml
+│   ├── runtimes/ollama/
+│   │   ├── systemd/
+│   │   ├── profiles/
+│   │   └── tests/
+│   ├── models/qwen3.8-27b/
+│   │   ├── model-lock.yaml
+│   │   ├── profiles/
+│   │   ├── evals/
+│   │   └── modelfiles/
+│   └── adaptation/qwen3.8-27b/
+│       ├── datasets/
+│       ├── configs/
+│       ├── evals/
+│       └── export/
+├── bin/hx-model-node
+├── tests/
+├── evidence/                 # generated results; retention policy applies
+└── docs/</code></pre>
+<p>Do not commit model weights, datasets containing sensitive
+information, checkpoints, secrets, generated logs with prompts, or
+Ollama's internal blob tree. Commit manifests, hashes, configurations,
+schemas, tests, decisions, and sanitized evidence.</p>
+<h2 id="fleet-deployment-architecture">Fleet deployment
+architecture</h2>
+<pre class="mermaid"><code>flowchart TB
+  A[&quot;Agent Zero / Claude\nphase authority&quot;] --&gt; B[&quot;HX-Ai-Platform on hxs-cp\ncontracts · profiles · locks&quot;]
+  B --&gt; C[&quot;Owen\nhost readiness&quot;]
+  B --&gt; D[&quot;Craig\nOllama runtime&quot;]
+  B --&gt; E[&quot;Quincy\nmodel + adaptation&quot;]
+  C --&gt; F[&quot;HXS-1\nUbuntu · storage · NVIDIA&quot;]
+  D --&gt; F
+  E --&gt; D
+  F --&gt; G[&quot;Tessa\nindependent evidence gate&quot;]</code></pre>
+<p>The control-plane pattern remains native Bash + SSH/SCP with explicit
+host/IP mapping, remote staging under <code>/tmp</code>, passwordless
+scoped sudo, <code>host</code>/<code>fleet</code>/<code>verify</code>
+modes, and no Ansible. Ollama stays on <code>127.0.0.1:11434</code>.
+Craig verifies it remotely with SSH-executed local curls; consumers use
+an approved SSH tunnel or later governed routing rather than changing
+Ollama to <code>0.0.0.0</code>.</p>
+<h2 id="storage-design">Storage design</h2>
+<h3 id="required-discovery-before-any-mutation">Required discovery
+before any mutation</h3>
+<p>Owen first captures, from <code>hxs-cp</code>, read-only evidence for
+HXS-1:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> hxsa@hxs-1 <span class="st">&#39;hostnamectl; uname -a; cat /etc/os-release&#39;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> hxsa@hxs-1 <span class="st">&#39;lsblk -e7 -o NAME,PATH,SIZE,TYPE,FSTYPE,FSVER,MOUNTPOINTS,UUID,MODEL,SERIAL&#39;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> hxsa@hxs-1 <span class="st">&#39;findmnt --real --output TARGET,SOURCE,FSTYPE,OPTIONS,USE%&#39;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> hxsa@hxs-1 <span class="st">&#39;df -hT; free -h; swapon --show&#39;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> hxsa@hxs-1 <span class="st">&#39;lspci -nnk | grep -A3 -Ei &quot;VGA|3D|NVIDIA&quot;&#39;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> hxsa@hxs-1 <span class="st">&#39;nvidia-smi -L; nvidia-smi --query-gpu=index,uuid,name,memory.total,driver_version,pstate,temperature.gpu,power.limit --format=csv&#39;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> hxsa@hxs-1 <span class="st">&#39;nvidia-smi topo -m&#39;</span></span></code></pre></div>
+<p>The actual block device, filesystem, existing data, encryption,
+RAID/LVM state, SMART/NVMe health, and mount conflicts are <strong>NOT
+ESTABLISHED</strong>. No partitioning or formatting command belongs in
+an executable work order until Owen produces a device-by-serial plan and
+Agent Zero approves that exact destructive target.</p>
+<h3 id="recommended-layout">Recommended layout</h3>
+<p>Use a dedicated NVMe-backed filesystem mounted at
+<code>/srv/hx-ai</code>, referenced in <code>/etc/fstab</code> by
+filesystem UUID. Prefer ext4 for operational simplicity unless the
+as-built storage already establishes another standard. Use
+<code>noatime</code>, retain periodic <code>fstrim</code>, monitor free
+space and device health, and keep the OS/root filesystem separate.</p>
+<pre class="text"><code>/srv/hx-ai/
+├── models/
+│   ├── ollama/               # OLLAMA_MODELS; owned by ollama:ollama
+│   ├── huggingface/          # source/cache for model adaptation
+│   └── lm-studio/            # isolated pilot only; no shared internal blob tree
+├── adaptation/
+│   ├── datasets/
+│   ├── checkpoints/
+│   ├── adapters/
+│   ├── merged/
+│   └── exports/
+├── benchmarks/
+├── evidence/
+└── scratch/</code></pre>
+<h3 id="capacity-recommendation">Capacity recommendation</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Use</th>
+<th style="text-align: right;">Approximate planning allowance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Approved Q4 Ollama artifact + projector</td>
+<td style="text-align: right;">20–25 GB</td>
+</tr>
+<tr class="even">
+<td>Non-MTP and MTP A/B artifacts, worst case before dedupe</td>
+<td style="text-align: right;">40–50 GB</td>
+</tr>
+<tr class="odd">
+<td>Optional Q8 comparison</td>
+<td style="text-align: right;">30–35 GB additional</td>
+</tr>
+<tr class="even">
+<td>Hugging Face BF16 source</td>
+<td style="text-align: right;">roughly 56 GB plus metadata/cache</td>
+</tr>
+<tr class="odd">
+<td>Merged model + GGUF export + Q4 output</td>
+<td style="text-align: right;">roughly 75–130 GB during conversion</td>
+</tr>
+<tr class="even">
+<td>Datasets, checkpoints, adapters, failed experiments</td>
+<td style="text-align: right;">workload-dependent; budget at least
+200–500 GB</td>
+</tr>
+<tr class="odd">
+<td>Operational headroom</td>
+<td style="text-align: right;">keep at least 20% free</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Minimum:</strong> 1 TB dedicated NVMe for inference plus a
+small adaptation pilot.<br />
+<strong>Recommended:</strong> 2 TB dedicated NVMe if HXS-1 will
+routinely fine-tune, convert, compare quantizations, and retain
+checkpoints.</p>
+<p>Weights and public caches are reproducible and need not be backed up.
+Back up versioned manifests, private/curated datasets, adapters,
+accepted checkpoints, evaluation records, and the exact conversion
+recipe. Prove restore of an adapter and its manifest; a backup claim
+without a restore test is not acceptance evidence.</p>
+<h2 id="step-by-step-implementation-plan">Step-by-step implementation
+plan</h2>
+<h3 id="phase-0--ratify-the-work-order">Phase 0 — ratify the work
+order</h3>
+<p>Owner decisions required before mutation:</p>
+<ol type="1">
+<li>Exact GitHub organization, visibility, and remote URL for
+<code>HX-Ai-Platform</code>.</li>
+<li>Exact HXS-1 storage device/volume after discovery, and whether
+repartitioning is authorized.</li>
+<li>Initial accepted context target: recommended 32,768 tokens, with
+65,536 as an experiment rather than a promise.</li>
+<li>Primary workload and success measures: coding, agentic tool use,
+research, vision/document analysis, or a weighted mix.</li>
+<li>Whether “fine-tune” means prompt/profile tuning, retrieval
+augmentation, supervised LoRA/QLoRA, or multimodal adaptation. These are
+not interchangeable.</li>
+</ol>
+<p><strong>Gate G0:</strong> signed work order, current inventory,
+explicit destructive target if any, rollback point, and named
+agents.</p>
+<h3 id="phase-1--bootstrap-the-repository-on-hxs-cp">Phase 1 — bootstrap
+the repository on hxs-cp</h3>
+<ol type="1">
+<li>Claude/meta-agent creates the private <code>HX-Ai-Platform</code>
+repository in the approved enterprise organization.</li>
+<li>Apply branch protection, required review, secret scanning,
+<code>.gitignore</code>, license/policy decision, and repository
+ownership.</li>
+<li>Clone to an owner-approved location on <code>hxs-cp</code>; do not
+hard-code a Windows desktop path.</li>
+<li>Add the root marker, constitution, local knowledge router,
+registries, contracts, agent definitions, and native fleet script.</li>
+<li>Pin the upstream Ollama, Ubuntu/NVIDIA, Qwen, and optional LM Studio
+sources in <code>upstream-locks.yaml</code>.</li>
+<li>Run repository structure, schema, path, secret, and
+agent-knowledge-gate tests.</li>
+</ol>
+<p><strong>Gate G1:</strong> clean repository, protected remote,
+reproducible clone, no secrets, valid agent paths, and no Ansible
+references.</p>
+<h3 id="phase-2--owen-discovers-and-prepares-hxs-1">Phase 2 — Owen
+discovers and prepares HXS-1</h3>
+<ol type="1">
+<li>Confirm identity using hostname, authoritative IP mapping, machine
+ID, NIC/MAC, and SSH host key.</li>
+<li>Capture OS, kernel, packages, pending reboot, time synchronization,
+DNS, memory, swap, CPU, PCIe, and firmware state.</li>
+<li>Capture both GPU UUIDs, driver version, kernel module, Secure Boot
+state, PCIe link width/speed, topology, temperature, and power
+limits.</li>
+<li>Inspect storage by model and serial; produce a no-change plan
+first.</li>
+<li>If storage is approved, create the dedicated filesystem, mount by
+UUID at <code>/srv/hx-ai</code>, create directories and ownership,
+reboot if required, and prove persistence.</li>
+<li>Reuse a passing NVIDIA driver. Change it only if compatibility or
+health evidence fails.</li>
+<li>If a driver change is required, use a current NVIDIA/Ubuntu package
+repository method, install kernel headers, choose the approved
+compute-capable driver branch, reboot, and verify both GPUs. Ollama
+inference requires a compatible NVIDIA driver; it does not require
+installing the entire CUDA developer toolkit.</li>
+<li>Run a sustained GPU/thermal/PCIe health test before runtime
+installation.</li>
+</ol>
+<p><strong>Gate G2 — host readiness:</strong> both GPUs stable and
+visible; storage persistent and healthy; no package/reboot debt;
+chrony/DNS/SSH valid; temperatures/power/PCIe acceptable; evidence
+schema passes.</p>
+<h3 id="phase-3--craig-installs-a-pinned-ollama-release">Phase 3 — Craig
+installs a pinned Ollama release</h3>
+<ol type="1">
+<li>Review the pinned local Ollama upstream source before
+execution.</li>
+<li>Record the current installed state and back up any prior service
+override/model manifest metadata.</li>
+<li>Install an exact Ollama version using the vendor's supported
+<code>OLLAMA_VERSION</code> mechanism; never depend on an unrecorded
+“latest.”</li>
+<li>Use the system <code>ollama</code> service account and the vendor
+systemd service pattern.</li>
+<li>Point <code>OLLAMA_MODELS</code> to
+<code>/srv/hx-ai/models/ollama</code> and give only
+<code>ollama:ollama</code> the necessary write access.</li>
+<li>Use a systemd drop-in, not edits to a vendor unit. Recommended
+initial profile:</li>
+</ol>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode ini"><code class="sourceCode ini"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[Service]</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="dt">Environment</span><span class="ot">=</span><span class="st">&quot;OLLAMA_HOST=127.0.0.1:11434&quot;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="dt">Environment</span><span class="ot">=</span><span class="st">&quot;OLLAMA_MODELS=/srv/hx-ai/models/ollama&quot;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="dt">Environment</span><span class="ot">=</span><span class="st">&quot;OLLAMA_NO_CLOUD=1&quot;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="dt">Environment</span><span class="ot">=</span><span class="st">&quot;OLLAMA_CONTEXT_LENGTH=32768&quot;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="dt">Environment</span><span class="ot">=</span><span class="st">&quot;OLLAMA_FLASH_ATTENTION=1&quot;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="dt">Environment</span><span class="ot">=</span><span class="st">&quot;OLLAMA_KV_CACHE_TYPE=q8_0&quot;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="dt">Environment</span><span class="ot">=</span><span class="st">&quot;OLLAMA_NUM_PARALLEL=1&quot;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="dt">Environment</span><span class="ot">=</span><span class="st">&quot;OLLAMA_MAX_LOADED_MODELS=1&quot;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="dt">Environment</span><span class="ot">=</span><span class="st">&quot;OLLAMA_MAX_QUEUE=32&quot;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="dt">Environment</span><span class="ot">=</span><span class="st">&quot;CUDA_VISIBLE_DEVICES=&lt;GPU-UUID-1&gt;,&lt;GPU-UUID-2&gt;&quot;</span></span></code></pre></div>
+<p>Substitute the recorded GPU UUIDs for both target devices (captured in the
+pre-install step above) in place of <code>&lt;GPU-UUID-1&gt;,&lt;GPU-UUID-2&gt;</code>. Use UUIDs, not numeric
+indexes — indexes reorder across reboots and hardware changes, while UUIDs are stable.</p>
+<ol start="7" type="1">
+<li>Reload systemd, start Ollama, capture <code>ollama -v</code>,
+service status, journal, listening sockets, effective environment, and
+local API health.</li>
+<li>Prove the service is not exposed on a non-loopback interface and
+cloud features are disabled.</li>
+</ol>
+<p><code>q8_0</code> above applies to the KV cache, not the model
+weights. Ollama documents it as about half the KV memory of
+<code>f16</code> with usually very small quality loss. It requires Flash
+Attention and must be tested against HX tasks.</p>
+<p><strong>Gate G3 — runtime:</strong> pinned version, healthy service,
+correct storage, local-only socket, local-only/cloud-disabled evidence,
+both GPUs detectable, clean restart and reboot behavior.</p>
+<h3 id="phase-4--pull-and-lock-the-baseline-model">Phase 4 — pull and
+lock the baseline model</h3>
+<ol type="1">
+<li>Check free space and abort below the repository threshold.</li>
+<li>Pull the explicit baseline:</li>
+</ol>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ollama</span> pull qwen3.8:27b-q4_K_M</span></code></pre></div>
+<ol start="3" type="1">
+<li>Record the complete local manifest and all blob SHA-256 identities.
+The website's <code>25b843619e94</code> is a short display ID, not
+sufficient as the only immutable lock.</li>
+<li>Capture <code>ollama show</code>, <code>ollama list</code>, a
+service journal slice, and filesystem usage.</li>
+<li>Preload with a local API call, then capture <code>ollama ps</code>
+and <code>nvidia-smi</code> while generation is active.</li>
+<li>Require <code>100% GPU</code> in <code>ollama ps</code>. Because 18
+GB exceeds either 16 GB card, Ollama should spread the model across both
+GPUs. Confirm actual per-GPU allocation; do not infer it from aggregate
+VRAM.</li>
+<li>Run smoke tests for text, thinking on/off, tool calling, structured
+output, and image input.</li>
+<li>Create an HX-local approved name only after acceptance, referencing
+the locked upstream artifact and versioned parameters.</li>
+</ol>
+<p><strong>Gate G4 — model load:</strong> correct identity/license, full
+GPU residency, both GPUs used, no OOM, no CPU spill, all core
+capabilities respond, evidence retained.</p>
+<h3 id="phase-5--optimize-empirically">Phase 5 — optimize
+empirically</h3>
+<p>Run one controlled change at a time against fixed prompts, fixed
+seeds where supported, fixed outputs limits, and the same host
+state.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Experiment</th>
+<th>Baseline</th>
+<th>Candidate</th>
+<th>Promotion rule</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>MTP</td>
+<td><code>27b-q4_K_M</code></td>
+<td><code>27b</code> / <code>27b-mtp-q4_K_M</code></td>
+<td>Promote only if end-to-end throughput improves without
+quality/tool/streaming regression.</td>
+</tr>
+<tr class="even">
+<td>KV cache</td>
+<td><code>q8_0</code></td>
+<td><code>f16</code>, then optional <code>q4_0</code></td>
+<td>Prefer q8 unless f16 materially improves quality or q4 is necessary
+for accepted context.</td>
+</tr>
+<tr class="odd">
+<td>Context</td>
+<td>32K</td>
+<td>64K, then evidence-driven higher step</td>
+<td>Promote only with full GPU residency, stable latency, no truncation,
+and workload value.</td>
+</tr>
+<tr class="even">
+<td>Thinking</td>
+<td>enabled/xhigh</td>
+<td>medium, low, or disabled</td>
+<td>Use per workload; faster turns are not a win if retries raise total
+latency.</td>
+</tr>
+<tr class="odd">
+<td>Concurrency</td>
+<td>1</td>
+<td>2 only if memory permits</td>
+<td>No CPU spill, OOM, or p95 collapse.</td>
+</tr>
+<tr class="even">
+<td>Quantization</td>
+<td>Q4_K_M</td>
+<td>Q8 only as a controlled spill/headroom experiment</td>
+<td>Q8 is not a production candidate unless it preserves required
+context and full GPU residency.</td>
+</tr>
+</tbody>
+</table>
+<p>Measure cold load, prompt evaluation tokens/s, generation tokens/s,
+time to first token, end-to-end completion time, p50/p95, peak VRAM per
+GPU, system RAM, CPU utilization, power, temperature, correctness, tool
+success, structured-output validity, vision accuracy, and retry
+count.</p>
+<h3 id="context-memory-reality">Context-memory reality</h3>
+<p>The model advertises 256K native context, while Ollama defaults to
+32K for 24–48 GiB VRAM. Qwen3.8 has 16 gated-attention layers, 4 KV
+heads, and 256-dimensional heads. A rough f16 KV-only estimate is about
+64 KiB per token: about 2 GiB at 32K, 4 GiB at 64K, 8 GiB at 128K, and
+16 GiB at 256K, before runtime buffers, vision state, and other model
+state. Q8 KV roughly halves this component.</p>
+<p>This is an architectural estimate, not measured acceptance evidence.
+Start at 32K, test 64K, and treat 128K/256K as conditional. Enforce the
+accepted maximum in a deterministic request gate so oversized prompts
+fail closed rather than being silently truncated.</p>
+<p><strong>Gate G5 — approved profile:</strong> a versioned
+runtime/model profile wins against baseline on the declared workload,
+passes all negative tests, survives reboot and soak, and includes
+reversal criteria.</p>
+<h3 id="phase-6--fine-tuningmodel-adaptation-pilot">Phase 6 —
+fine-tuning/model adaptation pilot</h3>
+<p>Do not fine-tune until the base model has a stable evaluation
+baseline and there is a demonstrated gap that prompting, tool design,
+retrieval, or a Modelfile cannot solve.</p>
+<ol type="1">
+<li>Write the adaptation hypothesis: exact behavior to improve, tasks
+affected, expected gain, unacceptable regressions.</li>
+<li>Freeze a training/evaluation split and data
+provenance/license/privacy record.</li>
+<li>Begin with <strong>text-only LoRA/QLoRA</strong>, short context (for
+example 2K–4K), batch size 1, gradient accumulation, gradient
+checkpointing, and conservative rank. Full 27B fine-tuning is not
+appropriate for 2 × 16 GB.</li>
+<li>Prove trainer support for the exact <code>Qwen/Qwen3.8-27B</code>
+architecture and vision-language configuration with a tiny overfit test
+before committing a long run. Current Qwen training documentation covers
+Qwen3 generally; the new Qwen3.8 model card does not yet provide a
+fine-tuning recipe.</li>
+<li>Keep the base immutable. Version the dataset hash, code/environment
+lock, seed, hyperparameters, adapter, metrics, and lineage.</li>
+<li>Compare base versus adapter on held-out HX tasks, reasoning, tool
+use, vision, safety, and general capability.</li>
+<li>Prove the serving path. Ollama's current adapter-import
+documentation lists Llama, Mistral, and Gemma adapter architectures, not
+Qwen. Therefore direct Qwen3.8 Safetensors adapter import is <strong>NOT
+ESTABLISHED</strong>.</li>
+<li>Preferred conditional route: merge the accepted adapter outside
+Ollama, convert the merged model to a Qwen3.8-compatible GGUF with a
+pinned llama.cpp toolchain, quantize to Q4_K_M, import the full GGUF
+into Ollama, and compare it against the original base. Every step
+requires hash and quality verification.</li>
+<li>Reject the adaptation if the export route is unsupported, gains do
+not survive quantization, reasoning/vision/tool behavior regresses, or
+the improvement can be achieved more safely with
+retrieval/prompting.</li>
+</ol>
+<p><strong>Gate G6 — adaptation:</strong> reproducible training,
+licensed/provenanced data, held-out improvement, no material regression,
+supported export, Ollama load, full-GPU residency, and reversible model
+promotion.</p>
+<h2 id="lm-studio--bionic-disposition">LM Studio / Bionic
+disposition</h2>
+<h3 id="what-it-is">What it is</h3>
+<ul>
+<li><strong>Bionic:</strong> an agent interface with Work and Code
+projects; it can use local, remote, or cloud models.</li>
+<li><strong>LM Studio desktop:</strong> a Linux AppImage GUI for
+downloading, configuring, chatting with, and serving GGUF models.</li>
+<li><strong>llmster:</strong> LM Studio's recommended headless daemon
+for Linux servers.</li>
+</ul>
+<h3 id="value-to-hx">Value to HX</h3>
+<p>LM Studio exposes convenient controlled load experiments: context
+length, Flash Attention, evaluation batch size, GPU offload, whether KV
+cache remains on GPU, model lifecycle, REST/OpenAI-compatible endpoints,
+JIT loading, and a visual comparison surface. It can be useful for a
+human-led GGUF fit/quality lab.</p>
+<h3 id="constraints">Constraints</h3>
+<ol type="1">
+<li>It does not fine-tune Qwen or “optimize” Ollama.</li>
+<li>It is a separate runtime with separate model management, APIs,
+service state, and possible duplicate storage.</li>
+<li>Bionic's remote-model experience uses LM Link/LM Studio mechanisms;
+do not assume it is a generic front end for an arbitrary Ollama endpoint
+without a proved supported integration.</li>
+<li>LM Studio documents Ubuntu 20.04+ but says versions newer than 22
+are not well tested for the desktop app. HXS-1 is Ubuntu 24.04.</li>
+<li>Running Ollama and llmster concurrently would compete for the same
+GPUs and invalidate measurements.</li>
+</ol>
+<h3 id="recommendation">Recommendation</h3>
+<p><strong>PILOT NARROWLY / DO NOT ADOPT AS PRIMARY RUNTIME.</strong> If
+used:</p>
+<ol type="1">
+<li>Use Bionic on a supported operator workstation.</li>
+<li>Install <code>llmster</code> on HXS-1 only in an owner-approved
+isolated trial.</li>
+<li>Stop and disable Ollama for the duration; use port 1234 and
+<code>/srv/hx-ai/models/lm-studio</code>.</li>
+<li>Import the same locked non-MTP GGUF or an independently hash-matched
+equivalent.</li>
+<li>Run the same HX evaluation and telemetry suite.</li>
+<li>Remove/disable llmster after the comparison unless it earns a
+distinct role.</li>
+</ol>
+<p>If the need is merely to compare llama.cpp load settings, a direct
+pinned llama.cpp benchmark may be a smaller and more reproducible
+experiment than adding Bionic/LM Studio to the server.</p>
+<h2 id="repeatable-hxs-1-through-hxs-4-pattern">Repeatable HXS-1 through
+HXS-4 pattern</h2>
+<p>Each server gets a declarative host profile and model lock, not a
+copied one-off shell history.</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">host</span><span class="kw">:</span><span class="at"> hxs-1</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">role</span><span class="kw">:</span><span class="at"> qwen-reasoning</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">runtime</span><span class="kw">:</span><span class="at"> ollama</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">runtime_version</span><span class="kw">:</span><span class="at"> &lt;pinned-after-preflight&gt;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">listen</span><span class="kw">:</span><span class="at"> 127.0.0.1:11434</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">model</span><span class="kw">:</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">source</span><span class="kw">:</span><span class="at"> ollama</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">reference</span><span class="kw">:</span><span class="at"> qwen3.8:27b-q4_K_M</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">manifest_sha256</span><span class="kw">:</span><span class="at"> &lt;full-local-manifest-digest&gt;</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">accepted_context</span><span class="kw">:</span><span class="at"> </span><span class="dv">32768</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">kv_cache</span><span class="kw">:</span><span class="at"> q8_0</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">flash_attention</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">num_parallel</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="fu">gpu</span><span class="kw">:</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">expected_count</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">expected_model</span><span class="kw">:</span><span class="at"> NVIDIA GeForce RTX 4070 Ti SUPER</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">expected_vram_mib_each</span><span class="kw">:</span><span class="at"> </span><span class="dv">16384</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="fu">storage</span><span class="kw">:</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">mount</span><span class="kw">:</span><span class="at"> /srv/hx-ai</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">filesystem_uuid</span><span class="kw">:</span><span class="at"> &lt;inventory-derived&gt;</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">minimum_free_gib_before_pull</span><span class="kw">:</span><span class="at"> </span><span class="dv">200</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="fu">network</span><span class="kw">:</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">api_exposure</span><span class="kw">:</span><span class="at"> loopback-only</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="fu">acceptance_profile</span><span class="kw">:</span><span class="at"> qwen38-hx-v1</span></span></code></pre></div>
+<p>The same command surface should support:</p>
+<pre class="text"><code>hx-model-node discover hxs-1
+hx-model-node plan hxs-1
+hx-model-node apply --stage host hxs-1
+hx-model-node apply --stage runtime hxs-1
+hx-model-node apply --stage model hxs-1
+hx-model-node verify hxs-1
+hx-model-node benchmark hxs-1 --profile qwen38-hx-v1
+hx-model-node rollback hxs-1 --to &lt;recorded-state&gt;</code></pre>
+<p>The implementation must be Bash/SSH/SCP, idempotent, fail-closed,
+schema-validated, previewable, and evidence-producing. <code>plan</code>
+never mutates. Storage mutation requires a second explicit authorization
+bound to the exact device serial and plan hash. Fleet mode may run
+read-only discovery and verification broadly; mutable deployment should
+begin host-by-host.</p>
+<h2 id="acceptance-suite">Acceptance suite</h2>
+<h3 id="host">Host</h3>
+<ul>
+<li>Correct host identity and authoritative IP mapping.</li>
+<li>Ubuntu 24.04, kernel, reboot state, time and DNS valid.</li>
+<li>Exactly two expected GPUs with recorded UUIDs; stable driver and
+kernel module.</li>
+<li>PCIe topology/link state captured; no correctable error flood.</li>
+<li>Sustained temperatures and power within policy.</li>
+<li>Dedicated storage mounted by UUID, ownership correct, free-space
+threshold passing.</li>
+</ul>
+<h3 id="runtime">Runtime</h3>
+<ul>
+<li>Exact Ollama version recorded and service starts after reboot.</li>
+<li>Only loopback port 11434 is listening.</li>
+<li>Cloud features disabled.</li>
+<li>Model path is the dedicated filesystem.</li>
+<li>Logs contain no CUDA fallback or repeated restart.</li>
+<li>Rollback to previous service/profile state is proved.</li>
+</ul>
+<h3 id="model">Model</h3>
+<ul>
+<li>Exact full manifest/blob digests and Apache-2.0 provenance
+recorded.</li>
+<li><code>ollama ps</code> shows 100% GPU and accepted context.</li>
+<li>Both GPUs carry expected allocation during inference; no system-RAM
+weight spill.</li>
+<li>Text, image, thinking on/off, structured output, streaming, and tool
+calling pass.</li>
+<li>Oversized prompt is rejected by the HX gate, not silently
+truncated.</li>
+<li>Golden HX tasks pass quality thresholds.</li>
+</ul>
+<h3 id="performance-and-reliability">Performance and reliability</h3>
+<ul>
+<li>Cold/warm latency, TTFT, prompt/generation throughput, p50/p95
+retained.</li>
+<li>30–60 minute soak at accepted context/concurrency with no OOM,
+crash, thermal throttle, or progressive memory growth.</li>
+<li>Service restart and full host reboot tests pass.</li>
+<li>Network-denial and non-loopback exposure tests pass.</li>
+<li>A corrupted/mismatched manifest or insufficient-storage case fails
+before mutation.</li>
+</ul>
+<h2 id="risks-and-reversal-criteria">Risks and reversal criteria</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Risk</th>
+<th>Control</th>
+<th>Reverse when</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Aggregate VRAM mistaken for unified VRAM</td>
+<td>Observe per-GPU allocation and PCIe topology; require full GPU
+residency.</td>
+<td>CPU spill, OOM, or transfer bottleneck violates target.</td>
+</tr>
+<tr class="even">
+<td>256K model claim mistaken for host capacity</td>
+<td>Adopt measured context limit and fail-closed request gate.</td>
+<td>Context increase harms reliability or latency without workload
+value.</td>
+</tr>
+<tr class="odd">
+<td>Q8 selected for perceived quality</td>
+<td>Q4 first; identical HX quality suite.</td>
+<td>Q8 cannot retain runtime/context headroom.</td>
+</tr>
+<tr class="even">
+<td>MTP/default silently changes behavior</td>
+<td>Explicit non-MTP baseline and A/B.</td>
+<td>Tool, stream, quality, or compatibility regression.</td>
+</tr>
+<tr class="odd">
+<td>Driver install destabilizes a working host</td>
+<td>Reuse passing driver; record rollback and reboot gate.</td>
+<td>GPU/driver health regresses.</td>
+</tr>
+<tr class="even">
+<td>Fine-tuning degrades general capability</td>
+<td>Immutable base, held-out suite, adapter lineage, no promotion on
+regression.</td>
+<td>Gain is narrow, unreproducible, or lost after GGUF
+quantization.</td>
+</tr>
+<tr class="odd">
+<td>LM Studio becomes a second authority plane</td>
+<td>Isolated, time-boxed comparison; distinct port/storage; Ollama
+stopped.</td>
+<td>It adds no measurable value or creates drift.</td>
+</tr>
+<tr class="even">
+<td>Hard-coded Windows agent paths break Linux control plane</td>
+<td>Repo-root discovery + registry-based knowledge mapping.</td>
+<td>Agent cannot prove exact knowledge source.</td>
+</tr>
+<tr class="odd">
+<td>Model blobs fill root filesystem</td>
+<td>Dedicated mount, pre-pull threshold, monitoring, no internal-store
+symlinks.</td>
+<td>Free space drops below policy.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-not-to-do">What not to do</h2>
+<ul>
+<li>Do not install Ansible.</li>
+<li>Do not let Owen and Craig both create or own the canonical
+repository.</li>
+<li>Do not expose Ollama on <code>0.0.0.0</code> to make remote testing
+convenient.</li>
+<li>Do not install the full CUDA toolkit merely because the NVIDIA
+driver is needed for Ollama.</li>
+<li>Do not pull <code>latest</code>, Q8, BF16, and multiple experimental
+variants before storage and acceptance gates exist.</li>
+<li>Do not treat the 128 GB of system RAM as equivalent to VRAM for
+performance.</li>
+<li>Do not call prompt/Modelfile changes “fine-tuning.”</li>
+<li>Do not train before defining the gap, dataset, baseline, held-out
+evaluation, and export path.</li>
+<li>Do not assume Ollama supports a Qwen3.8 Safetensors adapter because
+it supports adapters for other architectures.</li>
+<li>Do not run Ollama and llmster simultaneously during comparison.</li>
+<li>Do not back up public model caches while neglecting private
+datasets, adapters, manifests, and restore tests.</li>
+</ul>
+<h2 id="recommended-owner-decisions">Recommended owner decisions</h2>
+<ol type="1">
+<li><strong>Approve the four-stage approach</strong>: host readiness →
+Ollama baseline → optimization → optional adaptation.</li>
+<li><strong>Approve Owen as the dedicated Ubuntu/platform
+agent</strong>, with explicit NVIDIA driver, PCIe, storage, filesystem,
+capacity, thermal, and systemd responsibilities added to his
+charter.</li>
+<li><strong>Retain Craig as Ollama specialist</strong>, extending his
+existing HXS-4 full-audit obligation into a reusable HXS-1–HXS-4
+deployment/audit contract.</li>
+<li><strong>Require Quincy and Tessa</strong> for model/adaptation
+authority and independent proof; do not force fine-tuning into Owen or
+Craig.</li>
+<li><strong>Approve Q4_K_M non-MTP as the first HXS-1 baseline</strong>
+and MTP as the first optimization A/B.</li>
+<li><strong>Approve 32K as the initial acceptance context</strong>, with
+64K as the next measured target.</li>
+<li><strong>Approve LM Studio/llmster only as a narrow comparison
+pilot</strong>, not part of the initial HXS-1 build.</li>
+<li><strong>Confirm the enterprise GitHub organization and remote
+URL</strong> for <code>HX-Ai-Platform</code>.</li>
+<li><strong>Provide or authorize read-only HXS-1 storage
+discovery</strong> before deciding capacity/partition actions.</li>
+</ol>
+<h2 id="immediate-next-artifact-after-approval">Immediate next artifact
+after approval</h2>
+<p>The next deliverable should be a repository-ready implementation
+packet containing:</p>
+<ol type="1">
+<li>Owen's revised agent definition.</li>
+<li>Craig's revised fleet deployment/audit definition.</li>
+<li>Quincy/Tessa task charters for Qwen3.8 acceptance and
+adaptation.</li>
+<li>JSON schemas for host readiness, storage plan, model lock, and
+evidence.</li>
+<li>HXS-1 declarative host/model profile.</li>
+<li>Native Bash/SSH/SCP <code>discover</code>, <code>plan</code>,
+<code>apply</code>, <code>verify</code>, <code>benchmark</code>, and
+<code>rollback</code> scripts.</li>
+<li>Deterministic tests and an owner-facing execution prompt for Claude
+Code.</li>
+</ol>
+<p>No execution should begin until the repository owner/URL and HXS-1
+storage target are resolved.</p>
+<h2 id="source-register">Source register</h2>
+<h3 id="current-primary-sources">Current primary sources</h3>
+<ul>
+<li><a href="https://ollama.com/library/qwen3.8/tags">Ollama Qwen3.8 tag
+index</a></li>
+<li><a href="https://ollama.com/library/qwen3.8%3A27b">Ollama Qwen3.8
+27B default/MTP Q4_K_M</a></li>
+<li><a href="https://ollama.com/library/qwen3.8%3A27b-q4_K_M">Ollama
+Qwen3.8 27B explicit non-MTP Q4_K_M</a></li>
+<li><a href="https://ollama.com/library/qwen3.8%3A27b-q8_0">Ollama
+Qwen3.8 27B Q8_0</a></li>
+<li><a href="https://ollama.com/library/qwen3.8%3A27b-bf16">Ollama
+Qwen3.8 27B BF16</a></li>
+<li><a href="https://huggingface.co/Qwen/Qwen3.8-27B">Official
+Qwen/Qwen3.8-27B model card</a></li>
+<li><a href="https://docs.ollama.com/linux">Ollama Linux
+installation</a></li>
+<li><a href="https://docs.ollama.com/context-length">Ollama context
+length</a></li>
+<li><a href="https://docs.ollama.com/faq">Ollama FAQ: storage,
+multi-GPU, concurrency, Flash Attention, KV-cache quantization</a></li>
+<li><a href="https://docs.ollama.com/import">Ollama model import and
+quantization</a></li>
+<li><a href="https://docs.ollama.com/modelfile">Ollama Modelfile
+reference</a></li>
+<li><a
+href="https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/latest/ubuntu.html">NVIDIA
+driver installation for Ubuntu 24.04</a></li>
+<li><a
+href="https://docs.nvidia.com/deploy/cuda-compatibility/latest/why-cuda-compatibility.html">NVIDIA
+CUDA compatibility model</a></li>
+<li><a href="https://lmstudio.ai/docs/bionic">LM Studio Bionic
+documentation</a></li>
+<li><a href="https://lmstudio.ai/docs/developer/core/headless">LM Studio
+headless/llmster</a></li>
+<li><a
+href="https://lmstudio.ai/docs/developer/core/headless_llmster">LM
+Studio Linux startup task</a></li>
+<li><a href="https://lmstudio.ai/docs/app/system-requirements">LM Studio
+system requirements</a></li>
+<li><a href="https://lmstudio.ai/docs/developer/rest/load">LM Studio
+model load controls</a></li>
+<li><a
+href="https://qwen.readthedocs.io/en/latest/training/unsloth.html">Qwen
+training documentation: Unsloth</a></li>
+<li><a
+href="https://qwen.readthedocs.io/en/latest/training/axolotl.html">Qwen
+training documentation: Axolotl</a></li>
+</ul>
+<h3 id="current-hx-authority-and-retained-project-evidence">Current HX
+authority and retained project evidence</h3>
+<ul>
+<li>Agent Zero's current instruction in this request.</li>
+<li>HX validated Bash/SSH/SCP fleet-control baseline; Ansible
+permanently excluded.</li>
+<li>HX server-role alignment reserving HXS-1 for Qwen reasoning.</li>
+<li>HX proposed technology agent roster: Owen, Craig, Quincy, Tessa, and
+Victor responsibility boundaries.</li>
+<li>Craig's retained durable Ollama role and full HXS-4 audit
+obligation.</li>
+<li>HX agentic SDLC decision: capability-first catalogue, lean
+activation, deterministic evidence gates, and state in files rather than
+conversation memory.</li>
+<li>HX current operating scope: development, testing, and demos; later
+assurance must not block standing up the core platform.</li>
+</ul>
+<h2 id="evidence-states">Evidence states</h2>
+<ul>
+<li><strong>VERIFIED CURRENT:</strong> Qwen3.8-27B is available from
+Ollama; Q4/Q8/BF16 sizes and tags; official model
+architecture/context/license; Ollama multi-GPU behavior and storage
+controls; LM Studio/llmster Linux capability.</li>
+<li><strong>OWNER DECISION:</strong> repository organization/remote,
+storage target, accepted context/workload, fine-tuning objective.</li>
+<li><strong>NOT ESTABLISHED:</strong> HXS-1 current
+disks/filesystems/driver/PCIe/thermals; exact Ollama version required on
+the host; Qwen3.8 trainer support on the selected stack; direct Qwen3.8
+adapter import into Ollama.</li>
+<li><strong>INFERENCE TO VERIFY:</strong> 32K and likely 64K fit with
+Q4_K_M and Q8 KV while remaining fully GPU-resident; MTP improves
+end-to-end performance on HX workloads.</li>
+</ul>
+</body>
+</html>

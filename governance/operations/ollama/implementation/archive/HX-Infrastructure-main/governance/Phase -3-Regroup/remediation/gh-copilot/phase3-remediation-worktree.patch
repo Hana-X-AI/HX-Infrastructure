@@ -1,0 +1,712 @@
+diff --git a/.claude/AGENTS.md b/.claude/AGENTS.md
+index 840b8a86aa5222f88dbc0daacb94ca745946bbc4..4a3a16f1f1815478eef3dab345504ca0ce56b892 100644
+--- a/.claude/AGENTS.md
++++ b/.claude/AGENTS.md
+@@ -32,7 +32,7 @@ Automation must preserve these boundaries:
+ 
+ - Phase 1 automation may discover and document but may not assign roles, workloads, or models.
+ - Phase 1 automation may not perform persistent role-specific configuration.
+-- Phase 2 release state must follow the lifecycle vocabulary defined by `SERVER-REGISTRY.md`.
++- The mutation guard is hard-locked in Phase 3 (Regroup); no `SERVER-REGISTRY.md` Phase 2 status value releases it. The registry vocabulary is retained for the session dashboard only.
+ - hooks are deterministic guardrails, not a substitute for authoritative project state.
+ - skills implement repeatable workflows; hooks should not contain complex knowledge workflows.
+ - missing or malformed hook input must not silently create a fail-open path for a protected operation.
+diff --git a/.claude/hooks/hx-phase1-guard.ps1 b/.claude/hooks/hx-phase1-guard.ps1
+index 28071890f04b6a3357ecacd09b4c4bccaee9a289..3826530241d2a8d8f4b98ed8dd9722acb8aa3ef9 100644
+--- a/.claude/hooks/hx-phase1-guard.ps1
++++ b/.claude/hooks/hx-phase1-guard.ps1
+@@ -3,9 +3,10 @@
+ $inputObject = Read-HxHookInput
+ $root = Get-HxProjectRoot $inputObject
+ 
+-if (Test-HxPhase2Open $root) {
+-    exit 0
+-}
++# Phase 3 (Regroup) hard-lock. Server mutation is denied regardless of the
++# registry Phase 2 status; no lifecycle value releases this guard. The
++# authorization record that replaces the hard lock is designed in the
++# Transition Stage (P-F1), not here. (Previously released on Phase 2 = READY.)
+ 
+ $tool = [string]$inputObject.tool_name
+ $denyReason = $null
+@@ -17,7 +18,7 @@ if ($tool -eq "Write" -or $tool -eq "Edit") {
+     }
+ 
+     if ($filePath -match '(?:^|/)servers/[^/]+/configuration\.md$') {
+-        $denyReason = "Phase 2 is blocked. configuration.md must not be created or edited during Phase 1."
++        $denyReason = "Phase 3 (Regroup) hard-lock: configuration.md is created only in the later owner-authorized implementation phase, not now."
+     }
+ }
+ elseif ($tool -eq "Bash" -or $tool -eq "PowerShell") {
+@@ -47,7 +48,7 @@ elseif ($tool -eq "Bash" -or $tool -eq "PowerShell") {
+ 
+     foreach ($pattern in $blockedPatterns) {
+         if ($command -match $pattern) {
+-            $denyReason = "Phase 1 is discovery/documentation only. This command appears to perform role-specific or persistent server configuration. Complete the fleet discovery and manual role-assignment gate before Phase 2."
++            $denyReason = "Phase 3 (Regroup) hard-lock: this command performs role-specific or persistent server configuration, which is denied until the owner authorizes the implementation phase."
+             break
+         }
+     }
+diff --git a/CLAUDE.md b/CLAUDE.md
+index f6a8471c23ee527f817a5b809ffbcac42bd60ffc..3d33cdebee13efab49902206fe2b2ad4b262fbbc 100644
+--- a/CLAUDE.md
++++ b/CLAUDE.md
+@@ -27,11 +27,13 @@ The canonical Phase 1 gate and independently approved expected-fleet baseline ar
+ 
+ Evaluate that gate by comparing the expected fleet count with the registry count and completed discovery count. Do not begin Phase 2 until every canonical gate condition is complete.
+ 
+-## Phase 2
++## Phase 2 — Repository Consolidation & Alignment (COMPLETE)
+ 
+-Do not begin until every server is discovered, documented, reviewed, and manually assigned a role.
++Phase 2 consolidated the project into one repository and one authority. It is complete. Phase 3 (Regroup & Reconciliation) is the current phase.
+ 
+-When Phase 2 begins for a server:
++## Future Server Implementation Phase (number TBD, owner-authorized)
++
++Server role configuration is deferred to a later, owner-authorized phase. When it is authorized, for each server:
+ 
+ - preserve `discovery.md`;
+ - configure only the approved role;
+@@ -63,7 +65,7 @@ Use Context7 for version-sensitive technical guidance, especially for:
+ - storage tooling;
+ - NVIDIA drivers and CUDA compatibility;
+ - vLLM;
+-- Hugging Face tooling and libraries when those become part of an approved Phase 2 role.
++- Hugging Face tooling and libraries when those become part of an approved server role in the implementation phase.
+ 
+ Context7 is a retrieval mechanism, not the source of truth for the HX environment.
+ 
+diff --git a/README.md b/README.md
+index 465c320cc8a46b0ec0792f5d28c7ccdfea0c641b..42e809d1d3832eb98d1394dbcf04d936b9c4279d 100644
+--- a/README.md
++++ b/README.md
+@@ -14,7 +14,12 @@ Phase 1: Discovery & Documentation
+ 
+ PHASE 1 GATE
+ 
+-Phase 2: Role Configuration
++Phase 2: Repository Consolidation & Alignment  (COMPLETE)
++
++Phase 3: Regroup & Reconciliation  (current)
++  -> reconcile authority, controls, lessons, and architecture decisions
++
++Future Server Implementation Phase  (number TBD, owner-authorized)
+   -> configure each server for its approved role
+   -> create configuration.md
+   -> preserve discovery.md unchanged
+@@ -26,7 +31,7 @@ Phase 2: Role Configuration
+ - `servers/<server>/discovery.md` records the server as found.
+ - Roles are assigned manually after fleet review.
+ - Agents may summarize capabilities but may not assign roles.
+-- `servers/<server>/configuration.md` is created only in Phase 2.
++- `servers/<server>/configuration.md` is created only in the future server implementation phase.
+ 
+ ## Project Tracking
+ 
+diff --git a/SERVER-REGISTRY.md b/SERVER-REGISTRY.md
+index 89538b34e8d6b5070e7e34530f196bdc4bc867d8..d3a4785f9346343778cdb0bda59c0dd0c8fdda1f 100644
+--- a/SERVER-REGISTRY.md
++++ b/SERVER-REGISTRY.md
+@@ -10,7 +10,7 @@ Fleet-level source of truth for discovery status, manual role assignment, and Ph
+ - Roles and workloads/models are entered only after manual review and approval.
+ - `configuration.md` copies approved role and workload/model values from this registry; it does not assign them.
+ - Agents must not assign roles automatically.
+-- Phase 2 means repository consolidation and alignment. Server implementation is Phase 3.
++- Phase 2 means repository consolidation and alignment. Server implementation is a later owner-authorized phase; Phase 3 is Regroup & Reconciliation.
+ 
+ ## Discovery Status Values
+ 
+@@ -83,11 +83,7 @@ output rather than by re-contacting the hosts.
+ make it. `hxs-cp` is the control plane, deliberately outside the fifteen-server fleet, and
+ holds no row here.
+ 
+-**Retired as a control on 2026-08-13, kept as a record.** All seven conditions are complete and `act-012` is closed. **Phase 2 is open** — Phase 2 now means repository consolidation and alignment; server implementation is Phase 3. The Phase 1
+-command guard is released as a direct consequence: package installation, service management,
+-network, storage and driver commands are no longer denied fleet-wide. Phase 2 work is bounded
+-by the approved role for each server rather than by the guard, and `configuration.md` copies
+-the role and workload values from this table without reinterpreting them.
++**Retired as a control on 2026-08-13, kept as a record.** All seven conditions are complete and `act-012` is closed. **Phase 2 consolidation opened** and server implementation remains deferred to a later owner-authorized phase (Phase 3 is Regroup & Reconciliation). The Phase 3 mutation guard is hard-locked for every registry status; the Phase 2 status is retained for the session dashboard only.
+ 
+ **Phase 1 Status:** COMPLETE
+ **Phase 2 Status:** READY
+diff --git a/_s2.py b/_s2.py
+index f489a6f7d41248d96527dbe09cfa6dd866d741b1..df19f3192fd346007bd049e866616394474885ce 100644
+--- a/_s2.py
++++ b/_s2.py
+@@ -1,18 +1,27 @@
+ import pathlib
++import sys
++
+ f = pathlib.Path(r'governance/Phase -3-Regroup/repo review/claude_20260815_0130_phase3remediationplandeep.html')
+ text = f.read_text(encoding='utf-8')
+-body_end = text.find('<body><main>') + len('<body><main>')
++body_end_pos = text.find('<body><main>')
+ eyebrow_start = text.find('<div class="eyebrow">')
++if body_end_pos == -1:
++    sys.exit('FAIL: <body><main> marker not found')
++if eyebrow_start == -1:
++    sys.exit('FAIL: eyebrow marker not found')
++if 'SUPERSEDED V1' in text:
++    sys.exit('FAIL: SUPERSEDED V1 banner already present')
++body_end = body_end_pos + len('<body><main>')
+ banner = (
+     '\n<div style="background:#3a1418;border:3px solid #ff7d87;border-radius:12px;padding:20px 24px;margin:0 0 28px;text-align:center">\n'
+     '<p style="color:#ff7d87;font-size:1.4rem;font-weight:900;margin:0 0 8px;letter-spacing:.04em">SUPERSEDED V1</p>\n'
+     '<p style="color:#e8eef4;margin:0;font-size:1rem">This document is a historical artifact. The canonical current plan is\n'
+-    '<a href="../remediation/claude_20260815_0150_phase3remediationplandeepv2.html" style="color:#6fc6ff;font-weight:700">Phase 3 Remediation Plan v2</a>.</p>\n'
++    '<a href="../remediation/claude_20260815_0234_phase3remediationplandeepv3.html" style="color:#6fc6ff;font-weight:700">Phase 3 Remediation Plan v3</a>.</p>\n'
+     '</div>\n\n'
+ )
+ text = text[:body_end] + banner + text[eyebrow_start:]
+-f.write_text(text, encoding='utf-8')
+ count = text.count('SUPERSEDED V1')
+-print(f'Banner count: {count}')
+ assert count == 1, f'Expected 1, got {count}'
++f.write_text(text, encoding='utf-8')
++print(f'Banner count: {count}')
+ print('Stage 2 PASS')
+diff --git a/claude-hooks/README.md b/claude-hooks/README.md
+index dcc5699571ff2df3b6f472c372920d97bfad6a72..8f382021b3dcead953f8caa7ed0141b6431317fb 100644
+--- a/claude-hooks/README.md
++++ b/claude-hooks/README.md
+@@ -1,11 +1,11 @@
+ # HX-Infrastructure Claude Code Hooks
+ 
+-This package installs the five approved project hooks without replacing the rest of `.claude/settings.json`.
++This package installs the seven approved project hook commands without replacing the rest of `.claude/settings.json`.
+ 
+ ## Hooks
+ 
+ 1. `SessionStart` — injects current Phase 1 / Phase 2 and registry counts.
+-2. `PreToolUse` — blocks obvious role-specific or persistent configuration while Phase 2 is blocked.
++2. `PreToolUse` — hard-locks obvious role-specific or persistent server configuration during Phase 3 (Regroup); no registry status releases it.
+ 3. `PostToolUse` — validates `discovery.md` and `SERVER-REGISTRY.md` after Claude writes/edits them.
+ 4. `SubagentStop` — requires the `server-discovery` subagent to leave a valid completed discovery record before it exits.
+ 5. `Notification` — displays a Windows alert when Claude Code is idle or a background agent needs input.
+@@ -54,17 +54,13 @@ SubagentStop
+ Notification
+ ```
+ 
+-## Phase Gate
++## Phase Gate — Phase 3 hard-lock
+ 
+-`PreToolUse` considers Phase 2 open only when the authoritative `SERVER-REGISTRY.md` lifecycle value is `READY`, `IN PROGRESS`, or `COMPLETE`:
++During Phase 3 (Regroup) the `PreToolUse` guard denies server mutation for **every** registry state. No `Phase 2 Status` value — `READY`, `IN PROGRESS`, `COMPLETE`, `BLOCKED`, missing, or unrecognized — releases it. The registry `Phase 2 Status` column is retained for the session dashboard, but it no longer gates the guard.
+ 
+-```text
+-**Phase 2 Status:** READY
+-```
+-
+-`BLOCKED` keeps the guard active, as does a missing registry file. `READY` is set only after the fleet-wide Phase 1 gate is complete.
++The guard blocks obvious package installation/upgrades, service mutations, Netplan apply/try, firewall mutation, storage formatting/partitioning, NVIDIA driver installation, model downloads, vLLM serving/install commands, Ollama mutations, and creation/editing of per-server `configuration.md`.
+ 
+-Until then, the guard blocks obvious package installation/upgrades, service mutations, Netplan apply/try, firewall mutation, storage formatting/partitioning, NVIDIA driver installation, model downloads, vLLM serving/install commands, Ollama mutations, and creation/editing of per-server `configuration.md`.
++The authorization record that replaces this hard lock — allowing scoped, owner-authorized mutation in the later implementation phase — is designed in the Transition Stage (P-F1), not here.
+ 
+ The hook is a defense-in-depth guardrail, not a complete sandbox or the source of truth. Claude permission deny rules provide stronger deterministic enforcement where an applicable rule can be defined. `GOALS-AND-OBJECTIVES.md`, `CLAUDE.md`, and the server registry remain authoritative.
+ 
+@@ -72,7 +68,7 @@ The hook is a defense-in-depth guardrail, not a complete sandbox or the source o
+ 
+ `.claude/settings.json` also carries a `permissions.deny` list covering the irreversible storage operations that `INFRASTRUCTURE-CONTRACT.md` section 10.5 requires explicit approval for in **any** phase: `mkfs`, `wipefs`, `sgdisk`, `pvcreate`, `vgcreate`, `lvcreate`, and `mdadm --create`.
+ 
+-These rules are deliberately phase-independent. Unlike the hook, they are not released when the registry reaches `READY`, because the contract prohibits those operations without approval in Phase 2 as well.
++These rules are deliberately phase-independent. Like the Phase 3 hard-locked hook, they are never released by a registry status value, because the contract prohibits those operations without explicit approval in any phase.
+ 
+ Permission rules match on a command prefix, so they cannot cover every invocation form. The `PreToolUse` hook remains the broader, registry-aware layer; the deny list is the deterministic backstop for the highest-impact commands. This installer does not write permission rules — `apply-hooks.ps1` merges only the `hooks` section and leaves the rest of `settings.json` untouched.
+ 
+diff --git a/claude-hooks/claude-hooks/hooks/hx-phase1-guard.ps1 b/claude-hooks/claude-hooks/hooks/hx-phase1-guard.ps1
+index 28071890f04b6a3357ecacd09b4c4bccaee9a289..3826530241d2a8d8f4b98ed8dd9722acb8aa3ef9 100644
+--- a/claude-hooks/claude-hooks/hooks/hx-phase1-guard.ps1
++++ b/claude-hooks/claude-hooks/hooks/hx-phase1-guard.ps1
+@@ -3,9 +3,10 @@
+ $inputObject = Read-HxHookInput
+ $root = Get-HxProjectRoot $inputObject
+ 
+-if (Test-HxPhase2Open $root) {
+-    exit 0
+-}
++# Phase 3 (Regroup) hard-lock. Server mutation is denied regardless of the
++# registry Phase 2 status; no lifecycle value releases this guard. The
++# authorization record that replaces the hard lock is designed in the
++# Transition Stage (P-F1), not here. (Previously released on Phase 2 = READY.)
+ 
+ $tool = [string]$inputObject.tool_name
+ $denyReason = $null
+@@ -17,7 +18,7 @@ if ($tool -eq "Write" -or $tool -eq "Edit") {
+     }
+ 
+     if ($filePath -match '(?:^|/)servers/[^/]+/configuration\.md$') {
+-        $denyReason = "Phase 2 is blocked. configuration.md must not be created or edited during Phase 1."
++        $denyReason = "Phase 3 (Regroup) hard-lock: configuration.md is created only in the later owner-authorized implementation phase, not now."
+     }
+ }
+ elseif ($tool -eq "Bash" -or $tool -eq "PowerShell") {
+@@ -47,7 +48,7 @@ elseif ($tool -eq "Bash" -or $tool -eq "PowerShell") {
+ 
+     foreach ($pattern in $blockedPatterns) {
+         if ($command -match $pattern) {
+-            $denyReason = "Phase 1 is discovery/documentation only. This command appears to perform role-specific or persistent server configuration. Complete the fleet discovery and manual role-assignment gate before Phase 2."
++            $denyReason = "Phase 3 (Regroup) hard-lock: this command performs role-specific or persistent server configuration, which is denied until the owner authorizes the implementation phase."
+             break
+         }
+     }
+diff --git a/governance/Phase -3-Regroup/README.md b/governance/Phase -3-Regroup/README.md
+index 45bd9b93ea0b8001eb890843295d424254a0b937..8c1837aecddb3b924f38804d56829233fb02f652 100644
+--- a/governance/Phase -3-Regroup/README.md	
++++ b/governance/Phase -3-Regroup/README.md	
+@@ -58,18 +58,22 @@ storage, or role-specific mutation.
+ | `repo review/claude_20260815_0130_phase3remediationplandeep.html` | Superseded Phase 3 remediation plan v1 | Historical planning artifact |
+ | `repo review/chatgpt_20260815_0227_phase3remediationplanfinalreview.html` | ChatGPT/Codex review of remediation plan v1 | Supporting review artifact |
+ | `repo review/GitHub-Copilot_2026-08-15_phase3-remediation-plan-v2-review.md` | Independent verification of remediation plan v2 | Revise before execution |
+-| `remediation/` | Verified Phase 3 remediation records and supporting artifacts | Plan reviewed (v2 immutable, v2.1 markup-corrected derivative); remediation not started |
+-| `remediation/claude_20260815_0150_phase3remediationplandeepv2.html` | Current Phase 3 remediation plan v2 | Reviewed; revision required before execution |
++| `remediation/` | Verified Phase 3 remediation records and supporting artifacts | v3 current; v2 superseded; v2.1 markup derivative; P1-00 incomplete pending provenance gate |
++| `remediation/claude_20260815_0150_phase3remediationplandeepv2.html` | Superseded Phase 3 remediation plan v2 | Superseded by v3 |
+ | `remediation/claude_20260815_0150_phase3remediationplandeepv2.1.html` | Markup-only corrected derivative of v2 (P1-06 closing tag) | Derived from immutable v2 |
++| `remediation/claude_20260815_0234_phase3remediationplandeepv3.html` | Phase 3 remediation plan v3 | Current remediation plan |
++| `remediation/claudecodex_20260815_0051_jointreconciliationbrief.html` | External corrected-final joint brief comparison copy | Reconciliation evidence |
++| `remediation/README.md` | Living index of remediation artifacts and provenance | Active |
+ 
+ ## Current review state
+ 
+ The joint reconciliation brief remains the primary reconnaissance artifact for the Phase 3
+ regroup. It combines the two independent reconnaissance reports and summarizes the phase model
+-recorded in `GOALS-AND-OBJECTIVES.md`. Remediation plan v2 is the current planning artifact. Its
+-independent GitHub Copilot review returned **REVISE BEFORE EXECUTION** because its provenance and
+-branch-baseline gates cannot currently pass and several scope and ordering details remain
+-ambiguous. No remediation has started.
++recorded in `GOALS-AND-OBJECTIVES.md`. Remediation plan v3 is the current planning artifact,
++incorporating the independent GitHub Copilot review of v2 (verdict: REVISE BEFORE EXECUTION).
++v3 resolves provenance, lifecycle, and scoping issues raised in that review. P1-00 remains
++incomplete pending its provenance gate. P1-02 and the bundled P1-04 count correction were
++executed and validated in the dedicated worktree; P1-01 remains open pending P1-00.
+ 
+ The brief and its source reports are review evidence, not canonical project authority. Their
+ checkable findings must be verified against the authoritative checkout before they are used to
+@@ -122,3 +126,5 @@ The regroup is complete when:
+ | 2026-08-15 | Indexed remediation plan v1, its ChatGPT/Codex review, and remediation plan v2. |
+ | 2026-08-15 | Added the independent GitHub Copilot review of plan v2; verdict `REVISE BEFORE EXECUTION`, with remediation still not started. |
+ | 2026-08-15 | Indexed v2.1 markup-only corrected derivative; v2 remains immutable reviewed artifact; repo review count unchanged at six. |
++| 2026-08-15 | Indexed v3 plan, joint brief, and remediation README; marked v3 current and v2 superseded. |
++| 2026-08-15 | Executed the P1-02 Phase 3 guard hard-lock and bundled P1-04 count correction; the v2 scan is green and the 160-check regression suite passes. P1-01 remains open pending P1-00. |
+diff --git a/governance/Phase -3-Regroup/remediation/README.md b/governance/Phase -3-Regroup/remediation/README.md
+index e33f3d2be065a48d1b1d96f0018c8b27940aa1d8..2cbf2f1e276535c99d1bbbb6dc45bded7067aac1 100644
+--- a/governance/Phase -3-Regroup/remediation/README.md	
++++ b/governance/Phase -3-Regroup/remediation/README.md	
+@@ -12,16 +12,17 @@ This index records the reconnaissance-and-remediation artifacts for the Phase 3
+ 
+ | Artifact | Version / status | SHA-256 | Notes |
+ | --- | --- | --- | --- |
+-| `remediation/claude_20260815_0234_phase3remediationplandeepv3.html` | **v3 — CURRENT · awaiting owner accept** | `81d9ac470d67225dcc19492bf975c313a9f82ffb7337832001793e138033d3da` | Incorporates the GitHub Copilot review. Not execution-ready until the owner accepts it on an authoritative checkout. |
+-| Joint Reconnaissance & Reconciliation Brief (on disk) | governing brief · CURRENT | `f58b1a4a8852a5593dd39c5ed9420243e391861fa9ffe734b9980b7ac745f307` | On-disk copy present in the checkout. Reconcile against the externally-held corrected-final (below) in P1-00. |
++| `claude_20260815_0234_phase3remediationplandeepv3.html` | **v3 — CURRENT** | `6317299dfd591e0eabfd1b9184110a5d8c52ba9578b3492879758f55cd998e45` | Incorporates the GitHub Copilot review. P1-00 is incomplete pending its provenance gate. |
++| Joint Reconnaissance & Reconciliation Brief (on disk) | governing brief · CURRENT | `f58b1a4a8852a5593dd39c5ed9420243e391861fa9ffe734b9980b7ac745f307` | Reconciled in P1-00 against the corrected-final comparison copy. The content delta is the canonical phase-model update. |
+ 
+ ## Plan version history
+ 
+ | Version | File | SHA-256 | Status |
+ | --- | --- | --- | --- |
+ | v1 | `claude_20260815_0130_phase3remediationplandeep.html` | `2bb4ff1b43f38d80c7f4d3c0262562184ed184326d3ef091d1d1d1492ab57a92` | superseded by v2 |
+-| v2 | `remediation/claude_20260815_0150_phase3remediationplandeepv2.html` | `ed860d3fb9b352f52458b0eef7d117cf36d315bfd7981cfa4c0c0aed64e39078` | superseded by v3 (reviewed by Copilot) |
+-| **v3** | `remediation/claude_20260815_0234_phase3remediationplandeepv3.html` | `81d9ac470d67225dcc19492bf975c313a9f82ffb7337832001793e138033d3da` | **current — awaiting owner accept** |
++| v2 | `claude_20260815_0150_phase3remediationplandeepv2.html` | `ed860d3fb9b352f52458b0eef7d117cf36d315bfd7981cfa4c0c0aed64e39078` | superseded by v3 (reviewed by Copilot) |
++| v2.1 | `claude_20260815_0150_phase3remediationplandeepv2.1.html` | `a5fc390f1aaa73846884f2c34e5b04a0e3ac66e8f0a09a9b67929a925c43ceac` | Markup-only derivative of v2 (P1-06 closing tag); Copilot-review hash `a5fc390f` |
++| **v3** | `claude_20260815_0234_phase3remediationplandeepv3.html` | `6317299dfd591e0eabfd1b9184110a5d8c52ba9578b3492879758f55cd998e45` | **current** |
+ 
+ ## Review chain
+ 
+@@ -29,14 +30,15 @@ This index records the reconnaissance-and-remediation artifacts for the Phase 3
+ | --- | --- | --- | --- |
+ | Joint brief consolidation | Claude + ChatGPT/Codex | corrected-final `a788e80067553604ad0009bb4979f076b88bcb05cff990839b4db31fe69531a8` (externally held) | accepted with correction |
+ | v1 → v2 review | ChatGPT / Codex (GPT-5.6) | `2bb4ff1b…a57a92` (plan reviewed) | conditional accept (B+) |
+-| v2 → v3 review | GitHub Copilot | `48c48e5457320eecb6b8ce72ee82fa80f169bcdc360ee03044749d8142d32894` | REVISE BEFORE EXECUTION |
++| v2 → v3 review | GitHub Copilot | `11d4b863db4e713d7b211c3fcdc97e587fb79a0a249592f86bc0df611e587d1a` | REVISE BEFORE EXECUTION |
+ 
+ ## Provenance — four evidence classes
+ 
+ | Class | Artifact | SHA-256 |
+ | --- | --- | --- |
+ | Reproducible (in checkout) | current joint brief | `f58b1a4a…f307` |
+-| Reproducible (in checkout) | Copilot review | `48c48e54…d32894` (re-verified: match) |
++| Reproducible (in checkout) | Copilot review | `11d4b863…587d1a` (re-verified: match) |
++| Reproducible (in checkout) | remediation plan v2 | `ed860d3f…e39078` |
+ | Externally held | corrected-final joint brief | `a788e800…31a8` |
+ | Unavailable | pre-correction joint-brief draft | `38f403e4…f9c9d` |
+ | Metadata-corroborated | source repository archive | `db09e94f…f7919` |
+@@ -58,4 +60,23 @@ This index records the reconnaissance-and-remediation artifacts for the Phase 3
+ - `P3-03` — repository maturity / licence posture.
+ - `C-02` — approve reconciled baseline + roadmap (closes Phase 3).
+ 
+-> Placement note: the v3 SHA-256 (`81d9ac47…33d3da`) is recorded in the tables above; re-verify it once v3 is committed to the checkout. v3 was produced with no remediation performed and no canonical project state edited.
++> Placement note: the v3 SHA-256 (`6317299d…d998e45`) is recorded in the tables above. It includes the verified correction from four reproducible evidence rows to three.
++
++## Reconciliation notes
++
++### Hook registration count
++
++The joint reconciliation brief plan item 4 refers to "all eight hooks."
++The actual registered hook-command count is **seven**, as verified from
++`.claude/settings.json`. The eighth file, `hx-common.ps1`, is a dot-sourced
++shared helper loaded by other hooks — it is not a registered hook command.
++Plan item 4's "eight hooks" is superseded by the verified count of seven
++registered commands.
++
++### F-07 severity
++
++The joint brief governs F-07 at **MEDIUM**, not HIGH. The affected decisions
++cover bootstrap credential strength and local credential-file permissions whose
++review triggers expired; there is no evidence in F-07 of a live credential
++disclosure or a tracked secret value. The owner disposition remains open under
++`P2-01` and still requires an explicit ruling in the risk register.
+diff --git a/governance/Phase -3-Regroup/remediation/claude_20260815_0234_phase3remediationplandeepv3.html b/governance/Phase -3-Regroup/remediation/claude_20260815_0234_phase3remediationplandeepv3.html
+index 4239f81385cb8bcb0f0685f4309eab63757b0670..f17538e21e593e598b2b49a2671a703638e27a13 100644
+--- a/governance/Phase -3-Regroup/remediation/claude_20260815_0234_phase3remediationplandeepv3.html	
++++ b/governance/Phase -3-Regroup/remediation/claude_20260815_0234_phase3remediationplandeepv3.html	
+@@ -93,7 +93,7 @@ footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);color:v
+ <thead><tr><th>Class</th><th>Artifact</th><th>SHA-256</th><th>Where it lives</th></tr></thead>
+ <tbody>
+ <tr><td><span class="ok">Reproducible</span></td><td>Current joint brief on disk<br><span class="small">(renamed <code>claudecodex_20260815_0051_jointreconciliationbrief.html</code>)</span></td><td class="small">f58b1a4a…f307</td><td>In the checkout. Recompute and record as the <b>current governing version</b>.</td></tr>
+-<tr><td><span class="ok">Reproducible</span></td><td>Copilot review v2</td><td class="small">48c48e5457…d32894 <b>(re-verified: match)</b></td><td>In the checkout. Byte-identical to the copy Jarvis cited — confirmed.</td></tr>
++  <tr><td><span class="ok">Reproducible</span></td><td>Copilot review v2</td><td class="small">11d4b863db4e713d7b211c3fcdc97e587fb79a0a249592f86bc0df611e587d1a <b>(re-verified: match)</b></td><td>In the checkout. Current repository bytes confirmed.</td></tr>
+ <tr><td><span class="ok">Reproducible</span></td><td>This plan (v2, reviewed)</td><td class="small">ed860d3f…39078</td><td>In the checkout.</td></tr>
+ <tr><td>Externally held</td><td>Corrected-final joint brief</td><td class="small">a788e800…31a8</td><td>Delivered via Cowork; not present in the checkout. Recorded as provenance, <b>not</b> required to recompute.</td></tr>
+ <tr><td>Unavailable</td><td>Pre-correction joint brief draft</td><td class="small">38f403e4…f9c9d</td><td>Superseded; no artifact present. Historical record only.</td></tr>
+@@ -143,7 +143,7 @@ footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);color:v
+     <dl class="kv">
+       <dt>Baseline (B2)</dt><dd>The checkout is <code>main @ efb1a3a2…</code> with a dirty worktree (16 porcelain entries of owner/regroup work). <b>OWNER approves those changes as a baseline commit</b> (or annotated tag) so nothing is discarded, stashed, or hidden. AGENT then creates a dedicated <code>git worktree</code> / remediation branch from that baseline.</dd>
+       <dt>"Protected" (B2)</dt><dd>Means a <b>local workflow rule</b>: no direct commits to <code>main</code>; all work on the remediation branch; verified locally by asserting the current branch is not <code>main</code> and the worktree is clean against the baseline. Remote GitHub branch protection, if wanted, is a separate OWNER/WS prerequisite done <em>outside</em> this no-remote run.</dd>
+-      <dt>Provenance (B1)</dt><dd>Recompute the hash of every artifact <em>present</em> (the four "reproducible" rows above). Record externally-held and unavailable artifacts without recomputation. Perform the on-disk-vs-external brief reconciliation.</dd>
++      <dt>Provenance (B1)</dt><dd>Recompute the hash of every artifact <em>present</em> (the three "reproducible" rows above). Record externally-held and unavailable artifacts without recomputation. Perform the on-disk-vs-external brief reconciliation.</dd>
+     </dl>
+     <div class="entry"><b>Entry gate:</b> the authoritative checkout is available; the 16 dirty entries are enumerated and shown to the owner.</div>
+     <div class="gate"><b>Exit gate (failable, reproducible):</b> the baseline commit/tag exists and contains the 16 entries; the remediation worktree is clean against it; the current branch ≠ <code>main</code>; each present artifact re-computes to its recorded hash; the current joint brief is recorded as <code>f58b1a4a…</code> with the reconciliation result noted. No remote endpoint is contacted.</div>
+@@ -158,7 +158,7 @@ footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);color:v
+       <dt>Verified stale text</dt><dd>Confirmed in the snapshot: <code>README.md</code> ("Phase 2: Role Configuration"), <code>servers/AGENTS.md</code>, root <code>AGENTS.md</code>, <code>start-up/session-resume.md</code>, and — critically — <code>claude-hooks/README.md</code> (lines 8, 59–67, 75 describe "READY releases the guard") and <code>.claude/AGENTS.md:35</code> ("Phase 2 release state"). These couple lifecycle to guard release and must be repaired with P1-02.</dd>
+       <dt>Change</dt><dd>State Phase 3 = Regroup; refer to implementation as the <b>"Future Server Implementation Phase (number TBD, owner-authorized)."</b> No number is invented here (M1).</dd>
+     </dl>
+-    <div class="entry"><b>Entry gate:</b> P1-00 exit passed; the allowlist is fixed and the historical/lessons exclusion recorded.</div>
++    <div class="entry"><b>Entry gate:</b> P1-00 exit gate passes; the allowlist is fixed and the historical/lessons exclusion recorded.</div>
+     <div class="gate"><b>Exit gate (failable):</b> a scan over exactly the allowlist finds zero descriptions of Phase 2 as server configuration, Phase 3 as server implementation, or any Phase-2-status-releases-the-guard claim. Red on today's tree, green after edits; both scan outputs retained. Historical paths untouched.</div>
+   </div>
+ </div>
+@@ -387,7 +387,7 @@ WAVE 4  Decision prep (planning) P2-03 charter · P-F1 DESIGN SPEC (doc only) ·
+ 
+ <footer>
+ <p><strong>Prepared by:</strong> Claude (Opus 4.8), incorporating the GitHub Copilot review · <strong>Date:</strong> 2026-08-15 · <strong>Owner:</strong> Jarvis Richardson, Hana-X AI.</p>
+-<p><strong>Review chain:</strong> Claude v1 → ChatGPT/Codex → Claude v2 → GitHub Copilot (verdict: revise) → Claude v3. <strong>Reviewed plan:</strong> v2 SHA-256 <code>ed860d3f…39078</code>. <strong>Review:</strong> Copilot SHA-256 <code>48c48e54…d32894</code> (re-verified: match). <strong>Scope:</strong> Phase 3 is planning, decision, and tightening-only control work; no task contacts a live system, and no remediation or server activity was performed to produce this document.</p>
++  <p><strong>Review chain:</strong> Claude v1 → ChatGPT/Codex → Claude v2 → GitHub Copilot (verdict: revise) → Claude v3. <strong>Reviewed plan:</strong> v2 SHA-256 <code>ed860d3f…39078</code>. <strong>Review:</strong> Copilot SHA-256 <code>11d4b863db4e713d7b211c3fcdc97e587fb79a0a249592f86bc0df611e587d1a</code> (re-verified: match). <strong>Scope:</strong> Phase 3 is planning, decision, and tightening-only control work; no task contacts a live system, and no remediation or server activity was performed to produce this document.</p>
+ </footer>
+ 
+ </main></body></html>
+diff --git a/governance/Phase -3-Regroup/remediation/diffbrief.ps1 b/governance/Phase -3-Regroup/remediation/diffbrief.ps1
+index fef1b43e794e66a0b5c77caeefd83f1e3d5cc319..72c1b39bbf598002a7a04ad7bd518e5d6d2e42ef 100644
+--- a/governance/Phase -3-Regroup/remediation/diffbrief.ps1	
++++ b/governance/Phase -3-Regroup/remediation/diffbrief.ps1	
+@@ -5,7 +5,7 @@
+  Read-only. No server contacted.
+ 
+  Usage (adjust paths to where the two files sit):
+-   powershell -ExecutionPolicy Bypass -File .\diff-brief.ps1 `
++   powershell -ExecutionPolicy Bypass -File .\diffbrief.ps1 `
+      -External ".\joint-brief-external-a788e800.html" `
+      -OnDisk   "C:\Users\JarvisRichardson\Desktop\HX-Infrastructure\governance\Phase -3-Regroup\repo review\claudecodex_20260815_0051_jointreconciliationbrief.html"
+ =====================================================================
+@@ -35,7 +35,7 @@ $b = Get-Content -LiteralPath $OnDisk
+ Write-Host ("EXTERNAL lines: {0}   ON-DISK lines: {1}" -f $a.Count, $b.Count)
+ "-" * 72
+ Write-Host "LINE DIFF   ( => only on-disk / added,   <= only external / removed )"
+-$diff = Compare-Object -ReferenceObject $a -DifferenceObject $b -SyncWindow 200
++$diff = Compare-Object -ReferenceObject $a -DifferenceObject $b -CaseSensitive -SyncWindow 200
+ if (-not $diff) {
+   Write-Host "  (no line differences - content is line-identical)"
+ } else {
+@@ -43,8 +43,8 @@ if (-not $diff) {
+     $mark = if ($_.SideIndicator -eq '=>') { 'ADD' } else { 'DEL' }
+     Write-Host ("  [{0}] {1}" -f $mark, $_.InputObject)
+   }
+-  $add = ($diff | ? { $_.SideIndicator -eq '=>' }).Count
+-  $del = ($diff | ? { $_.SideIndicator -eq '<=' }).Count
++  $add = @($diff | ? { $_.SideIndicator -eq '=>' }).Count
++  $del = @($diff | ? { $_.SideIndicator -eq '<=' }).Count
+   "-" * 72
+   Write-Host ("Summary: {0} line(s) added on-disk, {1} line(s) removed vs external." -f $add, $del)
+ }
+diff --git a/governance/Phase -3-Regroup/remediation/p100runbook.ps1 b/governance/Phase -3-Regroup/remediation/p100runbook.ps1
+index 3bb23da83cf2ccab20733e5aa4e19c397c776da9..85a64e9a3c220c28032d7f9c407d72d2aa2688e9 100644
+--- a/governance/Phase -3-Regroup/remediation/p100runbook.ps1	
++++ b/governance/Phase -3-Regroup/remediation/p100runbook.ps1	
+@@ -11,8 +11,8 @@
+    -Commit   Phase B = mutating. Baseline commit + worktree. Run after you approve A.
+ 
+  Usage:
+-   powershell -ExecutionPolicy Bypass -File .\p1-00-runbook.ps1 -RepoRoot "C:\Users\JarvisRichardson\Desktop\HX-Infrastructure"
+-   powershell -ExecutionPolicy Bypass -File .\p1-00-runbook.ps1 -RepoRoot "C:\Users\JarvisRichardson\Desktop\HX-Infrastructure" -Commit
++   powershell -ExecutionPolicy Bypass -File .\p100runbook.ps1 -RepoRoot "C:\Users\JarvisRichardson\Desktop\HX-Infrastructure"
++   powershell -ExecutionPolicy Bypass -File .\p100runbook.ps1 -RepoRoot "C:\Users\JarvisRichardson\Desktop\HX-Infrastructure" -Commit
+ =====================================================================
+ #>
+ param(
+@@ -32,8 +32,8 @@ $WorktreeDir = "../hx-remediation"
+ # DIFF just means the on-disk copy was re-saved on transfer - record the on-disk value.
+ $ExpectHash = @{
+   "governance/Phase -3-Regroup/remediation/claude_20260815_0150_phase3remediationplandeepv2.html" = "ed860d3fb9b352f52458b0eef7d117cf36d315bfd7981cfa4c0c0aed64e39078"
+-  "governance/Phase -3-Regroup/remediation/claude_20260815_0234_phase3remediationplandeepv3.html" = "81d9ac470d67225dcc19492bf975c313a9f82ffb7337832001793e138033d3da"
+-  "governance/Phase -3-Regroup/repo review/GitHub-Copilot_2026-08-15_phase3-remediation-plan-v2-review.md" = "48c48e5457320eecb6b8ce72ee82fa80f169bcdc360ee03044749d8142d32894"
++  "governance/Phase -3-Regroup/remediation/claude_20260815_0234_phase3remediationplandeepv3.html" = "6317299dfd591e0eabfd1b9184110a5d8c52ba9578b3492879758f55cd998e45"
++  "governance/Phase -3-Regroup/repo review/GitHub-Copilot_2026-08-15_phase3-remediation-plan-v2-review.md" = "11d4b863db4e713d7b211c3fcdc97e587fb79a0a249592f86bc0df611e587d1a"
+ }
+ $JointBrief        = "governance/Phase -3-Regroup/repo review/claudecodex_20260815_0051_jointreconciliationbrief.html"
+ $JointOnDiskExpect = "f58b1a4a8852a5593dd39c5ed9420243e391861fa9ffe734b9980b7ac745f307"
+@@ -87,7 +87,7 @@ function Phase-A {
+   }
+   Line
+   Write-Host "PHASE A done. If the above is correct, run Phase B:"
+-  Write-Host ("  powershell -ExecutionPolicy Bypass -File .\p1-00-runbook.ps1 -RepoRoot `"{0}`" -Commit" -f $RepoRoot)
++  Write-Host ("  powershell -ExecutionPolicy Bypass -File .\p100runbook.ps1 -RepoRoot `"{0}`" -Commit" -f $RepoRoot)
+ }
+ 
+ function Phase-B {
+diff --git a/governance/Phase -3-Regroup/remediation/p100runbookrev.ps1 b/governance/Phase -3-Regroup/remediation/p100runbookrev.ps1
+index f40c66ab20d04bfa109ff760bd21db31728eb7c6..72141993dd965f1992bc933cee53599c46df0f11 100644
+--- a/governance/Phase -3-Regroup/remediation/p100runbookrev.ps1	
++++ b/governance/Phase -3-Regroup/remediation/p100runbookrev.ps1	
+@@ -33,8 +33,8 @@ $WorktreeDir = "../hx-remediation"
+ 
+ $ExpectHash = @{
+   "governance/Phase -3-Regroup/remediation/claude_20260815_0150_phase3remediationplandeepv2.html" = "ed860d3fb9b352f52458b0eef7d117cf36d315bfd7981cfa4c0c0aed64e39078"
+-  "governance/Phase -3-Regroup/remediation/claude_20260815_0234_phase3remediationplandeepv3.html" = "81d9ac470d67225dcc19492bf975c313a9f82ffb7337832001793e138033d3da"
+-  "governance/Phase -3-Regroup/repo review/GitHub-Copilot_2026-08-15_phase3-remediation-plan-v2-review.md" = "48c48e5457320eecb6b8ce72ee82fa80f169bcdc360ee03044749d8142d32894"
++  "governance/Phase -3-Regroup/remediation/claude_20260815_0234_phase3remediationplandeepv3.html" = "6317299dfd591e0eabfd1b9184110a5d8c52ba9578b3492879758f55cd998e45"
++  "governance/Phase -3-Regroup/repo review/GitHub-Copilot_2026-08-15_phase3-remediation-plan-v2-review.md" = "11d4b863db4e713d7b211c3fcdc97e587fb79a0a249592f86bc0df611e587d1a"
+ }
+ $JointBrief        = "governance/Phase -3-Regroup/repo review/claudecodex_20260815_0051_jointreconciliationbrief.html"
+ $JointOnDiskExpect = "f58b1a4a8852a5593dd39c5ed9420243e391861fa9ffe734b9980b7ac745f307"
+diff --git a/governance/Phase -3-Regroup/repo review/claude_20260815_0025_reporeconalignment.html b/governance/Phase -3-Regroup/repo review/claude_20260815_0025_reporeconalignment.html
+index 308bef94f87f148f138f03094943bc63dad8d6eb..bd6120d0bb236609bf6f76b99ddf4136f05cba5f 100644
+--- a/governance/Phase -3-Regroup/repo review/claude_20260815_0025_reporeconalignment.html	
++++ b/governance/Phase -3-Regroup/repo review/claude_20260815_0025_reporeconalignment.html	
+@@ -89,6 +89,11 @@
+   <div class="stat"><div class="n">0</div><div class="l">services deployed to their assigned hosts</div></div>
+ </div>
+ 
++<div class="flag bad">
++  <div class="tag">SUPERSEDED PHASE MODEL · 2026-08-15</div>
++  <p><code>GOALS-AND-OBJECTIVES.md</code> is canonical. Phase 3 is Regroup &amp; Reconciliation, and server implementation is deferred to a later owner-authorized phase. The table below remains unchanged as dated reconnaissance evidence; it is not current lifecycle authority.</p>
++</div>
++
+ <table>
+ <thead><tr><th>Phase</th><th>Meaning (current)</th><th>State</th></tr></thead>
+ <tbody>
+diff --git a/governance/Phase -3-Regroup/repo review/claude_20260815_0130_phase3remediationplandeep.html b/governance/Phase -3-Regroup/repo review/claude_20260815_0130_phase3remediationplandeep.html
+index 9f025c496865e358241c2315b7af74cf91c16ad9..9cc5c1316f341358ceae613de9c5c79b7f81b2c5 100644
+--- a/governance/Phase -3-Regroup/repo review/claude_20260815_0130_phase3remediationplandeep.html	
++++ b/governance/Phase -3-Regroup/repo review/claude_20260815_0130_phase3remediationplandeep.html	
+@@ -68,7 +68,7 @@ footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);color:v
+ <div style="background:#3a1418;border:3px solid #ff7d87;border-radius:12px;padding:20px 24px;margin:0 0 28px;text-align:center">
+ <p style="color:#ff7d87;font-size:1.4rem;font-weight:900;margin:0 0 8px;letter-spacing:.04em">SUPERSEDED V1</p>
+ <p style="color:#e8eef4;margin:0;font-size:1rem">This document is a historical artifact. The canonical current plan is
+-<a href="../remediation/claude_20260815_0150_phase3remediationplandeepv2.html" style="color:#6fc6ff;font-weight:700">Phase 3 Remediation Plan v2</a>.</p>
++<a href="../remediation/claude_20260815_0234_phase3remediationplandeepv3.html" style="color:#6fc6ff;font-weight:700">Phase 3 Remediation Plan v3</a>.</p>
+ </div>
+ 
+ <div class="eyebrow">HX-Infrastructure · Phase 3 Regroup · Implementation-grade remediation plan</div>
+diff --git a/governance/Phase -3-Regroup/repo review/hx-infrastructure-reconnaissance-report_codex-gpt-5.6-sol_20260815_0130.html b/governance/Phase -3-Regroup/repo review/hx-infrastructure-reconnaissance-report_codex-gpt-5.6-sol_20260815_0130.html
+index 55cf14b4d202358928e766ca9820db6cad60582e..bc172e876f80e7eb87a249b82563cc223ff8cb42 100644
+--- a/governance/Phase -3-Regroup/repo review/hx-infrastructure-reconnaissance-report_codex-gpt-5.6-sol_20260815_0130.html	
++++ b/governance/Phase -3-Regroup/repo review/hx-infrastructure-reconnaissance-report_codex-gpt-5.6-sol_20260815_0130.html	
+@@ -15,6 +15,8 @@
+ 
+ <div class="verdict"><strong>Disposition: RECONCILE BEFORE PHASE 3 / NEXT IMPLEMENTATION.</strong> Preserve the repository and its proven methods. Do not rebuild it wholesale. Run a focused truth-reconciliation pass before new platform construction so that the next phase begins from one lifecycle, one registry interpretation, one runtime contract, and one current architecture.</div>
+ 
++<div style="background:#3a1418;border:3px solid #ff7d87;border-radius:12px;padding:20px 24px;margin:24px 0;text-align:center"><p style="color:#ff7d87;font-size:1.4rem;font-weight:900;margin:0 0 8px;letter-spacing:.04em">SUPERSEDED PHASE MODEL</p><p style="color:#e8eef4;margin:0;font-size:1rem"><strong>“RECONCILE BEFORE PHASE 3” reflects the obsolete phase model.</strong> Under the owner-ratified model in <code>GOALS-AND-OBJECTIVES.md</code>, Phase 3 is the reconciliation phase and server implementation is deferred to a later owner-authorized phase. This report remains dated reconnaissance evidence.</p></div>
++
+ <section class="meta">
+   <div class="card"><div class="n">234</div><div class="k">Files in archive</div></div>
+   <div class="card"><div class="n">304</div><div class="k">ZIP entries</div></div>
+@@ -81,7 +83,7 @@
+ 
+ <div class="finding"><h3><span class="pill p-red">HIGH</span> F-06 — A real host mutation lacks its required as-built configuration authority</h3><p>hxs-4 was commissioned with Ollama and Qwen3.5-9B, including a systemd configuration and model acquisition, but there are no per-server <code>configuration.md</code> records anywhere. Evidence exists in the workload JSON, operational HTML report, and action log, but the repository contract says <code>configuration.md</code> is the as-built authority after implementation.</p><p><strong>Impact:</strong> the repository’s strongest documentation invariant—discovery versus configured state—is not actually complete for its first live AI runtime.</p></div>
+ 
+-<div class="finding"><h3><span class="pill p-red">HIGH</span> F-07 — Two accepted risks have passed their own review trigger</h3><p><code>risk-001</code> and <code>risk-002</code> remain <code>accepted</code>, but each expires for review at the Phase 1 gate or before Phase 2. Phase 1 is complete and Phase 2 opened. The risk register therefore violates its own acceptance window.</p><p><strong>Impact:</strong> credential-strength and credential-file-permission decisions are stale. They require explicit renew, remediate, supersede, or close decisions—not silent continuation.</p></div>
++<div class="finding"><h3><span class="pill p-amber">MEDIUM · ADJUSTED</span> F-07 — Two accepted risks have passed their own review trigger <span class="pill p-violet">X · adjusted</span></h3><p><code>risk-001</code> and <code>risk-002</code> remain <code>accepted</code>, but each expires for review at the Phase 1 gate or before Phase 2. Phase 1 is complete and Phase 2 opened. The risk register therefore violates its own acceptance window.</p><p><strong>Severity rationale:</strong> the original HIGH rating is superseded by the joint brief's MEDIUM rating. F-07 concerns stale decisions about bootstrap credential strength and local credential-file permissions; it is not evidence of a live credential disclosure or a tracked secret value. The expired review triggers still require an explicit owner ruling, not silent continuation.</p></div>
+ 
+ <div class="finding"><h3><span class="pill p-amber">MEDIUM</span> F-08 — “DS4 removed everywhere” is false, and removal likely caused policy damage</h3><p><code>start-up/session-resume.md</code> says DS4 was removed everywhere with zero references. The snapshot retains extensive DS4 material in <code>governance/operations/hxs3-workload-placement.md</code>, runtime prompts/reports, and log history. Some historical mentions are legitimate, but the absolute zero-reference claim is false. More importantly, the broken AI runtime contract and README appear to contain holes where a project identity was removed without repairing the surrounding prose.</p></div>
+ 
+@@ -163,7 +165,7 @@
+ <li><strong>Reconcile the registry.</strong> Rule hxs-4’s durable workload, replace or annotate LiteLLM entries with the approved OmniRoute target state, and clearly separate approved placement from commissioned exceptions.</li>
+ <li><strong>Establish OmniRoute as a governed plane.</strong> Create the service/authority contract only after confirming its exact narrow role and loopback-fronting mechanism. Preserve the rule: traffic plane, not memory, agent, or governance authority.</li>
+ <li><strong>Repair runtime gates against the current schema.</strong> Either adapt the gate/commission scripts to the Qwen workload schema or archive the stale DS4-era gate family. Add a known-failing schema-compatibility test.</li>
+-<li><strong>Close the as-built gap.</strong> Produce the hxs-4 configuration record from retained evidence without rewriting discovery history.</li>
++<li><strong>Request the owner's hxs-4 as-built ruling.</strong> Ask whether the commissioned exception requires a <code>configuration.md</code>. No configuration record may be owed until the later implementation phase; do not create one unless the owner records that ruling.</li>
+ <li><strong>Adjudicate logs and risks.</strong> Close or reclassify <code>act-015</code>/<code>iss-016</code>, review expired <code>risk-001</code>/<code>risk-002</code>, preserve valid open issues, and normalize only statuses that genuinely need it.</li>
+ <li><strong>Regenerate human-facing governance.</strong> Require ID parity between Markdown and HTML and make the dark/night presentation the default for regroup artifacts.</li>
+ <li><strong>Run the full verification suite on the authoritative checkout.</strong> Use a Windows/PowerShell-capable environment, restore the canonical remediation filename after reboot, verify Git commit/branch state, and retain the run evidence.</li>
+diff --git a/governance/Phase -3-Regroup/tech-stack/chatgpt-gpt-5-6_20260815_0251_hx-infrastructure-proposed-technology-stack.html b/governance/Phase -3-Regroup/tech-stack/chatgpt-gpt-5-6_20260815_0251_hx-infrastructure-proposed-technology-stack.html
+index d42bad32bff132065a130818b69cc20bc40e9438..e981746066fb57f803d6a7601db8e6ac2487f864 100644
+--- a/governance/Phase -3-Regroup/tech-stack/chatgpt-gpt-5-6_20260815_0251_hx-infrastructure-proposed-technology-stack.html	
++++ b/governance/Phase -3-Regroup/tech-stack/chatgpt-gpt-5-6_20260815_0251_hx-infrastructure-proposed-technology-stack.html	
+@@ -9,7 +9,7 @@
+ 
+ <div class="meta"><b>Status:</b> PROPOSED TRUE-NORTH STACK · <b>Date:</b> 2026-08-15 · <b>Revised:</b> 2026-08-15 03:05 ET · <b>Prepared by:</b> ChatGPT / GPT-5.6<br><b>Scope:</b> development, testing, and demonstrations; self-hosted; full-stack capability valued above production-scale optimization.<br><b>Evidence basis:</b> current owner decisions, consolidated repository, fleet architecture v0.3, runtime acceptance evidence, service designs and review verdicts, joint reconnaissance, prior capability recons, and the Granite Docling reconnaissance completed 2026-08-15.</div>
+ 
+-<div class="callout verdict"><strong>Executive conclusion.</strong> HX should be a governed, self-hosted AI application platform—not merely a cluster of model servers. Its center is a set of deliberately separated planes: governance and execution control, traffic, inference, knowledge, agents, MCP capabilities, state, applications, automation, and observability. The stack is coherent when each technology owns one clear job and does not quietly become a second authority for routing, memory, execution, or truth.</div>
++<div class="callout verdict"><strong>Executive conclusion.</strong> HX should be a governed, self-hosted AI application platform—not merely a cluster of model servers. Its center is nine deliberately separated planes: governance and execution control; systems foundation; edge and traffic; AI inference; retrieval and knowledge; agents, memory, and MCP; data and state; experience and automation; and observability and recovery. The stack is coherent when each technology owns one clear job and does not quietly become a second authority for routing, memory, execution, or truth.</div>
+ 
+ <div class="grid">
+ <div class="card"><div class="score">9</div><b>platform planes</b><div class="muted">Clear ownership boundaries</div></div>
+@@ -100,7 +100,7 @@
+ </tbody></table>
+ 
+ <h2>Recommended true-north statement</h2>
+-<div class="callout"><strong>HX-Infrastructure is a self-hosted, specification-governed AI platform for development, testing, and demonstrations.</strong> It uses native Linux services and Bash/SSH operations; OmniRoute for governed model traffic; vLLM and Ollama for distinct inference classes; LangGraph for orchestration; Mem0 for durable user/agent memory; FastMCP for bounded capability exposure; PostgreSQL, Redis, and Qdrant for clearly separated state roles; LightRAG, Docling with Granite Docling 258M as its preferred embedded VLM, Crawl4AI, and purpose-built embedding/rerank serving for knowledge workflows; Open WebUI plus CopilotKit/AG-UI for user experience; n8n for deterministic automation; and Prometheus, Grafana, and Loki for operational visibility. Claude Code, jcode, and future read-only code intelligence support the engineering process under repository-enforced authority.</div>
++<div class="callout"><strong>HX-Infrastructure is a self-hosted, specification-governed AI platform for development, testing, and demonstrations.</strong> It uses native Linux services and Bash/SSH operations; NGINX for TLS termination, path routing, and controlled human ingress; OmniRoute for governed model traffic; vLLM and Ollama for distinct inference classes; LangGraph for orchestration; Mem0 for durable user/agent memory; FastMCP for bounded capability exposure; PostgreSQL, Redis, and Qdrant for clearly separated state roles; LightRAG, Docling with Granite Docling 258M as its preferred embedded VLM, Crawl4AI, and purpose-built embedding/rerank serving for knowledge workflows; Open WebUI plus CopilotKit/AG-UI for user experience; n8n for deterministic automation; and Prometheus, Grafana, and Loki for operational visibility. Claude Code, jcode, and future read-only code intelligence support the engineering process under repository-enforced authority.</div>
+ 
+ <h2>Final recommendation</h2>
+ <div class="callout verdict"><strong>Adopt this as the proposed technology inventory, not yet as an implementation authorization.</strong> It is broad enough to exercise the complete Hana-X platform and disciplined enough to avoid duplicate planes. The next architecture work should convert each proposed-core component into a concise capability contract: purpose, owned state, interfaces, dependencies, exclusions, acceptance evidence, and reversal criteria. Placement and sequence should remain separate until the complete-stack reconnaissance and true-north reconciliation are finished.</div>
+diff --git a/governance/logs/actions-and-issues.md b/governance/logs/actions-and-issues.md
+index 21114669996bbe703b59feb84de3d4639a96c502..80e464bf6cf4fc4272256efa864e7fc4fbff5515 100644
+--- a/governance/logs/actions-and-issues.md
++++ b/governance/logs/actions-and-issues.md
+@@ -33,6 +33,10 @@ than by lowering the severity.
+ 
+ ## log
+ 
++Interpretation note for `act-015`: “all gates passed” means all non-SME,
++machine-verifiable gates passed. It does not include the separate SME reviews; the
++same row records that three returned FAIL and one returned CONDITIONAL PASS.
++
+ | id | type | item | impact / outcome | owner | status | related | resolution / closeout |
+ | --- | --- | --- | --- | --- | --- | --- | --- |
+ | act-001 | action | **JFFS-backed mechanism built 2026-08-12. Two items block closure.** The owner moved the records off the RAM-backed `/etc/hosts` and into `/jffs/hx-hosts`, with `/jffs/hx-dns-load.sh` applying them. JFFS is persistent flash, so the files themselves now survive a reboot. All five servers resolve after running the loader, verified from the workstation. **Blocker 1, naming defect: FIXED 2026-08-12.** The `hxs-5` record had been written as `hx-5`. The owner deleted the entry by address from both `/jffs/hx-hosts` and `/etc/hosts`, appended the correct record and reloaded. Verified from the workstation: `hxs-1` through `hxs-5` and `HX-Router` all resolve forward, all five servers resolve in reverse to their `hxs-N.hx.local.arpa` names, and `hx-5.hx.local.arpa` no longer resolves. **Boot-time execution is deferred to `act-011` by owner decision on 2026-08-12 and is not a blocker.** Name resolution is operational for all five servers and the router, forward and reverse, and is sufficient for current work. What remains unproven is whether the loader runs automatically after a reboot, which is tracked separately in the backlog. Prior state follows. Working records created 2026-08-12, persistence NOT yet demonstrated. The project owner appended `hxs-2`, `hxs-3` and `hxs-4` records to `/etc/hosts` on the router and signalled dnsmasq with `killall -HUP dnsmasq`. Resolution verified from three independent vantage points: the router itself, the Windows workstation querying 192.168.50.1 explicitly, and `hxs-2` using its configured resolver. Forward resolution works for `hxs-1` through `hxs-4` and `HX-Router`, and reverse resolution works, with `192.168.50.202` returning `hxs-3.hx.local.arpa`. **This does not close the action.** The router shell reports a home directory under `/tmp`, which on ASUSWRT is RAM-backed, and `INFRASTRUCTURE-CONTRACT.md` section 5.4 states that `/etc/hosts` and `/etc/dnsmasq.conf` are regenerated. `HUP` caused dnsmasq to re-read the file without regenerating it, which is why the edit took effect. **Required next step: reboot the router and re-run the same resolution checks.** If the records survive, this action closes on evidence. If they do not, a persistent mechanism such as JFFS scripting or an nvram-backed configuration is required, and `iss-001` remains the governing constraint. Secondary gap, unrelated to persistence: short names do not resolve on the servers because no search domain is configured, so `hxs-3` fails while `hxs-3.hx.local.arpa` succeeds. Original text follows. Establish persistent router-side `hx.local.arpa` DNS records for approved server-managed static IP addresses. Record each approved address in `SERVER-REGISTRY.md`, configure static addressing on the Ubuntu server, and use ASUSWRT only for persistent name resolution. DHCP reservations remain out of scope for the primary LAN. The solution must survive router reboot, dnsmasq restart, and ASUSWRT configuration apply. | Persistent local server naming and address management. | hx infrastructure | done | iss-001, act-011 | **Operationally complete 2026-08-12.** Router-side `hx.local.arpa` records exist for `hxs-1` through `hxs-5` and `HX-Router`, stored in persistent flash at `/jffs/hx-hosts` and applied by `/jffs/hx-dns-load.sh`. Verified independently from the workstation: all six names resolve forward, and all five servers resolve in reverse to their `hxs-N.hx.local.arpa` names. Server addressing remains configured on each Ubuntu host, the router provides name resolution only, and no DHCP reservation was used, matching the required ownership model. Reboot survival is deferred to `act-011` in the backlog by owner decision and is not a blocker. |
+diff --git a/p1-01-scan-after.txt b/p1-01-scan-after.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..142b34fa575aefb09ea6f305a5212787e78bc06f
+GIT binary patch
+literal 804
+zcmd6l%?g505QWb==p9@dA)2`gTC@lXf&zU3Gqa#S%zFIlyEn;21TEz<<C!1tJ#(1n
+z!&AFXR~@Z1fK`C^@u3`Dl_}K;bhoifv{j{CrFvvNYz;O&nRY}awIjCCo@|9bQ}cD9
+znsQ&Rq0C$Dn%=XV9QZdHnCWj!S1~~a_k%{%gRjoFPXBa9{QvvTHY$>6sYDYkU>?_K
+u3Z7|B6xWIv-5j}S<7kW(b_;U5H-+7Toa`1IOTLZ5{SOY+;E2sK8}b4UcUaQ^
+
+literal 0
+HcmV?d00001
+
+diff --git a/p1-01-scan-before-p102.txt b/p1-01-scan-before-p102.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..7280fe83aa059f70333e5919266cd7e277e5f356
+GIT binary patch
+literal 2900
+zcmd6pOK;Oq5QS%r#Eu`}WvNJ?>VqN{5mbOgOGHzo?&73raGThXn-=lsf%DD8wFzxi
+zx~eQcuIGC0nKNg`_xG=sJ+0%pJ+qFj3)PygiH$9@GaK5#e(D_SDX~jErIzbyN%u3G
+z>1}B*HE!wb>ly37zH3y<Hqm)1KdEMBR>-z$Q(04a8rr6@=F?)K<(O7H;?%B$ekjas
+z`(XQaXk9z96-9MwdqTgZYee3;i7By-dF(J2al+foIe^27yfRM2Um;${y8h5;CLh>u
+z<NaE5V7{+!$GVrwN#fYf#A~kaPBrfP+nzA)+gJPM*Os34h5nP?cJ+KR$KTT(_Q`A&
+zXG;hQ9T&p4>fg2Py&dTLI%Xp7YF?%}iE^3B!-cLR#}1Z=mAIHuMFq}lpOfmVsUj$R
+z4DJ}6%Q|pgY7~i>$=pYw$l(lCO&#;VBOf)^z!uCF;x;j2Y{s`L>rh_MVlKp&vY+dU
+zE+5Cot}9?eeps#J=(^6~*p7X*o-8jCazmcs3RVh@uZ4oB7{dm7X=yaoo!DS(;B!k|
+zd0WZ~?^IpxYz*{W?lVX7MD<m526JR7>UL3|k-Zud`gx2Vw(PYtaChv15ZqJ}5hUWN
+z>HtwKg-1tMA)2wP81zJ0D+raMrb1rOM8q1JdZ^~_s;*S4UTM9=`6ZWB4eCG9^DDjY
+zse%r5@5u5+^@ROMM_9qcoOiMvXwGL@yE=Pf=l`p0XWm(;GZYQ3QuxRv{89hBgHgIg
+zU-!s8V>(0KV_UN4J`)AS6WT$s$If;pP2#Pp)T;W3I^N;2S~C~_RUOtHjw=2)W1t*4
+zqch>d3vcKc5!Y=z6APV=x@e*b9pQ)XK@eR7jrVoVoSD!^d>N{0)&$%w_LF8eLIo%Q
+z)h%k2PR`dbJf7FeL;CEV{s%i=BekLud8!ZooQtbPeO7hxMl-59qEApu%}SqW6j`T_
+z41|$-Mt2WGxNF;vaM_lnYdU1+nIfwZcY1?>41ghOmHJ)Nx$V1#U0v7pUqm@*YU+8a
+zJ&=9kD1~lCYb|SD+xg@VIrRSl+()eJ8>(*BR6W*-e4{=(AsEp$Y6@+{4rW8+s-F1^
+z6ut&4C%*RmoCi8O_u@P%fd4gn8&(DzkxhLCFcTs9xG!fFW;B<nN^<u{Ws+^!D4h@b
+zN_G=3Yci*q{m@Di<)+6N-Q#ck>#mBYxZ`4X()PZY*hlqRc3SK;c64$qNoR?@)j4vu
+O<KHlHCWhL9qV_)+tj4$i
+
+literal 0
+HcmV?d00001
+
+diff --git a/p1-01-scan-before.txt b/p1-01-scan-before.txt
+new file mode 100644
+index 0000000000000000000000000000000000000000..53945f9544c9d63b6a62124498349ca4c7bafd5a
+GIT binary patch
+literal 3418
+zcmd6qTTc^F6ovP*iEsXZc~gl63UU#nNdp8)KnWBLZ@o}zp>&!;A^v%FeS7!Np)HCp
+zhBPzGoO5Ph)?WL<ub(A*TEFM^%nqz9s}^<7tZN-Rvz9gOhpw)kGP}}K-FkX@Weu&I
+zS#AUUeXW&}u7=*&Z`yagv2&^GRFdj;t$VJ$1?y|KE?F&GHncu197=A}rtMk9j%~}f
+zZC+lS+J>xst9xeOWPi(1IJom9vnBVxWo`M{lXuw&olL%hTuXS|_<h4Q97=LU^7jiG
+z%C_bj?#o5zp|Fb>Y&wc(($cn}<DHNN%h^)bU24fbN>X#;d*a%XjS;h=onsF=iXI--
+z6}!H4=I+U<R(QrPbk9phS7(MotED(sY)8I*wyGT!FkBhgl8J4J2Z0`ZK~``B%&zr(
+zt(8m>82WqI)YZA%Znb{xv6#))8=Zl#4SkDU12H*s+d!`;xp>g<)tYSF7J6U(UUD3F
+zY*(vQJ)ey1ujwzI7E!u-z|$35bx*fsMJ8>zYz2M1OkR;a_?F8OvJLwt+49nnujxy&
+zXI9*UpEZ4ZD>OQe;WWA(m(y_Mns(vdhd0Hjl_Vk8??R^+X0mD7y{ft<IMJ8I$g7Kw
+zL@L-%<cJa{QjD;j44B2EVAZ*Hn~u}i3cP}UtPFh*1pAVWUbM9fI@p6ZnNFYSPQ;4-
+zEoir;eR75`ue5)zJJ_b^7SI13kI1bh$wAwJ$G0kZ<i)XTBQh^Cm<DUX3RH5v-^dEQ
+z;yq<jNpF3}0Y-Fmp0n_T)q!@2Bw5jOKOg4B|KY=my>mu9?0Z;<-P8p<m}Y10-qBfz
+zMAtI`Hb<RJ45GFK69$qN)gf`}u^IeOt$?pX>4U*oSi58YiJss1%C4#zwjbIT)i!GF
+zk$$loF{;_7_V#sVPrFrJHK9Yz_%~LqS=7m@V*qDi2z3m8lR+>&su`V{ZcOim7lGcm
+z%a*j?bL?SIJi#3pd+ca;ydI1*HDw=O2li2!LT9RFyp8KMwRAdSoS`Ga*r>m(M7Ie~
+zrg6p>>Na_Sk16`WBjoTsIUZGmn%B@3Ju3JSUk0lJmzX}lZnB;fyBaKr8aB;Q`VwE`
+zbyw&S)yH&=4b2A8*Hd>sk(}a>*=e#H1`AVOyw{18M^qMaX*^TWL+YM0fk;y}(%l|!
+z;rggs&DorIO@-_@!-#75O<x*E02?A#>D`OER(*0@*S)Ms3Fgpa`W~mT1fq|WfvlUC
+zt~s5nIG!;h(I2P+p^2`Trkf(`*}ar(*cbBwQzy38M%;)gc1iCkpUJ=68HMJ|b^jUj
+zu#U<-d5#QV`e3?6Gq&Mb-!)(}9+ETR2mNI_X31ta$28Y-d1NNhhQVoK#E0ZBIyqB}
+zesHB|<+A%2)#JYXWoN}xoVl5`Dqc4;`=r^6xslno?EjCDFR#S3%s%L9JKn*SwqwD6
+HA@Kb-;fWj5
+
+literal 0
+HcmV?d00001
+
+diff --git a/servers/AGENTS.md b/servers/AGENTS.md
+index 380e6b1a8f8a7fbf93865e0a978681341aa9d431..c226a2627316db5f3b60655894a22c3609ef26d4 100644
+--- a/servers/AGENTS.md
++++ b/servers/AGENTS.md
+@@ -51,11 +51,11 @@ Automation must not populate or infer:
+ - `Workload / Model`;
+ - manual approval decisions.
+ 
+-### phase 2 — configuration
++### future server implementation phase — configuration
+ 
+-Do not create or modify a server's `configuration.md` while Phase 2 is blocked.
++Do not create or modify a server's `configuration.md` until the owner authorizes the future server implementation phase.
+ 
+-When Phase 2 is legitimately open:
++When that phase is legitimately authorized:
+ 
+ - copy the approved role/workload from `SERVER-REGISTRY.md`;
+ - configure only the approved role;
+diff --git a/tests/remediation-tests-restored.ps1 b/tests/remediation-tests-restored.ps1
+index c2af51c6d6273e70ed4ca77ee52764ca0e3868bc..e294690d019f409bb3a8bb4ba47c3425020f6a6b 100644
+--- a/tests/remediation-tests-restored.ps1
++++ b/tests/remediation-tests-restored.ps1
+@@ -750,14 +750,18 @@ $noAgentTypeIncomplete = Invoke-Hook $subagentHook @{
+ $noAgentTypeIncompleteJson = $noAgentTypeIncomplete.StdOut | ConvertFrom-Json
+ Assert-True "F2: absent agent_type still blocks an incomplete record" ($noAgentTypeIncompleteJson.decision -eq "block")
+ 
+-# ---------- F1: Phase 2 unblock vocabulary ----------
+-# The guard releases only on the canonical SERVER-REGISTRY.md lifecycle values.
++# ---------- F1: Phase 3 hard-lock matrix ----------
++# The guard denies protected mutations for EVERY registry state. No Phase 2
++# status value releases it. (READY/IN PROGRESS/COMPLETE flipped from release
++# to deny in the same change as the guard code.)
+ 
+ $phase2States = @(
+-    @{ Value = "BLOCKED";     GuardActive = $true  },
+-    @{ Value = "READY";       GuardActive = $false },
+-    @{ Value = "IN PROGRESS"; GuardActive = $false },
+-    @{ Value = "COMPLETE";    GuardActive = $false }
++    @{ Value = "BLOCKED";     GuardActive = $true },
++    @{ Value = "READY";       GuardActive = $true },
++    @{ Value = "IN PROGRESS"; GuardActive = $true },
++    @{ Value = "COMPLETE";    GuardActive = $true },
++    @{ Value = "BANANA";      GuardActive = $true },   # unknown value
++    @{ Value = "";            GuardActive = $true }     # malformed / empty
+ )
+ 
+ foreach ($phase2State in $phase2States) {
+@@ -803,8 +807,8 @@ Assert-True "F1: missing registry keeps the guard active" (
+ Assert-True "F1: OPEN is not reintroduced into the registry" (
+     (Get-Content "$root\SERVER-REGISTRY.md" -Raw) -notmatch '(?im)^\s*\*\*Phase 2 Status:\*\*\s*OPEN\s*$'
+ )
+-Assert-True "F1: hook no longer gates on OPEN" (
+-    (Get-Content "$root\.claude\hooks\hx-common.ps1" -Raw) -match 'READY\|IN PROGRESS\|COMPLETE'
++Assert-True "F1: guard is hard-locked (Phase 2 release removed)" (
++    (Get-Content "$root\.claude\hooks\hx-phase1-guard.ps1" -Raw) -notmatch 'if\s*\(\s*Test-HxPhase2Open'
+ )
+ 
+ # ---------- Items 5 and 7: notification scope, deny rules, settings parity ----------

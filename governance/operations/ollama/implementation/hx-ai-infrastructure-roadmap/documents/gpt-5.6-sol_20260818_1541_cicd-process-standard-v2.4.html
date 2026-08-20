@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>HX CI/CD Process Standard v2.4</title>
+  <style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+  <style type="text/css">:root{--bg:#071019;--panel:#0d1925;--panel2:#122231;--ink:#e9f2f8;--muted:#9db0bf;--line:#263b4d;--cyan:#49d9e8;--green:#5ddd91;--amber:#f3be55;--purple:#bba7ff;--red:#ff7878}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 86% 2%,rgba(73,217,232,.1),transparent 34rem),radial-gradient(circle at 8% 30%,rgba(187,167,255,.07),transparent 30rem),var(--bg);color:var(--ink);font:15px/1.62 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body>header,body>main,body>.hero{max-width:1180px;margin:auto}main{padding:10px 30px 80px}.hero{padding:48px 30px 34px}.eyebrow{color:var(--cyan);font-size:12px;font-weight:850;letter-spacing:.15em;text-transform:uppercase}.hero h1{font-size:clamp(38px,6vw,68px);line-height:1.02;letter-spacing:-.045em;margin:12px 0 14px}.hero p{max-width:900px;color:#c5d4df;font-size:18px}.badges{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}.badge{border:1px solid var(--line);background:rgba(13,25,37,.85);border-radius:999px;padding:7px 11px;color:var(--muted);font-size:12px}.scoreboard{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;margin:25px 0}.score{background:linear-gradient(145deg,rgba(13,25,37,.95),rgba(18,34,49,.85));border:1px solid var(--line);border-radius:15px;padding:18px}.score b{display:block;color:var(--cyan);font-size:28px}.score span{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}.authority{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin:24px 0}.authority div{position:relative;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:14px;min-height:88px}.authority div:not(:last-child)::after{content:"→";position:absolute;right:-13px;top:31%;color:var(--cyan);font-size:21px;z-index:2}.authority b{display:block;color:var(--cyan);margin-bottom:5px}nav#TOC{max-width:1120px;margin:0 auto 28px;padding:18px 22px;background:rgba(13,25,37,.9);border:1px solid var(--line);border-radius:14px}nav#TOC:before{content:"Document navigation";display:block;color:var(--cyan);font-weight:800;margin-bottom:8px}nav#TOC ul{columns:2;margin:0}nav#TOC a{color:#cfe4ef;text-decoration:none}h1,h2,h3,h4{letter-spacing:-.018em;line-height:1.18;scroll-margin-top:22px}main>h1{display:none}h1{font-size:40px}h2{font-size:29px;margin:54px 0 16px;padding-top:12px;border-top:1px solid var(--line)}h3{font-size:21px;margin:30px 0 10px;color:#dcedf5}h4{font-size:17px;margin:23px 0 8px;color:var(--cyan)}p{margin:0 0 14px}a{color:var(--cyan)}blockquote{margin:20px 0;padding:16px 18px;border-left:4px solid var(--cyan);background:rgba(73,217,232,.065);border-radius:0 12px 12px 0;color:#d9e7ee}table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:rgba(13,25,37,.84);margin:16px 0 28px}th,td{padding:12px 13px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}th{background:var(--panel2);color:#d4e8f2;font-size:12px;letter-spacing:.05em;text-transform:uppercase}tr:last-child td{border-bottom:0}code{background:#06111b;border:1px solid #20364a;border-radius:5px;padding:1px 5px;color:#c9e9f8}pre{background:#06111b;border:1px solid var(--line);border-radius:12px;padding:16px;overflow:auto;color:#c9e9f8}pre.mermaid{display:none}ul,ol{padding-left:22px}li{margin:6px 0}hr{border:0;border-top:1px solid var(--line);margin:42px 0}.status{display:inline-block;color:var(--green);font-weight:800}.approval{border:1px solid rgba(93,221,145,.45);background:rgba(93,221,145,.07);border-radius:14px;padding:18px;margin:25px 0}.footer-note{max-width:1120px;margin:0 auto 50px;padding:18px 30px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}@media(max-width:860px){.scoreboard,.authority{grid-template-columns:1fr}.authority div:not(:last-child)::after{content:"↓";right:50%;top:auto;bottom:-20px}.hero,main{padding-left:18px;padding-right:18px}nav#TOC ul{columns:1}table{display:block;overflow-x:auto}}@media print{body{background:#fff;color:#111}.hero,main{max-width:none}.score,.authority div,table,nav#TOC{background:#fff;color:#111}a{color:#075985}}
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="eyebrow">Hana-X AI · Governing Standard · Approval Edition</div>
+  <h1>CI/CD Process Standard <span class="status">v2.4</span></h1>
+  <p>Evidence-producing delivery controls for Hana-X repositories—designed to move quickly without granting implementation, AI review, validation, and deployment the same authority.</p>
+  <div class="badges">
+    <span class="badge">HX-SD-CI-001</span>
+    <span class="badge">Ready for owner approval</span>
+    <span class="badge">CodeRabbit production adoption: Stage 5</span>
+    <span class="badge">Effective on approval</span>
+  </div>
+  <div class="scoreboard">
+    <div class="score"><b>8.8 / 10</b><span>Target adoption readiness</span></div>
+    <div class="score"><b>14</b><span>Normative control domains</span></div>
+    <div class="score"><b>5</b><span>Core + applicability profiles</span></div>
+  </div>
+  <div class="authority" aria-label="Hana-X delivery authority chain">
+    <div><b>Implementer</b>Creates change and evidence.</div>
+    <div><b>First-party CI</b>Runs deterministic gates.</div>
+    <div><b>CodeRabbit</b>Performs production AI review.</div>
+    <div><b>Tessa</b>Independently validates when required.</div>
+    <div><b>Owner</b>Accepts or delegates merge authority.</div>
+  </div>
+</section>
+<header id="title-block-header">
+<h1 class="title">HX CI/CD Process Standard v2.4</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#cicd-process-standard" id="toc-cicd-process-standard">CI/CD Process Standard</a>
+<ul>
+<li><a href="#change-history" id="toc-change-history">Change
+history</a></li>
+<li><a href="#executive-directive" id="toc-executive-directive">Executive directive</a></li>
+<li><a href="#control-flow" id="toc-control-flow">Control flow</a></li>
+</ul></li>
+<li><a href="#part-1--normative-standard" id="toc-part-1--normative-standard">Part 1 — Normative standard</a>
+<ul>
+<li><a href="#1-scope-authority-and-language" id="toc-1-scope-authority-and-language">1. Scope, authority, and
+language</a></li>
+<li><a href="#s1--the-merge-gate-must-be-real" id="toc-s1--the-merge-gate-must-be-real">S1 — The merge gate MUST be
+real</a></li>
+<li><a href="#s2--credentials-and-secrets-must-fail-closed" id="toc-s2--credentials-and-secrets-must-fail-closed">S2 — Credentials
+and secrets MUST fail closed</a></li>
+<li><a href="#s3--workflow-privilege-must-be-proportional-to-its-trigger" id="toc-s3--workflow-privilege-must-be-proportional-to-its-trigger">S3 —
+Workflow privilege MUST be proportional to its trigger</a></li>
+<li><a href="#s4--third-party-ai-and-automation-must-remain-subordinate-to-hana-x-authority" id="toc-s4--third-party-ai-and-automation-must-remain-subordinate-to-hana-x-authority">S4
+— Third-party AI and automation MUST remain subordinate to Hana-X
+authority</a></li>
+<li><a href="#s5--runner-security-must-protect-the-fleet" id="toc-s5--runner-security-must-protect-the-fleet">S5 — Runner security
+MUST protect the fleet</a></li>
+<li><a href="#s6--dependency-and-automation-inputs-must-be-reproducible" id="toc-s6--dependency-and-automation-inputs-must-be-reproducible">S6 —
+Dependency and automation inputs MUST be reproducible</a></li>
+<li><a href="#s7--caches-must-be-treated-as-untrusted-accelerators" id="toc-s7--caches-must-be-treated-as-untrusted-accelerators">S7 —
+Caches MUST be treated as untrusted accelerators</a></li>
+<li><a href="#s8--matrix-builds-must-prove-expected-coverage-not-artificial-sameness" id="toc-s8--matrix-builds-must-prove-expected-coverage-not-artificial-sameness">S8
+— Matrix builds MUST prove expected coverage, not artificial
+sameness</a></li>
+<li><a href="#s9--ruleset-and-wiring-drift-must-be-detected" id="toc-s9--ruleset-and-wiring-drift-must-be-detected">S9 — Ruleset and
+wiring drift MUST be detected</a></li>
+<li><a href="#s10--public-and-fork-contribution-paths-must-remain-safe-and-usable" id="toc-s10--public-and-fork-contribution-paths-must-remain-safe-and-usable">S10
+— Public and fork contribution paths MUST remain safe and
+usable</a></li>
+<li><a href="#s11--workflow-artifacts-and-evidence-must-preserve-integrity" id="toc-s11--workflow-artifacts-and-evidence-must-preserve-integrity">S11
+— Workflow artifacts and evidence MUST preserve integrity</a></li>
+<li><a href="#s12--operational-and-supply-chain-hygiene-must-be-explicit" id="toc-s12--operational-and-supply-chain-hygiene-must-be-explicit">S12
+— Operational and supply-chain hygiene MUST be explicit</a></li>
+<li><a href="#s13--accepted-risk-and-control-evidence-must-be-truthful" id="toc-s13--accepted-risk-and-control-evidence-must-be-truthful">S13 —
+Accepted risk and control evidence MUST be truthful</a></li>
+<li><a href="#s14--deployment-must-be-a-separately-protected-authority-plane" id="toc-s14--deployment-must-be-a-separately-protected-authority-plane">S14
+— Deployment MUST be a separately protected authority plane</a></li>
+</ul></li>
+<li><a href="#part-2--applicability-profiles" id="toc-part-2--applicability-profiles">Part 2 — Applicability
+profiles</a>
+<ul>
+<li><a href="#profile-selection-rule" id="toc-profile-selection-rule">Profile selection rule</a></li>
+</ul></li>
+<li><a href="#part-3--hx-ai-platform-production-adoption-decision" id="toc-part-3--hx-ai-platform-production-adoption-decision">Part 3 —
+HX-Ai-Platform production adoption decision</a>
+<ul>
+<li><a href="#31-coderabbit-decision" id="toc-31-coderabbit-decision">3.1 CodeRabbit decision</a></li>
+<li><a href="#32-first-party-stage-5-controls" id="toc-32-first-party-stage-5-controls">3.2 First-party Stage 5
+controls</a></li>
+<li><a href="#33-configuration-change-rule" id="toc-33-configuration-change-rule">3.3 Configuration-change
+rule</a></li>
+</ul></li>
+<li><a href="#part-4--conformance-and-evidence" id="toc-part-4--conformance-and-evidence">Part 4 — Conformance and
+evidence</a>
+<ul>
+<li><a href="#41-minimum-control-registry" id="toc-41-minimum-control-registry">4.1 Minimum control
+registry</a></li>
+<li><a href="#42-acceptance-evidence" id="toc-42-acceptance-evidence">4.2 Acceptance evidence</a></li>
+<li><a href="#43-validation-separation" id="toc-43-validation-separation">4.3 Validation separation</a></li>
+<li><a href="#44-incident-reporting" id="toc-44-incident-reporting">4.4
+Incident reporting</a></li>
+</ul></li>
+<li><a href="#part-5--exceptions-and-change-control" id="toc-part-5--exceptions-and-change-control">Part 5 — Exceptions and
+change control</a>
+<ul>
+<li><a href="#51-exception-requirements" id="toc-51-exception-requirements">5.1 Exception requirements</a></li>
+<li><a href="#52-emergency-change" id="toc-52-emergency-change">5.2
+Emergency change</a></li>
+<li><a href="#53-standard-changes" id="toc-53-standard-changes">5.3
+Standard changes</a></li>
+</ul></li>
+<li><a href="#part-6--implementation-sequence" id="toc-part-6--implementation-sequence">Part 6 — Implementation
+sequence</a></li>
+<li><a href="#part-7--matters-closed-by-v24" id="toc-part-7--matters-closed-by-v24">Part 7 — Matters closed by
+v2.4</a></li>
+<li><a href="#part-8--current-primary-source-basis" id="toc-part-8--current-primary-source-basis">Part 8 — Current primary
+source basis</a></li>
+<li><a href="#owner-approval" id="toc-owner-approval">Owner
+approval</a></li>
+</ul>
+</nav>
+<h1 id="cicd-process-standard">CI/CD Process Standard</h1>
+<table>
+<thead>
+<tr class="header">
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Document ID</strong></td>
+<td>HX-SD-CI-001</td>
+</tr>
+<tr class="even">
+<td><strong>Version</strong></td>
+<td>2.4</td>
+</tr>
+<tr class="odd">
+<td><strong>Status</strong></td>
+<td>PROPOSED — READY FOR OWNER APPROVAL</td>
+</tr>
+<tr class="even">
+<td><strong>Owner</strong></td>
+<td>Jarvis Richardson, Chief AI Officer, Hana-X AI</td>
+</tr>
+<tr class="odd">
+<td><strong>Effective date</strong></td>
+<td>On owner approval</td>
+</tr>
+<tr class="even">
+<td><strong>Review cadence</strong></td>
+<td>Semi-annual; after any material CI/CD incident; or when a governing
+platform changes behavior</td>
+</tr>
+<tr class="odd">
+<td><strong>Applies to</strong></td>
+<td>Hana-X repositories and delivery pipelines, subject to the
+applicability profiles in Part 2</td>
+</tr>
+<tr class="even">
+<td><strong>v2.4 editor</strong></td>
+<td>ChatGPT, acting as Chief of Staff, at owner direction</td>
+</tr>
+<tr class="odd">
+<td><strong>Source basis</strong></td>
+<td>HX-SD-CI-001 v2.3; current Hana-X standing directives; current
+GitHub Actions and CodeRabbit primary documentation verified
+2026-08-18</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Approval effect.</strong> Owner approval changes this
+document&#39;s status to <strong>ADOPTED</strong> without requiring a
+version-number change. The approved copy must record the approval date
+and retained decision evidence.</p>
+</blockquote>
+<h2 id="change-history">Change history</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Version</th>
+<th>Date</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1.0</td>
+<td>2026-08-18</td>
+<td>Initial repository-specific review and recommendations.</td>
+</tr>
+<tr class="even">
+<td>2.0</td>
+<td>2026-08-18</td>
+<td>Separated normative controls from repository evidence.</td>
+</tr>
+<tr class="odd">
+<td>2.1</td>
+<td>2026-08-18</td>
+<td>Added pinned-commit verification corrections and cache/dependency
+concerns.</td>
+</tr>
+<tr class="even">
+<td>2.2</td>
+<td>2026-08-18</td>
+<td>Reworked third-party blocking conditions and assigned owner.</td>
+</tr>
+<tr class="odd">
+<td>2.3</td>
+<td>2026-08-18</td>
+<td>Qualified human-invoked writes and added a first-party check
+condition. Classified as an adoption candidate.</td>
+</tr>
+<tr class="even">
+<td><strong>2.4</strong></td>
+<td><strong>2026-08-18</strong></td>
+<td><strong>Approval-ready revision. Corrects the cache model;
+establishes production CodeRabbit adoption in Stage 5; restores the
+no-self-validation boundary; adds feature-branch review-config
+protection, always-running aggregate gates, expected check-source
+controls, ecosystem-portable dependency integrity, matrix coverage
+contracts, risk-register authority, applicability profiles, acceptance
+evidence, and controlled exception handling. Removes repository-specific
+evidence from the normative body.</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="executive-directive">Executive directive</h2>
+<p>Hana-X will use CI/CD as an evidence-producing delivery system, not
+as a collection of green badges.</p>
+<p>This standard requires:</p>
+<ol type="1">
+<li>deterministic first-party checks that fail closed;</li>
+<li>least-privilege workflow execution;</li>
+<li>reproducible dependencies and immutable automation inputs;</li>
+<li>clear separation between implementation, AI-assisted review,
+independent validation, and owner acceptance;</li>
+<li>retained evidence sufficient to reproduce why a change was accepted;
+and</li>
+<li>controls proportional to the repository&#39;s actual risk profile.</li>
+</ol>
+<p><strong>CodeRabbit is adopted as a production AI review capability
+for HX-Ai-Platform in Foundation Stage 5.</strong> Its initial
+production role is automatic, assertive review and CI-analysis
+assistance. It is not the sole merge authority, an independent
+validator, or a deployment authority. Direct-branch Autofix is disabled.
+This is an operating boundary, not a trial designation.</p>
+<h2 id="control-flow">Control flow</h2>
+<pre class="mermaid"><code>flowchart LR
+    A[Implementer change] --&gt; B[First-party deterministic CI]
+    A --&gt; C[CodeRabbit production review]
+    B --&gt; D[Required aggregate gate]
+    C --&gt; E[Human disposition]
+    D --&gt; F[Tessa independent validation when required]
+    E --&gt; F
+    F --&gt; G[Owner or delegated merge authority]
+    G --&gt; H[Protected release or deployment workflow]</code></pre>
+<p>The diagram expresses authority, not chronology. CodeRabbit and
+first-party CI may run concurrently. Tessa does not remediate the
+implementation she validates.</p>
+<hr />
+<h1 id="part-1--normative-standard">Part 1 — Normative standard</h1>
+<h2 id="1-scope-authority-and-language">1. Scope, authority, and
+language</h2>
+<h3 id="11-source-authority">1.1 Source authority</h3>
+<p>For this standard, the authority order is:</p>
+<ol type="1">
+<li>explicit current owner decisions and adopted Hana-X standing
+directives;</li>
+<li>this adopted standard and its approved applicability profile;</li>
+<li>repository-specific policy and control registries;</li>
+<li>current as-built evidence and first-party test results;</li>
+<li>current official platform documentation;</li>
+<li>historical reviews and implementation examples; and</li>
+<li>inference.</li>
+</ol>
+<p>A historical repository or reference implementation can inform a
+control but cannot redefine the control merely to obtain a compliance
+result.</p>
+<h3 id="12-normative-terms">1.2 Normative terms</h3>
+<ul>
+<li><strong>MUST</strong> and <strong>MUST NOT</strong> are
+mandatory.</li>
+<li><strong>SHOULD</strong> and <strong>SHOULD NOT</strong> are strong
+defaults. A deviation requires a written exception under Section
+16.</li>
+<li><strong>MAY</strong> identifies an allowed choice.</li>
+<li><strong>NOT APPLICABLE</strong> requires a recorded applicability
+rationale; silence is not a determination.</li>
+<li><strong>NOT VERIFIED</strong> means evidence was unavailable or
+insufficient. It is not a pass.</li>
+</ul>
+<h3 id="13-defined-roles">1.3 Defined roles</h3>
+<ul>
+<li><strong>First-party check:</strong> automation owned or directly
+governed by Hana-X and executed from reviewed repository or organization
+configuration.</li>
+<li><strong>Third-party reviewer:</strong> an external App or service
+that analyzes or comments on a change, including an AI reviewer.</li>
+<li><strong>Independent validation:</strong> validation performed under
+the Tessa methodology or another owner-approved independent role that
+did not implement or remediate the change being accepted.</li>
+<li><strong>Aggregate gate:</strong> an always-running first-party job
+whose sole purpose is to evaluate the expected results of required
+subordinate checks and fail if any mandatory result is missing, failed,
+cancelled, unexpectedly skipped, neutral, or inconclusive.</li>
+<li><strong>Artifact:</strong> a file, image, package, report, model, or
+evidence object produced or consumed by a workflow.</li>
+<li><strong>Protected branch:</strong> a branch governed by an adopted
+ruleset that requires pull-request review and defined checks before
+merge.</li>
+</ul>
+<h2 id="s1--the-merge-gate-must-be-real">S1 — The merge gate MUST be
+real</h2>
+<ol type="1">
+<li>CI MUST run automatically on every pull request and every push to
+the default branch. Draft-PR behavior MUST be explicit.</li>
+<li>Protected branches MUST require a pull request, the named required
+checks, linear history, and blocked force-push and deletion unless an
+approved exception states otherwise.</li>
+<li>Every required check MUST have a stable, unique name. Renaming a
+required job is a protection-changing operation and MUST update the
+ruleset in the same controlled change.</li>
+<li>Where GitHub supports it, each required external check MUST be bound
+to its expected GitHub App source. “Any source” MUST NOT be used without
+a documented reason.</li>
+<li>Because GitHub may treat <code>successful</code>,
+<code>skipped</code>, or <code>neutral</code> as satisfying a required
+check, every repository with multiple mandatory first-party jobs MUST
+expose one required aggregate gate that:
+<ul>
+<li>runs with <code>if: always()</code> or an equivalent fail-closed
+mechanism;</li>
+<li>knows the expected subordinate job set;</li>
+<li>fails on missing, failed, cancelled, or unexpectedly skipped
+results;</li>
+<li>permits a skipped result only when an explicit, tested applicability
+condition authorizes it; and</li>
+<li>emits success only after evaluating the complete expected set.</li>
+</ul></li>
+<li>A required check that can silently disappear, remain pending
+indefinitely, or report neutral without an approved condition is a
+broken gate.</li>
+<li>Ruleset configuration and required-check inventory MUST be retained
+as governed evidence and audited under S9.</li>
+</ol>
+<h2 id="s2--credentials-and-secrets-must-fail-closed">S2 — Credentials
+and secrets MUST fail closed</h2>
+<ol type="1">
+<li>Ordinary pull-request and verification CI MUST receive no production
+API keys, service credentials, or long-lived cloud credentials.</li>
+<li>Tests in ordinary CI SHOULD mock external services. Controlled
+integration tests MAY contact a sandbox service only when:
+<ul>
+<li>the workflow is explicitly classified as an integration
+workflow;</li>
+<li>the credential is non-production, least-privilege, and short-lived
+where possible;</li>
+<li>fork and untrusted contributions cannot access it;</li>
+<li>an environment or equivalent approval boundary protects it; and</li>
+<li>the external dependency and failure behavior are documented.</li>
+</ul></li>
+<li>Deployment MUST use OIDC federation or another approved short-lived
+identity mechanism instead of stored long-lived cloud credentials
+wherever the target supports it.</li>
+<li>A secret scanner MUST run as a required first-party check. A
+confirmed credential in git history is treated as compromised and MUST
+be rotated; deleting the line is not remediation.</li>
+<li>Workflow logs, caches, artifacts, test fixtures, and retained
+evidence MUST NOT contain credentials or bearer tokens.</li>
+<li>Secret-access failures MUST fail the affected privileged job. A job
+MUST NOT silently fall back to weaker authentication.</li>
+</ol>
+<h2 id="s3--workflow-privilege-must-be-proportional-to-its-trigger">S3 —
+Workflow privilege MUST be proportional to its trigger</h2>
+<ol type="1">
+<li>The repository or organization default <code>GITHUB_TOKEN</code>
+permission MUST be read-only.</li>
+<li>Workflows MUST default to <code>permissions: contents: read</code>.
+Additional permissions MUST be assigned at the narrowest practical job
+scope.</li>
+<li>Public-repository workflows triggered by human-authored
+text—comments, reviews, issue bodies, issue titles, or equivalent
+surfaces—MUST gate privileged jobs at the job level on an authorized
+actor or association. A step-level gate is insufficient.</li>
+<li>Text commands MUST use an explicit command grammar. Substring
+matches such as “contains <code>@agent</code>” MUST NOT grant write
+capability.</li>
+<li><code>pull_request_target</code> MUST NOT check out or execute
+pull-request-controlled code. Its permitted use is bounded metadata work
+against trusted base-branch code.</li>
+<li><code>id-token: write</code> MUST appear only in a job performing an
+approved OIDC-backed purpose, such as cloud federation or artifact
+attestation. It MUST NOT be placed at workflow scope for
+convenience.</li>
+<li>Privileged <code>workflow_dispatch</code> jobs MUST use protected
+environments or equivalent approval when they can modify infrastructure,
+releases, or repository state.</li>
+<li>Scheduled workflows with write capability MUST run reviewed
+default-branch code, declare least-privilege permissions, and have a
+named owner.</li>
+<li>The broadest permission set MUST have the narrowest and
+most-reviewed trigger. The inverse is a finding.</li>
+</ol>
+<h2 id="s4--third-party-ai-and-automation-must-remain-subordinate-to-hana-x-authority">S4
+— Third-party AI and automation MUST remain subordinate to Hana-X
+authority</h2>
+<h3 id="s41-default-and-production-roles">S4.1 Default and production
+roles</h3>
+<ol type="1">
+<li>Third-party review systems are subordinate controls. They MAY
+review, summarize, classify, and recommend.</li>
+<li>A third-party reviewer MUST NOT be the sole merge authority,
+independent validator, owner acceptance authority, or deployment
+authority.</li>
+<li>Human invocation authorizes an action; it does not make the
+resulting output independently validated.</li>
+<li>First-party deterministic CI remains the technical source of merge
+evidence. Tessa or another owner-approved independent role remains the
+independent validation authority when required by repository
+policy.</li>
+</ol>
+<h3 id="s42-blocking-eligibility">S4.2 Blocking eligibility</h3>
+<p>A third-party check MAY be required only when all of the following
+are true:</p>
+<ol type="1">
+<li>the check has completed successfully across every applicable PR
+class used by the repository;</li>
+<li>its check name is stable and its expected App source is bound in the
+ruleset where supported;</li>
+<li>an auditable per-PR override or documented break-glass path exists
+and does not require silently weakening the standing ruleset;</li>
+<li>the third-party check is not the sole required check;</li>
+<li>at least one first-party deterministic gate evaluates the changed
+artifact;</li>
+<li>inconclusive, missing, skipped, rate-limited, or service-unavailable
+outcomes fail closed or invoke the documented break-glass process;
+and</li>
+<li>the provider&#39;s access, configuration, retention, removal, and
+incident response have been recorded.</li>
+</ol>
+<p>Blocking status does not convert a third-party AI judgment into
+independent validation.</p>
+<h3 id="s43-configuration-integrity">S4.3 Configuration integrity</h3>
+<ol type="1">
+<li>Third-party configuration stored in the repository is part of the CI
+control surface.</li>
+<li>If a provider uses the feature branch&#39;s configuration to review that
+same branch, the configuration file MUST be protected by CODEOWNERS or
+an equivalent owner-review control.</li>
+<li>A change to a security-sensitive reviewer configuration MUST be
+isolated in a dedicated governance PR unless the owner explicitly
+approves combined scope.</li>
+<li>First-party CI MUST detect configuration changes and verify at
+minimum:
+<ul>
+<li>the file parses against the supported schema;</li>
+<li>prohibited capabilities remain disabled;</li>
+<li>required review paths are not silently excluded;</li>
+<li>the change is presented as a policy change; and</li>
+<li>the change does not remove the first-party gate.</li>
+</ul></li>
+<li>A review that names a third-party system but does not read its
+effective configuration has not reviewed that system.</li>
+</ol>
+<h3 id="s44-write-capability">S4.4 Write capability</h3>
+<ol type="1">
+<li>Direct-branch AI Autofix is disabled in the HX default profile.</li>
+<li>A future owner-approved write profile MAY allow human-requested
+fixes only through a separate stacked PR or equivalent reviewable
+branch.</li>
+<li>AI-generated fixes MUST pass the full first-party CI suite and any
+required independent validation. A provider&#39;s own verification is
+implementation evidence, not acceptance.</li>
+<li>A generated change MUST NOT be accepted when required verification
+failed, even if the provider delivers the change.</li>
+<li>An AI reviewer MUST NOT approve or independently validate its own
+generated fix.</li>
+<li>Automatic review-fix-review loops are prohibited unless separately
+designed, bounded, tested, cost-limited, and owner-approved.</li>
+</ol>
+<h3 id="s45-adoption-record">S4.5 Adoption record</h3>
+<p>Every third-party App adoption MUST record:</p>
+<ul>
+<li>the business purpose;</li>
+<li>repository and organization scope;</li>
+<li>read, comment, status, and write permissions;</li>
+<li>data and retention considerations;</li>
+<li>whether output is advisory or blocking;</li>
+<li>effective configuration location;</li>
+<li>incident and service-outage behavior;</li>
+<li>removal and access-revocation procedure;</li>
+<li>decision owner and review date; and</li>
+<li>evidence required before authority is expanded.</li>
+</ul>
+<h2 id="s5--runner-security-must-protect-the-fleet">S5 — Runner security
+MUST protect the fleet</h2>
+<ol type="1">
+<li>GitHub-hosted runners are the default.</li>
+<li>Self-hosted runners are prohibited for public repositories and on
+shared or long-lived workload hosts unless an owner-approved exception
+exists.</li>
+<li><strong>HXS-1 through HXS-4 and hxs-cp MUST NOT serve as general
+GitHub Actions runners.</strong> Model servers and the control-plane
+host are delivery targets or administrative systems, not disposable
+execution sandboxes.</li>
+<li>Any exempted self-hosted runner MUST be ephemeral, single-job,
+isolated, free of unrelated credentials and workloads, and governed by
+restricted network egress.</li>
+<li>Runner images and labels MUST be explicit enough to reproduce the
+environment. Moving labels such as <code>ubuntu-latest</code> MAY be
+used only when the project accepts and tests platform drift; otherwise
+pin the supported runner generation.</li>
+</ol>
+<h2 id="s6--dependency-and-automation-inputs-must-be-reproducible">S6 —
+Dependency and automation inputs MUST be reproducible</h2>
+<ol type="1">
+<li>Each ecosystem MUST use its strongest supported native
+reproducibility mechanism:
+<ul>
+<li>lockfile or resolved manifest for direct and transitive
+dependencies;</li>
+<li>integrity hashes where the ecosystem produces or enforces them;</li>
+<li>frozen or immutable install mode in CI;</li>
+<li>full commit SHA for GitHub Actions;</li>
+<li>image digest for containers; and</li>
+<li>immutable release, snapshot, or repository metadata for
+operating-system packages when exact reproduction is required.</li>
+</ul></li>
+<li>Floating dependency ranges MUST NOT be the final CI install
+authority.</li>
+<li>When an ecosystem cannot provide hash-bearing lockfiles, the
+repository MUST document the strongest available mechanism and the
+residual risk. The absence of an ecosystem feature is not automatic
+non-compliance.</li>
+<li>A consistency check MUST fail when source constraints and resolved
+dependencies disagree.</li>
+<li>Dependency update automation MUST cover every supported ecosystem
+present, including GitHub Actions. An unsupported ecosystem MUST be
+recorded with a manual review cadence.</li>
+<li>Security updates and routine version updates are distinct channels:
+confirmed security remediation is prioritized by severity; routine
+updates follow the repository cadence.</li>
+<li>Initial adoption of an external action or reusable workflow requires
+source and maintainer vetting. SHA pinning preserves that decision; it
+does not prove trustworthiness.</li>
+</ol>
+<h2 id="s7--caches-must-be-treated-as-untrusted-accelerators">S7 —
+Caches MUST be treated as untrusted accelerators</h2>
+<ol type="1">
+<li>Reproducibility MUST come from immutable dependency inputs and
+frozen installation, never from a cache.</li>
+<li>A cache key MUST represent the material inputs to the cached data,
+including relevant lockfile content, operating system, architecture,
+runtime/toolchain version, and trust scope.</li>
+<li>Broad restore prefixes MUST NOT allow materially incompatible or
+less-trusted entries to satisfy a protected workflow.</li>
+<li>Normal GitHub <code>pull_request</code> caches are scoped to the PR
+merge ref and cannot be restored by the base branch or sibling PRs.
+Controls MUST preserve—not assume away—that boundary.</li>
+<li>Low-trust workflows that execute in default-branch context MUST have
+restore-only cache access unless the trigger and actor are explicitly
+trusted.</li>
+<li>Protected-branch and deployment jobs MUST write caches only from
+trusted triggers and MUST NOT execute unverified scripts, binaries,
+virtual environments, or workspace content restored from a less-trusted
+cache.</li>
+<li>Package-manager download, HTTP, or wheel caches MAY be used when
+installs still verify immutable dependency inputs. Cached installed
+environments require stronger exact keys and MUST NOT cross trust,
+runtime, or architecture boundaries.</li>
+<li>Cache paths MUST NOT contain secrets, tokens, credentials, signing
+material, or retained evidence.</li>
+<li>Cache keys and restore behavior MUST be inspectable. A suspected
+poisoned cache is an incident: stop restoration, invalidate the affected
+namespace, preserve relevant logs, and rebuild from immutable
+inputs.</li>
+</ol>
+<h2 id="s8--matrix-builds-must-prove-expected-coverage-not-artificial-sameness">S8
+— Matrix builds MUST prove expected coverage, not artificial
+sameness</h2>
+<ol type="1">
+<li>Every matrix dimension MUST have a declared purpose and expected
+coverage contract.</li>
+<li>When configurations are intended to execute the same logical suite,
+CI MUST compare normalized test identities and fail on unexplained
+shrinkage.</li>
+<li>Configuration-specific tests, exclusions, or skips are permitted
+only when they are declared, justified, and version-controlled.</li>
+<li>The gate MUST distinguish:
+<ul>
+<li>an expected applicability difference;</li>
+<li>a test that did not execute because a dependency or output
+disappeared; and</li>
+<li>a true coverage regression.</li>
+</ul></li>
+<li>Custom coverage gates MUST have their own unit tests and MUST
+smoke-assert their runtime inputs: required files present, non-empty,
+parseable, and equal to the expected count.</li>
+<li>A vacuous comparison is a failure. A tool&#39;s unit tests prove its
+logic, not that the workflow supplied the correct evidence.</li>
+</ol>
+<h2 id="s9--ruleset-and-wiring-drift-must-be-detected">S9 — Ruleset and
+wiring drift MUST be detected</h2>
+<ol type="1">
+<li>Required checks, exact names, expected App sources, pull-request
+requirements, review requirements, linear history, force-push, deletion,
+and bypass actors MUST be compared against the governed control
+registry:
+<ul>
+<li>after any ruleset or workflow change;</li>
+<li>at every release; and</li>
+<li>at least quarterly for active repositories.</li>
+</ul></li>
+<li>Drift results MUST be retained as evidence.</li>
+<li>Every bypass actor or role MUST be removed, time-boxed with expiry,
+or retained with a named owner and written justification.</li>
+<li>A break-glass event MUST produce an incident or exception record
+identifying who used it, why, what changed, and how normal controls were
+restored.</li>
+<li>Ruleset claims that could not be retrieved with sufficient authority
+MUST be marked NOT VERIFIED.</li>
+</ol>
+<h2 id="s10--public-and-fork-contribution-paths-must-remain-safe-and-usable">S10
+— Public and fork contribution paths MUST remain safe and usable</h2>
+<ol type="1">
+<li>Public fork pull requests MUST receive no secrets and a read-only
+token.</li>
+<li>Every required check applicable to public contributions MUST be able
+to complete under fork conditions, or the contribution path MUST
+explicitly state its controlled maintainer-hand-off process.</li>
+<li>Public fork paths MUST NOT use <code>pull_request_target</code> to
+execute fork-controlled code.</li>
+<li>Base-branch caches readable by fork PRs MUST contain no sensitive
+material.</li>
+<li>This section is NOT APPLICABLE to a private repository with forks
+disabled, but that determination MUST be recorded in its profile.</li>
+</ol>
+<h2 id="s11--workflow-artifacts-and-evidence-must-preserve-integrity">S11 —
+Workflow artifacts and evidence MUST preserve integrity</h2>
+<ol type="1">
+<li>Cross-job reports and build outputs consumed as gate evidence MUST
+use an explicit artifact transfer mechanism with configured
+retention.</li>
+<li>A consuming gate MUST validate artifact presence, expected count,
+type, parseability, producer identity where available, and content
+schema before trusting it.</li>
+<li>Evidence artifacts MUST be immutable within an attempt. A rerun
+creates a new attempt or a clearly versioned replacement under
+repository policy.</li>
+<li>Retention MUST align with the Hana-X evidence policy and the
+repository&#39;s release, incident, and audit needs. “Platform default” is
+not a retention decision.</li>
+<li>Externally consumed binaries, packages, and container images MUST
+receive provenance attestation before release when the GitHub plan and
+target support it.</li>
+<li>Attestation generation alone is not acceptance. The release or
+consumer process MUST verify subject identity, digest, repository, and
+expected workflow provenance.</li>
+<li>Test logs, source snapshots, documentation, and transient build
+products SHOULD NOT be attested merely to increase artifact count.</li>
+</ol>
+<h2 id="s12--operational-and-supply-chain-hygiene-must-be-explicit">S12
+— Operational and supply-chain hygiene MUST be explicit</h2>
+<ol type="1">
+<li>Every job MUST set <code>timeout-minutes</code>.</li>
+<li>Workflows SHOULD use concurrency groups and
+<code>cancel-in-progress</code> when a newer commit makes an in-flight
+run obsolete. Deployment concurrency MUST prevent two runs racing the
+same environment.</li>
+<li>Required jobs MUST NOT use <code>continue-on-error</code> for the
+control they are intended to enforce.</li>
+<li>Each component MUST have at least one automated gate that can fail
+on a realistic defect class. “No automated test” requires an
+accepted-risk record.</li>
+<li>GitHub Actions and reusable workflows MUST be pinned to full commit
+SHAs.</li>
+<li>Where available, Hana-X SHOULD enforce an organization-level
+allowlist for approved actions and reusable workflows.</li>
+<li>Workflow dependencies, including composite actions and scripts
+invoked by actions, are part of the reviewed supply chain.</li>
+<li>If strict checks and linear history create merge contention,
+evaluate merge queue operation before weakening controls.</li>
+</ol>
+<h2 id="s13--accepted-risk-and-control-evidence-must-be-truthful">S13 —
+Accepted risk and control evidence MUST be truthful</h2>
+<ol type="1">
+<li>The governed repository risk register is the authoritative location
+for accepted risks. The README MUST provide an executive summary or link
+when users need visibility.</li>
+<li>Each accepted risk MUST identify the condition, impact, rationale,
+owner, acceptance date, review date, and retirement or reversal
+criteria.</li>
+<li>A control MUST NOT receive credit for evidence it did not inspect or
+behavior it did not test.</li>
+<li>A review MUST distinguish VERIFIED, REPORTED, NOT VERIFIED, NOT
+APPLICABLE, and INFERRED claims.</li>
+<li>Non-obvious workflow choices MUST include a concise “why” comment or
+link to the governing decision.</li>
+<li>A new maintainer MUST be able to reconstruct each material CI
+decision from retained policy, configuration, and evidence without
+relying on chat history.</li>
+</ol>
+<h2 id="s14--deployment-must-be-a-separately-protected-authority-plane">S14
+— Deployment MUST be a separately protected authority plane</h2>
+<ol type="1">
+<li>No deployment may originate from an unprotected branch.</li>
+<li>Production deployments MUST use protected environments with required
+reviewers or an equivalent owner-approved control.</li>
+<li>Deployment workflow permissions MUST be isolated from verification
+CI. A test job MUST NOT inherit deployment credentials or scopes.</li>
+<li>OIDC or approved short-lived identity is required where
+supported.</li>
+<li>Deployment concurrency MUST prevent simultaneous changes to the same
+environment.</li>
+<li>The deployed artifact MUST be the exact digest or immutable identity
+that passed the release gate. Rebuilding after approval creates a new
+artifact requiring new evidence.</li>
+<li>Deployment MUST have a tested rollback or forward-recovery procedure
+and retained outcome evidence.</li>
+<li>HX-Ai-Platform Foundation work does not authorize GitHub Actions
+deployment to HXS hosts. That authority requires a separate
+owner-approved deployment profile.</li>
+</ol>
+<hr />
+<h1 id="part-2--applicability-profiles">Part 2 — Applicability
+profiles</h1>
+<p>Every repository adopts the <strong>Core</strong> plus each profile
+that applies. The profile selection is retained in the repository
+control registry.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Profile</th>
+<th>Applies when</th>
+<th>Additional requirements</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Core</strong></td>
+<td>Every Hana-X repository</td>
+<td>S1–S9, S11–S13 as applicable to present components; explicit NOT
+APPLICABLE records allowed only where defined.</td>
+</tr>
+<tr class="even">
+<td><strong>HX Infrastructure</strong></td>
+<td>Repository defines or operates Hana-X hosts, local AI platforms,
+networking, storage, or model services</td>
+<td>GitHub-hosted CI; no HXS host as a runner; no CI deployment until
+separately authorized; Bash/SSH implementation remains governed by
+existing HX directives; infrastructure changes require retained evidence
+and Tessa validation where specified.</td>
+</tr>
+<tr class="odd">
+<td><strong>Public / OSS</strong></td>
+<td>Public repository or external fork contribution</td>
+<td>S10 mandatory; no privileged human-text trigger without actor
+gating; public log and cache exposure reviewed.</td>
+</tr>
+<tr class="even">
+<td><strong>Release / Deployment</strong></td>
+<td>Repository publishes consumer artifacts or changes environments</td>
+<td>S11 attestation/verification where supported; S14 mandatory;
+environment protection and rollback evidence required.</td>
+</tr>
+<tr class="odd">
+<td><strong>AI Review</strong></td>
+<td>Third-party AI App reviews, comments, sets status, or writes
+code</td>
+<td>S4 mandatory; provider adoption record, config integrity, outage
+behavior, and revocation procedure required.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="profile-selection-rule">Profile selection rule</h2>
+<p>A repository MUST NOT declare a profile NOT APPLICABLE merely because
+the corresponding control has not been implemented. Applicability is
+determined by repository behavior and risk, not current maturity.</p>
+<hr />
+<h1 id="part-3--hx-ai-platform-production-adoption-decision">Part 3 —
+HX-Ai-Platform production adoption decision</h1>
+<h2 id="31-coderabbit-decision">3.1 CodeRabbit decision</h2>
+<p>CodeRabbit is <strong>ADOPTED FOR PRODUCTION IMPLEMENTATION IN
+FOUNDATION STAGE 5</strong>, contingent on the Stage 5 first-party
+validation workflow being present in the same implementation
+sequence.</p>
+<p>This is not a proof-of-concept or optional pilot. It is the approved
+initial production authority boundary.</p>
+<h3 id="required-production-configuration">Required production
+configuration</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Capability</th>
+<th>Required state</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Automatic PR review</td>
+<td>Enabled</td>
+</tr>
+<tr class="even">
+<td>Review profile</td>
+<td>Assertive</td>
+</tr>
+<tr class="odd">
+<td>PR summaries and walkthroughs</td>
+<td>Enabled</td>
+</tr>
+<tr class="even">
+<td>GitHub Checks analysis</td>
+<td>Enabled</td>
+</tr>
+<tr class="odd">
+<td>Pre-merge AI checks</td>
+<td>Warning until required-check acceptance below completes</td>
+</tr>
+<tr class="even">
+<td><code>request_changes_workflow</code></td>
+<td>Disabled initially</td>
+</tr>
+<tr class="odd">
+<td>Direct-branch Autofix</td>
+<td>Disabled</td>
+</tr>
+<tr class="even">
+<td>Custom Finishing Touch write recipes</td>
+<td>Disabled</td>
+</tr>
+<tr class="odd">
+<td>Merge authority</td>
+<td>First-party ruleset and human authority only</td>
+</tr>
+<tr class="even">
+<td>Independent validation</td>
+<td>Tessa when required; never CodeRabbit self-validation</td>
+</tr>
+<tr class="odd">
+<td>Configuration protection</td>
+<td>CODEOWNERS plus first-party config-integrity check</td>
+</tr>
+</tbody>
+</table>
+<h3 id="minimum-repository-configuration">Minimum repository
+configuration</h3>
+<p>The exact file MUST be validated against the current CodeRabbit
+schema during implementation. The minimum intent is:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">language</span><span class="kw">:</span><span class="at"> en-US</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">reviews</span><span class="kw">:</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">profile</span><span class="kw">:</span><span class="at"> assertive</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">request_changes_workflow</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">auto_review</span><span class="kw">:</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">enabled</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">drafts</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">finishing_touches</span><span class="kw">:</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">autofix</span><span class="kw">:</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">enabled</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">tools</span><span class="kw">:</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">github-checks</span><span class="kw">:</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">enabled</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre></div>
+<h3 id="required-check-activation">Required-check activation</h3>
+<p>CodeRabbit becomes a required check after one implementation
+acceptance run proves all of the following against the repository&#39;s
+actual PR classes:</p>
+<ol type="1">
+<li>the emitted check name is stable;</li>
+<li>the expected CodeRabbit App source can be bound in the ruleset;</li>
+<li>normal, draft-to-ready, documentation-only, and configuration-only
+PRs receive a deterministic terminal result or an explicitly documented
+applicability result;</li>
+<li>provider outage, rate-limit, and inconclusive behavior are
+documented;</li>
+<li>an auditable break-glass procedure exists; and</li>
+<li>first-party CI is already required and remains authoritative.</li>
+</ol>
+<p>This acceptance run is an installation verification, not a pilot
+program. If any item fails, CodeRabbit remains in production as advisory
+review while the specific integration defect is corrected.</p>
+<h2 id="32-first-party-stage-5-controls">3.2 First-party Stage 5
+controls</h2>
+<p>Stage 5 MUST establish, at minimum:</p>
+<ol type="1">
+<li>repository structure validation;</li>
+<li>secret scanning;</li>
+<li>Markdown/YAML/JSON syntax and schema validation for governed
+files;</li>
+<li>agent contract and Library Read Gate validation;</li>
+<li>CodeRabbit configuration-integrity validation;</li>
+<li>stable required job names;</li>
+<li>an always-running aggregate gate; and</li>
+<li>ruleset evidence sufficient to reproduce the required-check
+configuration.</li>
+</ol>
+<h2 id="33-configuration-change-rule">3.3 Configuration-change rule</h2>
+<p>A PR that changes <code>.coderabbit.yaml</code>, CODEOWNERS controls
+over it, or the first-party aggregate gate MUST be classified as a CI
+policy change. It SHOULD contain no unrelated implementation changes.
+Owner-approved emergency exceptions MUST be recorded.</p>
+<hr />
+<h1 id="part-4--conformance-and-evidence">Part 4 — Conformance and
+evidence</h1>
+<h2 id="41-minimum-control-registry">4.1 Minimum control registry</h2>
+<p>Each active repository MUST retain a machine-readable or
+deterministically parseable registry containing:</p>
+<ul>
+<li>repository identity and selected profiles;</li>
+<li>default and protected branches;</li>
+<li>required check name;</li>
+<li>expected source App;</li>
+<li>producing workflow and job;</li>
+<li>trigger classes;</li>
+<li>permission summary;</li>
+<li>control owner;</li>
+<li>exception reference, if any;</li>
+<li>last verified date; and</li>
+<li>current verification status.</li>
+</ul>
+<h2 id="42-acceptance-evidence">4.2 Acceptance evidence</h2>
+<p>A CI/CD implementation is not accepted until retained evidence
+demonstrates:</p>
+<ol type="1">
+<li>required workflows triggered from their intended events;</li>
+<li>mandatory failures block the aggregate gate;</li>
+<li>missing or malformed artifacts fail closed;</li>
+<li>an intentionally skipped mandatory subordinate job causes
+aggregate-gate failure;</li>
+<li>fork behavior passes where the Public / OSS profile applies;</li>
+<li>secret and permission boundaries match the selected profiles;</li>
+<li>external required checks come from the expected App source where
+supported;</li>
+<li>protected-branch configuration matches the registry;</li>
+<li>cache boundaries and keys match S7;</li>
+<li>locked dependency installation reproduces; and</li>
+<li>rollback or removal procedures exist for third-party Apps and
+deployment authority.</li>
+</ol>
+<h2 id="43-validation-separation">4.3 Validation separation</h2>
+<ul>
+<li>The implementer runs and reports first-party verification.</li>
+<li>CodeRabbit performs production AI review within S4.</li>
+<li>Tessa independently traces requirements, examines retained evidence,
+reproduces selected checks, stress-tests failure boundaries, and issues
+PASS, FAIL, BLOCKED, or STOPPED.</li>
+<li>The owner or delegated authority accepts the result.</li>
+</ul>
+<p>No actor may convert its own implementation report into independent
+acceptance.</p>
+<h2 id="44-incident-reporting">4.4 Incident reporting</h2>
+<p>A CI/CD incident includes, at minimum:</p>
+<ul>
+<li>a bypass or required check that did not enforce its stated
+policy;</li>
+<li>third-party service behavior that blocked or silently permitted a
+merge;</li>
+<li>a credential exposed to workflow, log, artifact, or cache;</li>
+<li>poisoned or untrusted executable cache content;</li>
+<li>ruleset drift;</li>
+<li>an artifact accepted without provenance or required evidence;
+or</li>
+<li>a deployment of an artifact other than the approved digest.</li>
+</ul>
+<p>The incident MUST produce a retained report under the repository&#39;s
+governed report plane.</p>
+<hr />
+<h1 id="part-5--exceptions-and-change-control">Part 5 — Exceptions and
+change control</h1>
+<h2 id="51-exception-requirements">5.1 Exception requirements</h2>
+<p>An exception MUST be written, dated, and retained. It MUST
+identify:</p>
+<ol type="1">
+<li>the exact control and repository scope;</li>
+<li>the business or technical reason;</li>
+<li>the risk introduced;</li>
+<li>compensating controls;</li>
+<li>owner;</li>
+<li>effective and expiry dates;</li>
+<li>evidence required during the exception; and</li>
+<li>removal, renewal, or reversal criteria.</li>
+</ol>
+<p>Standing exceptions without an owner or review date are invalid.</p>
+<h2 id="52-emergency-change">5.2 Emergency change</h2>
+<p>Emergency operation MAY use a documented break-glass path. It MUST
+NOT silently rewrite policy. The operator MUST preserve the reason,
+actor, affected refs, actions taken, validation performed, and
+restoration of normal controls.</p>
+<h2 id="53-standard-changes">5.3 Standard changes</h2>
+<p>Normative changes require:</p>
+<ol type="1">
+<li>a version increment;</li>
+<li>change-history entry;</li>
+<li>owner review;</li>
+<li>technical verification against current primary documentation when
+platform behavior is involved; and</li>
+<li>an impact statement for existing repositories.</li>
+</ol>
+<p>Reference implementations and historical reviews remain evidence.
+They do not become normative merely by citation.</p>
+<hr />
+<h1 id="part-6--implementation-sequence">Part 6 — Implementation
+sequence</h1>
+<p>For HX-Ai-Platform, the authorized sequence is:</p>
+<ol type="1">
+<li>complete the active Foundation Stage 4 work without scope
+interruption;</li>
+<li>implement first-party CI and CodeRabbit together in Stage 5;</li>
+<li>validate repository checks and CodeRabbit configuration
+integrity;</li>
+<li>run the one-time required-check installation acceptance;</li>
+<li>configure the adopted ruleset and expected App sources;</li>
+<li>complete Foundation Stage 6 evidence/reporting obligations;</li>
+<li>perform Tessa independent validation; and</li>
+<li>proceed to infrastructure implementation under the accepted
+foundation.</li>
+</ol>
+<p>The sequence deliberately avoids two errors: delaying useful
+production review until every future control is perfect, and granting a
+reviewer mutation or acceptance authority before the first-party gate
+exists.</p>
+<hr />
+<h1 id="part-7--matters-closed-by-v24">Part 7 — Matters closed by
+v2.4</h1>
+<p>The following questions are closed unless new evidence materially
+changes them:</p>
+<ol type="1">
+<li><strong>CodeRabbit adoption:</strong> adopted for production
+implementation in Stage 5.</li>
+<li><strong>CodeRabbit initial authority:</strong> automatic assertive
+review and CI analysis; no direct-branch write, self-validation, merge,
+or deployment authority.</li>
+<li><strong>Cache model:</strong> caches are untrusted accelerators;
+normal PR merge-ref isolation is recognized; lockfiles—not
+caches—provide reproducibility.</li>
+<li><strong>Matrix behavior:</strong> expected coverage contracts
+replace universal identical-test-set requirements.</li>
+<li><strong>Dependency integrity:</strong> strongest ecosystem-native
+reproducibility replaces an impossible universal hash-lockfile
+formulation.</li>
+<li><strong>Accepted risk:</strong> the governed risk register is
+authoritative; the README summarizes or links.</li>
+<li><strong>Repository-specific evidence:</strong> HX-SD-CI-001 v2.3 and
+its pinned <code>sdd-core-citadel</code> appendix remain retained
+historical evidence and are not part of this normative standard.</li>
+<li><strong>Self-hosted runners:</strong> HXS model servers and hxs-cp
+are not general CI runners.</li>
+</ol>
+<hr />
+<h1 id="part-8--current-primary-source-basis">Part 8 — Current primary
+source basis</h1>
+<p>Verified 2026-08-18:</p>
+<ol type="1">
+<li>GitHub dependency caching reference: <a href="https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching">https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching</a></li>
+<li>Official <code>actions/setup-python</code> caching behavior: <a href="https://github.com/actions/setup-python/blob/main/README.md">https://github.com/actions/setup-python/blob/main/README.md</a></li>
+<li>pip caching behavior: <a href="https://pip.pypa.io/en/stable/topics/caching/">https://pip.pypa.io/en/stable/topics/caching/</a></li>
+<li>GitHub protected branches and required-check semantics: <a href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches">https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches</a></li>
+<li>GitHub secure workflow use: <a href="https://docs.github.com/en/actions/reference/security/secure-use">https://docs.github.com/en/actions/reference/security/secure-use</a></li>
+<li>GitHub artifact attestations: <a href="https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations">https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations</a></li>
+<li>GitHub matrix jobs: <a href="https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/run-job-variations">https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/run-job-variations</a></li>
+<li>CodeRabbit YAML configuration behavior: <a href="https://docs.coderabbit.ai/getting-started/yaml-configuration">https://docs.coderabbit.ai/getting-started/yaml-configuration</a></li>
+<li>CodeRabbit Autofix behavior: <a href="https://docs.coderabbit.ai/finishing-touches/autofix">https://docs.coderabbit.ai/finishing-touches/autofix</a></li>
+<li>CodeRabbit pre-merge checks: <a href="https://docs.coderabbit.ai/pr-reviews/pre-merge-checks">https://docs.coderabbit.ai/pr-reviews/pre-merge-checks</a></li>
+<li>CodeRabbit GitHub Checks integration: <a href="https://docs.coderabbit.ai/tools/github-checks">https://docs.coderabbit.ai/tools/github-checks</a></li>
+<li>CodeRabbit custom Finishing Touch capability: <a href="https://docs.coderabbit.ai/finishing-touches/custom-finishing-touches">https://docs.coderabbit.ai/finishing-touches/custom-finishing-touches</a></li>
+</ol>
+<p>Current upstream documentation establishes platform behavior. The
+owner decision establishes Hana-X policy.</p>
+<hr />
+<h1 id="owner-approval">Owner approval</h1>
+<table>
+<thead>
+<tr class="header">
+<th>Decision field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Decision</strong></td>
+<td>Pending: APPROVE / APPROVE WITH CONDITIONS / REJECT</td>
+</tr>
+<tr class="even">
+<td><strong>Owner</strong></td>
+<td>Jarvis Richardson, Chief AI Officer</td>
+</tr>
+<tr class="odd">
+<td><strong>Approval date</strong></td>
+<td>Pending</td>
+</tr>
+<tr class="even">
+<td><strong>Conditions or decision reference</strong></td>
+<td>Pending</td>
+</tr>
+</tbody>
+</table>
+<p>Upon approval, record the decision evidence, set the status to
+<strong>ADOPTED</strong>, and execute the Stage 5 implementation
+sequence in Part 6.</p>
+<hr />
+<p><em>End of HX-SD-CI-001 v2.4.</em></p>
+<div class="footer-note">HX-SD-CI-001 v2.4 · Prepared 2026-08-18 for Jarvis Richardson, Chief AI Officer, Hana-X AI · Canonical source: matching Markdown edition.</div>
+</body>
+</html>

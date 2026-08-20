@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Code Prompt — HX Agent Skills Integration</title>
+<style>
+:root {
+  --bg: #081018;
+  --panel: #0d1722;
+  --panel2: #101d2a;
+  --text: #e7eef6;
+  --muted: #9fb0c2;
+  --line: #263849;
+  --accent: #64d8ff;
+  --accent2: #9fe870;
+  --warn: #ffd166;
+  --danger: #ff7b8a;
+  --code: #07131d;
+  --shadow: 0 12px 40px rgba(0,0,0,.28);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 12% -5%, rgba(100,216,255,.10), transparent 30%),
+    radial-gradient(circle at 90% 0%, rgba(159,232,112,.07), transparent 24%),
+    var(--bg);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.55;
+}
+main { width: min(1180px, calc(100% - 36px)); margin: 0 auto; padding: 36px 0 70px; }
+.hero {
+  padding: 34px 36px;
+  background: linear-gradient(145deg, rgba(16,29,42,.96), rgba(9,21,31,.96));
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+}
+.eyebrow { color: var(--accent); text-transform: uppercase; letter-spacing: .14em; font-size: 12px; font-weight: 800; }
+h1 { margin: 8px 0 12px; font-size: clamp(34px, 5vw, 56px); line-height: 1.03; letter-spacing: -.035em; }
+h2 { margin: 38px 0 14px; font-size: 26px; letter-spacing: -.015em; }
+h3 { margin: 22px 0 8px; font-size: 19px; }
+p { margin: 8px 0 14px; }
+a { color: var(--accent); }
+.meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.pill { border: 1px solid var(--line); background: rgba(255,255,255,.025); color: var(--muted); border-radius: 999px; padding: 7px 11px; font-size: 12px; }
+.pill.good { color: var(--accent2); border-color: rgba(159,232,112,.35); }
+.pill.warn { color: var(--warn); border-color: rgba(255,209,102,.35); }
+.grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
+.card {
+  grid-column: span 6;
+  padding: 20px;
+  background: linear-gradient(180deg, rgba(16,29,42,.92), rgba(13,23,34,.92));
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.card.full { grid-column: 1 / -1; }
+.card.third { grid-column: span 4; }
+.card h3 { margin-top: 0; }
+.callout {
+  margin: 18px 0;
+  padding: 18px 20px;
+  background: rgba(100,216,255,.055);
+  border: 1px solid rgba(100,216,255,.25);
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
+}
+.callout.warn { background: rgba(255,209,102,.05); border-color: rgba(255,209,102,.24); border-left-color: var(--warn); }
+.callout.danger { background: rgba(255,123,138,.05); border-color: rgba(255,123,138,.24); border-left-color: var(--danger); }
+table { width: 100%; border-collapse: collapse; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: rgba(13,23,34,.9); }
+th, td { padding: 12px 13px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+th { color: #cfe6f5; background: rgba(255,255,255,.03); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+td { font-size: 14px; }
+tr:last-child td { border-bottom: 0; }
+code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+code { background: var(--code); border: 1px solid rgba(255,255,255,.06); padding: 2px 5px; border-radius: 5px; color: #cae8f7; }
+pre {
+  white-space: pre-wrap;
+  background: var(--code);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+  overflow: auto;
+  color: #dceaf3;
+}
+ul, ol { padding-left: 22px; }
+li { margin: 5px 0; }
+.checklist { list-style: none; padding-left: 0; }
+.checklist li::before { content: "□"; color: var(--accent2); display: inline-block; width: 1.3em; font-weight: 800; }
+.flow { display:flex; flex-wrap:wrap; align-items:center; gap:9px; margin: 14px 0 6px; }
+.node { padding: 9px 11px; border:1px solid var(--line); border-radius:10px; background:var(--panel2); font-size:13px; }
+.arrow { color: var(--accent); font-weight:800; }
+.small { font-size: 13px; color: var(--muted); }
+.section-tag { color: var(--accent2); font-weight: 750; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+footer { margin-top: 48px; color: var(--muted); font-size: 12px; padding-top: 20px; border-top: 1px solid var(--line); }
+@media (max-width: 800px) {
+  main { width: min(100% - 22px, 1180px); padding-top: 18px; }
+  .hero { padding: 24px 20px; }
+  .card, .card.third { grid-column: 1 / -1; }
+  table { display:block; overflow-x:auto; }
+}
+@media print {
+  :root { --bg:#fff; --panel:#fff; --panel2:#fff; --text:#101820; --muted:#4d5d6d; --line:#cdd6df; --accent:#006b8f; --accent2:#477a16; --warn:#8a6100; --danger:#a00022; --code:#f4f6f8; }
+  body { background:#fff; }
+  .hero, .card { box-shadow:none; }
+}
+
+.promptbox { position: relative; }
+.copybtn {
+  position: sticky; top: 12px; float: right; margin: 12px 12px -52px 0; z-index: 2;
+  cursor: pointer; padding: 8px 11px; border-radius: 9px; border: 1px solid var(--line);
+  background: #142536; color: var(--text); font-weight: 700;
+}
+.copybtn:hover { border-color: var(--accent); }
+#copyStatus { color: var(--accent2); font-size: 12px; margin-left: 8px; }
+</style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <div class="eyebrow">HX-Infrastructure · Claude Code Handoff</div>
+    <h1>Execution Prompt: Agent Skills Integration</h1>
+    <p>Use this prompt in Claude Code from the canonical HX-Infrastructure repository. It is intentionally explicit about authority, scope, migration discipline, and validation so the upstream skills are mined into HX rather than installed as a competing framework.</p>
+    <div class="meta">
+      <span class="pill good">Ready to hand off</span>
+      <span class="pill">Prepared by: GPT-5.6 Sol</span>
+      <span class="pill">2026-08-13 17:35 America/Panama</span>
+    </div>
+  </section>
+
+  <div class="callout warn">
+    <strong>Operator note.</strong> The prompt instructs Claude Code to discover actual repository paths before editing. This is deliberate: the HX governance anchors are fixed, but target skill/agent directories should be taken from the current canonical repository rather than guessed from legacy or upstream structures.
+  </div>
+
+  <h2>Claude Code prompt</h2>
+  <div class="promptbox">
+    <button class="copybtn" onclick="copyPrompt()">Copy prompt</button>
+    <span id="copyStatus"></span>
+    <pre id="prompt">You are Claude Code working inside the canonical HX-Infrastructure repository.
+
+OBJECTIVE
+Integrate the best reusable mechanisms from the reviewed addyosmani/agent-skills repository into HX-Infrastructure without installing the upstream framework wholesale and without creating a competing execution/governance control plane.
+
+SOURCE MATERIAL
+- User-provided upstream repository snapshot: agent-skills-main.zip
+- Snapshot SHA-256: 6d305c0c515f11223810032562a80b0615f8fe951cded34db227385449b6055a
+- Upstream repository: https://github.com/addyosmani/agent-skills
+- Priority upstream material:
+  - skills/context-engineering/SKILL.md
+  - skills/source-driven-development/SKILL.md
+  - skills/doubt-driven-development/SKILL.md
+  - skills/planning-and-task-breakdown/SKILL.md
+  - skills/documentation-and-adrs/SKILL.md
+  - skills/deprecation-and-migration/SKILL.md
+  - docs/agents.md
+  - docs/adoption-guide.md
+- Secondary/selective material:
+  - git-workflow-and-versioning
+  - interview-me
+  - incremental-implementation
+  - debugging-and-error-recovery
+  - code-review-and-quality
+  - ci-cd-and-automation
+- Deferred/situational material:
+  - observability-and-instrumentation
+  - security-and-hardening
+  - performance-optimization
+  - test-driven-development
+  - shipping-and-launch
+  - API/frontend/browser skills as needed
+- Do NOT import using-agent-skills as a governing meta-router.
+- Do NOT import spec-driven-development unchanged as a second SDD framework.
+
+HX AUTHORITIES AND HARD CONSTRAINTS
+1. The existing sdd-core model is the execution backbone.
+2. .specify/memory/constitution.md remains the global governance authority.
+3. knowledge/instructions.md remains the local repository/context router.
+4. Discover and preserve the repository&#x27;s current canonical locations for skills, agents, references, validation, plans, and human-facing artifacts. Do not invent a parallel directory hierarchy.
+5. Ansible is permanently out of scope. Do not add it to plans, procedures, agents, tooling, examples, or recommendations. Stale Ansible references encountered in touched scope should be deliberately removed or revised.
+6. The proven HX fleet-control baseline is native Bash/SSH fan-out from hxs-cp using the hxsa SSH user, explicit host/IP mapping, SCP to /tmp, passwordless sudo, and host/fleet/verify modes. Do not replace this baseline implicitly.
+7. Maintain explicit truth/authority distinctions: TARGET-STATE, AS-BUILT, DISCOVERED, PROPOSED, and LEGACY/HISTORICAL. Never turn polished target-state prose into evidence of current/as-built state.
+8. The environment is development/testing with periodic demos, intended to exercise the full stack and available servers. Performance matters but is not the top priority.
+9. Detailed MCP exposure and deep security hardening remain deferred until the core platform is operational. Do not turn this work into that rabbit hole.
+10. Observability is a later workstream tied to a spare server. Do not pull it forward solely because an upstream skill exists.
+11. Human-facing review/completion material should be polished dark-mode HTML. Markdown may remain an internal agent/source format.
+12. Preserve appropriate MIT provenance/attribution for copied or substantially reused upstream material.
+
+OPERATING PRINCIPLE
+Treat the upstream repository as a knowledge and pattern mine, not as the architecture we are adopting. Transform useful mechanisms into HX-native capabilities that extend current governance.
+
+TARGET HX CAPABILITIES
+Synthesize, consolidate where appropriate, and integrate these capabilities in HX-native form:
+A. HX Context Engineering
+   - constitution -&gt; knowledge router -&gt; scoped repository/server/service sources -&gt; runtime evidence
+   - load only relevant context
+   - explicit authority/trust hierarchy
+B. HX Source-Driven Research
+   - detect tool/platform versions
+   - prefer authoritative sources for unstable facts
+   - record evidence and uncertainty
+   - distinguish verified facts from inference
+C. HX Adversarial Validation
+   - fresh-context review of consequential claims/decisions
+   - bounded claim -&gt; challenge -&gt; reconcile -&gt; stop workflow
+   - independent reviewers where parallelism is real
+D. HX Planning &amp; Gates
+   - dependency-first planning
+   - entry/exit criteria
+   - acceptance criteria
+   - verification evidence
+   - rollback/risk awareness
+   - do not impose upstream tasks/plan.md or tasks/todo.md if they conflict with HX
+E. HX Architecture Decisions &amp; Authority
+   - document the why
+   - ADR discipline where warranted
+   - target-state/as-built authority semantics
+F. HX Legacy Migration
+   - mine reusable knowledge from legacy repositories
+   - transform rather than blindly copy old environment state
+   - remove zombie/deprecated mechanisms deliberately
+   - preserve historical rationale without presenting it as current truth
+
+SPECIALIST AGENT MODEL
+Retain the upstream insight that skills = how, agents/personas = who, and the coordinating workflow/session = when/orchestration.
+- Specialists must have a real domain perspective/output, not exist only to route other specialists.
+- Personas/specialists do not recursively call other personas.
+- Use parallel fan-out only for genuinely independent investigations.
+- Merge/reconciliation remains in the coordinating layer.
+- Preserve broad capability with lean activation.
+- Reconcile with the HX specialist agents already present; do not create duplicates merely because upstream has a persona.
+
+EXECUTION SEQUENCE
+
+PHASE 0 — PREFLIGHT / AUTHORITY DISCOVERY
+- Read the current constitution, knowledge routing instructions, latest repository merge/migration material, skill/agent definitions, validation tooling, and relevant current documentation.
+- Determine canonical current paths and authority precedence.
+- Search for stale or conflicting references relevant to this integration, including Ansible, obsolete orchestration, competing task schemas, and old meta-routers.
+- Do not modify files until you can state the authority map and conflicts.
+
+PHASE 1 — FILE-BY-FILE MIGRATION MANIFEST
+Build a manifest for each useful upstream file/section with:
+- upstream source path/section
+- capability extracted
+- disposition: ADOPT / ADAPT / MINE-REFERENCE / DEFER / REJECT
+- conflict analysis against HX/sdd-core
+- actual target location in current HX repo
+- transformation notes
+- provenance/license note
+- validation method
+Include the six priority skills, docs/agents.md, and relevant adoption-guide sections.
+Explicitly document why using-agent-skills and spec-driven-development are not imported as governing frameworks.
+Identify shared upstream references required by selected skills so you do not create broken repo-relative dependencies.
+
+PHASE 2 — IMPLEMENT HX-NATIVE CONTENT
+- Create/update only within existing canonical HX structures.
+- Rewrite generic application-development assumptions around HX infrastructure.
+- Keep skill entrypoints concise; move substantial reusable knowledge into references where that matches existing repository conventions.
+- Remove upstream file/path assumptions that do not exist in HX.
+- Encode verified vs inferred and authority-state rules.
+- Do not duplicate existing good HX content.
+
+PHASE 3 — SPECIALIST AGENT RECONCILIATION
+- Compare current HX specialist agents to useful upstream persona patterns.
+- Improve current agents where useful instead of proliferating redundant agents.
+- Ensure each specialist has a bounded purpose, clear evidence/report output, and no recursive agent orchestration.
+- Preserve centralized synthesis.
+
+PHASE 4 — CLEANUP / CONTROLS
+- Remove/revise stale Ansible references in touched scope.
+- Remove conflicting lifecycle/router assumptions in touched scope.
+- Rebuild validators/controls only from current authoritative data.
+- Preserve MIT attribution where reuse is substantial.
+- Resolve all local references and links.
+
+PHASE 5 — VALIDATION
+Run the repository&#x27;s native validation.
+Then perform a fresh-context/adversarial review specifically testing:
+- Does sdd-core remain the sole execution backbone?
+- Can a fresh agent identify constitution -&gt; knowledge router -&gt; scoped source/evidence authority?
+- Can it select the appropriate HX capability without loading an entire skills catalog?
+- Are any upstream paths unresolved?
+- Did any task schema or meta-router become a competing control plane?
+- Did Ansible reappear anywhere in future-facing touched material?
+- Did target-state prose become an as-built/current-state assertion?
+- Did security hardening, MCP exposure, or observability expand beyond the authorized scope?
+- Are specialist agents actually independent capabilities rather than routing layers?
+- Is licensing/provenance adequate?
+
+CHANGE DISCIPLINE
+- Prefer small, coherent, reviewable changes.
+- Do not refactor unrelated material.
+- Do not silently resolve ambiguous authority by guessing; inspect the repository and record the basis for the decision.
+- Do not copy a legacy/upstream artifact merely because it looks polished.
+- When current repository content conflicts with old legacy material, current authoritative HX governance wins unless explicit evidence says otherwise.
+- Preserve sanitized useful history and rationale, but never confuse history with current state.
+
+REQUIRED FINAL DELIVERABLES
+1. File-by-file migration manifest.
+2. Implemented HX-native skills/references/agent updates.
+3. Touched-scope cleanup of stale/conflicting material.
+4. Validation evidence and a concise list of rejected/deferred upstream material.
+5. A polished dark-mode HTML completion report for human review.
+
+FINAL REPORT MUST INCLUDE
+- executive summary
+- files created/modified/removed
+- migration manifest summary
+- capability-by-capability result
+- conflicts found and how they were resolved
+- evidence that sdd-core remains authoritative
+- Ansible stale-reference findings/removals
+- unresolved/deferred items
+- validation results
+- provenance/license treatment
+- explicit statement of what is TARGET-STATE vs what is now actually AS-BUILT in the repository
+- recommended next action, if any
+
+Do the work against the current repository state. Do not create a hypothetical parallel structure. If the current repository already has a better mechanism for one of the target capabilities, preserve it and document that the upstream item was rejected or only mined for specific improvements.
+</pre>
+  </div>
+
+  <footer>
+    Companion artifact: HX-Infrastructure Agent Skills Integration &amp; Migration Brief. Upstream ZIP snapshot SHA-256: <code>6d305c0c515f11223810032562a80b0615f8fe951cded34db227385449b6055a</code>.
+  </footer>
+</main>
+<script>
+async function copyPrompt() {
+  const text = document.getElementById('prompt').innerText;
+  try {
+    await navigator.clipboard.writeText(text);
+    document.getElementById('copyStatus').textContent = 'Copied.';
+  } catch (e) {
+    const r = document.createRange();
+    r.selectNodeContents(document.getElementById('prompt'));
+    const sel = window.getSelection();
+    sel.removeAllRanges(); sel.addRange(r);
+    document.getElementById('copyStatus').textContent = 'Prompt selected — copy manually.';
+  }
+}
+</script>
+</body>
+</html>

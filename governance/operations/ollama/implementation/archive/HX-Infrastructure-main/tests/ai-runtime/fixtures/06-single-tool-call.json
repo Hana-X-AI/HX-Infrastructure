@@ -1,0 +1,34 @@
+{
+  "id": "F06",
+  "capability": "RT-07",
+  "evidence_class": "A",
+  "api_style": "openai-chat",
+  "description": "Tool call exposes id, name and arguments.",
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "message": {
+          "role": "assistant",
+          "content": null,
+          "tool_calls": [
+            {
+              "id": "call_hx_001",
+              "type": "function",
+              "function": {
+                "name": "hx_read_registry",
+                "arguments": "{\"host\":\"hxs-3\"}"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "expect": {
+    "tool_call_id": "call_hx_001",
+    "tool_name": "hx_read_registry",
+    "argument_key": "host",
+    "argument_value": "hxs-3"
+  }
+}

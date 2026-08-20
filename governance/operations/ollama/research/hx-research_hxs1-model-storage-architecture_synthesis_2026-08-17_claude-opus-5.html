@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>hxs-1 Model Storage Architecture — Reconnaissance and Design Proposal</title>
+<style>
+  :root{
+    color-scheme: light;
+    --surface-1:#fcfcfb; --page:#f9f9f7;
+    --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#898781;
+    --grid:#e1e0d9; --baseline:#c3c2b7; --border:rgba(11,11,11,0.10);
+    --series-1:#2a78d6; --series-2:#eb6834; --series-3:#1baf7a;
+    --st-good:#0ca30c; --st-warning:#fab219; --st-serious:#ec835a; --st-critical:#d03b3b;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --surface-1:#1a1a19; --page:#0d0d0d;
+      --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#898781;
+      --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,0.10);
+      --series-1:#3987e5; --series-2:#d95926; --series-3:#199e70;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--text-primary);
+       font:16px/1.62 system-ui,-apple-system,"Segoe UI",sans-serif;}
+  .wrap{max-width:940px;margin:0 auto;padding:48px 24px 96px}
+  h1{font-size:27px;line-height:1.26;margin:0 0 18px;letter-spacing:-.012em;
+     padding-bottom:20px;border-bottom:1px solid var(--grid)}
+  h2{font-size:20px;margin:46px 0 12px;padding-top:20px;
+     border-top:1px solid var(--grid);letter-spacing:-.01em}
+  h3{font-size:15.5px;margin:28px 0 8px}
+  h4{font-size:14px;margin:20px 0 6px;color:var(--text-secondary);
+     text-transform:uppercase;letter-spacing:.05em}
+  p{margin:0 0 14px} ul,ol{margin:0 0 14px;padding-left:22px} li{margin:6px 0}
+  li > p{margin:0 0 8px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.8px;
+       background:var(--surface-1);border:1px solid var(--grid);border-radius:4px;padding:1px 5px}
+  pre{background:var(--surface-1);border:1px solid var(--grid);border-radius:8px;
+      padding:14px 16px;overflow-x:auto;font-size:12.8px;line-height:1.6}
+  pre code{background:none;border:none;padding:0;font-size:12.5px}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px;
+        font-variant-numeric:tabular-nums}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--grid);vertical-align:top}
+  th{font-weight:600;color:var(--text-secondary);font-size:12px;
+     text-transform:uppercase;letter-spacing:.05em;font-variant-numeric:normal}
+  tbody tr:hover{background:var(--surface-1)}
+  td code{white-space:nowrap}
+  blockquote{margin:16px 0;padding:12px 18px;border-left:3px solid var(--baseline);
+             color:var(--text-secondary);background:var(--surface-1);border-radius:0 6px 6px 0}
+  blockquote p:last-child{margin:0}
+  hr{border:none;border-top:1px solid var(--grid);margin:34px 0}
+  a{color:var(--series-1)}
+  .meta table{font-size:13.5px;margin:0 0 8px}
+  .meta td{border-bottom:none;padding:3px 12px 3px 0}
+  .meta td:first-child{color:var(--text-muted);width:150px;white-space:nowrap}
+  .meta thead{display:none}
+  .ok{color:var(--st-good);font-weight:600}
+  .no{color:var(--st-critical);font-weight:600}
+  .warn{color:var(--st-warning);font-weight:600}
+  footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--grid);
+         color:var(--text-muted);font-size:12.8px;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>hxs-1 Model Storage Architecture — Reconnaissance and Design Proposal</h1>
+<div class="meta"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Document ID</strong></td>
+<td><code>hx-research_hxs1-model-storage-architecture_synthesis_2026-08-17_claude-opus-5</code></td>
+</tr>
+<tr>
+<td><strong>Subject</strong></td>
+<td>hxs-1 local storage: current state, device selection, filesystem and mount design, and how model artifacts should be stored during download and at runtime</td>
+</tr>
+<tr>
+<td><strong>Evidence tier</strong></td>
+<td><code>synthesis</code> — HX discovery record (primary) + vendor runtime documentation + published drive characteristics, with derived design</td>
+</tr>
+<tr>
+<td><strong>Author</strong></td>
+<td>Claude (Opus 5)</td>
+</tr>
+<tr>
+<td><strong>Date</strong></td>
+<td>2026-08-17</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td><strong>Design proposal.</strong> Not a decision, not an acceptance, not an authorization. No storage mutation is authorized by Phase 3.</td>
+</tr>
+<tr>
+<td><strong>Relates to</strong></td>
+<td>hxs-1 · <code>INFRASTRUCTURE-CONTRACT.md</code> §10 · <code>hx-recommendations.html</code> R1, R5 · <code>tests/ai-runtime/hx-capacity-gate.ps1</code></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>Abstract</h2>
+<p>hxs-1 has ~11 TB of installed, unpartitioned, unused storage across two devices and a root
+filesystem at 1% capacity. Capacity is not the constraint — <strong>device selection is</strong>.</p>
+<p>Three findings drive the design. The 7.3 TB SATA drive is a <strong>Seagate ST8000DM004, an SMR
+(shingled) 5400-RPM consumer disk</strong>; it is unsuitable as a model store or download target and
+should be treated as cold archive only. NVMe device enumeration on this host has <strong>already
+changed once</strong> — the discovery record notes root and <code>/boot/efi</code> were on <code>nvme1n1</code> at install
+and are now on <code>nvme0n1</code> — so device-name-based configuration is empirically unsafe here and
+serial numbers are the only reliable device identity. And because hxs-1 has <strong>no BMC or
+out-of-band management</strong>, a data-disk mount that can block boot is a recovery hazard, making
+<code>nofail</code> mandatory rather than optional.</p>
+<p>The proposal: dedicate the second NVMe (<code>WD_BLACK SN850X</code>, serial <code>250816800905</code>) to a model
+store mounted at <code>/srv/hx/models</code>, keep models entirely off the root filesystem, and reserve
+the SMR drive for cold archive. Both Ollama and Hugging Face download <strong>in place</strong> using
+content-addressed layouts with same-filesystem atomic promotion, so <strong>no 2× staging space is
+required</strong>. At runtime the 128 GB of host RAM keeps the model file page-cache resident after
+first load absent memory pressure, so storage speed governs cold start only — where the two
+candidate devices differ by roughly <strong>38× on published sequential specs</strong>.</p>
+<hr>
+<h2>1. Reconnaissance — current storage state</h2>
+<p>All facts from <code>servers/hxs-1/discovery.md</code>. Nothing in this section is inferred.</p>
+<h3>1.1 Block devices</h3>
+<table>
+<thead>
+<tr>
+<th>Device</th>
+<th>Model</th>
+<th>Serial</th>
+<th>Type</th>
+<th>Capacity</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/dev/nvme0n1</code></td>
+<td>WD_BLACK SN850X 4000GB</td>
+<td><code>250816800073</code></td>
+<td>NVMe SSD</td>
+<td>3.6 TB</td>
+<td>partitioned, <strong>in use</strong></td>
+</tr>
+<tr>
+<td><code>└ nvme0n1p1</code></td>
+<td>—</td>
+<td>—</td>
+<td>partition</td>
+<td>1 GB</td>
+<td>vfat FAT32, UUID <code>2EFE-5D0D</code> → <code>/boot/efi</code></td>
+</tr>
+<tr>
+<td><code>└ nvme0n1p2</code></td>
+<td>—</td>
+<td>—</td>
+<td>partition</td>
+<td>3.6 TB</td>
+<td>ext4, UUID <code>ab09b07d-fb20-4235-99df-440f18896e99</code> → <code>/</code></td>
+</tr>
+<tr>
+<td><code>/dev/nvme1n1</code></td>
+<td>WD_BLACK SN850X 4000GB</td>
+<td><code>250816800905</code></td>
+<td>NVMe SSD</td>
+<td>3.6 TB</td>
+<td><strong>no partition table, no filesystem, unmounted</strong></td>
+</tr>
+<tr>
+<td><code>/dev/sda</code></td>
+<td><strong>ST8000DM004-2U91</strong></td>
+<td><code>ZR1682F1</code></td>
+<td>SATA HDD, rotational</td>
+<td>7.3 TB</td>
+<td><strong>no partition table, no filesystem, unmounted</strong></td>
+</tr>
+</tbody>
+</table>
+<h3>1.2 Recorded characteristics</h3>
+<ul>
+<li>Root filesystem usage: <strong>11 GB of 3.6 TB — 1%</strong></li>
+<li><strong>No LVM</strong> — no physical volumes, volume groups or logical volumes</li>
+<li><strong>No RAID</strong> — <code>/proc/mdstat</code> lists personalities but reports no active arrays</li>
+<li><code>fstab</code> mounts root and <code>/boot/efi</code> <strong>by UUID</strong>, satisfying the stable-identifier requirement
+  in <code>INFRASTRUCTURE-CONTRACT.md</code> §10.2</li>
+<li><strong>Device enumeration is empirically unstable:</strong> <em>"fstab comments record that root and
+  <code>/boot/efi</code> were on <code>nvme1n1</code> during installation; they are now on <code>nvme0n1</code>, so NVMe
+  enumeration changed after install"</em></li>
+<li>Swap is the file <code>/swap.img</code> (size not recorded in the discovery record)</li>
+<li><strong>SMART detail unavailable — <code>smartctl</code> is not installed</strong> (open recommendation R1)</li>
+<li>Host RAM: <strong>128 GB DDR5</strong>, non-ECC</li>
+<li>Network: single <strong>1 Gb/s</strong> copper link, <code>enp131s0</code></li>
+<li><code>multipathd</code>, <code>open-iscsi</code> and <code>lvm2-monitor</code> are enabled, carried over from a
+  virtualization-oriented install image on what is bare metal</li>
+</ul>
+<h3>1.3 Finding — the SATA drive is SMR</h3>
+<p>The <strong>Seagate ST8000DM004</strong> is a shingled-magnetic-recording (SMR) drive in the 5400-RPM
+BarraCuda consumer line. Seagate added SMR to this model without initially disclosing it; it
+was identified in the 2020 industry-wide SMR disclosure episode and independently measured.</p>
+<p>Why it matters here:</p>
+<ul>
+<li>SMR writes overlap adjacent tracks. Writes land first in a small CMR cache zone, then are
+  re-shingled in the background. <strong>Once the cache is exhausted, sustained write throughput
+  collapses</strong> — measured drops to a small fraction of nominal, sometimes for tens of minutes.</li>
+<li>Any write pattern that is not large, sequential and well-spaced is pathological. Fine-tuning
+  checkpoint churn is exactly that pattern.</li>
+<li>Seagate rates it at "up to 190 MB/s" sustained transfer at the outer diameter. That is a
+  <strong>vendor maximum, not a measurement</strong>, and it is a read figure — the drive's sustained
+  <em>write</em> rate after media-cache exhaustion is not published, and field reports for this model
+  record collapse to single-digit MB/s during re-shingling.</li>
+<li>Even at the vendor read figure it is a 5400-RPM mechanical disk, roughly <strong>38× slower than
+  the SN850X</strong> on published sequential specs.</li>
+</ul>
+<p><strong>Disposition:</strong> cold archive only. Never a download target, never a model store, never a
+checkpoint destination.</p>
+<h3>1.4 Finding — device names are unsafe on this host, serials are not</h3>
+<p>The enumeration change recorded in <code>discovery.md</code> is not hypothetical risk; it already
+happened on this machine. Consequences for any storage work:</p>
+<ol>
+<li>Every persistent mount must use <code>UUID=</code> — already required by contract §10.2, and now with
+   host-specific evidence behind it.</li>
+<li><strong>Identifying which physical drive is the spare requires the serial, not the device name.</strong>
+   The target for the model store is the SN850X with serial <code>250816800905</code>. Confirm with
+   <code>lsblk -o NAME,MODEL,SERIAL,SIZE,TYPE,FSTYPE,MOUNTPOINTS,TRAN</code> immediately before any
+   partitioning command — never from a remembered <code>/dev/nvmeXn1</code> path.</li>
+<li>A script that partitions <code>/dev/nvme1n1</code> by name could, after a reboot or firmware change,
+   be pointed at the root device. This is the single highest-consequence hazard in the whole
+   proposal.</li>
+</ol>
+<hr>
+<h2>2. How the runtimes actually use disk</h2>
+<p>Vendor-documented behaviour. This determines the space budget and the layout.</p>
+<h3>2.1 Ollama</h3>
+<ul>
+<li><strong>Default store:</strong> <code>/usr/share/ollama/.ollama/models</code> on Linux; the service runs as the
+  <code>ollama</code> user.</li>
+<li><strong>Relocated by:</strong> <code>OLLAMA_MODELS=&lt;dir&gt;</code>, with <code>chown -R ollama:ollama &lt;dir&gt;</code>.</li>
+<li><strong>Layout:</strong> content-addressed. <code>blobs/sha256-&lt;digest&gt;</code> holds weights; <code>manifests/</code> holds the
+  model metadata tree.</li>
+<li><strong>Download:</strong> partial blobs are written into the same <code>blobs/</code> directory and promoted by
+  rename on completion. Source and destination are the same filesystem, so promotion is an
+  atomic <code>rename(2)</code> — <strong>no copy, no double space</strong>.</li>
+</ul>
+<h3>2.2 Hugging Face Hub (used by vLLM and by any fine-tuning tooling)</h3>
+<ul>
+<li><strong>Default cache:</strong> <code>~/.cache/huggingface/hub</code>.</li>
+<li><strong>Relocated by:</strong> <code>HF_HOME=&lt;dir&gt;</code> (moves everything) or <code>HF_HUB_CACHE=&lt;dir&gt;</code> (hub cache only).</li>
+<li><strong>Layout:</strong> per-repo directories <code>models--Qwen--Qwen3.8-27B/</code> containing <code>blobs/</code> (content
+  addressed), <code>snapshots/&lt;revision&gt;/</code> (<strong>symlinks into <code>blobs/</code></strong>), <code>refs/</code>, <code>trees/</code>.</li>
+<li><strong>Download:</strong> in-progress files are <code>.incomplete</code> blobs inside <code>blobs/</code>, promoted in place.
+  Again same-filesystem — <strong>no 2× staging requirement</strong>.</li>
+<li><strong>Symlink dependency:</strong> <code>snapshots/</code> are symlinks. On a filesystem without symlink support
+  the library falls back to <strong>copying</strong>, which doubles the footprint. ext4 supports symlinks,
+  so this is a non-issue for the proposed layout — but it is a real trap if the store is ever
+  moved to an exFAT/NTFS volume or certain network mounts.</li>
+<li><strong>Two genuine 2× paths do exist</strong>, and neither is the cache: <code>huggingface-cli download
+  --local-dir</code> and vLLM's <code>--download-dir</code> both <strong>copy out of</strong> the cache into a second
+  location. Prefer letting the runtime read from the cache directly; if a local directory is
+  required, budget for both copies.</li>
+<li>Stale <code>.incomplete</code> files are reclaimed with <code>hf cache prune</code>.</li>
+</ul>
+<h3>2.3 Runtime access pattern</h3>
+<table>
+<thead>
+<tr>
+<th>Runtime</th>
+<th>Load behaviour</th>
+<th>Storage implication</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ollama / llama.cpp</td>
+<td><strong><code>mmap</code>s the GGUF</strong>; pages fault in on demand and are cached by the kernel</td>
+<td>With 128 GB RAM the ~17 GB file is likely to remain cached <strong>absent memory pressure</strong> — page-cache pages are clean and LRU-evictable, and a fine-tuning run on this host would evict them. Storage speed governs <strong>cold start only</strong>.</td>
+</tr>
+<tr>
+<td>vLLM</td>
+<td><strong><code>mmap</code>s the safetensors shards</strong> (safetensors is a zero-copy mmap format) and copies tensors into VRAM; the mapping is released after load</td>
+<td>Page cache still warms; same conclusion.</td>
+</tr>
+</tbody>
+</table>
+<p>Two honest qualifications. Nothing <em>pins</em> page cache — "stays cached indefinitely" would be too
+strong. And with <code>OLLAMA_KEEP_ALIVE=-1</code> (§3.6) the weights are resident in <strong>VRAM</strong> anyway, so
+page-cache residency only shortens a reload after an explicit unload — which that setting exists
+to prevent. The two arguments are not independent supports; the keep-alive setting largely
+supersedes the page-cache one.</p>
+<p><strong>Derived cold-start comparison</strong> for a ~17 GB artifact. These are <strong>device-bandwidth floors
+from published sequential specs, not measured load times</strong> — real load is additionally bounded
+by page-fault handling and host-to-VRAM transfer, and will run several times the NVMe figure
+(order 10–20 s in practice). The ratio is between device specs only:</p>
+<table>
+<thead>
+<tr>
+<th>Device</th>
+<th>Sequential read</th>
+<th>Cold load</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WD_BLACK SN850X (PCIe 4 NVMe)</td>
+<td>~7,300 MB/s</td>
+<td><strong>~2.3 s</strong></td>
+</tr>
+<tr>
+<td>ST8000DM004 (SMR, 5400 RPM)</td>
+<td>~190 MB/s</td>
+<td><strong>~89 s</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The 128 GB of RAM makes this a <em>first-load-only</em> penalty — but it also argues directly for a
+long <code>OLLAMA_KEEP_ALIVE</code> and against frequent unload/reload cycles, which discard both the page
+cache and (per the companion inference-performance record) the prefix cache.</p>
+<h3>2.4 The download bottleneck is the network, not the disk</h3>
+<p>hxs-1 has a single <strong>1 Gb/s</strong> link — roughly 110 MB/s sustained in practice.</p>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>Est. size</th>
+<th>Download time @ ~110 MB/s</th>
+<th>Write time to NVMe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GGUF Q4_K_M</td>
+<td>~17 GB</td>
+<td><strong>~2.6 min</strong></td>
+<td>~2.6 s</td>
+</tr>
+<tr>
+<td>vLLM w4a16 / AWQ</td>
+<td>~30 GB (est., unverified)</td>
+<td><strong>~4.5 min</strong></td>
+<td>~4.5 s</td>
+</tr>
+<tr>
+<td>HF BF16 safetensors (fine-tune base)</td>
+<td>~54 GB</td>
+<td><strong>~8.2 min</strong></td>
+<td>~8.2 s</td>
+</tr>
+</tbody>
+</table>
+<p><small>Write times use the SN850X's ~6,600 MB/s sequential <strong>write</strong> rating, not its 7,300 MB/s
+read rating. Order-of-magnitude only.</small></p>
+<p>The NVMe absorbs writes roughly <strong>60–70× faster</strong> than the NIC delivers them (SN850X sequential
+write ~6,600 MB/s against ~110 MB/s of wire). <strong>Optimising download storage is pointless; the
+link is the constraint.</strong></p>
+<p>Note also that <code>HF_HUB_ENABLE_HF_TRANSFER</code> is <strong>deprecated</strong> — Hub transfers now go through the
+Xet backend (<code>hf-xet</code>) by default. Either way, transfer parallelism buys little against a 1 Gb/s
+ceiling. Xet's chunk cache (<code>HF_XET_CACHE</code>) is disabled by default and lives under <code>HF_HOME</code>, so
+the §3.6 wiring already contains it if it is ever enabled.</p>
+<p><strong>The tempting corollary does not hold.</strong> It is easy to reason that the SMR drive at
+"~190 MB/s" would also out-run a 1 Gb/s link on a single clean download — but 190 MB/s is
+Seagate's max-OD <em>read</em> rating, silently reused as a write figure. A 17–54 GB download exhausts
+a DM-SMR media cache many times over, and §1.3 already records that sustained write throughput
+collapses once it does. <strong>The SMR drive is disqualified as a download target on the initial
+pull as well, not only on repeated writes.</strong></p>
+<hr>
+<h2>3. Proposed storage design</h2>
+<p><strong>Status: proposal.</strong> Phase 3 authorizes no storage mutation. Commands are given so that the
+proposal is concrete and reviewable, not because it is cleared to run.</p>
+<h3>3.1 Device assignment</h3>
+<table>
+<thead>
+<tr>
+<th>Device</th>
+<th>Serial</th>
+<th>Role</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nvme0n1</code> (root)</td>
+<td><code>250816800073</code></td>
+<td><strong>OS only</strong></td>
+<td>Keep model artifacts off <code>/</code> entirely</td>
+</tr>
+<tr>
+<td><code>nvme1n1</code></td>
+<td><code>250816800905</code></td>
+<td><strong>Model store</strong> → <code>/srv/hx/models</code></td>
+<td>Matched PCIe 4 NVMe; fast cold start; isolates model I/O from OS and journal</td>
+</tr>
+<tr>
+<td><code>sda</code></td>
+<td><code>ZR1682F1</code></td>
+<td><strong>Cold archive</strong> → <code>/srv/hx/archive</code></td>
+<td>SMR: acceptable for write-once/read-rarely; unfit for anything else</td>
+</tr>
+</tbody>
+</table>
+<h3>3.2 Why not simply use the root filesystem</h3>
+<p>Root has 3.6 TB free at 1% used, so capacity alone would permit it. Four reasons not to:</p>
+<ol>
+<li><strong>Blast radius.</strong> A runaway download, a checkpoint loop, or an unpruned HF cache that fills
+   <code>/</code> takes the host down. On a machine with no BMC, that means physical access to recover.
+   A separate filesystem bounds the failure to the model store.</li>
+<li><strong><code>hx-capacity-gate.ps1</code> already gates on free space.</strong> It applies a <code>minimum_free_gb</code>
+   storage gate before authorizing a model download. Pointing that at a dedicated filesystem
+   makes the check meaningful; pointing it at <code>/</code> conflates OS headroom with model capacity.</li>
+<li><strong>I/O isolation.</strong> Model reads on a separate device do not contend with the root filesystem's
+   journal and OS writes.</li>
+<li><strong>Lifecycle.</strong> A model store is disposable and re-downloadable; the OS volume is not. Keeping
+   them separate lets each be wiped, resized, or backed up on its own terms.</li>
+</ol>
+<h3>3.3 Partition and filesystem plan — <code>nvme1n1</code></h3>
+<p>§1.4 calls mis-targeting the wrong NVMe "the single highest-consequence hazard in the whole
+proposal." A comment is not a mitigation against <code>parted -s</code>, which suppresses every prompt —
+so the serial check below is <strong>machine-enforced</strong>, and the device name is derived, never typed.</p>
+<pre><code class="language-bash"># 0. RESOLVE THE DEVICE FROM ITS SERIAL, AND REFUSE TO PROCEED OTHERWISE.
+TARGET_SERIAL=250816800905                       # WD_BLACK SN850X, the spare NVMe
+DEV=$(lsblk -dno NAME,SERIAL | awk -v s=&quot;$TARGET_SERIAL&quot; '$2==s{print &quot;/dev/&quot;$1}')
+[ -n &quot;$DEV&quot; ] || { echo &quot;FATAL: serial $TARGET_SERIAL not found&quot;; exit 1; }
+[ -z &quot;$(lsblk -no FSTYPE,MOUNTPOINTS &quot;$DEV&quot; | tr -d ' \n')&quot; ] \
+  || { echo &quot;FATAL: $DEV is not blank — refusing&quot;; exit 1; }
+echo &quot;Resolved $TARGET_SERIAL -&gt; $DEV&quot;
+lsblk -o NAME,MODEL,SERIAL,SIZE,TYPE,FSTYPE,MOUNTPOINTS,TRAN &quot;$DEV&quot;
+
+# 1. GPT label, single partition spanning the device.
+#    On a GPT label parted REQUIRES a partition name; `ext4` here only sets the
+#    partition type code — it creates no filesystem.
+sudo parted -s &quot;$DEV&quot; mklabel gpt
+sudo parted -s -a optimal &quot;$DEV&quot; mkpart hx-models ext4 0% 100%
+
+# 2. ext4: zero reserved blocks, large-file inode ratio, labelled
+sudo mkfs.ext4 -m 0 -T largefile -L hx-models &quot;${DEV}p1&quot;
+
+# 3. Capture the UUID — this, not the device name, goes in fstab
+sudo blkid -s UUID -o value &quot;${DEV}p1&quot;
+tune2fs -l &quot;${DEV}p1&quot; | grep -E 'Inode count|Reserved block count|Filesystem volume name'
+</code></pre>
+<p><strong>And the archive drive</strong>, which §3.4 mounts and therefore must exist:</p>
+<pre><code class="language-bash">TARGET_SERIAL=ZR1682F1                           # ST8000DM004-2U91, the SMR archive disk
+DEV=$(lsblk -dno NAME,SERIAL | awk -v s=&quot;$TARGET_SERIAL&quot; '$2==s{print &quot;/dev/&quot;$1}')
+[ -n &quot;$DEV&quot; ] || { echo &quot;FATAL: serial $TARGET_SERIAL not found&quot;; exit 1; }
+sudo parted -s &quot;$DEV&quot; mklabel gpt
+sudo parted -s -a optimal &quot;$DEV&quot; mkpart hx-archive ext4 0% 100%
+sudo mkfs.ext4 -m 0 -T largefile -L hx-archive &quot;${DEV}1&quot;
+sudo blkid -s UUID -o value &quot;${DEV}1&quot;
+</code></pre>
+<p><strong>Filesystem choice — ext4.</strong> It matches root, it is the Ubuntu 24.04 default, and it is the
+boring option for a workload that is overwhelmingly large sequential reads of immutable files.
+XFS has a modest edge on very large files and parallel I/O and would be a defensible
+alternative; it is not worth introducing a second filesystem type on this host for the
+difference.</p>
+<p><strong><code>-m 0</code> is a deliberate choice.</strong> ext4 reserves 5% of the filesystem for root by default. On a
+3.6 TiB data volume that is <strong>~184 GiB withheld for a purpose that does not apply here</strong> — the
+reservation keeps root-owned daemons writable when a <em>root</em> filesystem fills, and stops
+unprivileged users exhausting it. Neither applies to a dedicated model store. The residual
+trade-off is slightly less allocator headroom near full, which is low-risk for a few hundred
+large immutable files. (Leaving 1% would be a reasonable conservative variant.)</p>
+<p><strong><code>-T largefile</code> is the larger win, and it is easy to miss.</strong> <code>mkfs.ext4</code> defaults to one inode
+per 16 KiB, which on 3.6 TiB allocates ~236 million inodes and <strong>~60 GB of inode tables</strong> — for
+a store that will hold a few hundred multi-gigabyte files. <code>-T largefile</code> (one inode per 1 MiB)
+yields ~3.7 M inodes for under 1 GB of tables, recovering <strong>~59 GB</strong>. <code>largefile4</code> recovers
+marginally more but is too aggressive if the HF cache ever holds many small config, tokenizer,
+or dataset files. Verify with <code>tune2fs -l</code> that the inode count comfortably exceeds the expected
+file count before committing. The same applies with more force to the 7.3 TB archive drive,
+where the default would allocate ~125 GB of inode tables.</p>
+<h3>3.4 Mount configuration</h3>
+<p><code>/etc/fstab</code> — <strong>by UUID</strong>, per contract §10.2 and the enumeration evidence in §1.4:</p>
+<pre><code>UUID=&lt;uuid-of-nvme1n1p1&gt;  /srv/hx/models  ext4  defaults,noatime,nofail,x-systemd.device-timeout=10s  0  2
+UUID=&lt;uuid-of-sda1&gt;       /srv/hx/archive ext4  defaults,noatime,nofail,x-systemd.device-timeout=10s  0  2
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>noatime</code></td>
+<td>Eliminates atime updates entirely. <strong>The benefit here is small, not large</strong> — Ubuntu already defaults to <code>relatime</code> (at most one atime write per file per 24 h), and faulting pages of an already-<code>mmap</code>ed region updates no atime at all: <code>file_accessed()</code> fires once at <code>mmap()</code> time, not per fault. Kept as a cheap, conventional default for a store of immutable large files, not as a performance measure.</td>
+</tr>
+<tr>
+<td><strong><code>nofail</code></strong></td>
+<td><strong>The critical one.</strong> Without it, a failed or absent data disk drops the host into emergency mode at boot. hxs-1 has <strong>no BMC and no out-of-band access</strong> — recovery would require physically attending the machine. <code>nofail</code> degrades to a missing mount instead of a dead host.</td>
+</tr>
+<tr>
+<td><code>x-systemd.device-timeout=10s</code></td>
+<td>Bounds boot delay if the device is genuinely gone, rather than waiting out the default timeout.</td>
+</tr>
+<tr>
+<td>fsck pass <code>2</code></td>
+<td>Checked after root, not in parallel with it.</td>
+</tr>
+<tr>
+<td><em>not</em> <code>discard</code></td>
+<td>Ubuntu enables <code>fstrim.timer</code> weekly, which is the preferred pattern. Inline discard adds latency to every delete.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>A caveat <code>nofail</code> introduces.</strong> If the mount fails, the mountpoint directory still exists on
+the root filesystem and <code>OLLAMA_MODELS</code> still points at it — so the runtime would cheerfully
+re-download 17–54 GB onto <code>/</code>, which is precisely the runaway-fills-root scenario §3.2 exists to
+prevent. <code>nofail</code> converts a loud boot failure into a silent wrong-disk failure. Two mitigations,
+both cheap: bind the service to the mount (§3.6), and make the bare mountpoint unwritable so a
+stray write cannot succeed.</p>
+<pre><code class="language-bash">sudo umount /srv/hx/models
+sudo chattr +i /srv/hx/models     # bare mountpoint on / becomes immutable
+sudo mount /srv/hx/models         # the mount itself is unaffected
+</code></pre>
+<p><strong>Validate before rebooting</strong> — contract §10.4:</p>
+<pre><code class="language-bash">sudo mkdir -p /srv/hx/models /srv/hx/archive
+sudo mount -a
+findmnt --verify
+findmnt /srv/hx/models
+df -hT /srv/hx/models
+</code></pre>
+<h3>3.5 Directory layout and ownership</h3>
+<pre><code>/srv/hx/models/                     &lt;- nvme1n1p1, label hx-models
+├── ollama/                         &lt;- OLLAMA_MODELS         owner ollama:ollama
+│   ├── blobs/                         sha256-&lt;digest&gt; weight blobs
+│   └── manifests/
+├── hf/                             &lt;- HF_HOME               owner &lt;serving user&gt;
+│   └── hub/                        &lt;- HF_HUB_CACHE
+│       └── models--Qwen--Qwen3.8-27B/
+│           ├── blobs/                 content-addressed
+│           ├── snapshots/&lt;rev&gt;/       symlinks into blobs/
+│           └── refs/
+└── staging/                        &lt;- optional: checksum verification before promotion
+
+/srv/hx/archive/                    &lt;- sda1, SMR: cold only
+├── datasets/                          write-once, read-rarely
+└── snapshots/                         retired artifacts
+</code></pre>
+<p><strong>Path choice.</strong> <code>/srv</code> is the FHS location for site-specific data served by the system, which
+is what model weights consumed by an inference service are. <code>/opt/hx</code> or <code>/var/lib/hx</code> are
+defensible alternatives; the important property is that it is <strong>one documented path</strong>, not the
+runtime defaults scattered across <code>/usr/share</code> and <code>$HOME</code>.</p>
+<pre><code class="language-bash">sudo mkdir -p /srv/hx/models/{ollama,hf/hub,staging}
+
+# The `ollama` system user is created by the Ollama installer. This step therefore
+# runs AFTER the runtime is installed, not before — guard it rather than assume it.
+id ollama &gt;/dev/null 2&gt;&amp;1 \
+  || { echo &quot;FATAL: ollama user absent — install the runtime before this step&quot;; exit 1; }
+sudo chown -R ollama:ollama /srv/hx/models/ollama
+sudo chmod 0750 /srv/hx/models/ollama
+
+# The HF cache needs its own owner — whichever service account runs vLLM or the
+# fine-tuning tooling. Left root-owned, a non-root serving user cannot write to it.
+sudo chown -R &quot;${HX_SERVING_USER:?set to the serving account}&quot;:&quot;${HX_SERVING_USER}&quot; \
+  /srv/hx/models/hf
+</code></pre>
+<h3>3.6 Environment wiring</h3>
+<p>Ollama, via a systemd drop-in rather than an edited unit file (survives package upgrade):</p>
+<pre><code class="language-ini"># /etc/systemd/system/ollama.service.d/10-hx.conf
+[Unit]
+# Refuse to start if the model store is not mounted — see the nofail caveat in §3.4.
+RequiresMountsFor=/srv/hx/models
+
+[Service]
+Environment=&quot;OLLAMA_MODELS=/srv/hx/models/ollama&quot;
+Environment=&quot;OLLAMA_HOST=127.0.0.1:11434&quot;
+Environment=&quot;OLLAMA_KEEP_ALIVE=-1&quot;
+</code></pre>
+<p>A drop-in has no effect until reloaded, and the unit must be restarted to pick it up:</p>
+<pre><code class="language-bash">sudo systemctl daemon-reload
+sudo systemctl restart ollama
+systemctl show ollama -p Environment      # confirm OLLAMA_MODELS took effect
+</code></pre>
+<p>Note that repointing <code>OLLAMA_MODELS</code> at an empty directory makes any previously pulled models
+invisible — they must be moved or re-pulled.</p>
+<p><code>OLLAMA_HOST</code> stays on loopback: Ollama has <strong>no authentication of any kind</strong>, and the fleet's
+standing position (<code>act-017</code>) is that Qwen remains loopback-bound with remote consumption only
+through a gateway. <code>OLLAMA_KEEP_ALIVE=-1</code> holds the model resident, preserving both VRAM
+residency and the prefix cache — see the companion inference-performance record.</p>
+<p>For Hugging Face tooling, set in the service environment rather than a user profile:</p>
+<pre><code>HF_HOME=/srv/hx/models/hf
+HF_HUB_CACHE=/srv/hx/models/hf/hub
+</code></pre>
+<h3>3.7 Space budget</h3>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>Estimated size</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qwen3.8-27B GGUF Q4_K_M</td>
+<td>~16–17 GB</td>
+<td>primary inference artifact</td>
+</tr>
+<tr>
+<td>Alternate quant tiers (Q3_K_M / Q5_K_M / Q8_0)</td>
+<td>~13 / ~19 / ~29 GB</td>
+<td>only if comparison testing is wanted</td>
+</tr>
+<tr>
+<td>HF BF16 safetensors</td>
+<td>~54 GB</td>
+<td>fine-tuning base; not needed for inference</td>
+</tr>
+<tr>
+<td>vLLM w4a16 / AWQ</td>
+<td>~30 GB</td>
+<td><strong>estimate, unverified</strong> — see hypothesis H8 in the companion record</td>
+</tr>
+<tr>
+<td>LoRA adapters</td>
+<td>&lt;1 GB each</td>
+<td></td>
+</tr>
+<tr>
+<td>Fine-tune checkpoints</td>
+<td>highly variable</td>
+<td>the genuinely unbounded item</td>
+</tr>
+<tr>
+<td>Datasets</td>
+<td>variable</td>
+<td>candidate for <code>/srv/hx/archive</code></td>
+</tr>
+</tbody>
+</table>
+<p>Realistic inference-only footprint: <strong>well under 200 GB against 3.6 TiB.</strong> Capacity is not a
+constraint and will not become one for inference. Set <code>minimum_free_gb</code> in
+<code>hx-capacity-gate.ps1</code> generously — 200 GB is defensible — so the gate catches a genuinely
+degenerate condition rather than firing on normal growth.</p>
+<p>Fine-tuning is the exception. Checkpoint retention is the one workload here that can consume
+terabytes, and it needs its own retention policy before it starts, not after.</p>
+<hr>
+<h2>4. Risks and open conflicts</h2>
+<h3>R-1 — The R5 NFS proposal directly competes for this device</h3>
+<p><code>hx-recommendations.html</code> R5 proposes exporting hxs-1's unallocated NVMe <strong>and</strong> the 7.3 TB HDD
+as fleet NFS. That is the same <code>nvme1n1</code> this proposal assigns to the model store. R5 also
+carries its own recorded caution:</p>
+<blockquote>
+<p>"hxs-1 is the reasoning GPU host, so making it the fleet's NFS server puts an I/O dependency
+on the most performance-critical machine."</p>
+</blockquote>
+<p>Two further points argue against overlapping them:</p>
+<ul>
+<li><strong>Do not serve model weights over NFS at runtime on this host.</strong> The binding constraint is the
+  single 1 Gb/s NIC: a 17 GB cold load is ~2.6 minutes of wire time on the same interface
+  serving inference requests, versus seconds from local NVMe. (<code>mmap</code> over NFS additionally has
+  weak cache-coherence semantics — though that matters far less for immutable, digest-verified
+  weight files than the bandwidth ceiling does, and plenty of clusters do serve weights over
+  network filesystems successfully.)</li>
+<li>If fleet NFS is still wanted from this host, export <strong><code>/srv/hx/archive</code> (the SMR drive) only</strong>
+  — cold, write-once fleet data is the one workload SMR suits.</li>
+</ul>
+<p><strong>This is an owner decision, not a technical one.</strong> It should be settled before either
+proposal is actioned, because they cannot both have <code>nvme1n1</code>.</p>
+<h3>R-2 — No redundancy, and two different kinds of data</h3>
+<p>No RAID, no LVM, no backup path. That is <strong>acceptable for model weights</strong> — they are
+re-downloadable, and the artifact is verified by digest. It is <strong>not acceptable for
+fine-tuning checkpoints and curated datasets</strong>, which are the product of compute and human
+effort and cannot be re-fetched from anywhere.</p>
+<p>Any fine-tuning work needs a stated backup destination before the first run, not after the
+first loss. This distinction should be explicit in whatever storage decision is ratified.</p>
+<h3>R-3 — SMART is absent on the drives about to become load-bearing (R1)</h3>
+<blockquote>
+<p>"Not one drive in the fleet has SMART monitoring. <code>smartmontools</code> is absent on all sixteen
+machines."</p>
+</blockquote>
+<p>Installing <code>smartmontools</code> and establishing a baseline should precede committing terabytes to
+these devices — particularly the SMR drive, which is consumer-grade, mechanical, unredundant,
+and the least healthy device in the host. This is cheap, low-risk, and independently
+recommended already.</p>
+<h3>R-4 — Residual observations</h3>
+<ul>
+<li><strong><code>multipathd</code> and <code>open-iscsi</code> are enabled</strong> on bare metal, inherited from a
+  virtualization-oriented image. <code>multipathd</code> can claim block devices under some
+  configurations. Confirm it is not managing these NVMe devices before partitioning
+  (<code>multipath -ll</code>), and consider disabling both as unused services.</li>
+<li><strong>Non-ECC RAM with a large page cache.</strong> 128 GB of non-ECC memory will hold model weights in
+  page cache. Bit flips are possible and undetectable. Impact is low for inference — a
+  corrupted page produces a bad token, and the file re-reads clean — but it is worth stating
+  rather than discovering.</li>
+<li><strong>Partitioning is a §14 high-impact change.</strong> <code>INFRASTRUCTURE-CONTRACT.md</code> §10.5 states
+  automation must not repartition disks or create filesystems without explicit approval, and
+  §14 lists partition changes among operations requiring inspection, backup, validation and
+  rollback planning. The devices are unpartitioned and unused, which makes the risk low — but
+  the procedure still applies, and §1.4's device-naming hazard is exactly why.</li>
+</ul>
+<hr>
+<h2>5. Answering the question directly</h2>
+<p><strong>How should the model be stored during download?</strong></p>
+<p>On the dedicated NVMe model store, downloaded <strong>in place</strong> by the runtime's own client. Both
+Ollama and Hugging Face use content-addressed layouts that write partial files into the final
+directory and promote them atomically on the same filesystem — <strong>no separate staging area and
+no 2× space provisioning is needed</strong>. Do not download to <code>/tmp</code>, to <code>/</code>, or to the SMR drive
+and then move; a cross-filesystem move is a copy, and it buys nothing. Verify the artifact
+digest before first load, and let <code>hx-capacity-gate.ps1</code> clear free space before the download
+is authorized at all.</p>
+<p><strong>How should the model be stored at runtime?</strong></p>
+<p>In exactly the same place. There is no separate runtime copy. Ollama <code>mmap</code>s the GGUF directly
+from the store; vLLM reads the safetensors once into VRAM. With 128 GB of host RAM the file
+becomes page-cache resident after the first load, so runtime disk performance stops mattering
+almost immediately — which is precisely why the design should optimise for <strong>cold start and
+safety</strong> (fast NVMe, isolated filesystem, <code>nofail</code>, <code>noatime</code>) rather than for sustained
+throughput. Keep the model resident (<code>OLLAMA_KEEP_ALIVE=-1</code>) so that neither the page cache nor
+the prefix cache is discarded between requests.</p>
+<hr>
+<h2>6. Recommended next steps</h2>
+<p>Phase-3-safe items first; nothing below assumes authorization it does not have.</p>
+<ol>
+<li><strong>Resolve the R5 conflict.</strong> Owner decision: does <code>nvme1n1</code> become the hxs-1 model store, or
+   fleet NFS? They cannot both have it. Documentation-only.</li>
+<li><strong>Capture a storage baseline</strong> on hxs-1, read-only, to append to <code>driver-results.md</code> or a new
+   evidence file:
+   <pre><code>lsblk -o NAME,MODEL,SERIAL,SIZE,TYPE,FSTYPE,MOUNTPOINTS,TRAN
+sudo blkid
+findmnt --verify
+df -hT
+# NB: `multipath` requires root. Run unprivileged with stderr discarded, it fails
+# into a FALSE all-clear — the one outcome this check exists to rule out.
+sudo multipath -ll || echo "multipath: command failed or no maps — check exit status"
+sudo multipath -ll -v3 2>&amp;1 | grep -Ei 'nvme|sda' || echo "no nvme/sda paths claimed"</code></pre></li>
+<li><strong>Install <code>smartmontools</code> and take a baseline</strong> (R1) before any device becomes load-bearing.
+   A small, independently-recommended change — but still a package install, so it belongs in
+   the same authorization request as the rest.</li>
+<li><strong>Set <code>minimum_free_gb</code></strong> in <code>hx-capacity-gate.ps1</code> against the proposed model-store path.
+   Repository-side, no host access.</li>
+<li><strong>Decide the fine-tuning retention and backup policy</strong> before any fine-tuning run — the one
+   workload here that is neither bounded nor re-downloadable.</li>
+<li><strong>When implementation is authorized,</strong> execute §3.3–§3.6 in order, confirming device identity
+   by <strong>serial</strong> at every step, validating with <code>findmnt --verify</code> before reboot.</li>
+</ol>
+<hr>
+<h2>7. Citation</h2>
+<p><strong>Primary — HX records</strong>
+<code>servers/hxs-1/discovery.md</code> (block devices, serials, filesystems, enumeration change, RAM,
+network, enabled units) · <code>INFRASTRUCTURE-CONTRACT.md</code> §10.1–§10.5, §14 ·
+<code>governance/hx-recommendations.html</code> R1, R5 · <code>governance/logs/actions-and-issues.md</code>
+(<code>act-017</code>) · <code>tests/ai-runtime/hx-capacity-gate.ps1</code></p>
+<p><strong>Vendor — retrieved 2026-08-17</strong></p>
+<ul>
+<li>Ollama FAQ — <code>OLLAMA_MODELS</code>, service user and ownership, environment variables
+  <a href="https://docs.ollama.com/faq">https://docs.ollama.com/faq</a></li>
+<li>Hugging Face Hub — cache layout, blobs/snapshots/refs, <code>.incomplete</code> handling, <code>HF_HOME</code>
+  <a href="https://huggingface.co/docs/huggingface_hub/en/guides/manage-cache">https://huggingface.co/docs/huggingface_hub/en/guides/manage-cache</a></li>
+</ul>
+<p><strong>Third-party — drive characteristics</strong></p>
+<ul>
+<li>Tom's Hardware, <em>Seagate BarraCuda 8TB HDD Review: The SMR Slowdown</em> — ST8000DM004 SMR
+  identification and 5400-RPM confirmation. <strong>Sourcing caveat:</strong> the review reports Seagate's
+  "up to 190 MBps" rating and cautions that it may be misleading given SMR degradation; it
+  publishes no independent sequential-read measurement. The 190 MB/s figure used in §1.3 and
+  §2.3 is a <strong>vendor max-OD sustained-transfer specification, not a measurement</strong>.</li>
+<li>Blocks &amp; Files, <em>Seagate 'submarines' SMR into 3 Barracuda drives</em> — SMR disclosure record</li>
+<li>Western Digital — WD_BLACK SN850X 4 TB specification: 7,300 MB/s sequential read,
+  6,600 MB/s sequential write, PCIe Gen4 ×4</li>
+</ul>
+<p>Sequential-throughput figures for both devices are vendor-published values used only for
+order-of-magnitude comparison. <strong>Neither has been measured on hxs-1</strong>, and no figure in this
+document should be quoted as an HX measurement.</p>
+<hr>
+<p><em>Prepared by Claude (Opus 5), 2026-08-17. Design proposal — no authority asserted, no decision
+made, no storage mutation authorized. Per repository convention, a proposal is not a ruling.</em></p>
+<footer>Generated from the Markdown source of the same name — the pair is published together and must not diverge.<br>Research record — no authority asserted, no decision made.<br>Companion Markdown source: <code>hx-research_hxs1-model-storage-architecture_synthesis_2026-08-17_claude-opus-5.md</code></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>HX-SD-001 — Inference Runtime Standard</title>
+  <style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+</style>
+  <style type="text/css">:root {
+--bg: #071019;
+--surface: #0d1924;
+--surface-2: #112433;
+--ink: #e9f2f7;
+--muted: #9db2bf;
+--line: #29404e;
+--cyan: #25d0c5;
+--blue: #5aa7ff;
+--amber: #ffbf69;
+--red: #ff6f79;
+--green: #74d89b;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; background: var(--bg); }
+body {
+margin: 0 auto;
+max-width: 1240px;
+padding: 48px 56px 96px;
+background:
+radial-gradient(circle at 92% 3%, rgba(37,208,197,.13), transparent 24rem),
+radial-gradient(circle at 8% 18%, rgba(90,167,255,.09), transparent 22rem),
+var(--bg);
+color: var(--ink);
+font: 16px/1.68 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+header#title-block-header {
+border: 1px solid var(--line);
+border-top: 5px solid var(--cyan);
+border-radius: 16px;
+padding: 34px 38px 28px;
+background: linear-gradient(135deg, rgba(17,36,51,.96), rgba(9,20,30,.96));
+box-shadow: 0 24px 80px rgba(0,0,0,.28);
+}
+h1 { margin: 0 0 12px; font-size: clamp(2.2rem, 5vw, 4rem); line-height: 1.03; letter-spacing: -.045em; }
+h2 { margin-top: 3.5rem; padding-bottom: .45rem; border-bottom: 1px solid var(--line); font-size: 1.7rem; letter-spacing: -.02em; }
+h3 { margin-top: 2.2rem; color: #c8fbf6; font-size: 1.16rem; }
+p { max-width: 82ch; }
+a { color: #82c2ff; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: #b5dbff; }
+strong { color: #fff; }
+blockquote {
+margin: 1.8rem 0;
+padding: 18px 22px;
+border-left: 5px solid var(--cyan);
+border-radius: 0 10px 10px 0;
+background: rgba(37,208,197,.08);
+color: #dcfffb;
+font-size: 1.08rem;
+}
+table {
+width: 100%;
+margin: 1.4rem 0 2rem;
+border-collapse: separate;
+border-spacing: 0;
+overflow: hidden;
+border: 1px solid var(--line);
+border-radius: 12px;
+background: rgba(13,25,36,.86);
+font-size: .92rem;
+}
+th, td { padding: 12px 14px; vertical-align: top; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+th:last-child, td:last-child { border-right: 0; }
+tr:last-child td { border-bottom: 0; }
+th { background: #142b3a; color: #dffcf9; text-align: left; font-size: .78rem; letter-spacing: .055em; text-transform: uppercase; }
+tbody tr:hover { background: rgba(90,167,255,.06); }
+code {
+padding: .15em .38em;
+border: 1px solid rgba(90,167,255,.22);
+border-radius: 5px;
+background: #0b1b28;
+color: #a9d3ff;
+font: .9em/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+pre { overflow-x: auto; padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: #08141e; }
+pre code { padding: 0; border: 0; background: transparent; }
+.mermaid { margin: 1.5rem 0 2.2rem; padding: 22px; border: 1px solid var(--line); border-radius: 14px; background: #f6fbff; }
+nav#TOC {
+margin: 28px 0 40px;
+padding: 18px 24px;
+border: 1px solid var(--line);
+border-radius: 12px;
+background: rgba(13,25,36,.72);
+columns: 2;
+}
+nav#TOC > ul { margin: 0; padding-left: 1.15rem; }
+nav#TOC li { break-inside: avoid; margin: .25rem 0; }
+nav#TOC ul ul { display: none; }
+hr { height: 1px; border: 0; background: linear-gradient(90deg, transparent, var(--line), transparent); margin: 3rem 0; }
+ul, ol { max-width: 82ch; }
+li { margin: .32rem 0; }
+@media (max-width: 760px) {
+body { padding: 24px 18px 64px; }
+header#title-block-header { padding: 24px; }
+nav#TOC { columns: 1; }
+table { display: block; overflow-x: auto; }
+}
+@media print {
+:root { --bg: #fff; --surface: #fff; --surface-2: #f5f7f9; --ink: #15202a; --muted: #55646e; --line: #cbd5db; }
+body { max-width: none; padding: 18mm; background: #fff; color: var(--ink); font-size: 10pt; }
+header#title-block-header { box-shadow: none; background: #fff; }
+a { color: #145d9c; }
+table { background: #fff; }
+th { background: #edf3f6; color: #15202a; }
+code { background: #f1f4f6; color: #214e6f; }
+.mermaid { break-inside: avoid; }
+}
+</style>
+  <meta name="description" content="Executive reconnaissance of Qwen3.8-27B quantization, Ollama, vLLM, storage, CUDA, context and HXS-1 deployment fit.">
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        primaryColor: '#dff8f5',
+        primaryTextColor: '#10232f',
+        primaryBorderColor: '#1b8f88',
+        lineColor: '#31576e',
+        secondaryColor: '#dceeff',
+        tertiaryColor: '#fff2dd',
+        fontFamily: 'Inter, system-ui, sans-serif'
+      }
+    });
+  </script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">HX-SD-001 — Inference Runtime Standard</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#hx-sd-001--inference-runtime-standard" id="toc-hx-sd-001--inference-runtime-standard">HX-SD-001 — Inference
+Runtime Standard</a>
+<ul>
+<li><a href="#executive-directive" id="toc-executive-directive">Executive directive</a></li>
+<li><a href="#1-decision" id="toc-1-decision">1. Decision</a></li>
+<li><a href="#2-decision-rationale" id="toc-2-decision-rationale">2.
+Decision rationale</a></li>
+<li><a href="#3-conditions-that-may-justify-a-vllm-pilot" id="toc-3-conditions-that-may-justify-a-vllm-pilot">3. Conditions that
+may justify a vLLM pilot</a></li>
+<li><a href="#4-required-evidence-for-a-vllm-exception" id="toc-4-required-evidence-for-a-vllm-exception">4. Required evidence
+for a vLLM exception</a></li>
+<li><a href="#5-ollama-control-requirements" id="toc-5-ollama-control-requirements">5. Ollama control
+requirements</a></li>
+<li><a href="#6-agent-responsibilities" id="toc-6-agent-responsibilities">6. Agent responsibilities</a></li>
+<li><a href="#7-governance-and-exception-flow" id="toc-7-governance-and-exception-flow">7. Governance and exception
+flow</a></li>
+<li><a href="#8-consequences" id="toc-8-consequences">8.
+Consequences</a></li>
+<li><a href="#9-supersession-and-review" id="toc-9-supersession-and-review">9. Supersession and review</a></li>
+<li><a href="#10-standing-directive-statement" id="toc-10-standing-directive-statement">10. Standing directive
+statement</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="hx-sd-001--inference-runtime-standard">HX-SD-001 — Inference
+Runtime Standard</h1>
+<p><strong>Status:</strong> ACCEPTED — STANDING DIRECTIVE<br />
+<strong>Authority:</strong> Chief AI Officer, Hana-X<br />
+<strong>Decision date:</strong> 18 August 2026<br />
+<strong>Scope:</strong> HX-Ai-Infrastructure; HXS-1 through HXS-4 and
+later HX-managed local model servers<br />
+<strong>Proposed canonical repository path:</strong>
+<code>governance/directives/hx-sd-001-inference-runtime-standard.md</code></p>
+<hr />
+<h2 id="executive-directive">Executive directive</h2>
+<p><strong>Ollama is the default and approved inference runtime for
+HX-managed local model servers.</strong></p>
+<p>vLLM is not a parallel fleet standard and shall not be installed,
+configured, or introduced into an HX model-server build by default. It
+is retained as an evaluated alternative that may be piloted only when a
+specific workload fails an explicit Ollama acceptance requirement and
+the proposed vLLM path is approved through the HX governance
+process.</p>
+<p>This directive eliminates runtime ambiguity. HX will operate one
+standard inference-runtime control path until retained evidence
+demonstrates that an exception creates sufficient value to justify a
+second operational path.</p>
+<div class="mermaid">
+flowchart TD
+    W[&quot;HX model workload&quot;] --&gt; O[&quot;Ollama · default runtime&quot;]
+    O --&gt; A{&quot;Acceptance requirements met?&quot;}
+    A -- &quot;Yes&quot; --&gt; S[&quot;Remain on Ollama&quot;]
+    A -- &quot;No · retained evidence&quot; --&gt; G[&quot;Governed vLLM pilot proposal&quot;]
+    G --&gt; V[&quot;Measured Ollama vs vLLM comparison&quot;]
+    V --&gt; D{&quot;CAIO decision&quot;}
+    D -- &quot;Exception approved&quot; --&gt; X[&quot;Workload-specific vLLM exception&quot;]
+    D -- &quot;Not justified&quot; --&gt; S
+</div>
+<h2 id="1-decision">1. Decision</h2>
+<h3 id="11-standard-runtime">1.1 Standard runtime</h3>
+<p>Ollama shall be the standard runtime for:</p>
+<ul>
+<li>HXS-1 through HXS-4;</li>
+<li>repeatable Ubuntu model-server builds;</li>
+<li>local and loopback inference endpoints;</li>
+<li>GGUF and Ollama-registry model artifacts;</li>
+<li>agent-driven installation, configuration and verification;</li>
+<li>bounded development, testing and demonstration workloads;</li>
+<li>model-server deployments for which Ollama satisfies the recorded
+acceptance contract.</li>
+</ul>
+<p>Each server may run a unique model, but it shall inherit the same
+governed Ollama deployment pattern unless an approved exception states
+otherwise.</p>
+<h3 id="12-vllm-status">1.2 vLLM status</h3>
+<p>vLLM is classified as:</p>
+<blockquote>
+<p><strong>REFERENCE-ONLY / CONDITIONAL PILOT — NOT A DEFAULT DEPLOYMENT
+COMPONENT</strong></p>
+</blockquote>
+<p>Its presence in research, architecture comparisons, backlog records
+or the local agent library does not authorize installation or
+adoption.</p>
+<h3 id="13-fine-tuning-boundary">1.3 Fine-tuning boundary</h3>
+<p>Neither Ollama nor vLLM is the HX fine-tuning control plane.</p>
+<p>Fine-tuning shall use a separately approved training toolchain. The
+resulting model or adapter must pass provenance, compatibility,
+evaluation and acceptance gates before being packaged for the approved
+serving runtime.</p>
+<div class="mermaid">
+flowchart LR
+    D[&quot;Governed training data&quot;] --&gt; F[&quot;Approved fine-tuning toolchain&quot;]
+    F --&gt; R[&quot;Model / adapter artifact&quot;]
+    R --&gt; Q[&quot;Quincy evaluation + provenance&quot;]
+    Q --&gt; T[&quot;Tessa independent validation&quot;]
+    T --&gt; O[&quot;Ollama deployment&quot;]
+    T -. &quot;Approved exception only&quot; .-&gt; V[&quot;vLLM deployment&quot;]
+</div>
+<h2 id="2-decision-rationale">2. Decision rationale</h2>
+<p>Ollama is the correct HX default because the current fleet pattern
+prioritizes repeatability, controlled local operation and
+agent-manageable deployment over maximum multi-tenant throughput.</p>
+<p>The standard provides:</p>
+<ul>
+<li>a smaller installation and dependency surface;</li>
+<li>straightforward Ubuntu and systemd operation;</li>
+<li>mature GGUF and quantized-model support;</li>
+<li>automatic multi-GPU model distribution;</li>
+<li>explicit model-store configuration;</li>
+<li>Flash Attention and KV-cache controls;</li>
+<li>native and compatibility APIs;</li>
+<li>bounded concurrency and request queuing;</li>
+<li>adapter and externally produced model import;</li>
+<li>a coherent responsibility boundary for Owen, Craig, Quincy and
+Tessa.</li>
+</ul>
+<p>Introducing vLLM fleet-wide would add a second runtime, packaging
+path, dependency chain, model-compatibility matrix, quantization-kernel
+path, distributed-GPU strategy and validation suite before HX has
+demonstrated a requirement for those costs.</p>
+<h2 id="3-conditions-that-may-justify-a-vllm-pilot">3. Conditions that
+may justify a vLLM pilot</h2>
+<p>A vLLM pilot may be proposed only when retained evidence demonstrates
+at least one of the following:</p>
+<ol type="1">
+<li>Ollama fails a defined concurrency or aggregate-throughput
+objective.</li>
+<li>Repeated large shared prompts make automatic prefix caching
+materially valuable.</li>
+<li>HX requires several LoRA adapters to be served concurrently from one
+base model and selected per request.</li>
+<li>A required model artifact or quantization is materially better
+supported by vLLM.</li>
+<li>Ollama cannot satisfy a defined long-context capacity, correctness
+or latency requirement.</li>
+<li>Future GPU hardware materially improves the suitability of vLLM
+distributed execution.</li>
+<li>A production-serving requirement emerges that exceeds the accepted
+Ollama service envelope.</li>
+</ol>
+<p>A preference, benchmark claim, model-card recommendation, community
+report or theoretical throughput advantage is not sufficient.</p>
+<h2 id="4-required-evidence-for-a-vllm-exception">4. Required evidence
+for a vLLM exception</h2>
+<p>The exception proposal must include a controlled comparison using the
+same workload and acceptance criteria.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Evidence category</th>
+<th>Minimum record</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Workload</td>
+<td>named client, request shape, context distribution, concurrency and
+service objective</td>
+</tr>
+<tr class="even">
+<td>Artifact</td>
+<td>publisher, repository or registry, exact tag, full digest,
+quantization and byte size</td>
+</tr>
+<tr class="odd">
+<td>Runtime</td>
+<td>exact Ollama and vLLM versions, source/container identity and
+configuration</td>
+</tr>
+<tr class="even">
+<td>Hardware</td>
+<td>GPU UUIDs, VRAM, PCIe link state, topology, peer-access and
+collective-performance evidence</td>
+</tr>
+<tr class="odd">
+<td>Performance</td>
+<td>time to first token, prefill, decode, throughput, queue behavior and
+cache state</td>
+</tr>
+<tr class="even">
+<td>Capacity</td>
+<td>maximum accepted context, KV-cache allocation, concurrent sequences
+and VRAM margin</td>
+</tr>
+<tr class="odd">
+<td>Correctness</td>
+<td>identical HX evaluation set, retained outputs and scored acceptance
+results</td>
+</tr>
+<tr class="even">
+<td>Reliability</td>
+<td>startup, restart, failure, overflow and sustained-run behavior</td>
+</tr>
+<tr class="odd">
+<td>Operations</td>
+<td>installation, upgrade, rollback, observability and recovery
+burden</td>
+</tr>
+<tr class="even">
+<td>Validation</td>
+<td>independent Tessa verdict of <code>PASS</code>, <code>FAIL</code> or
+<code>BLOCKED</code></td>
+</tr>
+</tbody>
+</table>
+<p>The comparison must distinguish artifact fit from operational fit.
+Aggregate model bytes alone do not prove that a runtime can load, split,
+cache and serve the model correctly on the target GPUs.</p>
+<h2 id="5-ollama-control-requirements">5. Ollama control
+requirements</h2>
+<p>Ollama&#39;s status as the default does not waive correctness
+controls.</p>
+<p>Every HX Ollama deployment shall:</p>
+<ul>
+<li>pin the runtime version;</li>
+<li>pin the selected model manifest or artifact by full digest;</li>
+<li>configure an explicit model-store path;</li>
+<li>configure an explicit context window;</li>
+<li>record sampler and thinking settings when supported;</li>
+<li>verify GPU placement and memory use;</li>
+<li>expose only the approved network interface;</li>
+<li>retain installation and acceptance evidence;</li>
+<li>implement an HX context-budget control before agentic production
+use.</li>
+</ul>
+<h3 id="51-silent-truncation-control">5.1 Silent-truncation control</h3>
+<p>Ollama v0.32.14 silently removes older chat messages when a rendered
+prompt exceeds the configured context and truncation remains at its
+default. This behavior is acceptable for the bounded HXS-1 MVP-1 smoke
+request but is not acceptable as an unmanaged behavior for persistent
+agent sessions.</p>
+<p>Before an Ollama endpoint is approved for long-running agent memory,
+the HX traffic or client plane must:</p>
+<ol type="1">
+<li>budget input, retained-history and output tokens;</li>
+<li>reserve output capacity before sending the request;</li>
+<li>reject, compact or summarize before context overflow;</li>
+<li>record each compaction or summarization event;</li>
+<li>use native fail-closed controls where supported and required;</li>
+<li>prove through testing that governing instructions are not silently
+lost.</li>
+</ol>
+<p>This requirement is a runtime guard, not a reason to introduce vLLM
+fleet-wide.</p>
+<h2 id="6-agent-responsibilities">6. Agent responsibilities</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Role</th>
+<th>Standing responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Owner / CAIO</td>
+<td>approves this directive, any exception pilot and any promoted vLLM
+deployment</td>
+</tr>
+<tr class="even">
+<td>sdd-core / Meta-Agent</td>
+<td>routes work through the Ollama default and blocks unauthorized
+runtime expansion</td>
+</tr>
+<tr class="odd">
+<td>Owen</td>
+<td>prepares and validates Ubuntu, storage, driver, GPU identity and
+topology without choosing the inference runtime</td>
+</tr>
+<tr class="even">
+<td>Craig</td>
+<td>owns the standard Ollama installation, configuration, audit, upgrade
+and rollback pattern</td>
+</tr>
+<tr class="odd">
+<td>Quincy</td>
+<td>owns model/artifact identity, compatibility, configuration and
+evaluation evidence</td>
+</tr>
+<tr class="even">
+<td>Tessa</td>
+<td>independently validates acceptance and all proposed runtime
+exceptions</td>
+</tr>
+</tbody>
+</table>
+<p>No specialist agent may substitute vLLM, install both runtimes, or
+widen an MVP because it predicts better performance.</p>
+<h2 id="7-governance-and-exception-flow">7. Governance and exception
+flow</h2>
+<div class="mermaid">
+sequenceDiagram
+    participant O as Owner / CAIO
+    participant M as Meta-Agent
+    participant I as Owen · Craig · Quincy
+    participant T as Tessa
+    O-&gt;&gt;M: Define accepted workload and failure condition
+    M-&gt;&gt;I: Run Ollama baseline and retain evidence
+    I--&gt;&gt;M: Acceptance or measured failure
+    M-&gt;&gt;I: Authorize bounded vLLM pilot only if triggered
+    I--&gt;&gt;T: Submit identical comparison evidence
+    T--&gt;&gt;O: Independent PASS / FAIL / BLOCKED
+    O-&gt;&gt;M: Approve exception or retain Ollama
+</div>
+<p>An approved vLLM exception must be scoped to a named workload, model,
+server class and acceptance contract. It does not change the fleet
+default and cannot be generalized to other HX servers without a separate
+decision.</p>
+<h2 id="8-consequences">8. Consequences</h2>
+<h3 id="positive">Positive</h3>
+<ul>
+<li>one repeatable runtime pattern across the initial fleet;</li>
+<li>lower operational and agent cognitive load;</li>
+<li>clearer installation, audit and recovery ownership;</li>
+<li>fewer untested combinations of models, kernels and distributed
+execution;</li>
+<li>evidence-driven exceptions rather than speculative architecture
+expansion.</li>
+</ul>
+<h3 id="accepted-limitations">Accepted limitations</h3>
+<ul>
+<li>Ollama may provide less aggregate throughput than vLLM under high
+concurrency;</li>
+<li>shared-prefix caching and multi-LoRA serving may be less
+capable;</li>
+<li>long-context agent use requires an HX context-budget guard;</li>
+<li>some future model artifacts may require conversion or an exception
+runtime.</li>
+</ul>
+<p>These limitations are accepted until they cause a defined workload to
+fail.</p>
+<h2 id="9-supersession-and-review">9. Supersession and review</h2>
+<p>This directive supersedes any prior implication that Ollama and vLLM
+are co-equal default candidates for HX model-server deployment. It does
+not invalidate vLLM research; that material remains reference evidence
+for a future governed pilot.</p>
+<p>This directive remains in force until one of the following
+occurs:</p>
+<ul>
+<li>the CAIO explicitly supersedes it;</li>
+<li>an HX workload fails the Ollama acceptance envelope and an exception
+is approved;</li>
+<li>fleet hardware or service objectives materially change;</li>
+<li>retained production evidence demonstrates that a different fleet
+standard produces greater total value.</li>
+</ul>
+<p>Scheduled review alone does not authorize a runtime change.</p>
+<h2 id="10-standing-directive-statement">10. Standing directive
+statement</h2>
+<blockquote>
+<p><strong>Hana-X will standardize its local model-server fleet on
+Ollama. vLLM will not be deployed by default and may be introduced only
+as a workload-specific, evidence-gated exception approved by the CAIO
+after independent validation. Fine-tuning remains a separate control
+plane.</strong></p>
+</blockquote>
+<hr />
+<p><strong>Decision state:</strong> Accepted and effective immediately
+for HX-Ai-Infrastructure planning and implementation.</p>
+</body>
+</html>

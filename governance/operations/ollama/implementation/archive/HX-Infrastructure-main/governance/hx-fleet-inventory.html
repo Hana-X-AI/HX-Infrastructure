@@ -1,0 +1,684 @@
+<title>HX Fleet Server Inventory</title>
+<style>
+  :root {
+    --ground:   #fbfbf9;
+    --surface:  #f2f3f0;
+    --raised:   #ffffff;
+    --ink:      #1b1f1d;
+    --muted:    #6b726e;
+    --faint:    #949b96;
+    --line:     #dde0db;
+    --line-firm:#c3c8c1;
+    --accent:   #0f6e5c;
+    --accent-wash: #e6f0ec;
+    --signal:   #b4531a;
+    --signal-wash: #fbeee4;
+
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+    --step-0: 0.9375rem;
+    --step--1: 0.8125rem;
+    --step--2: 0.6875rem;
+    --step-1: 1.125rem;
+    --step-2: 1.5rem;
+    --step-3: 2.125rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground:   #141917;
+      --surface:  #1b211e;
+      --raised:   #1f2724;
+      --ink:      #e8ebe8;
+      --muted:    #97a09b;
+      --faint:    #6f7873;
+      --line:     #2b342f;
+      --line-firm:#3c4740;
+      --accent:   #4fbfa3;
+      --accent-wash: #16302a;
+      --signal:   #e08a4c;
+      --signal-wash: #33251a;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground:   #141917;
+    --surface:  #1b211e;
+    --raised:   #1f2724;
+    --ink:      #e8ebe8;
+    --muted:    #97a09b;
+    --faint:    #6f7873;
+    --line:     #2b342f;
+    --line-firm:#3c4740;
+    --accent:   #4fbfa3;
+    --accent-wash: #16302a;
+    --signal:   #e08a4c;
+    --signal-wash: #33251a;
+  }
+
+  :root[data-theme="light"] {
+    --ground:   #fbfbf9;
+    --surface:  #f2f3f0;
+    --raised:   #ffffff;
+    --ink:      #1b1f1d;
+    --muted:    #6b726e;
+    --faint:    #949b96;
+    --line:     #dde0db;
+    --line-firm:#c3c8c1;
+    --accent:   #0f6e5c;
+    --accent-wash: #e6f0ec;
+    --signal:   #b4531a;
+    --signal-wash: #fbeee4;
+  }
+
+  /* Keeps native UI — scrollbars, form controls — in step with the chosen theme. */
+  :root { color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root { color-scheme: dark; } }
+  :root[data-theme="dark"]  { color-scheme: dark; }
+  :root[data-theme="light"] { color-scheme: light; }
+
+  body {
+    margin: 0;
+    padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 4vw, 2rem) 5rem;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: var(--step-0);
+    line-height: 1.55;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .page { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 2.5rem; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: var(--step--2);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    margin: 0;
+  }
+
+  .masthead { display: flex; flex-direction: column; gap: 0.75rem; }
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .nav {
+    display: flex;
+    gap: 1.1rem;
+    flex-wrap: wrap;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: var(--step--2);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .nav a { color: var(--muted); text-decoration: none; border-bottom: 1px solid transparent; padding-bottom: 2px; }
+  .nav a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav a[aria-current="page"] { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .toggle {
+    font-family: var(--mono);
+    font-size: var(--step--2);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--line-firm);
+    border-radius: 2px;
+    padding: 0.4rem 0.75rem;
+    cursor: pointer;
+    transition: color 120ms ease, border-color 120ms ease;
+  }
+  .toggle:hover { color: var(--accent); border-color: var(--accent); }
+  .masthead h1 {
+    font-size: var(--step-3);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    font-weight: 650;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .masthead p { margin: 0; max-width: 65ch; color: var(--muted); }
+
+  .strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .cell { background: var(--surface); padding: 0.85rem 1rem; display: flex; flex-direction: column; gap: 0.15rem; }
+  .cell dt {
+    font-family: var(--mono);
+    font-size: var(--step--2);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+  .cell dd {
+    margin: 0;
+    font-size: var(--step-1);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  .standing {
+    background: var(--surface);
+    border-left: 2px solid var(--accent);
+    padding: 1rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    font-size: var(--step--1);
+  }
+  .standing p { margin: 0; max-width: 78ch; color: var(--muted); }
+  .standing strong { color: var(--ink); font-weight: 620; }
+
+  section { display: flex; flex-direction: column; gap: 0.85rem; }
+  h2 {
+    font-size: var(--step-2);
+    letter-spacing: -0.015em;
+    font-weight: 620;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .lede { margin: 0; color: var(--muted); max-width: 70ch; font-size: var(--step--1); }
+
+  .tablewrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    background: var(--raised);
+  }
+
+  table { border-collapse: collapse; width: 100%; font-size: var(--step--1); }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line-firm);
+    font-family: var(--mono);
+    font-size: var(--step--2);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--muted);
+    text-align: left;
+    padding: 0.7rem 0.85rem;
+    white-space: nowrap;
+  }
+
+  tbody td { padding: 0.65rem 0.85rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+
+  tr.band th {
+    position: static;
+    background: var(--accent-wash);
+    color: var(--ink);
+    border-top: 1px solid var(--line-firm);
+    border-bottom: 1px solid var(--line-firm);
+    letter-spacing: 0.11em;
+    padding: 0.5rem 0.85rem;
+  }
+  tr.band .count { color: var(--muted); font-weight: 500; }
+
+  td.host {
+    font-family: var(--mono);
+    font-weight: 620;
+    white-space: nowrap;
+    border-left: 3px solid transparent;
+  }
+  tr.tier-cp  td.host { border-left-color: var(--ink); }
+  tr.tier-gpu td.host { border-left-color: var(--accent); }
+  tr.tier-sff td.host { border-left-color: var(--line-firm); }
+
+  td.addr { font-family: var(--mono); white-space: nowrap; color: var(--ink); }
+  td.vram { font-family: var(--mono); text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  .qual { display: block; color: var(--muted); font-size: 0.86em; line-height: 1.4; margin-top: 0.15rem; }
+  .absent { color: var(--faint); }
+  .mark { color: var(--signal); font-weight: 600; }
+
+  tfoot td {
+    background: var(--surface);
+    border-top: 2px solid var(--line-firm);
+    font-weight: 620;
+    font-variant-numeric: tabular-nums;
+    padding: 0.7rem 0.85rem;
+  }
+  tfoot .vram { font-family: var(--mono); text-align: right; }
+  tfoot .label { font-family: var(--mono); font-size: var(--step--2); text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); }
+
+  .findings { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 3px; overflow: hidden; }
+  .finding { background: var(--raised); padding: 1rem 1.15rem; display: flex; flex-direction: column; gap: 0.35rem; }
+  .finding h3 { margin: 0; font-size: var(--step-0); font-weight: 620; letter-spacing: -0.005em; }
+  .finding p { margin: 0; font-size: var(--step--1); color: var(--muted); }
+  .finding.flagged h3 { color: var(--signal); }
+
+  .sources { display: flex; flex-direction: column; gap: 0.4rem; font-size: var(--step--1); color: var(--muted); }
+  .sources div { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .sources span:first-child { font-family: var(--mono); font-size: var(--step--2); text-transform: uppercase; letter-spacing: 0.09em; color: var(--faint); min-width: 8.5rem; }
+
+  code { font-family: var(--mono); font-size: 0.92em; background: var(--surface); padding: 0.05em 0.32em; border-radius: 2px; }
+
+  footer { border-top: 1px solid var(--line); padding-top: 1rem; font-size: var(--step--2); color: var(--faint); }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="page">
+
+  <header class="masthead">
+    <div class="masthead-top">
+      <nav class="nav">
+        <a href="https://claude.ai/code/artifact/09f4465a-1924-40c5-b352-cbe19926100d">Governance</a>
+        <a href="https://claude.ai/code/artifact/130cf301-c270-4851-a1e5-eb9ed8586074" aria-current="page">Fleet inventory</a>
+        <a href="https://claude.ai/code/artifact/1a0858b2-4e47-4111-b4c2-12005ee67ed4">Architecture v0.3</a>
+        <a href="https://claude.ai/code/artifact/01a9f2ed-02d1-4491-9cab-07934be22dd1">v0.1 frozen</a>
+        <a href="https://claude.ai/code/artifact/c16b4563-b9d4-4c17-9961-46329fe4faac">Validation</a>
+        <a href="https://claude.ai/code/artifact/1af2b128-6708-4e55-949d-d38cc293f67a">Recommendations</a>
+        <a href="https://claude.ai/code/artifact/4062f99f-e8d4-44ba-aae2-74472bde91f5">Actions &amp; issues</a>
+        <a href="https://claude.ai/code/artifact/9325f481-90f0-4439-9fa0-e8f48d629ff4">Lessons learned</a>
+        <a href="https://claude.ai/code/artifact/ac6d1ab7-8dae-436d-94f1-80bfbb99d467">Standards</a>
+      </nav>
+      <button type="button" class="toggle" id="theme-toggle">Dark mode</button>
+    </div>
+    <p class="eyebrow">HX-Infrastructure &middot; Phase 1 discovery</p>
+    <h1>Fleet Server Inventory</h1>
+    <p>
+      Hardware manifest for the fifteen HX fleet servers and the control-plane host that
+      operates them. Every value was collected read-only from the machine itself; nothing is
+      taken from vendor specifications. FQDNs come from the router DNS records.
+    </p>
+  </header>
+
+  <dl class="strip">
+    <div class="cell"><dt>Fleet servers</dt><dd>15</dd></div>
+    <div class="cell"><dt>Control plane</dt><dd>1</dd></div>
+    <div class="cell"><dt>Discrete GPUs</dt><dd>8</dd></div>
+    <div class="cell"><dt>Total VRAM</dt><dd>122,458 MiB</dd></div>
+    <div class="cell"><dt>CPU cores</dt><dd>110</dd></div>
+    <div class="cell"><dt>System memory</dt><dd>595.8 GB</dd></div>
+    <div class="cell"><dt>Storage</dt><dd>~29 TB</dd></div>
+  </dl>
+
+  <div class="standing">
+    <p>
+      <strong>This is an inventory, not a plan.</strong> No role, workload or model is assigned
+      to any server here. Role assignment is a manual project decision. Phase 2 is blocked and
+      zero roles are assigned.
+    </p>
+    <p>
+      <strong>On the FQDN column.</strong> These names resolve through <code>dnsmasq</code> on
+      the router, loaded from <code>/jffs/hx-hosts</code>. No domain suffix is set on the
+      servers themselves, so <code>hostname -f</code> returns the short name on every host.
+      Automatic loading of the records after a router reboot is unproven &mdash; see
+      <code>act-011</code>.
+    </p>
+    <p>
+      <strong>The control plane resolves.</strong> <code>hxs-cp.hx.local.arpa</code> was
+      verified forward and reverse against <code>192.168.50.1</code> on 2026-08-13, both
+      returning <code>192.168.50.215</code>. Its name uses a role suffix rather than the
+      numeric <code>hxs-N</code> pattern published for the fleet, which is a deliberate
+      distinction between the control plane and the servers it operates.
+    </p>
+  </div>
+
+  <section>
+    <h2>The fleet</h2>
+    <p class="lede">
+      Grouped by hardware class. Storage is total installed capacity, with the split between
+      the operating system device and any unallocated devices, because a single figure would
+      conceal the difference between free capacity and boot media. The control-plane host is
+      listed first and is excluded from the fleet totals, since it runs no workload.
+    </p>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Host</th>
+            <th scope="col">IP address</th>
+            <th scope="col">FQDN</th>
+            <th scope="col">Storage</th>
+            <th scope="col">CPU</th>
+            <th scope="col">GPU</th>
+            <th scope="col">GPU VRAM</th>
+            <th scope="col">Memory</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr class="band">
+            <th colspan="8" scope="colgroup">Control plane <span class="count">&mdash; 1, not a workload host</span></th>
+          </tr>
+
+          <tr class="tier-cp">
+            <td class="host">hxs-cp</td>
+            <td class="addr">192.168.50.215</td>
+            <td class="addr">hxs-cp.hx.local.arpa</td>
+            <td>476.9 GB<span class="qual">NVMe Samsung, sole device; 437 GB free</span></td>
+            <td>Core i7-1265U<span class="qual">10 cores / 12 threads, hybrid 2P + 8E</span></td>
+            <td class="absent">none &mdash; Intel Iris Xe integrated</td>
+            <td class="vram absent">&mdash;</td>
+            <td>15.8 GB<span class="qual">DDR5 4800 MT/s, <span class="mark">soldered</span>, non-ECC</span></td>
+          </tr>
+
+          <tr class="band">
+            <th colspan="8" scope="colgroup">GPU compute hosts <span class="count">&mdash; 4</span></th>
+          </tr>
+
+          <tr class="tier-gpu">
+            <td class="host">hxs-1</td>
+            <td class="addr">192.168.50.200</td>
+            <td class="addr">hxs-1.hx.local.arpa</td>
+            <td>14.5 TB<span class="qual">3.6 TB NVMe root; 3.6 TB NVMe + 7.3 TB SATA HDD unallocated</span></td>
+            <td>Core Ultra 9 285K<span class="qual">24 cores / 24 threads</span></td>
+            <td>2 &times; RTX 4070 Ti SUPER<span class="qual">16376 MiB each</span></td>
+            <td class="vram">32,752 MiB</td>
+            <td>128 GB<span class="qual">DDR5, non-ECC</span></td>
+          </tr>
+
+          <tr class="tier-gpu">
+            <td class="host">hxs-2</td>
+            <td class="addr">192.168.50.201</td>
+            <td class="addr">hxs-2.hx.local.arpa</td>
+            <td>4.8 TB<span class="qual">3.6 TB NVMe root; 2 &times; 596.2 GB SATA HDD unallocated</span></td>
+            <td>Core i7-5960X<span class="qual">8 cores / 16 threads</span></td>
+            <td>2 &times; RTX 5060 Ti<span class="qual">16311 MiB each</span></td>
+            <td class="vram">32,622 MiB</td>
+            <td>66 GB<span class="qual">DDR4 2133 MT/s, non-ECC</span></td>
+          </tr>
+
+          <tr class="tier-gpu">
+            <td class="host">hxs-3</td>
+            <td class="addr">192.168.50.202</td>
+            <td class="addr">hxs-3.hx.local.arpa</td>
+            <td>5.4 TB<span class="qual">3.6 TB NVMe root; 1.8 TB SATA SSD unallocated</span></td>
+            <td>Core i7-5960X<span class="qual">8 cores / 16 threads</span></td>
+            <td>2 &times; RTX 5060 Ti<span class="qual">16311 MiB each</span></td>
+            <td class="vram">32,622 MiB</td>
+            <td>66 GB<span class="qual">DDR4 2133 MT/s, non-ECC</span></td>
+          </tr>
+
+          <tr class="tier-gpu">
+            <td class="host">hxs-4</td>
+            <td class="addr">192.168.50.203</td>
+            <td class="addr">hxs-4.hx.local.arpa</td>
+            <td>1.4 TB<span class="qual">931.5 GB NVMe root; 476.9 GB NVMe unallocated</span></td>
+            <td>Core i7-14700F<span class="qual">20 cores / 28 threads, hybrid</span></td>
+            <td>RTX 5060 Ti + RTX 5060<span class="qual"><span class="mark">not a matched pair</span> &mdash; 16311 MiB and 8151 MiB</span></td>
+            <td class="vram">24,462 MiB</td>
+            <td>32 GB<span class="qual">DDR5 5600 MT/s, non-ECC</span></td>
+          </tr>
+
+          <tr class="band">
+            <th colspan="8" scope="colgroup">Small form factor hosts <span class="count">&mdash; 11, no discrete GPU</span></th>
+          </tr>
+
+          <tr class="tier-sff">
+            <td class="host">hxs-5</td>
+            <td class="addr">192.168.50.204</td>
+            <td class="addr">hxs-5.hx.local.arpa</td>
+            <td>238.5 GB<span class="qual">NVMe, sole device</span></td>
+            <td>Core i5-7500<span class="qual">4 cores / 4 threads</span></td>
+            <td class="absent">none &mdash; Intel HD 630 integrated</td>
+            <td class="vram absent">&mdash;</td>
+            <td>32 GB<span class="qual">DDR4 2400 MT/s, non-ECC</span></td>
+          </tr>
+
+          <tr class="tier-sff">
+            <td class="host">hxs-6</td>
+            <td class="addr">192.168.50.205</td>
+            <td class="addr">hxs-6.hx.local.arpa</td>
+            <td>238.5 GB<span class="qual">NVMe, sole device</span></td>
+            <td>Core i5-8500T<span class="qual">6 cores / 6 threads</span></td>
+            <td class="absent">none &mdash; Intel UHD 630 integrated</td>
+            <td class="vram absent">&mdash;</td>
+            <td>15.9 GB<span class="qual">DDR4 2667 MT/s, non-ECC</span></td>
+          </tr>
+
+          <tr class="tier-sff">
+            <td class="host">hxs-7</td>
+            <td class="addr">192.168.50.206</td>
+            <td class="addr">hxs-7.hx.local.arpa</td>
+            <td>238.5 GB<span class="qual">NVMe, sole device</span></td>
+            <td>Core i5-8500T<span class="qual">6 cores / 6 threads</span></td>
+            <td class="absent">none &mdash; Intel UHD 630 integrated</td>
+            <td class="vram absent">&mdash;</td>
+            <td>15.9 GB<span class="qual">DDR4 2400 MT/s, <span class="mark">single channel</span>, one slot free</span></td>
+          </tr>
+
+          <tr class="tier-sff">
+            <td class="host">hxs-8</td>
+            <td class="addr">192.168.50.207</td>
+            <td class="addr">hxs-8.hx.local.arpa</td>
+            <td>476.9 GB<span class="qual">NVMe, sole device &mdash; largest of any non-GPU host</span></td>
+            <td>Core i5-9400T<span class="qual">6 cores / 6 threads</span></td>
+            <td class="absent">none &mdash; Intel UHD 630 integrated</td>
+            <td class="vram absent">&mdash;</td>
+            <td>16 GB<span class="qual">DDR4 2666 MT/s, <span class="mark">single channel</span>, one slot free</span></td>
+          </tr>
+
+          <tr class="tier-sff">
+            <td class="host">hxs-9</td>
+            <td class="addr">192.168.50.208</td>
+            <td class="addr">hxs-9.hx.local.arpa</td>
+            <td>238.5 GB<span class="qual">NVMe, sole device</span></td>
+            <td>Core i5-7500<span class="qual">4 cores / 4 threads</span></td>
+            <td class="absent">none &mdash; Intel HD 630 integrated</td>
+            <td class="vram absent">&mdash;</td>
+            <td>32 GB<span class="qual">DDR4 2400 MT/s, non-ECC</span></td>
+          </tr>
+
+          <tr class="tier-sff">
+            <td class="host">hxs-10</td>
+            <td class="addr">192.168.50.209</td>
+            <td class="addr">hxs-10.hx.local.arpa</td>
+            <td>238.5 GB<span class="qual">NVMe, sole device</span></td>
+            <td>Core i5-7500<span class="qual">4 cores / 4 threads</span></td>
+            <td class="absent">none &mdash; Intel HD 630 integrated</td>
+            <td class="vram absent">&mdash;</td>
+            <td>32 GB<span class="qual">DDR4 2400 MT/s, non-ECC</span></td>
+          </tr>
+
+          <tr class="tier-sff">
+            <td class="host">hxs-11</td>
+            <td class="addr">192.168.50.210</td>
+            <td class="addr">hxs-11.hx.local.arpa</td>
+            <td>238.5 GB<span class="qual">NVMe, sole device, aftermarket</span></td>
+            <td>Core i5-7500<span class="qual">4 cores / 4 threads</span></td>
+            <td class="absent">none &mdash; Intel HD 630 integrated</td>
+            <td class="vram absent">&mdash;</td>
+            <td>32 GB<span class="qual">DDR4 2400 MT/s, non-ECC</span></td>
+          </tr>
+
+          <tr class="tier-sff">
+            <td class="host">hxs-12</td>
+            <td class="addr">192.168.50.211</td>
+            <td class="addr">hxs-12.hx.local.arpa</td>
+            <td>238.5 GB<span class="qual">NVMe, sole device</span></td>
+            <td>Core i5-7500<span class="qual">4 cores / 4 threads</span></td>
+            <td class="absent">none &mdash; Intel HD 630 integrated</td>
+            <td class="vram absent">&mdash;</td>
+            <td>32 GB<span class="qual">DDR4 2400 MT/s, non-ECC</span></td>
+          </tr>
+
+          <tr class="tier-sff">
+            <td class="host">hxs-13</td>
+            <td class="addr">192.168.50.212</td>
+            <td class="addr">hxs-13.hx.local.arpa</td>
+            <td>238.5 GB<span class="qual"><span class="mark">SATA SSD</span>, sole device</span></td>
+            <td>Core i5-6500<span class="qual">4 cores / 4 threads, <span class="mark">Skylake</span></span></td>
+            <td class="absent">none &mdash; Intel HD 530 integrated</td>
+            <td class="vram absent">&mdash;</td>
+            <td>32 GB<span class="qual">DDR4 2133 MT/s, non-ECC</span></td>
+          </tr>
+
+          <tr class="tier-sff">
+            <td class="host">hxs-14</td>
+            <td class="addr">192.168.50.213</td>
+            <td class="addr">hxs-14.hx.local.arpa</td>
+            <td>238.5 GB<span class="qual">NVMe, sole device, aftermarket</span></td>
+            <td>Core i5-7500<span class="qual">4 cores / 4 threads</span></td>
+            <td class="absent">none &mdash; Intel HD 630 integrated</td>
+            <td class="vram absent">&mdash;</td>
+            <td>32 GB<span class="qual">DDR4 2400 MT/s, non-ECC</span></td>
+          </tr>
+
+          <tr class="tier-sff">
+            <td class="host">hxs-15</td>
+            <td class="addr">192.168.50.214</td>
+            <td class="addr">hxs-15.hx.local.arpa</td>
+            <td>238.5 GB<span class="qual">NVMe, sole device, aftermarket</span></td>
+            <td>Core i5-7500<span class="qual">4 cores / 4 threads, <span class="mark">no VT-x</span></span></td>
+            <td class="absent">none &mdash; Intel HD 630 integrated</td>
+            <td class="vram absent">&mdash;</td>
+            <td>32 GB<span class="qual">DDR4 2400 MT/s, non-ECC</span></td>
+          </tr>
+        </tbody>
+
+        <tfoot>
+          <tr>
+            <td class="label">15 fleet servers</td>
+            <td colspan="2"></td>
+            <td>~29 TB</td>
+            <td>110 cores / 134 threads</td>
+            <td>8 discrete GPUs</td>
+            <td class="vram">122,458 MiB</td>
+            <td>595.8 GB</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>What the table shows</h2>
+    <div class="findings">
+      <div class="finding flagged">
+        <h3>The control plane has no wired network</h3>
+        <p><code>wlp0s20f3</code> is the only interface on hxs-cp &mdash; there is no Ethernet port present, not merely one left unplugged. Every SSH path to all fifteen fleet servers runs over a single Wi-Fi link.</p>
+      </div>
+      <div class="finding flagged">
+        <h3>The control plane is a laptop</h3>
+        <p>An HP Elite x360 1040 G9 convertible. Its memory is soldered at 15.8 GB and cannot be expanded, and suspend-on-lid behaviour has not been checked &mdash; both matter for a host expected to stay reachable.</p>
+      </div>
+      <div class="finding">
+        <h3>Compute is concentrated on four hosts</h3>
+        <p>All 8 discrete GPUs and all 122,458 MiB of VRAM sit on hxs-1 through hxs-4. The other eleven have integrated graphics only, suitable for console output rather than compute.</p>
+      </div>
+      <div class="finding">
+        <h3>So is storage</h3>
+        <p>Of roughly 29 TB installed, about 26 TB is on those same four hosts, most of it unallocated. The eleven small form factor hosts carry one device each that is also the boot disk.</p>
+      </div>
+      <div class="finding">
+        <h3>No expansion path on eleven hosts</h3>
+        <p>Every small form factor host is a 35 W or 65 W desktop-mini chassis: no spare drive, no free bay, no PCIe slot. Two free DIMM slots on hxs-7 and hxs-8 are the only physical upgrade available in that group.</p>
+      </div>
+      <div class="finding">
+        <h3>VRAM figures are measured</h3>
+        <p>Each is reported by <code>nvidia-smi</code> after the approved driver install, and agrees with the value the kernel reported before any vendor driver was present.</p>
+      </div>
+      <div class="finding flagged">
+        <h3>hxs-4 GPUs are mismatched</h3>
+        <p>16311 MiB and 8151 MiB in the same host. Any work assuming matched devices is constrained by the smaller card.</p>
+      </div>
+      <div class="finding flagged">
+        <h3>hxs-15 cannot host a hypervisor</h3>
+        <p>VT-x is not exposed to the operating system &mdash; the only host in fifteen. The silicon supports it, so the cause is firmware. Tracked as <code>iss-011</code>.</p>
+      </div>
+      <div class="finding flagged">
+        <h3>hxs-13 is not a drop-in equivalent</h3>
+        <p>It shares a model name with five other hosts but runs a Skylake CPU, older graphics, slower memory and a SATA boot device rather than NVMe.</p>
+      </div>
+      <div class="finding">
+        <h3>No ECC, no out-of-band management</h3>
+        <p>Memory is non-ECC on every server, and no host has a baseboard management controller, so there is no out-of-band recovery path anywhere in the fleet.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Sources</h2>
+    <div class="sources">
+      <div><span>Hardware</span><span><code>servers/hxs-1</code> &hellip; <code>servers/hxs-15</code> &mdash; each <code>discovery.md</code>, plus <code>driver-results.md</code> on the four GPU hosts</span></div>
+      <div><span>Comparison</span><span><code>SERVER-REGISTRY.md</code></span></div>
+      <div><span>Control plane</span><span><code>governance/design/hx-fleet-control-server.md</code>, <code>servers/hxs-cp/pre-work-results.md</code></span></div>
+      <div><span>DNS</span><span><code>governance/operations/dns-fqdn/hx-local-dns-and-fqdn-access.md</code></span></div>
+      <div><span>Open items</span><span><code>governance/logs/actions-and-issues.md</code></span></div>
+    </div>
+  </section>
+
+  <footer>
+    HX-Infrastructure &middot; compiled 2026-08-13 &middot; <code>SERVER-REGISTRY.md</code> is authoritative if the two ever disagree.
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById('theme-toggle');
+  if (!btn) { return; }
+
+  var media = window.matchMedia('(prefers-color-scheme: dark)');
+
+  // Reading storage throws in some sandboxed contexts, so every access is guarded.
+  function stored(value) {
+    try {
+      if (value === undefined) { return localStorage.getItem('hx-theme'); }
+      localStorage.setItem('hx-theme', value);
+    } catch (e) { /* no persistence available; the toggle still works for this view */ }
+    return null;
+  }
+
+  // No explicit attribute means the OS preference is in charge.
+  function active() {
+    var explicit = root.getAttribute('data-theme');
+    if (explicit === 'dark' || explicit === 'light') { return explicit; }
+    return media.matches ? 'dark' : 'light';
+  }
+
+  // The label names the destination, so the button says what pressing it does.
+  function relabel() {
+    var next = active() === 'dark' ? 'light' : 'dark';
+    btn.textContent = next === 'dark' ? 'Dark mode' : 'Light mode';
+    btn.setAttribute('aria-label', 'Switch to ' + next + ' mode');
+  }
+
+  var saved = stored();
+  if (saved === 'dark' || saved === 'light') { root.setAttribute('data-theme', saved); }
+  relabel();
+
+  btn.addEventListener('click', function () {
+    var next = active() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    stored(next);
+    relabel();
+  });
+
+  // Follow the OS while no explicit choice has been made.
+  if (typeof media.addEventListener === 'function') {
+    media.addEventListener('change', relabel);
+  }
+
+  // The artifact viewer stamps data-theme too; keep the label truthful when it does.
+  if (typeof MutationObserver === 'function') {
+    new MutationObserver(relabel).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  }
+})();
+</script>

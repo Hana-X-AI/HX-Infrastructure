@@ -1,0 +1,309 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Docling Distillation Pilot — Report</title>
+<style>
+:root{--bg:#ffffff;--panel:#f6f8fa;--panel2:#eef1f4;--bd:#d0d7de;--fg:#1f2328;--dim:#59636e;
+--acc:#0969da;--ok:#1a7f37;--warn:#9a6700;--stop:#cf222e}
+:root[data-theme="dark"]{--bg:#0d1117;--panel:#161b22;--panel2:#1c2129;--bd:#30363d;--fg:#e6edf3;
+--dim:#8b949e;--acc:#58a6ff;--ok:#3fb950;--warn:#d29922;--stop:#f85149}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1117;--panel:#161b22;
+--panel2:#1c2129;--bd:#30363d;--fg:#e6edf3;--dim:#8b949e;--acc:#58a6ff;--ok:#3fb950;--warn:#d29922;--stop:#f85149}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.62 -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.wrap{max-width:1060px;margin:0 auto;padding:28px 22px 80px}
+header.hero{border:1px solid var(--bd);border-radius:14px;background:var(--panel);padding:24px 26px;margin-bottom:20px}
+.hero h1{margin:0 0 6px;font-size:23px}
+.hero .sub{color:var(--dim);font-size:14px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.meta span{background:var(--panel2);border:1px solid var(--bd);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--dim)}
+.meta b{color:var(--fg)}
+h2{font-size:18px;margin:30px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--bd)}
+h2 .k{color:var(--acc);font-weight:700;margin-right:8px}
+h3{font-size:15px;margin:20px 0 6px}
+p{margin:8px 0}
+code{background:var(--panel2);border:1px solid var(--bd);border-radius:5px;padding:1px 5px;font:12.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace}
+pre{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto;font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:8px 0;min-width:520px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--bd);vertical-align:top}
+th{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.5px;background:var(--panel)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+.callout{border-left:4px solid var(--acc);background:var(--panel);border-radius:0 10px 10px 0;padding:13px 17px;margin:14px 0}
+.callout.stop{border-left-color:var(--stop)}.callout.ok{border-left-color:var(--ok)}.callout.warn{border-left-color:var(--warn)}
+.callout h3{margin:0 0 5px;font-size:14.5px}
+.callout p{margin:0 0 6px;font-size:13.5px;color:var(--dim)}.callout p:last-child{margin-bottom:0}
+.pass{color:var(--ok);font-weight:700}.fail{color:var(--stop);font-weight:700}.warnt{color:var(--warn);font-weight:700}
+ul.tight{margin:6px 0 0;padding-left:20px;font-size:14px}
+ul.tight li{margin:5px 0}
+ol{font-size:14px}ol li{margin:5px 0}
+.foot{color:var(--dim);font-size:12px;margin-top:36px;border-top:1px solid var(--bd);padding-top:16px}
+#themeToggle{position:fixed;top:14px;right:14px;z-index:99;background:var(--panel);color:var(--fg);
+border:1px solid var(--bd);border-radius:20px;padding:7px 14px;font-size:12.5px;cursor:pointer;font-family:inherit}
+#themeToggle:hover{border-color:var(--acc);color:var(--acc)}
+</style></head><body>
+<button id="themeToggle" type="button">◐ Theme</button>
+<div class="wrap">
+
+<header class="hero">
+<h1>Docling Distillation Pilot — Report</h1>
+<div class="sub">Document-only migration pilot. Distilled 195 files from the 2025 Docling node into one target-state design. No infrastructure was touched.</div>
+<div class="meta">
+<span>Run by <b>Claude Opus 5</b></span>
+<span>Date <b>2026-08-13</b></span>
+<span>Branch <b>migration/docling-pilot</b></span>
+<span>Deliverable <b>services/docling-mcp/service.md</b></span>
+<span>Result <b class="pass">Draft returned</b></span>
+</div></header>
+
+<div class="callout stop"><h3>SUPERSEDED — 2026-08-13</h3>
+<p>This is the <b>first-pass</b> pilot report. It has been superseded by
+<code>Claude-Opus-5_2026-08-13_docling-corrective-pass-report.html</code>. Two things in it are now known wrong and are
+corrected there:</p>
+<p><b>Coverage.</b> The 120 / 75 split reported below was inflated by five rows a loose
+generator pattern swept in. The accurate figures are <b>115 contributed / 80
+reviewed-not-used</b>.</p>
+<p><b>Protocol framework.</b> The design at the time described a FastMCP server. Current
+upstream (v3.0.0) uses the MCP Python SDK v2, not FastMCP.</p>
+<p>Kept as the record of what pass one produced. Do not cite it as current.</p></div>
+
+<div class="callout warn"><h3>Read this first</h3>
+<p>The design document is a <b>draft pending review</b>. It does not claim a multi-specialist
+sign-off, because no current specialist contract exists in this repository for any of the three
+required reviewers. Nothing in it asserts that Docling is installed, configured or reachable.</p></div>
+
+<h2><span class="k">1</span>Pre-flight</h2>
+<p>Two of the five conditions failed against the brief as written. You resolved all three open
+points on 2026-08-13: the standing waiver holds, the read source is the live org repository, and
+the ledger identity is re-pinned to the file that actually exists.</p>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>Condition</th><th>Result</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Owner decisions committed</td><td class="pass">PASS</td><td>Ansible excluded (<code>GOALS-AND-OBJECTIVES.md:76</code>); phase gate retired as a control (<code>:44</code>); registry carries 15 rows with no empty role</td></tr>
+<tr><td>2</td><td>Frozen ledger identity</td><td class="fail">FAIL → re-pinned</td><td>The pinned path and hash match no file in either repository. Re-pinned by owner decision</td></tr>
+<tr><td>3</td><td>Sanitized historical source</td><td class="fail">FAIL → waived</td><td><code>legacy/2025-sanitized</code> has never existed; the org repository holds exactly one ref, <code>refs/heads/main</code></td></tr>
+<tr><td>4</td><td>Ledger scope</td><td class="pass">PASS</td><td>198 rows <code>lgc-064</code>–<code>lgc-261</code>; 3 never-open; 195 eligible. Exact</td></tr>
+<tr><td>5</td><td>Migration branch</td><td class="pass">created</td><td><code>migration/docling-pilot</code></td></tr>
+</tbody></table></div>
+
+<h3>Ledger identity — confirmation</h3>
+<pre>pinned in brief v2 : governance/migrations/legacy-2025/manifest.jsonl
+                     sha256 260091051b8b5a39b09eb8caaa4639f359b7f1d084e7afa6fd5ff8fb126805aa
+                     ── path does not exist in either repository
+
+re-pinned (owner)  : governance/reports/claude/manifestv3.jsonl
+                     sha256 9aace8476d5646b2e53f499a8d4101baa62b0470fa85c6e12e471c970d1077d6
+                     522 rows · confirmed unchanged after the run</pre>
+<p>The mismatch is not a line-ending artefact — the hash is identical after newline
+normalisation. The sibling <code>manifest.jsonl</code> hashes <code>c0e97ce7…</code>, so the
+original pin matched neither file.</p>
+
+<h2><span class="k">2</span>Where the 2025 files were read from</h2>
+<p>The 198 Docling files live under <code>nodes/hx-docling-mcp-server/</code> on
+<code>Hana-X-AI/HX-Infrastructure@main</code>. That tree holds 522 files in total — an exact
+match to the 522 ledger rows, which confirms the ledger was built against this tree and not
+against any sanitized snapshot. Every row carries <code>source_ref:
+"legacy/2025-sanitized"</code> and a null sanitized hash, so no row has ever been reconciled
+against a sanitized copy. That mislabelling is reported, not fixed.</p>
+<p>Controls applied while reading, per the standing waiver:</p>
+<ul class="tight">
+<li>Read through the GitHub API into working memory only. <b>No legacy file was written to
+disk</b> and none was copied into this repository.</li>
+<li><code>lgc-134</code>, <code>lgc-260</code> and <code>lgc-261</code> were never opened. Their
+provenance entries record no read source at all.</li>
+<li>No literal value from any row flagged as carrying secrets was transcribed into notes or
+output. Credentials are referred to by identifier only.</li>
+<li><code>legacy-secret-002</code> stays inspect-only and appears in no configuration the design
+describes.</li>
+</ul>
+
+<h2><span class="k">3</span>Coverage — all 198 rows accounted for</h2>
+<div class="tw"><table>
+<thead><tr><th>State</th><th>Rows</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td class="mono">used</td><td>120</td><td>Content read and distilled into a named section of the design</td></tr>
+<tr><td class="mono">reviewed-not-used</td><td>75</td><td>Reviewed at file-inventory level; the shape informed the design but no distinct content was carried</td></tr>
+<tr><td class="mono">blocked</td><td>3</td><td>Never opened — <code>lgc-134</code>, <code>lgc-260</code>, <code>lgc-261</code></td></tr>
+<tr><td><b>Total</b></td><td><b>198</b></td><td>Matches the ledger scope exactly</td></tr>
+</tbody></table></div>
+<p>The 75 reviewed-not-used rows are mostly individual task and test-case files. Their
+<i>names</i> encode the implementation shape and that shape did inform the design — the task
+list is what revealed the vector-store drift described below — but no individual file
+contributed distinct content, so they are not claimed as distilled.</p>
+<p>Written to <code>governance/reports/claude/provenance-index.jsonl</code>, the location the v3
+manifest specifies. Every historical row keeps <code>migration_status: pending</code>. No
+disposition was changed, no schema was altered, no row was re-classified.</p>
+
+<h2><span class="k">4</span>Integration classifications</h2>
+<p>Each integration was classified before any contract was written. Two classifications reverse
+what the 2025 material implies, and both reversals are backed by that material's own correction
+record.</p>
+<div class="tw"><table>
+<thead><tr><th>Integration</th><th>Host</th><th>Class</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td>LightRAG</td><td>hxs-3</td><td class="pass">CURRENT REQUIRED</td><td>Parsed text must reach graph building. <b>Direction and transport unresolved</b> — the most consequential open item</td></tr>
+<tr><td>Qdrant</td><td>hxs-4</td><td class="warnt">INDIRECT</td><td>Reached through LightRAG, which owns the collections. Direct access was ruled out in 2025 and the implementation drifted back to it anyway</td></tr>
+<tr><td>Embeddings / reranker</td><td>hxs-4</td><td class="warnt">INDIRECT</td><td>A current hxs-4 capability. Docling does not embed</td></tr>
+<tr><td>LiteLLM gateway</td><td>hxs-8</td><td class="dim">LEGACY CANDIDATE</td><td>Docling called it because Docling ran entity extraction. That work now belongs to hxs-3. Parsing needs no language model</td></tr>
+<tr><td>Redis</td><td>hxs-9</td><td class="dim">LEGACY CANDIDATE</td><td>Upstream has no Redis integration; its cache is in-process. The 2025 shared cache was an addition</td></tr>
+<tr><td>PostgreSQL</td><td>hxs-9</td><td class="dim">LEGACY CANDIDATE</td><td>Metadata storage never became part of the parsing role</td></tr>
+<tr><td>FastMCP runtime</td><td>hxs-7</td><td class="fail">VERIFICATION REQUIRED</td><td>A current fleet role, so none of the four legacy classes apply. The compose-or-direct decision is not recorded anywhere</td></tr>
+</tbody></table></div>
+
+<h2><span class="k">5</span>The single most shaping current fact</h2>
+<div class="callout stop"><h3>hxs-12 has no GPU</h3>
+<p>Docling's assigned host carries an Intel HD Graphics 630 integrated adapter and nothing else.
+No NVIDIA, AMD, NPU or other accelerator; no CUDA or driver package installed. It has 4 cores
+with no hyper-threading, 32 GB of non-ECC memory, and a single 238.5 GB disk with no second
+device and no spare capacity.</p>
+<p>Everything in the design touching OCR, vision models or throughput follows from this. The
+pipeline's accelerator setting resolves to CPU. Vision-model features are available but are not
+enabled by default. No model-serving runtime becomes a Docling dependency, and no GPU toolchain
+pinning appears anywhere in the document.</p></div>
+
+<h2><span class="k">6</span>Specialist sign-off</h2>
+<div class="tw"><table>
+<thead><tr><th>Reviewer</th><th>Required</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td class="mono">docling-mcp</td><td>Yes</td><td class="fail">SME REVIEW REQUIRED — no current contract exists</td></tr>
+<tr><td class="mono">infrastructure-ops</td><td>Yes</td><td class="fail">SME REVIEW REQUIRED — no current contract exists</td></tr>
+<tr><td class="mono">testing-qa</td><td>Yes</td><td class="fail">SME REVIEW REQUIRED — no current contract exists</td></tr>
+<tr><td class="mono">litellm / qdrant / redis / lightrag</td><td>Only if CURRENT REQUIRED</td><td>Not triggered — none classified CURRENT REQUIRED except LightRAG, whose contract shape is unresolved</td></tr>
+</tbody></table></div>
+<p><b>Dependency:</b> no specialist agent contracts exist in this repository. The 2025 material
+names reviewers who signed off on the original design; those are historical evidence and were
+not treated as current sign-off. <code>reviewed_by</code> is empty on every provenance entry
+rather than populated with names that did not review this document.</p>
+
+<h2><span class="k">7</span>What needs deciding — 20 items</h2>
+<p>Full list in the design document. Grouped here by what blocks what:</p>
+<h3>Blocks any implementation</h3>
+<ol>
+<li>Direction and transport of the Docling → LightRAG handoff.</li>
+<li>Relationship with the FastMCP runtime on hxs-7 — compose and proxy, direct, or both.</li>
+<li>The authoritative tool surface, given three incompatible inherited inventories.</li>
+<li>Listen port, bind address and transport (2 and 3 gate these).</li>
+</ol>
+<h3>Blocks a working install</h3>
+<ol start="5">
+<li>Exact native library package names on Ubuntu 24.04 — the pre-24.04 name no longer exists.</li>
+<li>Interpreter and dependency versions, with upper bounds declared.</li>
+<li>Service root, cache path, and a cache size bound against a single 238 GB disk.</li>
+<li>Service account identity, and whether it is local or directory-integrated.</li>
+</ol>
+<h3>Needs measurement on this host</h3>
+<ol start="9">
+<li>OCR on or off by default — materially expensive with no GPU.</li>
+<li>Concurrency, worker counts and timeouts.</li>
+<li>Maximum document size.</li>
+<li>Coverage thresholds.</li>
+</ol>
+<h3>Open decisions carried forward</h3>
+<ol start="13">
+<li>Health check mechanism — upstream ships none.</li>
+<li>Whether any shared cache or session store is wanted.</li>
+<li>Which tool groups are enabled.</li>
+<li>Virtual environment or system interpreter.</li>
+<li>Log retention bound.</li>
+<li>Circuit-breaker acceptance criterion (deferred in 2025).</li>
+<li>Schema versioning approach (deferred in 2025).</li>
+<li>All three specialist reviews.</li>
+</ol>
+
+<h2><span class="k">8</span>Size and condensation</h2>
+<p><b>4,548 words</b>, against a guide of roughly 6,000–8,000. The rule is a ceiling, so coming
+in under it is the intended direction. Three things were deliberately compressed rather than
+carried:</p>
+<ul class="tight">
+<li><b>The 74 task files became structure, not prose.</b> Their sequence is the implementation
+shape; the step logs inside them are not design content. One substantive finding did come out
+of them — see below.</li>
+<li><b>The 57 test files became five group names and a set of coverage disciplines.</b> Old test
+counts and the old suite are explicitly not carried; the brief required re-baselining.</li>
+<li><b>27 defects became a 13-row lesson table plus targeted constraints.</b> Each is one line
+with a traceable identifier rather than a reproduced narrative.</li>
+</ul>
+<p>Nothing was dropped for length. What is absent is absent because it was 2025 environment
+state, not because it would not fit.</p>
+
+<h2><span class="k">9</span>Findings worth your attention</h2>
+<div class="callout stop"><h3>The tool surface was never settled</h3>
+<p>Three mutually incompatible inventories exist: the node README lists 21 tool names, the
+upstream package ships 19 different ones, and the HX specification defines a third set of 19.
+The 2025 functional tests were written against the README naming — so they did not test the
+tools the package actually ships. Only the upstream inventory was established by reading the
+package source. This is flagged as the least safe part of the inherited design to copy
+forward.</p></div>
+<div class="callout stop"><h3>The implementation drifted back to a design decision that had been reversed</h3>
+<p>The 2025 gap analysis recorded a critical conflict — Docling was not to install LightRAG
+locally — and a collection-ownership conflict with the separate LightRAG service. Both were
+corrected. Yet the task breakdown still contains a direct vector-store client, collection
+initialisation, entity and relationship insertion, payload indexes and vector search. The
+correction was made in the design and lost in the build. That is precisely why Qdrant is
+classified INDIRECT rather than inherited as a direct contract.</p></div>
+<div class="callout warn"><h3>Two safety defects worth remembering</h3>
+<p>A redaction pattern for bearer tokens had no capture group for the bearer form, so the
+substitution failed and <b>the token was not redacted at all</b> — a redactor that silently did
+nothing. Separately, the model cache failed with permission denied because the service unit's
+sandboxing hid the very directory the default cache path pointed at. Both are carried as
+constraints, neither as a hardening proposal.</p></div>
+
+<h2><span class="k">10</span>Deviations declared</h2>
+<div class="callout warn"><h3>No approved secret scanner exists in this repository</h3>
+<p><code>.claude/hooks/</code> contains no guard, and the password guard named in
+<code>iss-012</code> is gone. The two known values are also, correctly, recorded nowhere — so
+they could not be supplied to a scanner even ephemerally.</p>
+<p><b>Substituted control, which is structurally stronger than scanning after the fact:</b> the
+document is authored from extracted meaning, never copied text, so no literal from a
+secret-bearing row can reach it. That is backed by a pattern scan of the output covering
+assignment forms, key prefixes, bearer literals, JWT shapes, private-key blocks, vault markers
+and high-entropy strings. All returned zero.</p></div>
+<div class="callout warn"><h3>One tool fetch was auto-persisted by the harness</h3>
+<p>A single batched fetch of the charter files exceeded the inline output limit and the harness
+wrote it to its own session results directory. That is outside this repository and outside git
+objects, but it is a copy of legacy text on disk that I did not intend to create, so it is
+recorded here rather than left unmentioned. Every later fetch was reduced in-shell to stay
+under the limit.</p></div>
+
+<h2><span class="k">11</span>Ledger observations — reported, not fixed</h2>
+<p>v3 is frozen. These were noticed during the run and are recorded for whoever reconciles it:</p>
+<ul class="tight">
+<li>All 416 rows with a <code>distill</code> transform carry both a <code>target_path</code>
+<i>and</i> a <code>distill_target</code>. An executor following <code>target_path</code>
+literally would write 1:1 copies of historical files.</li>
+<li>All 522 rows name <code>source_ref: "legacy/2025-sanitized"</code>, a ref that has never
+existed, with <code>sanitized_sha256</code> null throughout.</li>
+<li><code>lgc-046</code> targets <code>governance/constitution.md</code> with a
+merge-into-current transform; that file exists in neither repository.</li>
+<li>Seven rows point at <code>governance/documentation-standards.md</code> and
+<code>governance/lessons-learned.md</code>, which moved into <code>governance/policy/</code>
+and <code>governance/logs/</code> on 2026-08-13.</li>
+<li>Brief §5 says "a further 20 rows are confirmed" — 20 is the scope total, and all three
+never-open rows are themselves confirmed, so the further count is 17. The 22 inspect rows are
+exact.</li>
+<li>Brief §7's defect identifiers were all checked against the ledger and are correct.</li>
+</ul>
+
+<h2><span class="k">12</span>Limits honoured</h2>
+<p>No SSH. No package installation. No service or server configuration. No deployment. No change
+to <code>SERVER-REGISTRY.md</code> or any assigned role. No infrastructure mutation of any kind.
+Nothing was pushed anywhere. The ledger hash is unchanged after the run. Three files are new in
+the working tree and no file from the 2025 tree appears in this repository.</p>
+<p><code>iss-012</code> — rotation of the two exposed credentials — remains outstanding. This
+pilot neither closed it nor depended on it.</p>
+
+<div class="foot">Docling distillation pilot · document-only migration mode · executed on branch
+<code>migration/docling-pilot</code> · ledger re-pinned to <code>manifestv3.jsonl</code> @
+<code>9aace847…</code> (522 rows; Docling scope <code>lgc-064</code>–<code>lgc-261</code>, 195
+content-eligible) · nothing implemented, nothing deployed.</div>
+</div>
+<script>
+(function(){
+ var b=document.getElementById('themeToggle'),r=document.documentElement;
+ function cur(){var e=r.getAttribute('data-theme');if(e)return e;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
+ function set(t){r.setAttribute('data-theme',t);b.textContent=t==='dark'?'☀ Light':'☾ Dark';}
+ set(cur());
+ b.addEventListener('click',function(){set(cur()==='dark'?'light':'dark');});
+})();
+</script>
+</body></html>

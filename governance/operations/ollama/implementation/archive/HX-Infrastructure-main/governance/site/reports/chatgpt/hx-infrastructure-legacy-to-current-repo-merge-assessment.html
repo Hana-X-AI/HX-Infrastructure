@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HX-Infrastructure Legacy-to-Current Repository Merge Assessment</title>
+<style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+
+  
+  <style>
+:root {
+  color-scheme: dark;
+  --bg: #0b0f14;
+  --panel: #111821;
+  --panel-2: #151e29;
+  --text: #dce6f2;
+  --muted: #94a3b8;
+  --line: #263445;
+  --accent: #69b7ff;
+  --accent-2: #8ce0c3;
+  --warn: #f1c36d;
+  --danger: #ff8b8b;
+  --ok: #8ce0a3;
+}
+html { background: var(--bg); }
+body {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 48px 54px 96px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.62;
+  font-size: 16px;
+}
+header#title-block-header {
+  background: linear-gradient(135deg, #121c28, #0e141d);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 28px 34px;
+  margin-bottom: 28px;
+  box-shadow: 0 18px 60px rgba(0,0,0,.28);
+}
+h1.title { color: #f3f7fb; margin-top: 0; letter-spacing: -.02em; }
+p.author, p.date { color: var(--muted); margin: .25rem 0; }
+nav#TOC {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px 26px;
+  margin: 24px 0 42px;
+}
+nav#TOC > ul { columns: 2; column-gap: 42px; }
+nav#TOC li { break-inside: avoid; margin: 4px 0; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1, h2, h3, h4 { color: #f0f6fc; line-height: 1.22; }
+h1 { font-size: 2.1rem; margin-top: 2.4em; border-bottom: 1px solid var(--line); padding-bottom: .4em; }
+h2 { font-size: 1.55rem; margin-top: 2.1em; }
+h3 { font-size: 1.2rem; margin-top: 1.8em; color: #d8e8fa; }
+blockquote {
+  margin: 24px 0;
+  padding: 15px 20px;
+  border-left: 4px solid var(--accent);
+  background: var(--panel-2);
+  color: #e9f4ff;
+  border-radius: 0 10px 10px 0;
+}
+code {
+  background: #17212c;
+  color: #bfe1ff;
+  padding: .13em .35em;
+  border-radius: 5px;
+  font-size: .92em;
+}
+pre {
+  background: #0e151d;
+  color: #cfdeeb;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+  overflow-x: auto;
+  line-height: 1.48;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.015);
+}
+pre code { background: transparent; padding: 0; color: inherit; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 22px 0 32px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  display: table;
+}
+th, td { border: 1px solid var(--line); padding: 10px 12px; vertical-align: top; }
+th { background: #172231; color: #eef6ff; text-align: left; }
+tr:nth-child(even) td { background: rgba(255,255,255,.018); }
+strong { color: #f4f8fc; }
+ul, ol { padding-left: 1.45em; }
+li { margin: .35em 0; }
+hr { border: 0; border-top: 1px solid var(--line); margin: 42px 0; }
+@media (max-width: 800px) {
+  body { padding: 24px 20px 64px; }
+  nav#TOC > ul { columns: 1; }
+  table { display: block; overflow-x: auto; }
+}
+@media print {
+  body { max-width: none; padding: 20px; }
+  nav#TOC { break-after: page; }
+  a { color: inherit; }
+}
+
+</style>
+
+<header id="title-block-header">
+<h1 class="title">HX-Infrastructure Legacy-to-Current Repository Merge
+Assessment</h1>
+<p class="author">GPT-5.6 Sol</p>
+<p class="date">2026-08-13 10:58 America/Panama</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#executive-decision" id="toc-executive-decision">Executive
+Decision</a></li>
+<li><a href="#scope-and-sources-reviewed"
+id="toc-scope-and-sources-reviewed">1. Scope and Sources Reviewed</a>
+<ul>
+<li><a href="#legacy-project-archive"
+id="toc-legacy-project-archive">1.1 Legacy project archive</a></li>
+<li><a href="#current-local-git-repository-backup"
+id="toc-current-local-git-repository-backup">1.2 Current local Git
+repository backup</a></li>
+</ul></li>
+<li><a href="#single-repository-principle"
+id="toc-single-repository-principle">2. Single-Repository
+Principle</a></li>
+<li><a href="#current-repository-remains-infrastructure-authority"
+id="toc-current-repository-remains-infrastructure-authority">3. Current
+Repository Remains Infrastructure Authority</a>
+<ul>
+<li><a href="#current-addressing-and-fleet-model"
+id="toc-current-addressing-and-fleet-model">3.1 Current addressing and
+fleet model</a></li>
+<li><a href="#current-server-evidence-model"
+id="toc-current-server-evidence-model">3.2 Current server evidence
+model</a></li>
+<li><a href="#current-authority-documents"
+id="toc-current-authority-documents">3.3 Current authority
+documents</a></li>
+</ul></li>
+<li><a href="#current-repository-issue-that-must-remain-visible"
+id="toc-current-repository-issue-that-must-remain-visible">4. Current
+Repository Issue That Must Remain Visible</a></li>
+<li><a
+href="#revised-assessment-of-agent-zero-and-the-specialist-agent-system"
+id="toc-revised-assessment-of-agent-zero-and-the-specialist-agent-system">5.
+Revised Assessment of Agent Zero and the Specialist-Agent System</a>
+<ul>
+<li><a href="#why-the-specialist-model-should-be-retained"
+id="toc-why-the-specialist-model-should-be-retained">5.1 Why the
+specialist model should be retained</a></li>
+<li><a href="#what-should-be-preserved"
+id="toc-what-should-be-preserved">5.2 What should be preserved</a></li>
+<li><a href="#what-must-not-be-preserved-unchanged"
+id="toc-what-must-not-be-preserved-unchanged">5.3 What must not be
+preserved unchanged</a></li>
+<li><a href="#recommended-agent-migration-strategy"
+id="toc-recommended-agent-migration-strategy">5.4 Recommended agent
+migration strategy</a></li>
+</ul></li>
+<li><a href="#revised-assessment-of-legacy-.claude-commands-and-hooks"
+id="toc-revised-assessment-of-legacy-.claude-commands-and-hooks">6.
+Revised Assessment of Legacy <code>.claude</code> Commands and Hooks</a>
+<ul>
+<li><a href="#legacy-commands-recommended-disposition"
+id="toc-legacy-commands-recommended-disposition">6.1 Legacy commands:
+recommended disposition</a></li>
+<li><a href="#legacy-hooks-recommended-disposition"
+id="toc-legacy-hooks-recommended-disposition">6.2 Legacy hooks:
+recommended disposition</a></li>
+<li><a href="#quality-gates" id="toc-quality-gates">6.3 Quality
+gates</a></li>
+</ul></li>
+<li><a href="#security-and-provenance-constraints"
+id="toc-security-and-provenance-constraints">7. Security and Provenance
+Constraints</a>
+<ul>
+<li><a href="#legacy-plaintext-credential-exposure"
+id="toc-legacy-plaintext-credential-exposure">7.1 Legacy plaintext
+credential exposure</a></li>
+<li><a href="#provenance-tags" id="toc-provenance-tags">7.2 Provenance
+tags</a></li>
+</ul></li>
+<li><a href="#legacy-service-knowledge-that-should-be-preserved"
+id="toc-legacy-service-knowledge-that-should-be-preserved">8. Legacy
+Service Knowledge That Should Be Preserved</a>
+<ul>
+<li><a href="#docling-mcp" id="toc-docling-mcp">8.1 Docling MCP</a></li>
+<li><a href="#langgraph-hx-lang-server"
+id="toc-langgraph-hx-lang-server">8.2 LangGraph /
+hx-lang-server</a></li>
+</ul></li>
+<li><a href="#legacy-top-level-disposition-matrix"
+id="toc-legacy-top-level-disposition-matrix">9. Legacy Top-Level
+Disposition Matrix</a></li>
+<li><a href="#proposed-merged-repository-structure"
+id="toc-proposed-merged-repository-structure">10. Proposed Merged
+Repository Structure</a>
+<ul>
+<li><a href="#why-this-structure-works"
+id="toc-why-this-structure-works">10.1 Why this structure works</a></li>
+</ul></li>
+<li><a href="#proposed-agent-file-contract"
+id="toc-proposed-agent-file-contract">11. Proposed Agent File
+Contract</a></li>
+<li><a href="#proposed-agent-zero-operating-contract"
+id="toc-proposed-agent-zero-operating-contract">12. Proposed Agent Zero
+Operating Contract</a></li>
+<li><a href="#recommended-merge-sequence"
+id="toc-recommended-merge-sequence">13. Recommended Merge Sequence</a>
+<ul>
+<li><a href="#stage-0-protect-the-current-repository"
+id="toc-stage-0-protect-the-current-repository">Stage 0 — protect the
+current repository</a></li>
+<li><a href="#stage-1-create-empty-target-boundaries"
+id="toc-stage-1-create-empty-target-boundaries">Stage 1 — create empty
+target boundaries</a></li>
+<li><a href="#stage-2-reconstruct-agent-zero-and-core-specialists"
+id="toc-stage-2-reconstruct-agent-zero-and-core-specialists">Stage 2 —
+reconstruct Agent Zero and core specialists</a></li>
+<li><a href="#stage-3-reconstruct-high-value-technology-smes"
+id="toc-stage-3-reconstruct-high-value-technology-smes">Stage 3 —
+reconstruct high-value technology SMEs</a></li>
+<li><a href="#stage-4-migrate-docling-knowledge"
+id="toc-stage-4-migrate-docling-knowledge">Stage 4 — migrate Docling
+knowledge</a></li>
+<li><a href="#stage-5-migrate-langgraph-knowledge"
+id="toc-stage-5-migrate-langgraph-knowledge">Stage 5 — migrate LangGraph
+knowledge</a></li>
+<li><a href="#stage-6-evaluate-legacy-commands-and-hooks-individually"
+id="toc-stage-6-evaluate-legacy-commands-and-hooks-individually">Stage 6
+— evaluate legacy commands and hooks individually</a></li>
+<li><a href="#stage-7-evaluate-remaining-specialist-catalogue"
+id="toc-stage-7-evaluate-remaining-specialist-catalogue">Stage 7 —
+evaluate remaining specialist catalogue</a></li>
+<li><a href="#stage-8-consolidate-and-remove-transitional-duplication"
+id="toc-stage-8-consolidate-and-remove-transitional-duplication">Stage 8
+— consolidate and remove transitional duplication</a></li>
+</ul></li>
+<li><a href="#merge-acceptance-criteria"
+id="toc-merge-acceptance-criteria">14. Merge Acceptance
+Criteria</a></li>
+<li><a href="#what-goes-what-stays-final-decision-matrix"
+id="toc-what-goes-what-stays-final-decision-matrix">15. What Goes, What
+Stays — Final Decision Matrix</a>
+<ul>
+<li><a href="#stays-as-authority" id="toc-stays-as-authority">STAYS AS
+AUTHORITY</a></li>
+<li><a href="#goes-into-the-merged-repo-after-adaptation"
+id="toc-goes-into-the-merged-repo-after-adaptation">GOES INTO THE MERGED
+REPO AFTER ADAPTATION</a></li>
+<li><a href="#does-not-go-into-the-merged-repo-as-active-truth"
+id="toc-does-not-go-into-the-merged-repo-as-active-truth">DOES NOT GO
+INTO THE MERGED REPO AS ACTIVE TRUTH</a></li>
+</ul></li>
+<li><a href="#guidance-for-any-ai-continuing-this-work"
+id="toc-guidance-for-any-ai-continuing-this-work">16. Guidance for Any
+AI Continuing This Work</a></li>
+<li><a href="#final-recommendation" id="toc-final-recommendation">17.
+Final Recommendation</a></li>
+</ul>
+</nav>
+<h1 id="executive-decision">Executive Decision</h1>
+<p><strong>Objective:</strong> converge the historical HX-Infrastructure
+project and the current HX-Infrastructure Git repository into
+<strong>one repository, one Git lineage, one authoritative
+infrastructure state, and one coordinated AI operating
+model</strong>.</p>
+<p><strong>Decision:</strong> the <strong>current Git repository remains
+the surviving repository and sole Git history</strong>. The legacy
+project is not merged as a second tree or second governance system. It
+is treated as a high-value engineering source from which
+specialist-agent capability, reusable technical knowledge, proven
+workflow patterns, tests, procedures, and lessons are selectively
+migrated.</p>
+<p>The original assessment’s blanket recommendation to exclude the
+legacy Agent Zero / 32-agent system is revised. The historical evidence
+shows that the specialist-agent model was materially useful: technology
+SMEs reviewed design decisions in their own domain, caught
+cross-technology mistakes, and reduced implementation drift. Examples
+include Ollama, Docling, LangGraph, FastAPI, PostgreSQL, Redis,
+LightRAG, n8n, FastMCP, Crawl4AI, infrastructure, architecture, and QA
+specialists working as a review and synthesis team.</p>
+<p>Therefore:</p>
+<blockquote>
+<p><strong>Preserve the specialist-agent operating pattern. Rebuild it
+under the current repository’s authority model. Do not preserve the old
+environment assumptions embedded inside those agents.</strong></p>
+</blockquote>
+<p>The same principle applies to the legacy <code>.claude</code>
+commands, hooks, and quality gates. They should no longer be categorized
+as a single “do not merge” block. They should be <strong>evaluated
+asset-by-asset</strong> and either retained, adapted, replaced by an
+existing current mechanism, or retired.</p>
+<p>No physical merge or configuration change is authorized by this
+report. This remains a <strong>planning and repository-design
+assessment</strong>.</p>
+<h1 id="scope-and-sources-reviewed">1. Scope and Sources Reviewed</h1>
+<h2 id="legacy-project-archive">1.1 Legacy project archive</h2>
+<p>Source archive:</p>
+<p><code>HX-Infrastructure-main.zip</code></p>
+<p>The extracted project contains 522 files, of which 504 are Markdown
+documents. Major areas include:</p>
+<ul>
+<li>root governance and project documents;</li>
+<li>legacy <code>.claude/commands/</code> and
+<code>.claude/hooks/</code>;</li>
+<li><code>.quality-gates/</code>;</li>
+<li><code>hx-agents/</code> inventory and orchestration material;</li>
+<li>infrastructure inventory and network documentation;</li>
+<li>procedures, standards, templates, RAIDD, defect and status
+material;</li>
+<li>detailed <code>hx-docling-mcp-server</code> engineering
+history;</li>
+<li>detailed <code>hx-lang-server</code> engineering history.</li>
+</ul>
+<p>The legacy archive does <strong>not</strong> contain a
+<code>.git</code> directory and therefore does not carry a second Git
+history that needs to be merged.</p>
+<h2 id="current-local-git-repository-backup">1.2 Current local Git
+repository backup</h2>
+<p>Source archive:</p>
+<p><code>HX-Infrastructure-backup-2026-08-13.zip</code></p>
+<p>The extracted current repository includes:</p>
+<ul>
+<li>the active <code>.git</code> repository;</li>
+<li>current root contracts and governance;</li>
+<li>complete <code>servers/hxs-1</code> through
+<code>servers/hxs-15</code> discovery trees plus <code>hxs-cp</code>
+material;</li>
+<li>current <code>.claude/agents</code>, <code>.claude/skills</code>,
+<code>.claude/hooks</code>, and settings;</li>
+<li>current governance HTML/site generation tools;</li>
+<li>test/remediation assets;</li>
+<li>current network, DNS, fleet and architecture material.</li>
+</ul>
+<p>At review time, the current branch is <code>main</code>, HEAD is
+commit <code>70ca772</code>, and the repository contains 14 commits. The
+working tree has one untracked local Claude settings file:
+<code>.claude/settings.local.json</code>.</p>
+<h1 id="single-repository-principle">2. Single-Repository Principle</h1>
+<p>The merge must produce <strong>one active repository, not an archive
+repo nested inside a current repo</strong>.</p>
+<p>The following rules define “one repo”:</p>
+<ol type="1">
+<li><strong>One <code>.git</code> directory</strong>: the current
+repository’s <code>.git</code> survives unchanged as the repository
+lineage.</li>
+<li><strong>One infrastructure truth</strong>: current server discovery,
+current addressing, current hostname conventions, current registry, and
+current approved architecture govern.</li>
+<li><strong>One governance chain</strong>: <code>AGENTS.md</code>,
+<code>CLAUDE.md</code>, <code>GOALS-AND-OBJECTIVES.md</code>,
+<code>INFRASTRUCTURE-CONTRACT.md</code>,
+<code>SERVER-REGISTRY.md</code>, and current governance records remain
+authoritative unless intentionally changed through the current
+process.</li>
+<li><strong>One AI execution model</strong>: specialist agents may be
+numerous, but they must all inherit the same current contracts and
+routing rules.</li>
+<li><strong>One service knowledge model</strong>: reusable service
+knowledge is stored by technology/service and linked to current server
+assignments; old host-specific state does not become present state.</li>
+<li><strong>No nested legacy project tree</strong>: do not copy the full
+legacy repository into <code>archive/old-HX-Infrastructure/</code> or
+similar. That would produce two projects inside one Git repository and
+preserve conflicting truth.</li>
+</ol>
+<h1 id="current-repository-remains-infrastructure-authority">3. Current
+Repository Remains Infrastructure Authority</h1>
+<p>The current repository reflects the active fleet model and must take
+precedence over legacy environment state.</p>
+<h2 id="current-addressing-and-fleet-model">3.1 Current addressing and
+fleet model</h2>
+<p>The active fleet model is the <code>192.168.50.x</code> environment
+with <code>hxs-1</code> through <code>hxs-15</code> and
+<code>hxs-cp</code>. The currently proven fleet-control pattern includes
+explicit host/IP mapping for <code>192.168.50.200-215</code> and does
+not depend on the legacy <code>192.168.10.x</code> topology.</p>
+<p>The legacy environment uses names such as <code>hx-dc-server</code>,
+<code>hx-ca-server</code>, <code>hx-ollama1-server</code>,
+<code>hx-litellm-server</code>, and <code>hx-qdrant-server</code>,
+largely on <code>192.168.10.0/24</code>, with <code>hx.dev.local</code>
+assumptions. Those values are historical evidence only.</p>
+<p><strong>Rule:</strong> a service role can migrate; an old IP/hostname
+assignment cannot migrate without an explicit current decision.</p>
+<h2 id="current-server-evidence-model">3.2 Current server evidence
+model</h2>
+<p>The <code>servers/</code> tree is a major strength of the current
+repository. It preserves as-found discovery evidence separately from
+future configured state. This aligns with the current contract that
+<code>discovery.md</code> must not be rewritten as configured state.</p>
+<p>That model should remain intact through the merge.</p>
+<h2 id="current-authority-documents">3.3 Current authority
+documents</h2>
+<p>Retain the current root authority chain:</p>
+<ul>
+<li><code>AGENTS.md</code></li>
+<li><code>CLAUDE.md</code></li>
+<li><code>GOALS-AND-OBJECTIVES.md</code></li>
+<li><code>INFRASTRUCTURE-CONTRACT.md</code></li>
+<li><code>SERVER-REGISTRY.md</code></li>
+<li><code>governance/policy/risk-acceptances.md</code></li>
+</ul>
+<p>Legacy constitutions, charters, standards, orchestration guides, and
+quality gates may contribute ideas, but they do not override these
+documents.</p>
+<h1 id="current-repository-issue-that-must-remain-visible">4. Current
+Repository Issue That Must Remain Visible</h1>
+<p>The reviewed current materials contain an important state
+discrepancy: architecture v0.3 contains a role mapping while the
+inspected <code>SERVER-REGISTRY.md</code> still has role fields blank
+and Phase 2 remains blocked.</p>
+<p>This report does <strong>not</strong> silently resolve that
+discrepancy.</p>
+<p>Before physical service migration or Phase 2 implementation, another
+AI must determine whether:</p>
+<ul>
+<li>architecture v0.3 is approved intent awaiting registry
+synchronization;</li>
+<li>registry blank roles are deliberately preserving the Phase 1
+gate;</li>
+<li>or another owner decision is required.</li>
+</ul>
+<p>No legacy service assignment may be used to fill those roles
+automatically.</p>
+<h1
+id="revised-assessment-of-agent-zero-and-the-specialist-agent-system">5.
+Revised Assessment of Agent Zero and the Specialist-Agent System</h1>
+<h2 id="why-the-specialist-model-should-be-retained">5.1 Why the
+specialist model should be retained</h2>
+<p>The historical project shows a repeatable multi-agent pattern:</p>
+<ol type="1">
+<li>a service or node charter/specification was prepared;</li>
+<li>domain specialists reviewed only their area of expertise;</li>
+<li>each specialist produced findings, constraints, test expectations,
+and implementation concerns;</li>
+<li>Agent Zero synthesized the contributions, reconciled conflicts, and
+surfaced remaining owner decisions;</li>
+<li>the unified design then advanced to tasks and implementation.</li>
+</ol>
+<p>For <code>hx-lang-server</code>, the charter review records 12
+specialist reviews covering:</p>
+<ul>
+<li>LangGraph;</li>
+<li>FastAPI;</li>
+<li>PostgreSQL;</li>
+<li>Redis;</li>
+<li>LightRAG;</li>
+<li>Ollama;</li>
+<li>n8n;</li>
+<li>FastMCP;</li>
+<li>Crawl4AI MCP;</li>
+<li>platform architecture;</li>
+<li>infrastructure/operations;</li>
+<li>testing/quality.</li>
+</ul>
+<p>The synthesis document records explicit conflict resolution across
+memory sizing, Redis pool sizing, key namespaces, and state schema
+versioning. This is exactly the kind of domain isolation that reduces
+implementation drift.</p>
+<p>The Docling project similarly contains specialist contributions for
+Docling, FastMCP/MCP tools, LightRAG extraction, LiteLLM integration,
+infrastructure, architecture, security, and QA.</p>
+<h2 id="what-should-be-preserved">5.2 What should be preserved</h2>
+<p>Preserve these capabilities:</p>
+<ul>
+<li><strong>Agent Zero / orchestrator</strong> — task decomposition,
+specialist selection, parallel/sequential execution planning, synthesis,
+conflict detection, owner escalation, final coherence checks.</li>
+<li><strong>Platform architecture specialist</strong> — architecture
+tradeoffs, integration boundaries, ADR-quality reasoning, cross-service
+consistency.</li>
+<li><strong>Infrastructure/operations specialist</strong> —
+host/runtime/service-manager/storage/network execution constraints.</li>
+<li><strong>QA/testing specialist</strong> — testability, acceptance
+criteria, integration tests, negative tests, quality gates.</li>
+<li><strong>Technology SMEs</strong> — narrow expertise in technologies
+actually present in the approved HX stack.</li>
+<li><strong>Cross-specialist review</strong> — use multiple SMEs only
+where boundaries intersect.</li>
+<li><strong>Synthesis before implementation</strong> — disagreements are
+reconciled before an implementation agent is allowed to improvise.</li>
+</ul>
+<h2 id="what-must-not-be-preserved-unchanged">5.3 What must not be
+preserved unchanged</h2>
+<p>The legacy agent definitions contain environment-specific assumptions
+that must be stripped:</p>
+<ul>
+<li><code>192.168.10.x</code> addressing;</li>
+<li><code>hx.dev.local</code> hostnames;</li>
+<li><code>/home/agent0/HX-Infrastructure</code> absolute paths;</li>
+<li>Samba AD assumptions as universal infrastructure policy;</li>
+<li>old service-account and credential instructions;</li>
+<li>references to historical server names as currently
+authoritative;</li>
+<li>old model names or context-size assumptions unless revalidated;</li>
+<li>old tool availability assumptions;</li>
+<li>old lifecycle vocabulary that conflicts with the current repo.</li>
+</ul>
+<p>Several historical documents also disagree about agent names and
+assignments. For example, one inventory presents “Jim Patterson”
+generically, while actual LangGraph artifacts identify Jim Harper as the
+Ollama SME; another orchestration guide refers to different
+Ollama/PostgreSQL/Redis specialist names. This means the
+<strong>capabilities and proven contributions are more authoritative
+than the old personality/name registry</strong>.</p>
+<h2 id="recommended-agent-migration-strategy">5.4 Recommended agent
+migration strategy</h2>
+<p>Do not attempt a blind one-for-one copy of 32 historical
+personas.</p>
+<p>Instead:</p>
+<ul>
+<li>preserve the full <strong>32-agent inventory as a migration
+candidate catalogue</strong>;</li>
+<li>reconstruct agent profiles from actual contribution evidence and
+current stack relevance;</li>
+<li>activate a smaller high-value first wave;</li>
+<li>retain inactive specialist definitions only when they still map to
+likely HX technologies;</li>
+<li>add new specialists where the modern stack has changed, especially
+vLLM;</li>
+<li>require all migrated agents to inherit current repository
+governance.</li>
+</ul>
+<h3 id="first-wave-specialist-set">First-wave specialist set</h3>
+<p>Recommended first-wave reconstruction:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Agent capability</th>
+<th>Disposition</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Agent Zero / synthesis orchestrator</td>
+<td><strong>KEEP + REBUILD</strong></td>
+<td>Proven coordination and drift-control value</td>
+</tr>
+<tr class="even">
+<td>Platform architect</td>
+<td><strong>KEEP + REBUILD</strong></td>
+<td>Needed for cross-stack integration decisions</td>
+</tr>
+<tr class="odd">
+<td>Infrastructure/operations</td>
+<td><strong>KEEP + REBUILD</strong></td>
+<td>Needed for bare-metal/systemd/network/storage work</td>
+</tr>
+<tr class="even">
+<td>QA/testing</td>
+<td><strong>KEEP + REBUILD</strong></td>
+<td>Proven value in acceptance and regression design</td>
+</tr>
+<tr class="odd">
+<td>Ollama SME</td>
+<td><strong>KEEP + REBUILD</strong></td>
+<td>Historical value; still useful for GGUF/Ollama evaluation</td>
+</tr>
+<tr class="even">
+<td>vLLM SME</td>
+<td><strong>ADD</strong></td>
+<td>Modern stack requirement not covered adequately by old set</td>
+</tr>
+<tr class="odd">
+<td>Docling SME</td>
+<td><strong>KEEP + REBUILD</strong></td>
+<td>Strong historical implementation knowledge</td>
+</tr>
+<tr class="even">
+<td>LangGraph SME</td>
+<td><strong>KEEP + REBUILD</strong></td>
+<td>Strong historical design corpus</td>
+</tr>
+<tr class="odd">
+<td>FastMCP/MCP SME</td>
+<td><strong>KEEP + REBUILD</strong></td>
+<td>Critical integration boundary</td>
+</tr>
+<tr class="even">
+<td>LiteLLM SME</td>
+<td><strong>KEEP + REBUILD IF APPROVED STACK</strong></td>
+<td>Useful routing/proxy specialization</td>
+</tr>
+<tr class="odd">
+<td>PostgreSQL SME</td>
+<td><strong>KEEP + REBUILD</strong></td>
+<td>Persistence/checkpointing expertise</td>
+</tr>
+<tr class="even">
+<td>Redis SME</td>
+<td><strong>KEEP + REBUILD</strong></td>
+<td>Cache/session/state specialization</td>
+</tr>
+<tr class="odd">
+<td>Qdrant SME</td>
+<td><strong>KEEP + REBUILD IF APPROVED STACK</strong></td>
+<td>Vector infrastructure specialization</td>
+</tr>
+<tr class="even">
+<td>n8n SME</td>
+<td><strong>KEEP + REBUILD IF APPROVED STACK</strong></td>
+<td>Workflow integration expertise</td>
+</tr>
+<tr class="odd">
+<td>LightRAG SME</td>
+<td><strong>KEEP + REBUILD IF APPROVED STACK</strong></td>
+<td>Historical retrieval integration knowledge</td>
+</tr>
+<tr class="even">
+<td>Docker/Compose SME</td>
+<td><strong>KEEP AS CONDITIONAL</strong></td>
+<td>Useful where containerized workloads are approved</td>
+</tr>
+<tr class="odd">
+<td>Open WebUI SME</td>
+<td><strong>KEEP AS CONDITIONAL</strong></td>
+<td>Useful if retained in modern stack</td>
+</tr>
+<tr class="even">
+<td>Crawl4AI SME</td>
+<td><strong>KEEP AS CONDITIONAL</strong></td>
+<td>Useful only if service remains approved</td>
+</tr>
+<tr class="odd">
+<td>Identity/DNS/certificate SME</td>
+<td><strong>REFRAME</strong></td>
+<td>Preserve domain expertise; remove Samba/old-domain assumptions</td>
+</tr>
+<tr class="even">
+<td>Ansible SME</td>
+<td><strong>CONDITIONAL</strong></td>
+<td>Preserve expertise but do not force Ansible where native fleet
+scripts are preferred</td>
+</tr>
+</tbody>
+</table>
+<h1 id="revised-assessment-of-legacy-.claude-commands-and-hooks">6.
+Revised Assessment of Legacy <code>.claude</code> Commands and
+Hooks</h1>
+<p>The previous “do not merge raw” decision is replaced with
+<strong>evaluate and leverage where useful</strong>.</p>
+<p>The important distinction is between <strong>workflow
+knowledge</strong> and <strong>environment-specific
+enforcement</strong>.</p>
+<h2 id="legacy-commands-recommended-disposition">6.1 Legacy commands:
+recommended disposition</h2>
+<h3 id="orchestration-commands">Orchestration commands</h3>
+<p>Legacy examples:</p>
+<ul>
+<li><code>cc-agent-zero-synthesis.md</code></li>
+<li><code>cc-orchestrate-alex.md</code></li>
+<li><code>cc-orchestrate-frank.md</code></li>
+<li><code>cc-orchestrate-julia.md</code></li>
+<li><code>cc-orchestrate-william.md</code></li>
+</ul>
+<p><strong>Disposition: KEEP CONCEPT / REBUILD.</strong></p>
+<p>Convert useful orchestration logic into current
+<code>.claude/agents/</code> definitions and/or
+<code>.claude/skills/</code>. Avoid command wrappers that duplicate
+current routing contracts.</p>
+<h3 id="phaseworkflow-commands">Phase/workflow commands</h3>
+<p>Legacy examples:</p>
+<ul>
+<li>charter questions;</li>
+<li>knowledge research;</li>
+<li>defect management;</li>
+<li>test-suite generation;</li>
+<li>charter workflow;</li>
+<li>specification workflow;</li>
+<li>task workflow;</li>
+<li>project closeout workflow.</li>
+</ul>
+<p><strong>Disposition: EVALUATE / MAP INTO CURRENT SDD
+FLOW.</strong></p>
+<p>Useful phase discipline, test planning, knowledge research, and
+closeout concepts should be migrated into <code>sdd-core</code>
+conventions, <code>.specify</code> governance, current skills, or
+procedures. Do not recreate an independent charter/spec/task bureaucracy
+if the same lifecycle already exists in the current execution
+backbone.</p>
+<h3 id="utility-commands">Utility commands</h3>
+<p>Legacy examples:</p>
+<ul>
+<li>context preparation;</li>
+<li>documentation linting;</li>
+<li>handoff;</li>
+<li>quality gate;</li>
+<li>RAIDD;</li>
+<li>artifact tracking;</li>
+<li>status reporting.</li>
+</ul>
+<p><strong>Disposition: MOSTLY SALVAGEABLE AS PATTERNS.</strong></p>
+<p>Specific guidance:</p>
+<ul>
+<li><strong>context prep</strong> → high-value; adapt into current
+task/agent context loading;</li>
+<li><strong>handoff</strong> → high-value for multi-agent work; adapt
+into a structured handoff template;</li>
+<li><strong>doc lint</strong> → useful where it does not conflict with
+current HTML publishing;</li>
+<li><strong>quality gate</strong> → preserve concept, rebuild against
+current contracts;</li>
+<li><strong>RAIDD</strong> → selectively merge into current
+actions/issues/risk records rather than create a competing tracker;</li>
+<li><strong>artifact tracker</strong> → evaluate against current
+Git/governance reporting before adding;</li>
+<li><strong>status report</strong> → likely redundant if it creates
+parallel status truth; preserve only useful status-summary logic.</li>
+</ul>
+<h2 id="legacy-hooks-recommended-disposition">6.2 Legacy hooks:
+recommended disposition</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Legacy hook</th>
+<th>Recommendation</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>hx-password-guard-hook.py</code></td>
+<td><strong>REWRITE, DO NOT COPY</strong></td>
+<td>Secret-prevention intent is valuable; implementation is broken and
+historical docs already exposed credentials</td>
+</tr>
+<tr class="even">
+<td><code>hx-ip-validator-hook.py</code></td>
+<td><strong>REWRITE/ADAPT</strong></td>
+<td>IP validation can be useful, but old <code>192.168.10.x</code> rules
+are wrong for current fleet</td>
+</tr>
+<tr class="odd">
+<td><code>hx-file-location-guard-hook.py</code></td>
+<td><strong>EVALUATE + ADAPT</strong></td>
+<td>Useful if mapped to current repo structure and source-vs-generated
+artifact rules</td>
+</tr>
+<tr class="even">
+<td><code>hx-session-context-hook.py</code></td>
+<td><strong>COMPARE WITH CURRENT
+<code>hx-session-state.ps1</code></strong></td>
+<td>Likely overlapping functionality; consolidate, do not duplicate</td>
+</tr>
+<tr class="odd">
+<td><code>hx-philosophy-guard-hook.py</code></td>
+<td><strong>EXTRACT RULES, PROBABLY RETIRE CODE</strong></td>
+<td>Governance belongs in authoritative contracts; hooks should enforce
+only deterministic checks</td>
+</tr>
+<tr class="even">
+<td><code>hx-charter-path-hook.py</code></td>
+<td><strong>LIKELY RETIRE/REMAP</strong></td>
+<td>Old charter workflow is not automatically authoritative in current
+SDD model</td>
+</tr>
+</tbody>
+</table>
+<h2 id="quality-gates">6.3 Quality gates</h2>
+<p>The legacy <code>.quality-gates/</code> directory contains useful
+intent but also old policy assumptions. Preserve reusable checks such
+as:</p>
+<ul>
+<li>document placement;</li>
+<li>required references;</li>
+<li>uniqueness/duplication detection;</li>
+<li>gate completeness;</li>
+<li>secret detection;</li>
+<li>syntax validation.</li>
+</ul>
+<p>Rewrite gates to validate <strong>current contracts</strong> rather
+than legacy philosophy. A current gate must never prohibit a tool merely
+because the old project did so; it must enforce the present approved
+architecture.</p>
+<h1 id="security-and-provenance-constraints">7. Security and Provenance
+Constraints</h1>
+<h2 id="legacy-plaintext-credential-exposure">7.1 Legacy plaintext
+credential exposure</h2>
+<p>The legacy documentation contains confirmed plaintext credentials and
+credential guidance. No raw legacy file should be imported until it has
+been scanned and sanitized.</p>
+<p>Rules:</p>
+<ul>
+<li>never copy historical secret values;</li>
+<li>never preserve credential examples that look usable;</li>
+<li>redact secrets from migrated lessons;</li>
+<li>convert security incidents into lessons, not reusable
+configuration;</li>
+<li>run secret scanning on every migration commit.</li>
+</ul>
+<h2 id="provenance-tags">7.2 Provenance tags</h2>
+<p>Every migrated legacy knowledge artifact should state:</p>
+<ul>
+<li>original legacy source path;</li>
+<li>original date if known;</li>
+<li>migration date;</li>
+<li>whether the content is <strong>historical</strong>,
+<strong>adapted</strong>, or <strong>current-validated</strong>;</li>
+<li>the current authority document it must not override.</li>
+</ul>
+<p>This prevents an AI from mistaking a polished historical document for
+current infrastructure state.</p>
+<h1 id="legacy-service-knowledge-that-should-be-preserved">8. Legacy
+Service Knowledge That Should Be Preserved</h1>
+<h2 id="docling-mcp">8.1 Docling MCP</h2>
+<p>The Docling corpus is one of the strongest legacy assets. Preserve,
+sanitize, and reorganize:</p>
+<ul>
+<li>architecture and service-boundary decisions;</li>
+<li>Docling processing patterns;</li>
+<li>FastMCP/MCP integration patterns;</li>
+<li>LightRAG extraction considerations;</li>
+<li>LiteLLM integration lessons;</li>
+<li>testing strategy and failure cases;</li>
+<li>systemd/runtime lessons where still applicable;</li>
+<li>defect and remediation lessons.</li>
+</ul>
+<p>Do <strong>not</strong> import historical hostnames, IPs,
+credentials, or deployment-state claims as current state.</p>
+<h2 id="langgraph-hx-lang-server">8.2 LangGraph / hx-lang-server</h2>
+<p>Preserve and reorganize:</p>
+<ul>
+<li>LangGraph supervisor/state design;</li>
+<li>FastAPI integration patterns;</li>
+<li>PostgreSQL checkpointer lessons;</li>
+<li>Redis TTL/namespacing/pooling lessons;</li>
+<li>model routing requirements;</li>
+<li>Ollama integration and context-size questions;</li>
+<li>MCP client integration boundaries;</li>
+<li>n8n webhook/custom-node patterns;</li>
+<li>integration and quality testing methodology.</li>
+</ul>
+<p>The historical implementation was incomplete; therefore this material
+is <strong>design/research input</strong>, not evidence of a currently
+deployed LangGraph service.</p>
+<h1 id="legacy-top-level-disposition-matrix">9. Legacy Top-Level
+Disposition Matrix</h1>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Legacy area</th>
+<th>Disposition</th>
+<th>Destination/Action</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>.claude/commands/agents/</code></td>
+<td><strong>ADAPT</strong></td>
+<td>Rebuild as current agents/skills</td>
+</tr>
+<tr class="even">
+<td><code>.claude/commands/phases/</code></td>
+<td><strong>EVALUATE</strong></td>
+<td>Map useful lifecycle logic into SDD/current skills</td>
+</tr>
+<tr class="odd">
+<td><code>.claude/commands/utilities/</code></td>
+<td><strong>ADAPT SELECTIVELY</strong></td>
+<td>Context, handoff, lint, quality patterns</td>
+</tr>
+<tr class="even">
+<td><code>.claude/commands/workflows/</code></td>
+<td><strong>EVALUATE</strong></td>
+<td>Extract workflow mechanics; avoid duplicate governance</td>
+</tr>
+<tr class="odd">
+<td><code>.claude/hooks/</code></td>
+<td><strong>CASE-BY-CASE</strong></td>
+<td>Rewrite deterministic protections; retire obsolete environment
+guards</td>
+</tr>
+<tr class="even">
+<td><code>.quality-gates/</code></td>
+<td><strong>ADAPT</strong></td>
+<td>Rebuild against current contracts</td>
+</tr>
+<tr class="odd">
+<td><code>hx-agents/</code></td>
+<td><strong>PRESERVE + RECONSTRUCT</strong></td>
+<td>Agent catalogue, orchestration logic, specialist evidence</td>
+</tr>
+<tr class="even">
+<td><code>inventory/</code></td>
+<td><strong>HISTORICAL ONLY</strong></td>
+<td>Extract non-state lessons; do not import as live inventory</td>
+</tr>
+<tr class="odd">
+<td><code>network/</code></td>
+<td><strong>HISTORICAL ONLY</strong></td>
+<td>Extract troubleshooting patterns, not topology</td>
+</tr>
+<tr class="even">
+<td><code>nodes/hx-docling-mcp-server/</code></td>
+<td><strong>HIGH-VALUE KNOWLEDGE MIGRATION</strong></td>
+<td><code>knowledge/technologies/docling/</code> and future service
+area</td>
+</tr>
+<tr class="odd">
+<td><code>nodes/hx-lang-server/</code></td>
+<td><strong>HIGH-VALUE KNOWLEDGE MIGRATION</strong></td>
+<td><code>knowledge/technologies/langgraph/</code> and future service
+area</td>
+</tr>
+<tr class="even">
+<td><code>procedures/</code></td>
+<td><strong>SELECTIVE ADAPTATION</strong></td>
+<td>Current <code>procedures/</code> or skills where still useful</td>
+</tr>
+<tr class="odd">
+<td><code>standards/</code></td>
+<td><strong>SELECTIVE ADAPTATION</strong></td>
+<td>Current contracts/knowledge; no duplicate standard authority</td>
+</tr>
+<tr class="even">
+<td><code>templates/</code></td>
+<td><strong>SELECTIVE ADAPTATION</strong></td>
+<td>Keep only templates that fit current workflows</td>
+</tr>
+<tr class="odd">
+<td><code>constitution.md</code></td>
+<td><strong>EXTRACT PRINCIPLES ONLY</strong></td>
+<td>Current <code>.specify/memory/constitution.md</code> / contracts as
+appropriate</td>
+</tr>
+<tr class="even">
+<td>status/defect/RAIDD root files</td>
+<td><strong>MINE LESSONS, DO NOT IMPORT AS ACTIVE TRACKERS</strong></td>
+<td>Current actions/issues/risk processes</td>
+</tr>
+<tr class="odd">
+<td><code>df1.md</code> terminal/UI capture</td>
+<td><strong>DROP</strong></td>
+<td>No merge value</td>
+</tr>
+<tr class="even">
+<td>compiled Python cache</td>
+<td><strong>DROP</strong></td>
+<td>Generated artifact</td>
+</tr>
+<tr class="odd">
+<td>old credentials/vault references</td>
+<td><strong>DROP/REDACT</strong></td>
+<td>Never migrate secret material</td>
+</tr>
+</tbody>
+</table>
+<h1 id="proposed-merged-repository-structure">10. Proposed Merged
+Repository Structure</h1>
+<p>The following structure is the recommended <strong>target
+shape</strong>, not an implementation authorization. It intentionally
+keeps the current server/governance model while adding a disciplined
+home for specialist agents and reusable service knowledge.</p>
+<pre class="text"><code>HX-Infrastructure/
+├── .git/                                  # CURRENT repo history only
+├── .gitignore
+├── .gitattributes
+├── README.md
+├── AGENTS.md                              # repo-wide AI routing contract
+├── CLAUDE.md                              # current Claude operating contract
+├── GOALS-AND-OBJECTIVES.md
+├── INFRASTRUCTURE-CONTRACT.md
+├── SERVER-REGISTRY.md                     # authoritative fleet registry
+│
+├── .specify/                              # sdd-core global governance
+│   └── memory/
+│       └── constitution.md
+│
+├── knowledge/                             # agent/source knowledge, not fleet state
+│   ├── instructions.md                    # local context/routing instructions
+│   ├── architecture/
+│   │   ├── integration-patterns.md
+│   │   ├── service-boundaries.md
+│   │   └── decision-guidance.md
+│   ├── technologies/
+│   │   ├── ollama/
+│   │   ├── vllm/
+│   │   ├── docling/
+│   │   ├── langgraph/
+│   │   ├── fastmcp/
+│   │   ├── litellm/
+│   │   ├── postgresql/
+│   │   ├── redis/
+│   │   ├── qdrant/
+│   │   ├── n8n/
+│   │   ├── lightrag/
+│   │   ├── crawl4ai/
+│   │   ├── docker/
+│   │   └── open-webui/
+│   ├── lessons/
+│   │   ├── deployment.md
+│   │   ├── integration.md
+│   │   ├── testing.md
+│   │   └── security.md
+│   └── legacy/                            # SANITIZED extracted reference only
+│       ├── README.md                      # explicit non-authoritative boundary
+│       ├── migration-index.md             # source -&gt; destination provenance
+│       ├── docling/
+│       ├── langgraph/
+│       └── agent-system/
+│
+├── .claude/
+│   ├── AGENTS.md                          # current automation contract
+│   ├── settings.json
+│   ├── agents/
+│   │   ├── orchestrators/
+│   │   │   └── agent-zero.md
+│   │   ├── core/
+│   │   │   ├── platform-architect.md
+│   │   │   ├── infrastructure-operations.md
+│   │   │   ├── quality-assurance.md
+│   │   │   └── identity-dns-certificates.md
+│   │   └── specialists/
+│   │       ├── ollama.md
+│   │       ├── vllm.md
+│   │       ├── docling.md
+│   │       ├── langgraph.md
+│   │       ├── fastmcp.md
+│   │       ├── litellm.md
+│   │       ├── postgresql.md
+│   │       ├── redis.md
+│   │       ├── qdrant.md
+│   │       ├── n8n.md
+│   │       ├── lightrag.md
+│   │       ├── crawl4ai.md
+│   │       ├── docker.md
+│   │       └── open-webui.md
+│   ├── skills/
+│   │   ├── discover-server/               # CURRENT
+│   │   ├── audit-discovery/               # CURRENT
+│   │   ├── phase1-gate/                   # CURRENT
+│   │   ├── sync-registry/                 # CURRENT
+│   │   ├── agent-synthesis/               # adapted legacy Agent Zero pattern
+│   │   ├── context-prep/                  # adapted legacy utility
+│   │   ├── specialist-review/             # standard SME review contract
+│   │   └── handoff/                       # adapted legacy handoff utility
+│   └── hooks/
+│       ├── hx-common.ps1                   # CURRENT
+│       ├── hx-notify.ps1                   # CURRENT
+│       ├── hx-phase1-guard.ps1             # CURRENT
+│       ├── hx-session-state.ps1            # CURRENT
+│       ├── hx-validate-discovery.ps1       # CURRENT
+│       ├── hx-validate-subagent.ps1        # CURRENT
+│       └── [new deterministic guards only after evaluation]
+│
+├── governance/                             # current human review/governance layer
+│   ├── AGENTS.md
+│   ├── index.html
+│   ├── site/
+│   ├── reports/                            # HTML becomes default new report format
+│   ├── decisions/                          # optional ADR/owner-decision records
+│   ├── actions-and-issues.md
+│   ├── risk-acceptances.md
+│   └── lessons-learned.md
+│
+├── servers/                                # authoritative per-host state
+│   ├── AGENTS.md
+│   ├── README.md
+│   ├── _templates/
+│   ├── hxs-cp/
+│   ├── hxs-1/
+│   ├── hxs-2/
+│   ├── ...
+│   └── hxs-15/
+│
+├── services/                               # service-level design/config, host-independent
+│   ├── README.md                           # service state rules + server linkage
+│   ├── _templates/
+│   ├── inference/                          # create only as roles are approved
+│   │   ├── ollama/
+│   │   └── vllm/
+│   ├── docling-mcp/
+│   ├── langgraph/
+│   └── [other approved services]/
+│
+├── procedures/                             # reusable operational procedures
+│   ├── fleet/
+│   │   └── hx-chrony-fleet.sh
+│   ├── deployment/
+│   ├── testing/
+│   └── recovery/
+│
+├── tests/                                  # repo/automation/infrastructure validation
+├── tools/                                  # governance/site/build/helper tools
+├── claude-hooks/                           # packaged hook distribution if still required
+├── conversations/                          # current sync policy and retained context
+└── .env.example                            # example only; no secrets</code></pre>
+<h2 id="why-this-structure-works">10.1 Why this structure works</h2>
+<h3 id="infrastructure-state-remains-host-centric">Infrastructure state
+remains host-centric</h3>
+<p><code>servers/</code> answers: <strong>what is this physical server,
+what was discovered, and what is configured on it?</strong></p>
+<h3 id="service-design-remains-service-centric">Service design remains
+service-centric</h3>
+<p><code>services/</code> answers: <strong>how is this workload
+designed/configured, independent of which current host runs
+it?</strong></p>
+<p>This avoids recreating legacy node names as the architecture. A
+Docling service can move from one host to another without moving its
+entire design history.</p>
+<h3 id="specialist-knowledge-remains-technology-centric">Specialist
+knowledge remains technology-centric</h3>
+<p><code>knowledge/technologies/</code> answers: <strong>what have we
+learned about this technology that any future implementation agent
+should know?</strong></p>
+<p>This is where sanitized legacy expertise should accumulate.</p>
+<h3 id="agents-are-capability-centric">Agents are
+capability-centric</h3>
+<p><code>.claude/agents/</code> answers: <strong>which bounded expert
+should reason about this domain?</strong></p>
+<p>Specialist agents reference
+<code>knowledge/technologies/&lt;technology&gt;/</code> and current
+contracts rather than carrying large, stale infrastructure assumptions
+inside their prompt.</p>
+<h3
+id="human-facing-governance-remains-presentation-centric">Human-facing
+governance remains presentation-centric</h3>
+<p><code>governance/</code> continues to carry polished review
+artifacts, with <strong>HTML as the default for new human-facing
+reports</strong>. Markdown remains appropriate for agent/source
+contracts and machine-editable knowledge.</p>
+<h1 id="proposed-agent-file-contract">11. Proposed Agent File
+Contract</h1>
+<p>Each reconstructed specialist should be deliberately small and
+stable. A specialist profile should contain:</p>
+<ol type="1">
+<li><strong>Role and scope</strong> — what the agent is expert in.</li>
+<li><strong>Out-of-scope boundaries</strong> — what it must defer to
+another specialist or owner.</li>
+<li><strong>Required current context</strong> — authoritative repo files
+that must be read first.</li>
+<li><strong>Technology knowledge routes</strong> — relevant
+<code>knowledge/technologies/...</code> paths.</li>
+<li><strong>Evidence requirements</strong> — local discovery / official
+docs / tests needed before conclusions.</li>
+<li><strong>Change authority</strong> — planning only, review only, or
+implementation within an approved role.</li>
+<li><strong>Handoff contract</strong> — concise findings, assumptions,
+risks, unresolved decisions, and validation commands.</li>
+</ol>
+<p>Agent profiles should <strong>not</strong> embed:</p>
+<ul>
+<li>IP tables;</li>
+<li>passwords;</li>
+<li>permanent host assignments;</li>
+<li>stale package versions;</li>
+<li>model deployments;</li>
+<li>hardcoded user home paths.</li>
+</ul>
+<p>Those belong in current state/configuration sources.</p>
+<h1 id="proposed-agent-zero-operating-contract">12. Proposed Agent Zero
+Operating Contract</h1>
+<p>Agent Zero should return as a <strong>repo-governed
+orchestrator</strong>, not as an alternate project authority.</p>
+<p>Recommended responsibilities:</p>
+<ul>
+<li>read the root and local <code>AGENTS.md</code> chain;</li>
+<li>identify the affected technology domains;</li>
+<li>choose the minimum specialist set needed;</li>
+<li>run specialists in parallel where their work is independent;</li>
+<li>prevent specialists from changing adjacent domains without
+handoff;</li>
+<li>synthesize disagreements and make conflicts explicit;</li>
+<li>distinguish owner decisions from technical recommendations;</li>
+<li>validate that final proposals match current infrastructure
+state;</li>
+<li>ensure test/verification requirements are defined before
+implementation;</li>
+<li>stop at current phase gates.</li>
+</ul>
+<p>Agent Zero must <strong>not</strong>:</p>
+<ul>
+<li>invent server roles;</li>
+<li>overwrite registry authority;</li>
+<li>revive legacy topology;</li>
+<li>create a second lifecycle/governance system;</li>
+<li>treat historical service status as current status;</li>
+<li>silently choose between conflicting specialist recommendations when
+the choice is an owner decision.</li>
+</ul>
+<h1 id="recommended-merge-sequence">13. Recommended Merge Sequence</h1>
+<h2 id="stage-0-protect-the-current-repository">Stage 0 — protect the
+current repository</h2>
+<p>Before importing anything:</p>
+<ul>
+<li>create a clean checkpoint commit/tag in the current repo;</li>
+<li>resolve or explicitly document
+<code>.claude/settings.local.json</code> handling;</li>
+<li>run current tests/validation and record baseline results;</li>
+<li>verify the active governance HTML build;</li>
+<li>confirm the role-mapping/registry discrepancy remains
+understood.</li>
+</ul>
+<p><strong>Gate:</strong> current repo reproduces cleanly before legacy
+content enters it.</p>
+<h2 id="stage-1-create-empty-target-boundaries">Stage 1 — create empty
+target boundaries</h2>
+<p>Create only the agreed structural boundaries needed for migration,
+likely:</p>
+<ul>
+<li><code>knowledge/</code>;</li>
+<li><code>knowledge/legacy/</code>;</li>
+<li><code>.claude/agents/orchestrators/</code>;</li>
+<li><code>.claude/agents/core/</code>;</li>
+<li><code>.claude/agents/specialists/</code>;</li>
+<li>optionally <code>services/</code> if service-level organization is
+approved.</li>
+</ul>
+<p>Add boundary documentation before content migration.</p>
+<p><strong>Gate:</strong> another AI can explain which tree is
+authoritative for fleet state, service design, technology knowledge, and
+agent behavior.</p>
+<h2 id="stage-2-reconstruct-agent-zero-and-core-specialists">Stage 2 —
+reconstruct Agent Zero and core specialists</h2>
+<p>Rebuild Agent Zero, architecture, infrastructure, and QA agents using
+current contracts plus proven legacy orchestration behavior.</p>
+<p>Do not yet migrate all 32 personas.</p>
+<p>Test using a dry-run review task against existing current
+material.</p>
+<p><strong>Gate:</strong> specialist outputs remain bounded and Agent
+Zero produces a coherent synthesis without contradicting current
+governance.</p>
+<h2 id="stage-3-reconstruct-high-value-technology-smes">Stage 3 —
+reconstruct high-value technology SMEs</h2>
+<p>Prioritize technologies with both strong historical value and
+current/reasonably expected use:</p>
+<ol type="1">
+<li>Ollama;</li>
+<li>vLLM;</li>
+<li>Docling;</li>
+<li>LangGraph;</li>
+<li>FastMCP/MCP;</li>
+<li>PostgreSQL;</li>
+<li>Redis;</li>
+<li>LiteLLM/Qdrant/n8n/LightRAG/Crawl4AI as current architecture
+confirms them.</li>
+</ol>
+<p>Each agent should be paired with a sanitized technology knowledge
+folder.</p>
+<p><strong>Gate:</strong> no migrated agent contains old IPs, hostnames,
+paths, credentials, or unvalidated deployment claims.</p>
+<h2 id="stage-4-migrate-docling-knowledge">Stage 4 — migrate Docling
+knowledge</h2>
+<p>Extract and sanitize the best Docling architecture, tests,
+integration patterns, defects, and lessons.</p>
+<p>Create a provenance index mapping legacy source paths to new
+knowledge documents.</p>
+<p><strong>Gate:</strong> knowledge is usable without implying the
+historical Docling server is currently deployed.</p>
+<h2 id="stage-5-migrate-langgraph-knowledge">Stage 5 — migrate LangGraph
+knowledge</h2>
+<p>Extract and sanitize LangGraph, persistence, Redis, model-routing,
+MCP, n8n and testing lessons.</p>
+<p>Clearly mark which items were design-only, partially implemented, or
+validated historically.</p>
+<p><strong>Gate:</strong> incomplete legacy implementation is not
+represented as current operational state.</p>
+<h2 id="stage-6-evaluate-legacy-commands-and-hooks-individually">Stage 6
+— evaluate legacy commands and hooks individually</h2>
+<p>For every legacy command/hook/gate, record one disposition:</p>
+<ul>
+<li><code>adopt</code>;</li>
+<li><code>adapt</code>;</li>
+<li><code>covered-by-current</code>;</li>
+<li><code>retire</code>;</li>
+<li><code>defer</code>.</li>
+</ul>
+<p>Only implement those with a concrete current use case.</p>
+<p><strong>Gate:</strong> no duplicated hook or workflow exists merely
+because it existed historically.</p>
+<h2 id="stage-7-evaluate-remaining-specialist-catalogue">Stage 7 —
+evaluate remaining specialist catalogue</h2>
+<p>Review the remaining legacy 32-agent catalogue against the approved
+modern stack.</p>
+<p>For each specialist:</p>
+<ul>
+<li>prove a current or foreseeable technology boundary;</li>
+<li>recover expertise from actual historical contributions where
+available;</li>
+<li>rename/reframe if old identity mappings are inconsistent;</li>
+<li>activate only when useful.</li>
+</ul>
+<p><strong>Gate:</strong> the agent catalogue reflects capabilities, not
+nostalgia for old names.</p>
+<h2 id="stage-8-consolidate-and-remove-transitional-duplication">Stage 8
+— consolidate and remove transitional duplication</h2>
+<p>After migration is validated:</p>
+<ul>
+<li>ensure no full legacy project tree exists;</li>
+<li>remove temporary extraction material from the repo;</li>
+<li>ensure governance references only current authority;</li>
+<li>run link, secret, syntax, hook, and regression checks;</li>
+<li>rebuild human-facing HTML governance/reports.</li>
+</ul>
+<p><strong>Gate:</strong> a new AI entering the repo sees one project
+and one source of truth.</p>
+<h1 id="merge-acceptance-criteria">14. Merge Acceptance Criteria</h1>
+<p>The merged repository is acceptable only when all of the following
+are true:</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Exactly one active <code>.git</code>
+history exists.</label></li>
+<li><label><input type="checkbox" />Current fleet state remains under
+<code>servers/</code> and <code>SERVER-REGISTRY.md</code>.</label></li>
+<li><label><input type="checkbox" />No legacy <code>192.168.10.x</code>
+address is mistaken for current infrastructure.</label></li>
+<li><label><input type="checkbox" />No <code>hx.dev.local</code> value
+is presented as the current DNS authority.</label></li>
+<li><label><input type="checkbox" />No historical plaintext credential
+or private key is introduced.</label></li>
+<li><label><input type="checkbox" />Agent Zero exists under current
+governance and cannot override current phase gates.</label></li>
+<li><label><input type="checkbox" />High-value technology SMEs have
+narrow, documented scopes.</label></li>
+<li><label><input type="checkbox" />Specialist agents use shared
+technology knowledge instead of embedding stale topology.</label></li>
+<li><label><input type="checkbox" />Legacy commands/hooks have explicit
+individual dispositions.</label></li>
+<li><label><input type="checkbox" />Existing current hooks/skills are
+not duplicated unnecessarily.</label></li>
+<li><label><input type="checkbox" />Docling historical knowledge is
+preserved and provenance-tagged.</label></li>
+<li><label><input type="checkbox" />LangGraph historical knowledge is
+preserved and provenance-tagged.</label></li>
+<li><label><input type="checkbox" />Historical implementation status is
+clearly distinguished from current deployment status.</label></li>
+<li><label><input type="checkbox" />Current governance/site build still
+succeeds.</label></li>
+<li><label><input type="checkbox" />Current automation/regression tests
+still pass after each migration batch.</label></li>
+<li><label><input type="checkbox" />The repository contains no nested
+copy of the entire legacy project.</label></li>
+<li><label><input type="checkbox" />A new AI can identify the current
+authority chain in under one context-loading pass.</label></li>
+</ul>
+<h1 id="what-goes-what-stays-final-decision-matrix">15. What Goes, What
+Stays — Final Decision Matrix</h1>
+<h2 id="stays-as-authority">STAYS AS AUTHORITY</h2>
+<ul>
+<li>current <code>.git</code> history;</li>
+<li>root current contracts;</li>
+<li>current fleet registry/discovery model;</li>
+<li>current <code>servers/</code> corpus;</li>
+<li>current governance corpus and HTML/site tooling;</li>
+<li>current <code>.claude</code> automation assets unless intentionally
+superseded;</li>
+<li>current tests and tooling;</li>
+<li>current <code>192.168.50.x</code> network/fleet model;</li>
+<li>current phase gates and owner-decision boundaries.</li>
+</ul>
+<h2 id="goes-into-the-merged-repo-after-adaptation">GOES INTO THE MERGED
+REPO AFTER ADAPTATION</h2>
+<ul>
+<li>Agent Zero orchestration/synthesis capability;</li>
+<li>core architecture/infrastructure/QA specialist capabilities;</li>
+<li>relevant technology SME capabilities from the 32-agent
+catalogue;</li>
+<li>Ollama SME expertise specifically;</li>
+<li>Docling SME expertise and implementation lessons;</li>
+<li>LangGraph and persistence specialist expertise;</li>
+<li>useful <code>.claude</code> orchestration and utility command
+patterns;</li>
+<li>useful deterministic hook ideas after rewrite;</li>
+<li>useful quality-gate ideas after rewrite;</li>
+<li>selected procedures, testing methods, templates and architectural
+principles;</li>
+<li>sanitized Docling and LangGraph knowledge;</li>
+<li>failure history and lessons that prevent repeating old
+mistakes.</li>
+</ul>
+<h2 id="does-not-go-into-the-merged-repo-as-active-truth">DOES NOT GO
+INTO THE MERGED REPO AS ACTIVE TRUTH</h2>
+<ul>
+<li>old network topology;</li>
+<li>old host assignments;</li>
+<li>old operational inventory;</li>
+<li>old status reports as current status;</li>
+<li>old absolute paths;</li>
+<li>old credentials or vault contents;</li>
+<li>Samba/AD-specific requirements unless deliberately re-approved;</li>
+<li>old tool bans or environment philosophy that conflict with current
+decisions;</li>
+<li>broken hooks unchanged;</li>
+<li>compiled caches and terminal captures;</li>
+<li>duplicate RAIDD/defect/status systems;</li>
+<li>a nested copy of the entire legacy repository.</li>
+</ul>
+<h1 id="guidance-for-any-ai-continuing-this-work">16. Guidance for Any
+AI Continuing This Work</h1>
+<ol type="1">
+<li><strong>Do not merge by directory similarity.</strong> Merge by
+semantic role and authority.</li>
+<li><strong>Do not confuse many agents with many authorities.</strong>
+There can be 32+ specialists and still only one repository governance
+chain.</li>
+<li><strong>Use specialist isolation to prevent drift.</strong> Ollama
+questions go to the Ollama specialist; Docling questions go to Docling;
+infrastructure questions go to infrastructure; cross-domain changes go
+through synthesis.</li>
+<li><strong>Current state always beats historical state.</strong> Legacy
+documents are evidence and knowledge, not live inventory.</li>
+<li><strong>Recover expertise from contributions, not only old agent
+inventory labels.</strong> The historical naming registry is
+inconsistent in places.</li>
+<li><strong>Prefer adaptation over duplication.</strong> If a current
+skill/hook already solves a problem, enhance it rather than recreating
+the old mechanism beside it.</li>
+<li><strong>Preserve failure knowledge aggressively.</strong> Sanitized
+defects and lessons are among the highest-value assets in the legacy
+corpus.</li>
+<li><strong>Stop at planning gates.</strong> Do not begin service
+deployment merely because historical tasks describe how.</li>
+</ol>
+<h1 id="final-recommendation">17. Final Recommendation</h1>
+<p>Proceed with a <strong>curated convergence into the current Git
+repository</strong>.</p>
+<p>The merged HX-Infrastructure repository should combine:</p>
+<ul>
+<li>the <strong>current project’s authoritative fleet state and
+governance</strong>;</li>
+<li>the <strong>legacy project’s proven specialist-agent
+model</strong>;</li>
+<li>the <strong>legacy project’s strongest service engineering knowledge
+and lessons</strong>;</li>
+<li>the <strong>current sdd-core-style execution backbone and repository
+contracts</strong>.</li>
+</ul>
+<p>The correct architectural principle is:</p>
+<blockquote>
+<p><strong>One repository, one truth, many specialists.</strong></p>
+</blockquote>
+<p>Agent Zero and the specialist agents should be preserved because they
+provided real implementation value, but they should be reconstructed as
+bounded capabilities that consume current repository state. Legacy
+commands and hooks should be mined rather than discarded: keep what
+prevents drift, catches defects, improves handoffs, or makes execution
+repeatable; retire what merely enforces a dead topology or duplicates
+current governance.</p>
+<p>The proposed repository structure in this report provides the target
+boundary for that convergence. The next planning artifact should be a
+<strong>file-by-file migration manifest</strong> that enumerates each
+legacy candidate source, proposed target path, transformation required,
+secret/provenance concerns, and final disposition before any repository
+changes are made.</p>
+
+</html>
+</body>
+</html>

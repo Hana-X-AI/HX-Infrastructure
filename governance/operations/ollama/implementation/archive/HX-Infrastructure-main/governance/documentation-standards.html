@@ -1,0 +1,337 @@
+<title>Documentation Standards — HX Governance</title>
+<style>
+  :root {
+    --ground:#fbfbf9; --surface:#f2f3f0; --raised:#ffffff;
+    --ink:#1b1f1d; --muted:#6b726e; --faint:#949b96;
+    --line:#dde0db; --line-firm:#c3c8c1;
+    --accent:#0f6e5c; --accent-wash:#e6f0ec;
+    --signal:#b4531a; --signal-wash:#fbeee4;
+    --ok:#2f6d4f; --ok-wash:#e4efe8;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --step--2:0.6875rem; --step--1:0.8125rem; --step-0:0.9375rem;
+    --step-1:1.125rem; --step-2:1.5rem; --step-3:2.125rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground:#141917; --surface:#1b211e; --raised:#1f2724;
+      --ink:#e8ebe8; --muted:#97a09b; --faint:#6f7873;
+      --line:#2b342f; --line-firm:#3c4740;
+      --accent:#4fbfa3; --accent-wash:#16302a;
+      --signal:#e08a4c; --signal-wash:#33251a;
+      --ok:#6cc09a; --ok-wash:#162c22;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#141917; --surface:#1b211e; --raised:#1f2724;
+    --ink:#e8ebe8; --muted:#97a09b; --faint:#6f7873;
+    --line:#2b342f; --line-firm:#3c4740;
+    --accent:#4fbfa3; --accent-wash:#16302a;
+    --signal:#e08a4c; --signal-wash:#33251a;
+    --ok:#6cc09a; --ok-wash:#162c22;
+  }
+  :root[data-theme="light"] {
+    --ground:#fbfbf9; --surface:#f2f3f0; --raised:#ffffff;
+    --ink:#1b1f1d; --muted:#6b726e; --faint:#949b96;
+    --line:#dde0db; --line-firm:#c3c8c1;
+    --accent:#0f6e5c; --accent-wash:#e6f0ec;
+    --signal:#b4531a; --signal-wash:#fbeee4;
+    --ok:#2f6d4f; --ok-wash:#e4efe8;
+  }
+
+  :root { color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root { color-scheme: dark; } }
+  :root[data-theme="dark"] { color-scheme: dark; }
+  :root[data-theme="light"] { color-scheme: light; }
+
+  body {
+    margin:0; padding:clamp(1.5rem,4vw,3.5rem) clamp(1rem,4vw,2rem) 5rem;
+    background:var(--ground); color:var(--ink);
+    font-family:var(--sans); font-size:var(--step-0); line-height:1.55;
+    -webkit-text-size-adjust:100%;
+  }
+  .page { max-width:1100px; margin:0 auto; display:flex; flex-direction:column; gap:2.25rem; }
+
+  .bar { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .nav { display:flex; gap:1.1rem; flex-wrap:wrap; align-items:center;
+         font-family:var(--mono); font-size:var(--step--2);
+         text-transform:uppercase; letter-spacing:0.1em; }
+  .nav a { color:var(--muted); text-decoration:none; border-bottom:1px solid transparent; padding-bottom:2px; }
+  .nav a:hover { color:var(--accent); border-bottom-color:var(--accent); }
+  .nav a[aria-current="page"] { color:var(--accent); border-bottom-color:var(--accent); }
+
+  .toggle {
+    font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+    letter-spacing:0.09em; color:var(--muted); background:var(--surface);
+    border:1px solid var(--line-firm); border-radius:2px; padding:0.4rem 0.75rem; cursor:pointer;
+    transition:color 120ms ease, border-color 120ms ease;
+  }
+  .toggle:hover { color:var(--accent); border-color:var(--accent); }
+
+  .masthead { display:flex; flex-direction:column; gap:0.7rem; }
+  .eyebrow { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+             letter-spacing:0.14em; color:var(--accent); margin:0; }
+  h1 { font-size:var(--step-3); line-height:1.08; letter-spacing:-0.02em; font-weight:650;
+       margin:0; text-wrap:balance; }
+  .masthead p { margin:0; max-width:65ch; color:var(--muted); }
+
+  .strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:1px;
+           background:var(--line); border:1px solid var(--line); border-radius:3px; overflow:hidden; }
+  .cell { background:var(--surface); padding:0.8rem 1rem; display:flex; flex-direction:column; gap:0.1rem; }
+  .cell dt { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+             letter-spacing:0.1em; color:var(--muted); }
+  .cell dd { margin:0; font-size:var(--step-1); font-weight:600; font-variant-numeric:tabular-nums; }
+
+  h2 { font-size:var(--step-2); letter-spacing:-0.015em; font-weight:620; margin:0; text-wrap:balance; }
+  section { display:flex; flex-direction:column; gap:0.85rem; }
+  .lede { margin:0; color:var(--muted); max-width:70ch; font-size:var(--step--1); }
+
+  .entries { display:flex; flex-direction:column; gap:0.75rem; }
+  .entry { border:1px solid var(--line); border-radius:3px; background:var(--raised);
+           padding:1rem 1.15rem; display:flex; flex-direction:column; gap:0.6rem;
+           border-left:3px solid var(--line-firm); }
+  .entry.is-open { border-left-color:var(--signal); }
+  .entry.is-done { border-left-color:var(--ok); }
+  .entry.is-hold { border-left-color:var(--faint); }
+
+  .entry-head { display:flex; align-items:center; gap:0.55rem; flex-wrap:wrap; }
+  .eid { font-family:var(--mono); font-weight:650; font-size:var(--step-0); }
+  .chip { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+          letter-spacing:0.08em; padding:0.15rem 0.45rem; border-radius:2px;
+          border:1px solid var(--line-firm); color:var(--muted); }
+  .pill { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+          letter-spacing:0.08em; padding:0.15rem 0.5rem; border-radius:10px; font-weight:600; }
+  .pill.is-open { background:var(--signal-wash); color:var(--signal); }
+  .pill.is-done { background:var(--ok-wash); color:var(--ok); }
+  .pill.is-hold { background:var(--surface); color:var(--muted); }
+  .rel { margin-left:auto; font-family:var(--mono); font-size:var(--step--2); color:var(--faint); }
+
+  .field { display:flex; flex-direction:column; gap:0.2rem; }
+  .field-label { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+                 letter-spacing:0.09em; color:var(--faint); }
+  .field p { margin:0; max-width:78ch; }
+  .field.body p { color:var(--ink); }
+  .field.sub p { color:var(--muted); font-size:var(--step--1); }
+
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1rem; }
+  .card { border:1px solid var(--line); border-radius:3px; background:var(--raised);
+          padding:1.15rem 1.25rem; display:flex; flex-direction:column; gap:0.5rem;
+          text-decoration:none; color:inherit;
+          transition:border-color 120ms ease, transform 120ms ease; }
+  .card:hover { border-color:var(--accent); transform:translateY(-2px); }
+  .card h3 { margin:0; font-size:var(--step-1); font-weight:620; letter-spacing:-0.01em; }
+  .card p { margin:0; font-size:var(--step--1); color:var(--muted); }
+  .card .meta { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase;
+                letter-spacing:0.09em; color:var(--accent); margin-top:auto; padding-top:0.3rem; }
+
+  .scroll { overflow-x:auto; border:1px solid var(--line); border-radius:3px; background:var(--raised); }
+  table { border-collapse:collapse; width:100%; font-size:var(--step--1); }
+  thead th { background:var(--surface); border-bottom:1px solid var(--line-firm);
+             font-family:var(--mono); font-size:var(--step--2); font-weight:600;
+             text-transform:uppercase; letter-spacing:0.09em; color:var(--muted);
+             text-align:left; padding:0.65rem 0.85rem; white-space:nowrap; }
+  tbody td { padding:0.6rem 0.85rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:last-child td { border-bottom:none; }
+
+  ul.notes { padding-left:1.15rem; margin:0; font-size:var(--step--1); color:var(--muted);
+             display:flex; flex-direction:column; gap:0.4rem; }
+  ul.notes b, ul.notes code { color:var(--ink); }
+
+  code { font-family:var(--mono); font-size:0.92em; background:var(--surface);
+         padding:0.05em 0.32em; border-radius:2px; }
+  pre { margin:0; overflow-x:auto; background:var(--surface); border:1px solid var(--line);
+        border-radius:3px; padding:0.85rem 1rem; }
+  pre code { background:none; padding:0; font-size:var(--step--1); }
+
+  footer { border-top:1px solid var(--line); padding-top:1rem; font-size:var(--step--2); color:var(--faint); }
+  a { color:var(--accent); }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
+</style>
+
+<div class="page">
+
+  <div class="bar">
+    <nav class="nav">
+        <a href="https://claude.ai/code/artifact/09f4465a-1924-40c5-b352-cbe19926100d">Governance</a>
+        <a href="https://claude.ai/code/artifact/130cf301-c270-4851-a1e5-eb9ed8586074">Fleet inventory</a>
+        <a href="https://claude.ai/code/artifact/1a0858b2-4e47-4111-b4c2-12005ee67ed4">Architecture v0.3</a>
+        <a href="https://claude.ai/code/artifact/01a9f2ed-02d1-4491-9cab-07934be22dd1">v0.1 frozen</a>
+        <a href="https://claude.ai/code/artifact/c16b4563-b9d4-4c17-9961-46329fe4faac">Validation</a>
+        <a href="https://claude.ai/code/artifact/1af2b128-6708-4e55-949d-d38cc293f67a">Recommendations</a>
+        <a href="https://claude.ai/code/artifact/4062f99f-e8d4-44ba-aae2-74472bde91f5">Actions &amp; issues</a>
+        <a href="https://claude.ai/code/artifact/9325f481-90f0-4439-9fa0-e8f48d629ff4">Lessons learned</a>
+        <a href="https://claude.ai/code/artifact/ac6d1ab7-8dae-436d-94f1-80bfbb99d467" aria-current="page">Standards</a>
+    </nav>
+    <button type="button" class="toggle" id="theme-toggle">Dark mode</button>
+  </div>
+
+  <header class="masthead">
+    <p class="eyebrow">HX-Infrastructure &middot; governance</p>
+    <h1>Documentation Standards</h1>
+    <p>How files in this repository are named and where they belong. Written 2026-08-13,
+    after a structure review found three naming schemes running in parallel and fifteen
+    server records in three different shapes.</p>
+  </header>
+
+  <section>
+    <h2>Naming rules</h2>
+    <p class="lede">Existing files that predate this document were aligned to it where the
+    change was safe. The deliberate exceptions are listed further down; they are exceptions,
+    not drift.</p>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr><th scope="col">Location</th><th scope="col">Rule</th><th scope="col">Example</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Repository root</td><td><code>SCREAMING-KEBAB-CASE.md</code>, reserved for canonical project documents</td><td><code>SERVER-REGISTRY.md</code></td></tr>
+          <tr><td><code>governance/</code></td><td><code>lower-kebab-case.md</code></td><td><code>risk-acceptances.md</code></td></tr>
+          <tr><td><code>governance/reports/</code></td><td><code>&lt;author&gt;_&lt;YYYY-MM-DD&gt;[_&lt;HHMMSS&gt;]_&lt;lower-kebab-slug&gt;.md</code></td><td><code>Claude-Opus-5_2026-08-13_hxs-5-to-15-discovery-report.md</code></td></tr>
+          <tr><td><code>servers/&lt;host&gt;/</code></td><td>fixed file names, see below</td><td><code>discovery.md</code></td></tr>
+          <tr><td><code>.claude/hooks/</code></td><td><code>hx-&lt;function&gt;.ps1</code></td><td><code>hx-phase1-guard.ps1</code></td></tr>
+          <tr><td>Scripts</td><td><code>lower-kebab-case</code> with the extension of the language</td><td><code>collect-server-facts.sh</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="notes">
+      <li><b>No spaces in file names.</b> They break shell quoting, URLs and cross-platform tooling.</li>
+      <li><b>No em-dashes or other non-ASCII characters in file names.</b> They survive badly through copy-paste, terminals and Git on Windows.</li>
+      <li>Use a hyphen as the word separator. The underscore is reserved for the field separator in report names.</li>
+      <li>The time component of a report name is optional, used only to disambiguate two reports by the same author on the same date.</li>
+      <li><code>&lt;author&gt;</code> identifies who produced the document: <code>Claude-Opus-5</code>, <code>GitHub-Copilot</code>, <code>chatgpt</code>, or <code>owner</code> for material written by the project owner.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Server record file set</h2>
+    <p class="lede">One directory per host, named for the hostname the host reports.</p>
+    <pre><code>servers/&lt;hostname&gt;/
+├── pre-work-results.md    human preparation record, written before discovery
+├── discovery.md           the server as found, Phase 1
+├── driver-results.md      only where an approved driver directive was executed
+└── configuration.md       the configured state, Phase 2 only</code></pre>
+    <p class="lede"><code>discovery.md</code> is never rewritten to reflect later
+    configuration. Where an approved change is made after discovery, it is recorded in a
+    clearly separated section of the same file, as on <code>hxs-1</code> through
+    <code>hxs-4</code>, or in <code>driver-results.md</code>.</p>
+  </section>
+
+  <section>
+    <h2>Pre-work record shape</h2>
+    <pre><code># &lt;hostname&gt; — pre-work results
+
+**Server:** / **IP address:** / **FQDN:** / **Admin account:**
+
+## Declared hardware        counts from building the machine, not from a command
+## Preparation outcome      derived from the evidence below
+## Raw terminal output      verbatim, fenced, never edited</code></pre>
+    <ul class="notes">
+      <li><b>The raw terminal output is evidence.</b> It is preserved byte for byte. Structure is added above it, never applied to it.</li>
+      <li><b>The IP address is taken from <code>SERVER-REGISTRY.md</code></b>, not read out of the paste. Pastes contain subnet addresses, gateway addresses and unrelated hosts, and reading an address out of one produced wrong values on four records before this rule existed.</li>
+      <li>A four-backtick fence is used because at least one paste contains a three-backtick sequence.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>HTML pages: two outputs, one source</h2>
+    <p class="lede">The governance pages exist in two forms, and the difference is deliberate.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th scope="col">Location</th><th scope="col">Shape</th><th scope="col">Links</th><th scope="col">Use</th></tr></thead>
+        <tbody>
+          <tr><td><code>governance/*.html</code></td><td>No <code>&lt;!DOCTYPE&gt;</code>, <code>&lt;html&gt;</code>, <code>&lt;head&gt;</code> or <code>&lt;body&gt;</code></td><td>Absolute <code>claude.ai</code> artifact URLs</td><td>Published as Claude artifacts</td></tr>
+          <tr><td><code>governance/site/*.html</code></td><td>Fully-formed documents</td><td>Relative filenames</td><td>Opening from disk, a file server, or an exported bundle</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="notes">
+      <li><b>The artifact form must not carry the HTML boilerplate.</b> The publisher wraps the source file in its own <code>&lt;!doctype html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;</code> skeleton at publish time and requires the source not to include those tags; adding them nests a second document inside the first.</li>
+      <li><b>The standalone form must carry it</b>, plus <code>&lt;html lang="en"&gt;</code> and <code>&lt;meta charset="utf-8"&gt;</code>, which assistive technology depends on.</li>
+      <li><b>And a viewport tag.</b> Without <code>&lt;meta name="viewport"&gt;</code> a phone lays the page out at desktop width and scales the result down, so the <code>clamp()</code> sizing never engages and the responsive design is inert.</li>
+    </ul>
+    <pre><code>node tools/build-governance-html.js   # regenerate governance/*.html from the Markdown
+node tools/make-standalone.js         # derive governance/site/*.html from those</code></pre>
+    <p class="lede"><code>make-standalone.js</code> fails rather than emits if any artifact URL
+    survives into the standalone build, or if any page stops linking to its siblings. The two
+    log pages are generated from their Markdown sources, which remain the source of truth;
+    their cells contain escaped pipes, so the parser splits only on unescaped ones.</p>
+  </section>
+
+  <section>
+    <h2>Deliberate exceptions</h2>
+    <p class="lede">These look inconsistent and are intentional. Do not "fix" them.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th scope="col">Path</th><th scope="col">Why</th></tr></thead>
+        <tbody>
+          <tr><td><code>.claude/skills/*/SKILL.md</code></td><td>Claude Code requires this exact filename</td></tr>
+          <tr><td><code>.claude/AGENTS.md</code>, <code>governance/AGENTS.md</code>, <code>servers/AGENTS.md</code></td><td>Fixed name, resolved by directory</td></tr>
+          <tr><td><code>claude-hooks/claude-hooks/hooks/</code></td><td>The doubled directory is the real packaged layout. A regression test guards against the single-nested form reappearing, because that stale path was a real defect once</td></tr>
+          <tr><td><code>conversations/SYNC-POLICY.md</code></td><td>Predates this standard and is referenced in historical reports</td></tr>
+          <tr><td><code>governance/reports/GitHub-Copilot/GITHUB-REMEDIATION-INSTRUCTIONS.md</code></td><td>Referenced by the regression suite</td></tr>
+          <tr><td>Existing report file names</td><td>Archival. They are cited across the governance log; renaming them rewrites the provenance trail for no operational gain</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>What was changed on 2026-08-13</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th scope="col">Before</th><th scope="col">After</th></tr></thead>
+        <tbody>
+          <tr><td><code>governance/Tooling First Rule.md</code></td><td><code>governance/policy/tooling-first-rule.md</code></td></tr>
+          <tr><td><code>governance/reports/Claude Prompt — Discover GPU VRAM Without NVIDIA Drivers.md</code></td><td><code>governance/reports/claude-code/owner_2026-08-11_gpu-vram-discovery-prompt.md</code></td></tr>
+          <tr><td><code>governance/reports/response to claude — gpu capability report.md</code></td><td><code>governance/reports/claude-code/owner_2026-08-11_gpu-capability-report-response.md</code></td></tr>
+          <tr><td>15 <code>pre-work-results.md</code> in three different shapes, every IP field blank</td><td>one shape, IP and FQDN populated from the registry, evidence preserved</td></tr>
+          <tr><td>A reference to <code>claude-opus-5_...</code> that did not resolve on a case-sensitive filesystem</td><td>corrected to <code>Claude-Opus-5_...</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lede">Every reference to a renamed file was updated in the same pass, and all
+    <code>governance/</code> paths cited anywhere in the repository were confirmed to resolve.</p>
+  </section>
+
+
+  <footer>
+    HX-Infrastructure governance &middot; generated from the Markdown sources in <code>governance/</code> on 2026-08-13.
+    The Markdown files remain the source of truth.
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById('theme-toggle');
+  if (!btn) { return; }
+  var media = window.matchMedia('(prefers-color-scheme: dark)');
+  function stored(v) {
+    try { if (v === undefined) { return localStorage.getItem('hx-theme'); } localStorage.setItem('hx-theme', v); }
+    catch (e) { /* sandboxed: the toggle still works for this view */ }
+    return null;
+  }
+  function active() {
+    var e = root.getAttribute('data-theme');
+    return (e === 'dark' || e === 'light') ? e : (media.matches ? 'dark' : 'light');
+  }
+  function relabel() {
+    var next = active() === 'dark' ? 'light' : 'dark';
+    btn.textContent = next === 'dark' ? 'Dark mode' : 'Light mode';
+    btn.setAttribute('aria-label', 'Switch to ' + next + ' mode');
+  }
+  var saved = stored();
+  if (saved === 'dark' || saved === 'light') { root.setAttribute('data-theme', saved); }
+  relabel();
+  btn.addEventListener('click', function () {
+    var next = active() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next); stored(next); relabel();
+  });
+  if (typeof media.addEventListener === 'function') { media.addEventListener('change', relabel); }
+  if (typeof MutationObserver === 'function') {
+    new MutationObserver(relabel).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  }
+})();
+</script>

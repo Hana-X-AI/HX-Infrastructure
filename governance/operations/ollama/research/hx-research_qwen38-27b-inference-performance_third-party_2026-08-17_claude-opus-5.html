@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qwen3.8-27B Local Inference Performance — Third-Party Field Report and HX Fit Analysis</title>
+<style>
+  .viz-root, :root{
+    color-scheme: light;
+    --surface-1:#fcfcfb; --page:#f9f9f7;
+    --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#898781;
+    --grid:#e1e0d9; --baseline:#c3c2b7; --border:rgba(11,11,11,0.10);
+    --series-1:#2a78d6; --series-2:#eb6834; --series-3:#1baf7a;
+    --seq-200:#9ec5f4; --seq-450:#2a78d6; --seq-600:#184f95;
+    --st-good:#0ca30c; --st-warning:#fab219; --st-serious:#ec835a; --st-critical:#d03b3b;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --surface-1:#1a1a19; --page:#0d0d0d;
+      --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#898781;
+      --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,0.10);
+      --series-1:#3987e5; --series-2:#d95926; --series-3:#199e70;
+      --seq-200:#184f95; --seq-450:#3987e5; --seq-600:#86b6ef;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--text-primary);
+       font:16px/1.62 system-ui,-apple-system,"Segoe UI",sans-serif;}
+  .wrap{max-width:940px;margin:0 auto;padding:48px 24px 96px}
+  header{border-bottom:1px solid var(--grid);padding-bottom:22px;margin-bottom:8px}
+  h1{font-size:27px;line-height:1.26;margin:0 0 10px;letter-spacing:-.012em}
+  h2{font-size:20px;margin:46px 0 12px;padding-top:20px;border-top:1px solid var(--grid);letter-spacing:-.01em}
+  h3{font-size:15.5px;margin:28px 0 8px}
+  h4{font-size:14px;margin:20px 0 6px;color:var(--text-secondary);
+     text-transform:uppercase;letter-spacing:.05em}
+  p{margin:0 0 14px} ul,ol{margin:0 0 14px;padding-left:22px} li{margin:6px 0}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.8px;
+       background:var(--surface-1);border:1px solid var(--grid);border-radius:4px;padding:1px 5px}
+  pre{background:var(--surface-1);border:1px solid var(--grid);border-radius:8px;
+      padding:14px 16px;overflow-x:auto;font-size:12.8px;line-height:1.6}
+  pre code{background:none;border:none;padding:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px;
+        font-variant-numeric:tabular-nums}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--grid);vertical-align:top}
+  th{font-weight:600;color:var(--text-secondary);font-size:12px;
+     text-transform:uppercase;letter-spacing:.05em;font-variant-numeric:normal}
+  tbody tr:hover{background:var(--surface-1)}
+  blockquote{margin:16px 0;padding:12px 18px;border-left:3px solid var(--baseline);
+             color:var(--text-secondary);background:var(--surface-1);border-radius:0 6px 6px 0}
+  blockquote p:last-child{margin:0}
+  .meta-table{font-size:13.5px;margin:0 0 8px}
+  .meta-table td:first-child{color:var(--text-muted);width:150px;white-space:nowrap}
+  .meta-table td{border-bottom:none;padding:3px 10px 3px 0}
+
+  /* ---- KPI row ---- */
+  .kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));gap:12px;margin:22px 0 8px}
+  .tile{background:var(--surface-1);border:1px solid var(--border);border-radius:10px;padding:15px 16px}
+  .tile .lab{font-size:11.5px;color:var(--text-muted);text-transform:uppercase;
+             letter-spacing:.05em;line-height:1.35;min-height:2.7em}
+  .tile .val{font-size:29px;font-weight:600;letter-spacing:-.02em;margin:6px 0 2px;line-height:1.1}
+  .tile .val .u{font-size:14px;font-weight:400;color:var(--text-secondary);letter-spacing:0}
+  .tile .sub{font-size:12.5px;color:var(--text-secondary);line-height:1.4}
+  .hero{font-size:52px;font-weight:600;letter-spacing:-.03em;line-height:1;margin:4px 0 6px}
+
+  /* ---- meters ---- */
+  figure{margin:24px 0;background:var(--surface-1);border:1px solid var(--border);
+         border-radius:10px;padding:20px 22px}
+  figcaption{font-size:12.5px;color:var(--text-muted);margin-top:14px;line-height:1.5}
+  .fig-title{font-size:15px;font-weight:600;margin:0 0 4px}
+  .fig-sub{font-size:13px;color:var(--text-secondary);margin:0 0 18px}
+  .meter{margin:0 0 18px}
+  .meter:last-of-type{margin-bottom:4px}
+  .meter-head{display:flex;justify-content:space-between;align-items:baseline;
+              gap:12px;margin-bottom:6px;font-size:13.5px}
+  .meter-head .name{color:var(--text-primary)}
+  .meter-head .num{color:var(--text-secondary);font-variant-numeric:tabular-nums;
+                   white-space:nowrap;font-size:13px}
+  .track{position:relative;height:22px;background:var(--grid);border-radius:4px;overflow:visible}
+  .fill{position:absolute;left:0;top:0;bottom:0;border-radius:4px;
+        transition:filter .12s ease}
+  .fill:hover{filter:brightness(1.08)}
+  .limit{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--text-primary);border-radius:1px}
+  .limit-lab{position:absolute;top:-19px;font-size:11px;color:var(--text-secondary);
+             white-space:nowrap;transform:translateX(-50%)}
+  .over{position:absolute;top:0;bottom:0;border-radius:0 4px 4px 0}
+  .legend{display:flex;flex-wrap:wrap;gap:16px;margin:16px 0 0;font-size:12.5px;
+          color:var(--text-secondary);padding-top:14px;border-top:1px solid var(--grid)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .sw{width:11px;height:11px;border-radius:3px;flex:none}
+
+  /* ---- status chips (icon + label, never color alone) ---- */
+  .chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;
+        letter-spacing:.03em;text-transform:uppercase;padding:2px 9px;border-radius:99px;
+        border:1px solid currentColor;white-space:nowrap}
+  .c-good{color:var(--st-good)} .c-warn{color:var(--st-warning)}
+  .c-ser{color:var(--st-serious)} .c-crit{color:var(--st-critical)}
+  .c-info{color:var(--series-1)}
+
+  .callout{border:1px solid var(--border);border-left:3px solid var(--series-1);
+           border-radius:0 9px 9px 0;padding:16px 20px;margin:22px 0;background:var(--surface-1)}
+  .callout.crit{border-left-color:var(--st-critical)}
+  .callout.warn{border-left-color:var(--st-serious)}
+  .callout > :first-child{margin-top:0} .callout > :last-child{margin-bottom:0}
+  .toc{background:var(--surface-1);border:1px solid var(--border);border-radius:10px;
+       padding:16px 22px;font-size:14.5px;margin:22px 0}
+  .toc ol{margin:0;padding-left:20px} .toc a{color:var(--series-1);text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--grid);
+         color:var(--text-muted);font-size:12.8px;line-height:1.6}
+  small{color:var(--text-muted)}
+  .note{font-size:13px;color:var(--text-secondary)}
+</style>
+</head>
+<body>
+<div class="wrap viz-root">
+
+<header>
+  <h1>Qwen3.8-27B Local Inference Performance<br>— Third-Party Field Report and HX Fit Analysis</h1>
+  <table class="meta-table">
+    <tr><td>Document ID</td><td><code>hx-research_qwen38-27b-inference-performance_third-party_2026-08-17_claude-opus-5</code></td></tr>
+    <tr><td>Subject</td><td>Qwen3.8-27B local inference — throughput, memory footprint, concurrency, agentic behaviour</td></tr>
+    <tr><td>Evidence tier</td><td><span class="chip c-warn">⚠ third-party</span> &nbsp;single external operator · unverified · non-HX hardware</td></tr>
+    <tr><td>Author</td><td>Claude (Opus 5)</td></tr>
+    <tr><td>Date</td><td>2026-08-17</td></tr>
+    <tr><td>Status</td><td>Research record. <strong>Not a decision, not an acceptance, not an authorization.</strong></td></tr>
+    <tr><td>Relates to</td><td>hxs-1 · <code>governance/fleet-architecture-v0.3.html</code> · <code>tests/ai-runtime/</code></td></tr>
+  </table>
+</header>
+
+<div class="toc">
+  <ol>
+    <li><a href="#abstract">Abstract</a></li>
+    <li><a href="#prov">Provenance and evidence tier</a></li>
+    <li><a href="#config">Reported test configuration</a></li>
+    <li><a href="#quant">Reported quantitative findings</a></li>
+    <li><a href="#fit">HX fit analysis — hxs-1</a></li>
+    <li><a href="#qual">Reported qualitative findings</a></li>
+    <li><a href="#hyp">Derived hypotheses for commissioning</a></li>
+    <li><a href="#concl">Conclusions</a></li>
+    <li><a href="#cite">Citation</a></li>
+  </ol>
+</div>
+
+<h2 id="abstract">1. Abstract</h2>
+
+<p>A public field report by a single independent operator provides the first quantitative performance data on Qwen3.8-27B under local inference available to this project. The operator ran a 4-bit Unsloth quantization on a <strong>single NVIDIA RTX 4090 (24 GB)</strong> and reported prefill and decode throughput across an 8K–120K context ladder, prefix-cache behaviour, a 32-way concurrency ladder, resident memory at 131K context, and qualitative results on three agentic build tasks.</p>
+
+<div class="callout">
+  <h4 style="margin-top:0">The number that matters</h4>
+  <div class="hero" style="color:var(--series-1)">23.5 <span style="font-size:22px;font-weight:400;color:var(--text-secondary)">GiB</span></div>
+  <p style="margin-bottom:0">Resident footprint at 131,072-token context on a 24 GiB card. This single figure resolves the largest open unknown in the hxs-1 slot — it establishes that Qwen3.8-27B at 4-bit <strong>plausibly fits hxs-1's 32,752 MiB aggregate with ~6.5 GiB headroom</strong>, and simultaneously that it <strong>cannot fit on either card alone</strong>.</p>
+</div>
+
+<p>Scaled to hxs-1's hardware by memory-bandwidth and compute ratio, the derived expectation is <strong>~40–53 tok/s single-stream decode</strong> and <strong>~135 s cold time-to-first-token at 120K context</strong>, falling to <strong>~3 s on a prefix-cache hit</strong>. Prefix caching is therefore not an optimization on this host; it is the difference between an interactive system and an unusable one.</p>
+
+<p>This document records the external claims, states their limitations plainly, derives the hxs-1 implications, and converts them into falsifiable hypotheses for a future commissioning run. It asserts no acceptance and requests no ruling.</p>
+
+<h2 id="prov">2. Provenance and evidence tier</h2>
+
+<p>A transcript of a publicly published video review of Qwen3.8-27B by an independent enthusiast operator, supplied by the project owner on 2026-08-17.</p>
+
+<p><code>governance/policy/ai-runtime-acceptance-contract.md</code> defines three evidence classes: <strong>A</strong> protocol conformance (offline-provable), <strong>B</strong> model behaviour, <strong>C</strong> performance and VRAM. Neither B nor C is provable offline. This source makes class C and class B claims about hardware that is not HX hardware, using a toolchain HX has not installed, with no published methodology, no raw logs, and no reproduction path.</p>
+
+<blockquote><p>Under the project's own standard — <em>“A skip is never a pass”</em> and <em>“Never use <code>PASS</code> for a property the test could not actually disprove”</em> — <strong>nothing in this document constitutes evidence for an HX acceptance decision.</strong> It is prior art. It narrows the hypothesis space for a commissioning run. It does not substitute for one.</p></blockquote>
+
+<h4>Known limitations</h4>
+<table>
+  <thead><tr><th style="width:44px">#</th><th>Limitation</th><th>Effect</th></tr></thead>
+  <tbody>
+    <tr><td>L1</td><td><strong>Different GPU class.</strong> Single RTX 4090, 24 GB, 1008 GB/s, AD102. hxs-1 is 2× RTX 4070 Ti SUPER, 16 GB each, 672 GB/s, AD103.</td><td>All throughput figures require scaling. Single-card vs dual-card is architectural, not a scaling factor.</td></tr>
+    <tr><td>L2</td><td><strong>Quantization tier partly ambiguous.</strong> Most tests stated as 4-bit Unsloth; a 3-bit tier is also discussed. The 23.5 GiB figure sits adjacent to the 3-bit discussion.</td><td>The single most important number carries a tier ambiguity.</td></tr>
+    <tr><td>L3</td><td><strong>Unsloth dynamic quants are not plain Q4_K_M</strong> — per-layer mixed precision.</td><td>Byte sizes do not transfer to a generic “4-bit” label.</td></tr>
+    <tr><td>L4</td><td><strong>No stated inference engine, version, or flags</strong> beyond MTP and prefix caching.</td><td>Findings cannot be attributed to Ollama, llama.cpp, or vLLM.</td></tr>
+    <tr><td>L5</td><td><strong>No methodology, error bars, or repetition count.</strong> Several figures given as approximations.</td><td>Treat every number as ±.</td></tr>
+    <tr><td>L6</td><td><strong>One internal arithmetic inconsistency</strong> in the concurrency block.</td><td>Reduces confidence in that section specifically.</td></tr>
+    <tr><td>L7</td><td><strong>Two comparative claims are explicitly hearsay.</strong></td><td>Not propagated into any HX record.</td></tr>
+    <tr><td>L8</td><td><strong>Concurrency context depth unstated.</strong></td><td>Concurrency figures cannot be converted to a capacity plan.</td></tr>
+  </tbody>
+</table>
+
+<h2 id="config">3. Reported test configuration</h2>
+<table>
+  <thead><tr><th>Parameter</th><th>Value</th><th style="width:110px">Confidence</th></tr></thead>
+  <tbody>
+    <tr><td>Model</td><td>Qwen3.8-27B</td><td>stated</td></tr>
+    <tr><td>Predecessor referenced</td><td>Qwen3.6-27B, ~4–5 months earlier</td><td>stated</td></tr>
+    <tr><td>GPU</td><td>1× NVIDIA RTX 4090, 24 GB GDDR6X</td><td>stated</td></tr>
+    <tr><td>Quantization</td><td>4-bit (Unsloth); 3-bit sampled</td><td>stated</td></tr>
+    <tr><td>Speculative decoding</td><td>MTP enabled by default, “out of the box”</td><td>stated</td></tr>
+    <tr><td>Prefix caching</td><td>Available; on/off both measured</td><td>stated</td></tr>
+    <tr><td>Reasoning effort</td><td>Maximum, for the build tasks</td><td>stated</td></tr>
+    <tr><td>Inference engine</td><td><em>not stated</em></td><td>—</td></tr>
+    <tr><td>Engine version / flags</td><td><em>not stated</em></td><td>—</td></tr>
+  </tbody>
+</table>
+
+<h2 id="quant">4. Reported quantitative findings</h2>
+<p class="note">All figures below are <strong>the source's claims</strong>, restated. None are HX measurements.</p>
+
+<div class="kpi">
+  <div class="tile"><div class="lab">Peak prefill @ 8K</div><div class="val">2,359<span class="u"> tok/s</span></div><div class="sub">degrades only slightly to 120K</div></div>
+  <div class="tile"><div class="lab">Sustained decode, 32–48K</div><div class="val">60–80<span class="u"> tok/s</span></div><div class="sub">single stream, MTP on</div></div>
+  <div class="tile"><div class="lab">Cold TTFT @ 120K</div><div class="val">72<span class="u"> s</span></div><div class="sub">no cache</div></div>
+  <div class="tile"><div class="lab">Cached TTFT @ 120K</div><div class="val">1.5<span class="u"> s</span></div><div class="sub">~48× reduction</div></div>
+  <div class="tile"><div class="lab">Aggregate decode, 32 agents</div><div class="val">330<span class="u"> tok/s</span></div><div class="sub">MTP disabled · ceiling not reached</div></div>
+  <div class="tile"><div class="lab">Resident @ 131K context</div><div class="val">23.5<span class="u"> GiB</span></div><div class="sub">of 24 GiB — near the limit</div></div>
+</div>
+
+<h3>4.1 Prefill and decode</h3>
+<table>
+  <thead><tr><th>Context</th><th>Prefill</th><th>Cold TTFT</th></tr></thead>
+  <tbody>
+    <tr><td>8,192</td><td><strong>2,359 tok/s</strong> (peak)</td><td>—</td></tr>
+    <tr><td>~120,000</td><td>slightly degraded from peak</td><td><strong>~72 s</strong></td></tr>
+  </tbody>
+</table>
+<p>Decode sustained <strong>60–80 tok/s</strong> at 32K–48K context, declining as context fills. Per-rung figures for the 8K/32K/64K/120K ladder were shown on-screen in the source but not spoken; only the aggregate characterization survives in the transcript.</p>
+
+<h3>4.2 Resident memory</h3>
+<blockquote><p>“I was pretty much almost at the limit. I believe 23 gigs, 23 and a half gigs at 131K context.”</p></blockquote>
+<p><strong>~23.5 GiB resident at 131,072-token context</strong>, against a 24 GiB card. Quantization tier ambiguous <em>(L2)</em>. This is the most consequential number in the source for this project, and §5.1 is built on it.</p>
+
+<h3>4.3 Concurrency</h3>
+<table>
+  <thead><tr><th>Concurrent agents</th><th>Aggregate decode</th><th>Per-agent</th><th>MTP</th></tr></thead>
+  <tbody>
+    <tr><td>8</td><td><strong>202 tok/s</strong></td><td>~25 tok/s <small>(derived)</small></td><td>not stated</td></tr>
+    <tr><td>16 / 20 / 24</td><td>ladder run, values not stated</td><td>—</td><td>disabled</td></tr>
+    <tr><td>32</td><td><strong>330 tok/s</strong></td><td>~10.3 <small>(derived)</small> / <strong>11.4 stated</strong></td><td>disabled</td></tr>
+  </tbody>
+</table>
+<ol>
+  <li><strong>MTP had to be disabled to reach high concurrency.</strong> The expected trade — speculative decoding spends spare compute to cut single-stream latency, and batching wants that compute back. A real operational finding that generalizes across engines.</li>
+  <li><strong>The per-agent figure is internally inconsistent.</strong> 32 × 11.4 = 365 tok/s, not the stated 330; 330 ÷ 32 = 10.3. A ~10% discrepancy. <em>(L6)</em></li>
+</ol>
+<p>The operator states the ceiling was <strong>not reached</strong> at 32 agents.</p>
+
+<h2 id="fit">5. HX fit analysis — hxs-1</h2>
+
+<p class="note">hxs-1 (<code>192.168.50.200</code>): Core Ultra 9 285K 24c/24t · 128 GB DDR5 · <strong>2× RTX 4070 Ti SUPER, 16,376 MiB each, 32,752 MiB total</strong> · driver 580.173.02 / CUDA 13.0 · Ubuntu 24.04.4 · 3.6 TB NVMe root at 1% used, <strong>~11 TB unallocated</strong>. Source: <code>servers/hxs-1/discovery.md</code>.</p>
+
+<h3>5.1 Memory budget</h3>
+
+<figure>
+  <p class="fig-title">Observed footprint against hxs-1's memory limits</p>
+  <p class="fig-sub">23.5 GiB resident at 131K context, measured against the two budgets that matter on this host. Overhead reserve follows <code>hx-gpu-fit.ps1</code>'s stated 1.0 GiB per device. <strong>Both tracks share one scale — 0 to 29.98 GiB</strong> — so bar lengths are directly comparable.</p>
+
+  <div class="meter">
+    <div class="meter-head">
+      <span class="name">hxs-1 <strong>aggregate</strong> — both GPUs, layer split</span>
+      <span class="num">23.50 / 29.98 GiB usable · 78.4%</span>
+    </div>
+    <div class="track">
+      <div class="fill" style="width:78.4%;background:var(--seq-450)" title="23.50 GiB resident of 29.98 GiB usable (78.4%)"></div>
+      <div class="limit" style="left:100%" title="29.98 GiB usable ceiling"></div>
+      <div class="limit-lab" style="left:100%;transform:translateX(-100%)">29.98 GiB ceiling</div>
+    </div>
+    <p class="note" style="margin:7px 0 0"><span class="chip c-good">✓ fits</span> &nbsp;6.48 GiB headroom — clears <code>hx-gpu-fit.ps1</code> thresholds (FAIL ≤ 0, BLOCKED &lt; 1.0) with margin.</p>
+  </div>
+
+  <div class="meter">
+    <div class="meter-head">
+      <span class="name">hxs-1 <strong>single card</strong> — 16,376 MiB</span>
+      <span class="num">23.50 / 14.99 GiB usable · 157%</span>
+    </div>
+    <div class="track">
+      <div class="fill" style="width:50.0%;background:var(--seq-450)" title="14.99 GiB usable — fully consumed"></div>
+      <div class="over" style="left:50.0%;width:28.4%;background:var(--st-critical);opacity:.85" title="8.51 GiB over the single-card ceiling"></div>
+      <div class="limit" style="left:50.0%" title="14.99 GiB single-card usable ceiling"></div>
+      <div class="limit-lab" style="left:50.0%">14.99 GiB ceiling</div>
+    </div>
+    <p class="note" style="margin:7px 0 0"><span class="chip c-crit">✕ does not fit</span> &nbsp;8.51 GiB over. <strong>Multi-GPU is mandatory.</strong></p>
+  </div>
+
+  <div class="legend">
+    <span><span class="sw" style="background:var(--seq-450)"></span> Resident footprint, within ceiling</span>
+    <span><span class="sw" style="background:var(--st-critical);opacity:.85"></span> Over ceiling</span>
+    <span><span class="sw" style="background:var(--grid)"></span> Free</span>
+    <span><span class="sw" style="background:var(--text-primary);width:2px;border-radius:1px"></span> Usable ceiling</span>
+  </div>
+
+  <figcaption>Figures in GiB; both tracks scaled 0 → 29.98 GiB. hxs-1 aggregate 32,752 MiB = 31.98 GiB, less 2 × 1.0 GiB CUDA context = 29.98 GiB usable. Single card 16,376 MiB = 15.99 GiB, less 1.0 GiB = 14.99 GiB — exactly half the aggregate ceiling, which is why its marker sits at 50%. In both rows the blue-plus-red extent is the same 23.50 GiB footprint. Source footprint is third-party and tier-ambiguous (L2). Exact values are tabulated below.</figcaption>
+</figure>
+
+<pre><code>hxs-1 aggregate            32,752 MiB  =  31.98 GiB
+  less 2 × 1.0 GiB CUDA context        =  -2.00 GiB
+usable                                 =  29.98 GiB
+
+observed footprint @131K ctx           =  23.50 GiB
+headroom                               =   6.48 GiB      utilization 78.4%
+
+single card usable (15.99 − 1.0)       =  14.99 GiB
+observed footprint                     =  23.50 GiB   →  DOES NOT FIT</code></pre>
+
+<p><strong>PASS on aggregate.</strong> 6.48 GiB headroom clears the gate thresholds with margin. At 78% utilization there is room for the CUDA context to run heavier than assumed and still hold.</p>
+
+<p><strong>Multi-GPU is mandatory, not optional.</strong> 23.5 GiB exceeds a single card by ~8.5 GiB. There is no single-card configuration of this model at this context on this host. Every deployment option therefore inherits the inter-GPU question below.</p>
+
+<h3>5.2 The PCIe ×4 link becomes a blocking question</h3>
+
+<div class="callout crit">
+  <p><code>servers/hxs-1/discovery.md</code> records GPU0 at <code>2.5 GT/s ×16</code> and <strong>GPU1 at <code>2.5 GT/s ×4</code> against an ×16-capable device</strong>, noting the GPUs “do not have equal host bandwidth” and that this “has not been confirmed under load.”</p>
+  <p>The 2.5 GT/s reading is very likely idle link-state downtraining (ASPM / dynamic link speed) and will recover under load. <strong>Link width, by contrast, is negotiated at link training and is not reduced by idle power management on NVIDIA GeForce parts.</strong> A ×4 reading therefore reflects the physical slot wiring, board bifurcation settings, riser or cable lane loss, or a lane that failed to train — none of which recover under load. And §5.1 has just established that the model <em>must</em> span both cards.</p>
+</div>
+
+<table>
+  <thead><tr><th>Strategy</th><th>Inter-GPU traffic</th><th>Sensitivity to ×4</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Layer split</strong><br><small>llama.cpp / Ollama</small></td><td>One activation tensor per split boundary — a few MB per token</td><td><span class="chip c-good">✓ low</span> Latency-bound, not bandwidth-bound. ×4 Gen4 (~8 GB/s) is ample.</td></tr>
+    <tr><td><strong>Tensor parallel, TP=2</strong><br><small>vLLM</small></td><td>All-reduce <strong>every layer</strong>, 64 layers per forward pass</td><td><span class="chip c-crit">✕ high</span> The slow card paces both. This is where ×4 becomes a throughput collapse.</td></tr>
+  </tbody>
+</table>
+
+<p><strong>This single unmeasured fact discriminates between the two candidate runtimes.</strong> It should be resolved before any runtime decision is packaged, and it costs one command.</p>
+
+<h3>5.3 Derived throughput expectations</h3>
+
+<table>
+  <thead><tr><th>Ratio</th><th>RTX 4090</th><th>RTX 4070 Ti SUPER</th><th>Ratio</th></tr></thead>
+  <tbody>
+    <tr><td>Memory bandwidth</td><td>1008 GB/s</td><td>672 GB/s</td><td><strong>0.667</strong></td></tr>
+    <tr><td>Compute (AI TOPS)</td><td>1321</td><td>706</td><td><strong>0.534</strong></td></tr>
+    <tr><td>Compute (FP32 TFLOPS)</td><td>82.6</td><td>44.1</td><td>0.534</td></tr>
+  </tbody>
+</table>
+
+<div class="callout warn">
+  <p style="margin:0"><strong>Why two cards do not double the rate.</strong> Under layer split the forward pass runs GPU0's layers, then GPU1's — sequentially. Each card reads only its own weights from its own VRAM. With two cards of <em>equal</em> bandwidth, total time is governed by one card's bandwidth rather than the sum — so <strong>for a single stream, two cards buy capacity, not speed.</strong> Under TP=2 the compute genuinely parallelizes, but only if the interconnect keeps up — which returns to §5.2.</p>
+</div>
+
+<table>
+  <thead><tr><th>Metric</th><th>4090 observed</th><th>hxs-1 derived</th><th>Basis</th></tr></thead>
+  <tbody>
+    <tr><td>Decode, single stream</td><td>60–80 tok/s</td><td><strong>40–53 tok/s</strong></td><td>× 0.667 (bandwidth)</td></tr>
+    <tr><td>Prefill @ 8K</td><td>2,359 tok/s</td><td><strong>~1,260 tok/s</strong></td><td>× 0.534 (compute)</td></tr>
+    <tr><td>Cold TTFT @ 120K</td><td>72 s</td><td><strong>~135 s</strong> (2.2 min)</td><td>÷ 0.534 (compute)</td></tr>
+    <tr><td>Cached TTFT @ 120K</td><td>1.5 s</td><td><strong>~2–3 s</strong></td><td>weakly scaled — see note</td></tr>
+    <tr><td>Aggregate, 8 agents</td><td>202 tok/s</td><td>~108–135 tok/s</td><td>× 0.534–0.667</td></tr>
+    <tr><td>Aggregate, 32 agents</td><td>330 tok/s</td><td>~176–220 tok/s (~5.5–6.9/agent)</td><td>× 0.534–0.667</td></tr>
+  </tbody>
+</table>
+
+<h4>Two scaling caveats, stated rather than hidden</h4>
+<ul>
+  <li><strong>The concurrency rows carry a range, not a point.</strong> Single-stream decode is memory-bandwidth-bound, so × 0.667 is right. Under batching, weight reads amortize across the batch and decode shifts toward compute- and attention-bound — pulling the honest ratio toward 0.534. The upper end of each range is an optimistic bound, not an estimate. A related caveat applies to the layer-split argument above: it is a <em>single-stream</em> result. Under concurrency the two GPU stages can in principle be pipelined so both cards work on different requests at once, recovering throughput toward 2× — vLLM's pipeline-parallel does this; llama.cpp largely does not.</li>
+  <li><strong>Cached TTFT is only weakly scalable.</strong> A prefix-cache hit skips prefill entirely, so the 1.5 s is KV load plus first-token decode plus host overhead — none of it compute-bound prefill. No clean ratio applies. ~2–3 s is an order-of-magnitude expectation, not a derivation.</li>
+</ul>
+
+<blockquote><p>These are <strong>derived estimates from an unverified third-party baseline</strong>, not predictions and certainly not commitments. They exist to size expectations and to give a commissioning run something specific to falsify. Real-world divergence of ±30% would not be surprising.</p></blockquote>
+
+<h3>5.4 Prefix caching is load-bearing on this host</h3>
+
+<div class="kpi" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+  <div class="tile"><div class="lab">hxs-1 derived — cold TTFT @ 120K</div><div class="val" style="color:var(--st-critical)">~135<span class="u"> s</span></div><div class="sub">Not usable interactively</div></div>
+  <div class="tile"><div class="lab">hxs-1 derived — cached TTFT @ 120K</div><div class="val" style="color:var(--st-good)">~2–3<span class="u"> s</span></div><div class="sub">Interactive</div></div>
+</div>
+
+<p>On the 4090 the cold path was merely annoying. <strong>On hxs-1 it is the difference between a working system and an abandoned one.</strong> Any serving design for this host must treat prefix-cache retention as a first-class requirement — sized deliberately, measured, and protected — rather than as an engine default nobody looked at. It also argues against frequent model unload/reload cycles here, which discard the cache.</p>
+
+<h3>5.5 Reasoning verbosity is a capacity lever, not a preference</h3>
+
+<p>The source is emphatic that Qwen3.8-27B over-reasons — that it “thinks a lot,” can “talk itself out of solutions,” and that turning reasoning effort down to medium or off makes it “feel a lot snappier” without materially hurting observed results.</p>
+
+<table>
+  <thead><tr><th>Task</th><th>4090 wall-clock</th><th>hxs-1 derived</th><th>Token budget</th></tr></thead>
+  <tbody>
+    <tr><td>Kanban board</td><td>~5 min</td><td><strong>~7.5 min</strong></td><td>~60,000</td></tr>
+    <tr><td>Options dashboard (MCP + skills)</td><td>~7–8 min</td><td><strong>~11 min</strong></td><td>~120,000</td></tr>
+  </tbody>
+</table>
+
+<p>Both were single-prompt runs at <strong>maximum</strong> reasoning effort. Reasoning effort acts as a direct multiplier on wall-clock, on context consumption, and on how fast a session approaches the context ceiling. On a host running at two-thirds the reference speed, the default reasoning level is a capacity decision.</p>
+
+<p class="note"><em>Derivation note: the token figures are total consumed, not tokens generated. 5 minutes at 60–80 tok/s implies ~18–24K generated tokens of the ~60K total. Wall-clock scaling uses the bandwidth ratio; token figures are reported as-is.</em></p>
+
+<h3>5.6 Runtime implications — what this settles and what it does not</h3>
+
+<p><code>tests/ai-runtime/profiles/vllm-qwen.json</code> marks vLLM <code>PRIMARY</code>, and CI invariant #1 enforces it. <code>craig-ollama-specialist.md</code> limits Ollama to a narrow GGUF-utility role: <em>“Ollama: ADOPT — NARROW ROLE… Do not promote it into the traffic plane or universal primary serving runtime.”</em> Owner direction of 2026-08-14: <em>“the fleet goes forward on vLLM with HuggingFace models rather than Ollama with library tags.”</em> That direction was set against a 9B model on hxs-4. This is the first data bearing on a 27B on hxs-1.</p>
+
+<table>
+  <thead><tr><th>Factor</th><th>Favours</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td>23.5 GiB footprint vs 29.98 GiB usable</td><td><strong>Ollama / llama.cpp</strong></td><td>HX's own hxs-4 measurement: a w4a16 vLLM artifact was <strong>10.65 GB</strong> against a <strong>5.29 GB</strong> GGUF for the same 9B, “because that format keeps activations at 16-bit and ships the vision tower.” At ~2× a 27B w4a16 artifact plausibly exceeds the budget.</td></tr>
+    <tr><td>Must span both GPUs</td><td><strong>Ollama / llama.cpp</strong></td><td>Layer split is insensitive to the ×4 link; TP=2 is not.</td></tr>
+    <tr><td>Over-budget failure mode</td><td><strong>Ollama / llama.cpp</strong></td><td>HX record: vLLM “preallocates a KV block pool… does NOT offload layers to CPU… <strong>vLLM fails to start.</strong>” Ollama degrades to a CPU/GPU split.</td></tr>
+    <tr><td>Context-overflow correctness</td><td><strong>vLLM</strong></td><td><code>iss-015</code> open: Ollama silently truncates. Root-caused in source — the Anthropic adapter never sets <code>Truncate</code>, handler defaults it true. Present at v0.32.13.</td></tr>
+    <tr><td>Concurrency / multi-agent serving</td><td><strong>vLLM</strong></td><td>Continuous batching and paged KV are vLLM's purpose. The source's 32-agent numbers came from an unstated engine.</td></tr>
+    <tr><td>Authentication</td><td><strong>vLLM</strong></td><td>HX record: “Ollama has <strong>no authentication of any kind</strong>.”</td></tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <p><strong>The honest reading.</strong> This evidence materially strengthens the case that Ollama is the runtime that <em>fits</em> on hxs-1, while leaving every reason Ollama was demoted — silent truncation, no auth, no batching story — completely intact. Those are orthogonal problems, and a fit argument does not answer a correctness argument.</p>
+  <p style="margin-bottom:0">It is not grounds to break a CI-enforced invariant. It is grounds to put a properly evidenced question in front of the owner: <em>does the vLLM-primary direction survive contact with a 27B model on a 32 GiB aggregate budget behind an unequal PCIe link?</em> The correct next step is a measurement, not a preference.</p>
+</div>
+
+<h2 id="qual">6. Reported qualitative findings</h2>
+
+<table>
+  <thead><tr><th>Task</th><th>Result</th></tr></thead>
+  <tbody>
+    <tr><td>Flappy Bird, React + Vite</td><td>One-shot success. Score tracking, sound, working physics described as “okay.”</td></tr>
+    <tr><td>Kanban to-do board</td><td>Complete in ~5 min / ~60K tokens. Drag-reorder, priority editing, persistence all functional.</td></tr>
+    <tr><td>Options debit-spread dashboard</td><td>Single prompt, ~120K tokens, 7–8 min. Chained tool use, skills, and a live MCP connection to a brokerage account; produced a positions view and a profit heatmap. <strong>Minor rendering defects observed.</strong></td></tr>
+  </tbody>
+</table>
+
+<p>The third task is the most informative for HX purposes: it exercised <strong>multi-step tool use, skill invocation, and MCP integration under a long reasoning chain from a short prompt</strong> — much closer to the <code>Deep reasoning &amp; synthesis</code> role assigned to hxs-1 than one-shot code generation is.</p>
+
+<h4>Behavioural characterization</h4>
+<ul>
+  <li><strong>Over-reasons.</strong> The central qualitative complaint. A double-edged sword: reasoning solves genuine edge cases, but can also reason past a correct answer.</li>
+  <li><strong>Operator recommendation:</strong> medium or disabled reasoning for most work.</li>
+  <li><strong>Quality holds at 3-bit</strong> in limited sampling, with lower memory use — untested at depth.</li>
+  <li><strong>MTP available by default,</strong> and worth disabling under concurrency.</li>
+</ul>
+
+<h4>Comparative claims — recorded, not propagated</h4>
+<p>Two comparative claims appear in the source. Both are flagged here and <strong>deliberately not carried into any HX record</strong>:</p>
+<ol>
+  <li><em>“As good, if not better on some benchmarks than Opus 4.6.”</em> The operator explicitly qualifies this as half-remembered — “I think I saw a benchmark screenshot somewhere.” No benchmark, harness, or figure is named. <span class="chip c-crit">✕ weakest claim in source</span></li>
+  <li>Favourable comparison against a similarly-sized model referred to as “Muse Glimmer.” Subjective, single-operator, no methodology.</li>
+</ol>
+<p>Neither meets any HX evidence bar. They are recorded solely so a future reader encountering the same source knows they were seen and rejected, rather than missed.</p>
+
+<h2 id="hyp">7. Derived hypotheses for hxs-1 commissioning</h2>
+
+<p>Falsifiable, each mapped to the measurement that would settle it. This is the section a future commissioning run should consume.</p>
+
+<table>
+  <thead><tr><th style="width:44px">#</th><th>Hypothesis</th><th>Test</th><th>Falsified if</th></tr></thead>
+  <tbody>
+    <tr><td>H1</td><td>Resident in &lt; 26 GiB at 128K context across both GPUs</td><td>Measured ladder — 8K, 32K, 64K, 128K — <code>nvidia-smi</code> per card at each rung</td><td>Exceeds 26 GiB at 128K <small>(hard failure at 29.98 GiB, or if CPU offload engages)</small></td></tr>
+    <tr><td>H2</td><td>Single-stream decode lands in 40–53 tok/s</td><td>Generation benchmark at 8K and 32K</td><td>Sustained rate below 30 tok/s</td></tr>
+    <tr><td>H3</td><td>GPU1's ×4 is a reporting artifact, not the negotiated slot width</td><td><strong><code>lspci -vvs &lt;bdf&gt;</code>, comparing <code>LnkCap</code> width against <code>LnkSta</code> width</strong> — <code>nvidia-smi --query-gpu=pcie.link.width.max</code> often reports the <em>device's</em> capability (16) rather than the slot's, and can leave this unfalsifiable</td><td><code>LnkSta</code> width reads x4 while <code>LnkCap</code> reads x16</td></tr>
+    <tr><td>H4</td><td>Layer split is insensitive to ×4; TP=2 is not</td><td>Same decode benchmark under both strategies</td><td>TP=2 within 10% of layer split</td></tr>
+    <tr><td>H5</td><td>Prefix caching reduces long-context TTFT &gt; 20×</td><td>TTFT at 120K, cold vs warm</td><td>Reduction under 10×</td></tr>
+    <tr><td>H6</td><td>KV growth is sub-linear in context, per the Gated DeltaNet hybrid pattern measured on Qwen3.5-9B</td><td>Per-rung KV delta from the H1 ladder</td><td>KV scales linearly with context</td></tr>
+    <tr><td>H7</td><td>Reduced reasoning effort cuts wall-clock &gt;30% without materially degrading task success</td><td>Same task at max / medium / off</td><td>Success rate drops materially at medium</td></tr>
+    <tr><td>H8</td><td>A vLLM-compatible 4-bit artifact does <strong>not</strong> fit the 29.98 GiB budget</td><td>Resolve actual w4a16 / AWQ / GPTQ manifest byte counts before download</td><td>An artifact fits with &gt;1 GiB headroom</td></tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <p style="margin:0"><strong>H8 is the cheapest and the most decision-relevant.</strong> It requires no host access at all — only resolving real manifest sizes in both channels. Per the project's own recorded lesson: <em>“Always resolve the real file size in the channel you will actually deploy from.”</em></p>
+</div>
+
+<h2 id="concl">8. Conclusions</h2>
+<ol>
+  <li><strong>A 27B-class model at 4-bit plausibly fits hxs-1.</strong> ~23.5 GiB against 29.98 GiB usable is 78% utilization with 6.48 GiB of headroom. The reserved slot is viable on capacity grounds. This was previously unknown.</li>
+  <li><strong>It cannot fit on one card.</strong> Multi-GPU is mandatory, which promotes the PCIe ×4 link from a footnote to a blocking question.</li>
+  <li><strong>The ×4 link discriminates between the two candidate runtimes</strong> — layer split tolerates it, TP=2 does not — and it is unmeasured. One command settles it.</li>
+  <li><strong>Prefix caching is load-bearing on this host,</strong> not an optimization. ~135 s cold versus ~3 s warm at 120K context.</li>
+  <li><strong>Reasoning effort is a capacity lever.</strong> At two-thirds the reference decode rate, default maximum reasoning multiplies wall-clock and context burn on every request.</li>
+  <li><strong>The fit evidence favours Ollama; the correctness evidence still favours vLLM.</strong> Both are true simultaneously. A question for the owner with measurements attached, not a conclusion to act on.</li>
+  <li><strong>This document changes no project state.</strong> Prior art that narrows the hypothesis space and supplies eight falsifiable tests for a commissioning run that has not been authorized.</li>
+</ol>
+
+<h2 id="cite">9. Citation</h2>
+<pre><code>Third-party field report, Qwen3.8-27B local inference performance.
+Independent operator, published video review; transcript supplied by project owner 2026-08-17.
+Hardware: 1× NVIDIA RTX 4090 24 GB. Quantization: 4-bit (Unsloth), 3-bit sampled.
+Engine, version and flags: not stated.
+Evidence tier: third-party — unverified, non-HX hardware, no published methodology.</code></pre>
+
+<p class="note"><strong>HX records referenced:</strong> <code>servers/hxs-1/discovery.md</code> · <code>SERVER-REGISTRY.md</code> · <code>governance/fleet-architecture-v0.3.html</code> · <code>governance/policy/ai-runtime-acceptance-contract.md</code> · <code>governance/logs/actions-and-issues.md</code> (<code>iss-015</code>, <code>act-014</code>) · <code>governance/operations/ollama/craig-ollama-specialist.md</code> · <code>tests/ai-runtime/hx-gpu-fit.ps1</code> · <code>tests/ai-runtime/profiles/vllm-qwen.json</code> · <code>tests/ai-runtime/workloads/qwen35-9b-ollama.json</code></p>
+
+<p class="note"><strong>GPU specifications</strong> are vendor-published figures for the RTX 4090 and RTX 4070 Ti SUPER (memory bandwidth, AI TOPS, FP32 throughput), used only to compute scaling ratios.</p>
+
+<footer>
+  Prepared by Claude (Opus 5), 2026-08-17. Research record — no authority asserted, no decision made, no acceptance granted.<br>
+  Per repository convention, a proposal is not a ruling.<br>
+  Companion Markdown source: <code>hx-research_qwen38-27b-inference-performance_third-party_2026-08-17_claude-opus-5.md</code>
+</footer>
+
+</div>
+</body>
+</html>

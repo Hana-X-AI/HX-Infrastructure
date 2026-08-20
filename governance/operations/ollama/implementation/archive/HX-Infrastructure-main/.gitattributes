@@ -1,0 +1,29 @@
+# This repository stores files exactly as written, with CRLF endings.
+#
+# The tooling is Windows PowerShell, and the active hooks under .claude/hooks
+# are byte-compared against their packaged copies under claude-hooks. Any
+# end-of-line conversion would break that parity check and rewrite every blob.
+#
+# The initial baseline was committed with CRLF already in the objects, so with
+# a global core.autocrlf=true and core.safecrlf=true, git refuses the round trip
+# and no further commit is possible. Disabling text conversion resolves that
+# without rewriting the existing history.
+
+* -text
+
+# Shell scripts are executed on Ubuntu hosts. A CR byte makes bash fail with
+# "$'\r': command not found", so these are normalised to LF in the object store
+# and checked out as LF regardless of the platform that wrote them.
+*.sh text eol=lf
+
+# Ledger and provenance artifacts are pinned by sha256 and cited by hash in
+# execution briefs. Under the blanket "* -text" rule above, an editor that
+# re-saves one of these with Windows line endings changes every byte-line and
+# breaks the pin while altering no data — which is exactly what happened to
+# manifestv3.1resolved.jsonl and halted the LangGraph pilot at pre-flight.
+#
+# Normalising to LF in the object store makes the hash stable regardless of the
+# tool that wrote the file. All four tracked .jsonl artifacts are already LF, so
+# this changes no content and no existing hash. It does not touch the hook
+# byte-parity check, which covers .py and .ps1 only.
+*.jsonl text eol=lf

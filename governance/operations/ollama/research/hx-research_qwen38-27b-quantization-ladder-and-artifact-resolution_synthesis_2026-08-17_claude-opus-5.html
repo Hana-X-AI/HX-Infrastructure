@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qwen3.8-27B — Quantization Ladder, Artifact Resolution, and the Collapse of the Fit Argument</title>
+<style>
+  :root{
+    color-scheme: light;
+    --surface-1:#fcfcfb; --page:#f9f9f7;
+    --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#898781;
+    --grid:#e1e0d9; --baseline:#c3c2b7; --border:rgba(11,11,11,0.10);
+    --series-1:#2a78d6; --series-2:#eb6834; --series-3:#1baf7a;
+    --st-good:#0ca30c; --st-warning:#fab219; --st-serious:#ec835a; --st-critical:#d03b3b;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --surface-1:#1a1a19; --page:#0d0d0d;
+      --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#898781;
+      --grid:#2c2c2a; --baseline:#383835; --border:rgba(255,255,255,0.10);
+      --series-1:#3987e5; --series-2:#d95926; --series-3:#199e70;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--text-primary);
+       font:16px/1.62 system-ui,-apple-system,"Segoe UI",sans-serif;}
+  .wrap{max-width:940px;margin:0 auto;padding:48px 24px 96px}
+  h1{font-size:27px;line-height:1.26;margin:0 0 18px;letter-spacing:-.012em;
+     padding-bottom:20px;border-bottom:1px solid var(--grid)}
+  h2{font-size:20px;margin:46px 0 12px;padding-top:20px;
+     border-top:1px solid var(--grid);letter-spacing:-.01em}
+  h3{font-size:15.5px;margin:28px 0 8px}
+  h4{font-size:14px;margin:20px 0 6px;color:var(--text-secondary);
+     text-transform:uppercase;letter-spacing:.05em}
+  p{margin:0 0 14px} ul,ol{margin:0 0 14px;padding-left:22px} li{margin:6px 0}
+  li > p{margin:0 0 8px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.8px;
+       background:var(--surface-1);border:1px solid var(--grid);border-radius:4px;padding:1px 5px}
+  pre{background:var(--surface-1);border:1px solid var(--grid);border-radius:8px;
+      padding:14px 16px;overflow-x:auto;font-size:12.8px;line-height:1.6}
+  pre code{background:none;border:none;padding:0;font-size:12.5px}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px;
+        font-variant-numeric:tabular-nums}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--grid);vertical-align:top}
+  th{font-weight:600;color:var(--text-secondary);font-size:12px;
+     text-transform:uppercase;letter-spacing:.05em;font-variant-numeric:normal}
+  tbody tr:hover{background:var(--surface-1)}
+  td code{white-space:nowrap}
+  blockquote{margin:16px 0;padding:12px 18px;border-left:3px solid var(--baseline);
+             color:var(--text-secondary);background:var(--surface-1);border-radius:0 6px 6px 0}
+  blockquote p:last-child{margin:0}
+  hr{border:none;border-top:1px solid var(--grid);margin:34px 0}
+  a{color:var(--series-1)}
+  .meta table{font-size:13.5px;margin:0 0 8px}
+  .meta td{border-bottom:none;padding:3px 12px 3px 0}
+  .meta td:first-child{color:var(--text-muted);width:150px;white-space:nowrap}
+  .meta thead{display:none}
+  .ok{color:var(--st-good);font-weight:600}
+  .no{color:var(--st-critical);font-weight:600}
+  .warn{color:var(--st-warning);font-weight:600}
+  footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--grid);
+         color:var(--text-muted);font-size:12.8px;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Qwen3.8-27B — Quantization Ladder, Artifact Resolution, and the Collapse of the Fit Argument</h1>
+<div class="meta"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Document ID</strong></td>
+<td><code>hx-research_qwen38-27b-quantization-ladder-and-artifact-resolution_synthesis_2026-08-17_claude-opus-5</code></td>
+</tr>
+<tr>
+<td><strong>Subject</strong></td>
+<td>Full quantization ladder resolved against hxs-1's aggregate budget; real vLLM artifact manifests; MTP acceptance on hybrid attention; benchmark provenance</td>
+</tr>
+<tr>
+<td><strong>Evidence tier</strong></td>
+<td><code>synthesis</code> — third-party transcript (trigger) reconciled against <strong>vendor primary</strong> (HuggingFace manifest byte counts, llama.cpp issue tracker, Qwen model card) and <strong>HX primary</strong></td>
+</tr>
+<tr>
+<td><strong>Author</strong></td>
+<td>Claude (Opus 5)</td>
+</tr>
+<tr>
+<td><strong>Date</strong></td>
+<td>2026-08-17</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Research record. <strong>Not a decision, not an acceptance, not an authorization.</strong></td>
+</tr>
+<tr>
+<td><strong>Corrects</strong></td>
+<td><code>hx-research_qwen38-27b-inference-performance_third-party_...</code> (H8 framing) and <code>hx-research_qwen38-27b-ollama-serving-and-capability-fit_synthesis_...</code> (F5 extrapolation, benchmark weighting). <strong>This is the fifth and final record in the series.</strong></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>1. Verdict</h2>
+<p><strong>Hypothesis H8 is resolved, and it resolves against the position the previous records were
+building.</strong> The memory-fit argument for preferring Ollama over vLLM on hxs-1 does not survive
+contact with real manifest data, and is withdrawn.</p>
+<p>I extrapolated the vLLM w4a16 artifact at <strong>~29 GB</strong>, using HX's own measured 9B ratio of 1.61×.
+The actual best-case Ada-compatible W4A16 build of Qwen3.8-27B is <strong>18.60 GB</strong> — my extrapolation
+was <strong>56% too high</strong>. Against the GGUF path at 18.04 GB (Q4_K_M plus the vision projector), the
+gap is <strong>0.57 GB, or 3.1%</strong> — 1.42 GB and 7.8% once the separately-shipped MTP module is counted
+on both sides. Either way it is far too small to carry a runtime decision.</p>
+<p><strong>The runtime decision must now be made on other grounds</strong> — silent truncation (<code>iss-015</code>),
+continuous batching, authentication, the unmeasured PCIe ×4 link, and operational fit. Every one
+of those was already on the table. The differentiator that appeared to favour Ollama on hard
+numbers is no longer decisive on its own.</p>
+<p>One qualification kept out of the headline because it is real: <strong>the two paths are not charged
+symmetrically.</strong> vLLM's fixed per-process cost (CUDA graphs, NCCL buffers, activation workspace)
+is higher, and F8 shows its default <code>gpu_memory_utilization=0.90</code> delivers roughly <strong>10.8 GB</strong> of
+KV rather than the 13.6 GB the raw budget implies. The fit gap narrows from ~4.5× to under 1.5 GB;
+it does not vanish, and it must be re-checked at the actual utilization setting.</p>
+<p>Two further corrections follow. <strong>Every benchmark figure in the series — including the Opus 4.6
+Max comparison column — is vendor self-reported, and no independent reproduction of the headline
+table exists.</strong> Record 4 weighted the model card as "vendor primary — load-bearing." That was
+right about the source and wrong about what it licenses. And <strong>hxs-1's aggregate budget reaches
+above the consumer quantization ladder</strong>: Q6_K plus its projector lands at 23.82 GB, leaving
+8.38 GB nominal for KV — a tier no single-card consumer machine reaches. But <strong>Ollama's library
+ships no Q6_K tag</strong>, so reaching it means importing a GGUF rather than pulling one; and F2 shows
+the per-card split leaves materially less usable KV than the aggregate figure suggests.</p>
+<p>The transcript that triggered this record is the most numerically accurate of the three field
+reports: <strong>thirteen of thirteen file-size and percentage claims verified exact.</strong> Its two failures
+are both claims about what does <em>not</em> exist, and both are wrong.</p>
+<hr>
+<h2>2. The correction, stated plainly</h2>
+<h3>2.1 What I got wrong, and why</h3>
+<p>Record 1 (hypothesis H8) correctly identified the vLLM artifact size as the cheapest
+decision-relevant unknown and said to <em>resolve real manifest byte counts</em>. Record 4 then did the
+opposite: it <strong>extrapolated</strong> from HX's measured 9B ratio instead of resolving the 27B manifests,
+and presented the result as a finding.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Figure</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Record 4 extrapolation</td>
+<td>~29.05 GB</td>
+<td>18 GB GGUF × 1.61 (HX's measured 9B w4a16 / GGUF ratio)</td>
+</tr>
+<tr>
+<td><strong>Actual</strong></td>
+<td><strong>18.60 GB</strong></td>
+<td><code>dbirks/Qwen3.8-27B-W4A16-AutoRound</code>, 18,603,379,616 bytes</td>
+</tr>
+<tr>
+<td>Error</td>
+<td><strong>+10.45 GB, 56% high</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why the ratio failed:</strong> HX's 9B measurement compared a w4a16 repo shipping the full vision tower
+at BF16 against a GGUF whose <em>resident</em> footprint excluded the vision encoder. On a 27B base the
+same absolute vision tower (<strong>≈0.93 GB</strong> — see F6) is a far smaller proportional inflation, and the
+quantization recipes differ. <strong>Artifact-size ratios do not transfer across model scales.</strong></p>
+<p><small>A residual inconsistency between the companion records, inherited here: record 1 cites the
+hxs-4 9B GGUF at <strong>5.29 GB</strong> (implying a ~2× w4a16 ratio) while record 4 cites <strong>6.6 GB</strong> (1.61×).
+The HX workload record gives 6,594,474,236 bytes, so 6.6 GB and 1.61× are correct; record 1's
+5.29 GB figure is unsourced against the HX record and should be corrected there.</small></p>
+<p>The repository already had the correct instruction, and I did not follow it:</p>
+<blockquote>
+<p><em>"Always resolve the real file size in the channel you will actually deploy from."</em></p>
+</blockquote>
+<p><strong>Recording this rather than quietly amending it.</strong> A research series that corrects its own load-
+bearing claim is worth more than one that appears consistent.</p>
+<h3>2.2 What the correction changes</h3>
+<table>
+<thead>
+<tr>
+<th>Claim, records 1 &amp; 4</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"A 27B w4a16 artifact plausibly exceeds the aggregate budget"</td>
+<td><span class="no">❌</span> <strong>Refuted.</strong> 18.60 GB against 32.20 GB usable</td>
+</tr>
+<tr>
+<td>"The vLLM path is ~4.5× tighter on KV headroom"</td>
+<td><span class="no">❌</span> <strong>Refuted.</strong> 13.59 GB vs 14.16 GB — a 4% difference</td>
+</tr>
+<tr>
+<td>"This evidence materially strengthens the case that Ollama is the runtime that <em>fits</em>"</td>
+<td><span class="no">❌</span> <strong>Withdrawn.</strong> Both fit comfortably</td>
+</tr>
+<tr>
+<td>"vLLM preallocates and fails to start rather than degrading"</td>
+<td><span class="ok">✅</span> <strong>Stands</strong>, and matters more than the raw budget suggests — see F8: the default utilization setting yields ~10.8 GB, not 13.6 GB</td>
+</tr>
+<tr>
+<td>"iss-015: Ollama silently truncates; vLLM errors explicitly"</td>
+<td><span class="ok">✅</span> <strong>Stands, and is now the strongest remaining differentiator</strong></td>
+</tr>
+<tr>
+<td>"The ×4 link penalises TP=2"</td>
+<td><span class="ok">✅</span> <strong>Stands, and is now the decisive open question</strong></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>3. The artifact ladder, resolved against hxs-1</h2>
+<p>hxs-1 usable: <strong>32.20 GB decimal</strong> (32,752 MiB aggregate less 2 × 1 GiB CUDA context). All sizes
+below are <strong>exact manifest byte counts</strong> in decimal GB retrieved from the HuggingFace API on
+2026-08-17 — <strong>except the two Ollama rows, which are the registry's rounded display strings</strong>;
+exact Ollama blob byte counts were not retrieved and are listed as V3 below. HuggingFace file
+listings publish decimal GB; Ollama's registry does too.</p>
+<h3>3.1 GGUF path</h3>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>Weights</th>
+<th>+ projector (0.931 GB)</th>
+<th>KV room</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unsloth BF16</td>
+<td>54.66</td>
+<td>55.59</td>
+<td><strong>−23.39 <span class="no">❌</span> OVER</strong></td>
+</tr>
+<tr>
+<td>bartowski Q6_K</td>
+<td>23.46</td>
+<td>24.39</td>
+<td>+7.80</td>
+</tr>
+<tr>
+<td><strong>Unsloth Q6_K</strong></td>
+<td><strong>22.88</strong></td>
+<td><strong>23.82</strong></td>
+<td><strong>+8.38</strong></td>
+</tr>
+<tr>
+<td>ggml-org Q4_K_M</td>
+<td>18.97</td>
+<td>19.91</td>
+<td>+12.29</td>
+</tr>
+<tr>
+<td><strong>Ollama <code>27b-q4_K_M</code></strong> (projector included)</td>
+<td><strong>18.00</strong></td>
+<td>—</td>
+<td><strong>+14.20</strong></td>
+</tr>
+<tr>
+<td>Unsloth UD-Q4_K_XL</td>
+<td>17.92</td>
+<td>18.85</td>
+<td>+13.34</td>
+</tr>
+<tr>
+<td>Unsloth Q4_K_M</td>
+<td>17.11</td>
+<td>18.04</td>
+<td>+14.16</td>
+</tr>
+<tr>
+<td>lmstudio-community / mradermacher Q4_K_M</td>
+<td>16.81</td>
+<td>17.74</td>
+<td>+14.45</td>
+</tr>
+<tr>
+<td>Unsloth IQ4_XS</td>
+<td>15.71</td>
+<td>16.64</td>
+<td>+15.56</td>
+</tr>
+<tr>
+<td>Unsloth UD-IQ3_XXS</td>
+<td>11.91</td>
+<td>12.84</td>
+<td>+19.35</td>
+</tr>
+<tr>
+<td>Ollama <code>27b-q8_0</code></td>
+<td>30.00</td>
+<td>—</td>
+<td>+2.20</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Nominal quant names are not portable between publishers.</strong> "Q4_K_M" spans <strong>16.81 → 18.97 GB</strong>
+depending on who built it — a 2.16 GB spread on the same label. Ollama's 18 GB sits inside that
+range. Any HX artifact record must name the publisher and pin the digest, not the quant label.</p>
+<h3>3.2 vLLM path — Ada-compatible builds only</h3>
+<p><strong>Accounting basis, stated because it changes the headline:</strong> all rows <strong>exclude</strong> the
+separately-shipped MTP module (≈0.85 GB). Including it adds ~0.85 GB to every W4A16 row and widens
+the §3.3 gap to <strong>1.42 GB (7.8%)</strong>. This matters because record 4's F3 established that Ollama's
+<em>default</em> tag is the MTP variant — so on a like-for-like basis the GGUF side ships MTP and the
+vLLM side, as tabulated, does not.</p>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>Weights (vision incl., MTP excl.)</th>
+<th>KV room</th>
+<th><code>--language-model-only</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>dbirks/…-W4A16-AutoRound</code></strong></td>
+<td><strong>18.60</strong></td>
+<td><strong>+13.59</strong></td>
+<td>+14.52</td>
+</tr>
+<tr>
+<td><code>philbert440/…-W4A16-AWQ</code></td>
+<td>18.70</td>
+<td>+13.50</td>
+<td>+14.43</td>
+</tr>
+<tr>
+<td><code>Vishva007/…-W4A16-AutoRound-GPTQ</code></td>
+<td>19.19</td>
+<td>+13.01</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>amd/…-Quark-AWQ-INT4-W4A16</code></td>
+<td>19.51</td>
+<td>+12.68</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>btbtyler09/…-GPTQ-4bit</code></td>
+<td>20.14</td>
+<td>+12.06</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>cyankiwi/…-AWQ-INT4</code></td>
+<td>21.02</td>
+<td>+11.18</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>Qwen/Qwen3.8-27B-FP8</code></td>
+<td>30.39</td>
+<td>+1.81</td>
+<td><span class="no">❌</span> vLLM would fail to start</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Ruled out on architecture, not size:</strong> <code>amd/…-MXFP4</code> — vLLM's own recipe page states the MXFP4
+linear method is missing on NVIDIA, so it is broken on <em>all</em> NVIDIA hardware, not just Ada.
+<code>dsikka/…-NVFP4-FP8</code> — NVFP4 requires Blackwell (compute capability 10.0+); hxs-1's Ada cards are
+8.9. This independently corroborates record 4's F4 disposition from a second direction.</p>
+<p><strong><code>RedHatAI/Qwen3.8-27B-quantized.w4a16</code> does not exist.</strong> Only <code>RedHatAI/Qwen3-8B-quantized.w4a16</code>
+— a different, 8-billion-parameter model. Worth recording because the naming collision is an easy
+trap, and HX's own hxs-4 workload record cites a RedHatAI w4a16 repo for the 9B.</p>
+<h3>3.3 The two paths converge</h3>
+<pre><code>GGUF  Q4_K_M + projector   18.038 GB   →  +14.16 GB KV room
+vLLM  W4A16 (dbirks)       18.603 GB   →  +13.59 GB KV room
+                            ──────
+gap                          0.566 GB   =  3.1%   (MTP-exclusive basis)
+                             1.415 GB   =  7.8%   (MTP-inclusive basis)
+</code></pre>
+<p>Corroborating datum, with its qualifier: <code>dbirks/…-W4A16-AutoRound</code> is the checkpoint in a public
+deployment running <strong>150K context on a single 24 GB RTX 3090</strong> with an fp8 KV pool — <strong>but that
+deployment applies an additional int8 requantization to the embedding matrices.</strong> The published
+18.60 GB artifact did not fit 24 GB at 150K; a further-shrunk derivative did. The comparison still
+favours hxs-1's 32 GB across two cards, but it is not the clean proof it first appears.</p>
+<hr>
+<h2>4. Findings</h2>
+<h3>F1 — Benchmark provenance: every number is vendor-run, and none has been reproduced</h3>
+<p>The transcript makes a methodological point the previous records understated:</p>
+<blockquote>
+<p><em>"Every benchmark number came off Qwen's own model card, including the Opus column beside it.
+Qwen ran both sides of that table."</em></p>
+</blockquote>
+<p>This is verified from the vendor's own words — <strong>the model card labels <code>QwenSWEBench</code> an
+"in-house coding benchmark"</strong>, and it sits in the comparison table scoring Qwen3.8-27B at 79.0
+against Opus 4.6 Max's 63.8. A third-party analysis reaches the same conclusion: <em>"These are
+Alibaba's own model-card numbers, not independent replications."</em></p>
+<p><strong>Scope the claim precisely:</strong> no independent reproduction of the <strong>headline benchmark table</strong>
+exists. That is not the same as no non-vendor data of any kind — community leaderboard tracking
+for the family does exist. The claim is about the table, not the model.</p>
+<p><strong>This is not an accusation.</strong> Publishing self-run comparisons is standard industry practice, and
+Qwen's table is unusually honest — it records four losses, including HLE at 30.8 against Opus's
+40.0. The transcript's framing is right: <em>"the losses are what make the wins believable."</em></p>
+<p><strong>But it changes the evidence class.</strong> Record 4 tabled the model card as <em>"vendor primary —
+load-bearing."</em> That is correct about <em>what Qwen claims</em> and wrong about what it licenses. Under
+HX's own acceptance contract these are <strong>class B — model behaviour — and class B is not provable
+offline</strong>, still less by the vendor's own harness. The correct weighting:</p>
+<table>
+<thead>
+<tr>
+<th>Claim type</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Qwen states Qwen3.8-27B scores 61.7 on SWE-bench Pro"</td>
+<td><strong>Verified fact about the model card</strong></td>
+</tr>
+<tr>
+<td>"Qwen3.8-27B scores 61.7 on SWE-bench Pro"</td>
+<td><strong>Vendor self-report, unreproduced</strong></td>
+</tr>
+<tr>
+<td>"Qwen3.8-27B beats Opus 4.6 Max on agentic coding"</td>
+<td><strong>NOT ESTABLISHED</strong> by any independent source</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Consequence for record 4's F1/F2.</strong> The role-fit finding — that this model is weak on frontier
+reasoning and strong on computer use — rests entirely on this table. The <em>direction</em> is
+corroborated by the model card recording its own losses, and by the qualitative field reports. The
+<em>magnitudes</em> are provisional. Record 4's finding should be read as <strong>"the vendor's own evidence
+points this way"</strong>, not <strong>"this is measured."</strong></p>
+<p><strong>The remedy is available and cheap:</strong> the weights are Apache 2.0. HX has hxs-15 assigned to
+<code>Test &amp; integration — QA, regression, integration testing, benchmarks</code>. <strong>A fleet that wants an
+independent number can produce one</strong>, which is more than most organizations evaluating this model
+can say.</p>
+<h3>F2 — hxs-1 sits above the consumer quantization ladder, but Ollama's library does not reach the tier</h3>
+<p>The transcript's central structure is a VRAM ladder — 24 / 17 / 16 / 12 / 8 GB — with the 16 GB
+rung as "the trap": standard Q4_K_M at 17.11 GB against a card holding 17.18 GB, fitting by
+<strong>73 MB</strong> before the KV cache is allocated at all.</p>
+<p><strong>None of that applies to hxs-1 the way it applies to a consumer machine.</strong> Under layer split the
+budget is aggregate, 32.20 GB usable — above the transcript's top rung. The consequence is that
+<strong>Q6_K becomes reachable</strong>: 22.88 GB plus the 0.931 GB projector leaves <strong>8.38 GB</strong> nominal for KV.
+That is the tier the transcript calls <em>"the best quality anyone runs at home"</em>.</p>
+<p><strong>But the aggregate figure flatters it, and the per-card arithmetic matters.</strong> 23.82 GB split
+evenly is <strong>11.91 GB per card</strong> against 16.10 GB usable per card — the weights fit. Consuming the
+full 8.38 GB of KV, however, puts each card at <strong>16.10 GB, exactly 100% of usable, with zero
+slack</strong>. And real llama.cpp splits are not even: layer granularity is ~0.37 GB, and the token
+embedding, output head and the 0.931 GB projector all land on one device, so <strong>expect 1–1.5 GB of
+asymmetry</strong>. The practical KV pool at Q6_K is closer to <strong>6.5–7 GB</strong> than 8.38.</p>
+<p><strong>But the Ollama library does not offer it.</strong> The twelve tags catalogued in record 4 are Q4_K_M,
+Q8_0, BF16, MLX, NVFP4 and MXFP8 variants — <strong>no Q6_K, no IQ4_XS</strong>. The library's usable range for
+this host is a 4-bit tier at 18 GB or an 8-bit tier at 30 GB with 2.20 GB left over.</p>
+<p>So the practical choice is sharper than it looked:</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Quality tier available</th>
+<th>Mechanism</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ollama library tag</td>
+<td>Q4_K_M (18 GB) or Q8_0 (30 GB, impractical)</td>
+<td><code>ollama pull</code></td>
+</tr>
+<tr>
+<td>Ollama + imported GGUF</td>
+<td><strong>Q6_K (23.82 GB, +8.38 KV)</strong></td>
+<td>Modelfile <code>FROM ./file.gguf</code></td>
+</tr>
+<tr>
+<td>vLLM W4A16</td>
+<td>4-bit equivalent (18.60 GB)</td>
+<td>HF repo</td>
+</tr>
+</tbody>
+</table>
+<p><strong>A quality tier is available to hxs-1 that requires leaving the convenient path to reach.</strong>
+Whether the Q6_K→Q4_K_M quality delta justifies importing a GGUF is a measurement question — and
+it is exactly the kind of question the fidelity data in F3 exists to answer.</p>
+<h3>F3 — Quantization fidelity is now measurable, with published methodology</h3>
+<p>The publisher <strong>AtomicChat</strong> ships a token-agreement table measuring each quant against the
+unquantized BF16 reference. Verified exact:</p>
+<table>
+<thead>
+<tr>
+<th>Build</th>
+<th>Top-1 token agreement vs BF16</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AD-Q4_K_M</code></td>
+<td><strong>95.59%</strong></td>
+</tr>
+<tr>
+<td><code>AD-IQ1_M</code> (1-bit)</td>
+<td><strong>76.34%</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Methodology, verified and independently reproducible: reference is the original BF16 weights
+converted to GGUF and run unquantized; metric is per-token KL divergence plus top-1 agreement;
+evaluation on a held-out <code>eval_neutral</code> partition of 87 chunks at 4096 context, <strong>disjoint from
+the imatrix calibration corpus</strong>; reference logits published.</p>
+<p><strong>This is the only quantization-fidelity evidence in the entire series that carries a stated,
+reproducible method.</strong> It is third-party and unverified by HX, but it is <em>methodologically
+stronger</em> than most of what has been available. It gives HX a template: a token-agreement harness
+against a BF16 reference is a class-B test that could be run on hxs-15 without touching hxs-1.</p>
+<p>The transcript's summary is fair: <strong>4-bit is a rounding error; 1-bit is a different model wearing
+the same name.</strong></p>
+<h3>F4 — The MTP speed story carries a large asterisk on exactly hxs-1's workload</h3>
+<p>Record 4 established that Ollama's <strong>default <code>qwen3.8:27b</code> tag is the MTP variant</strong>. The transcript
+supplies the reason it matters, and verification both confirms the numbers and corrects the framing.</p>
+<p><strong>Confirmed:</strong> llama.cpp merged MTP support in <strong>PR #22673, 16 May 2026</strong> (~75% acceptance with 3
+draft tokens, &gt;2× generation speedup on compatible models). <strong>Issue #23322</strong>, opened 19 May 2026,
+measured draft acceptance on hybrid-memory models at <strong>0.35360 and 0.36667</strong> on long tasks —
+bracketing the claimed 35–37% precisely — against a stated baseline of <em>"70–90% for models with
+compatible attention mechanisms."</em> Mechanism: cache invalidation forces full prompt reprocessing,
+wasting roughly two-thirds of the speculative compute.</p>
+<p><strong>Two corrections to the transcript's framing:</strong></p>
+<ol>
+<li><strong>The issue is closed, not open.</strong> It is presented as live.</li>
+<li><strong>It measured Qwen3.6-27B-MTP (SWA + hybrid recurrent memory), not Qwen3.8-27B.</strong> Qwen3.8's
+   stack is Gated DeltaNet + Gated Attention — related in kind, not the same. <strong>The 35–37% figure
+   is suggestive by analogy, not a Qwen3.8 measurement.</strong></li>
+</ol>
+<p><strong>Why this matters more for hxs-1 than for a consumer machine.</strong> The degradation is
+specifically on <em>long</em> tasks — and hxs-1's whole proposition is long context, with 131K supported
+under every branch of record 4's analysis. If the effect transfers, <strong>the MTP default that doubles
+throughput on a short prompt may contribute close to nothing at the context length hxs-1 actually
+works at.</strong> Combined with record 1's independent finding that MTP had to be <em>disabled</em> to reach
+high concurrency, the case for treating the non-MTP tag as the baseline strengthens further.</p>
+<p><strong>One qualification on my own citation, in the spirit of the correction above.</strong> Issue #23322
+reports four data points, not two: 0.36667 and 0.35360 on long tasks, but also <strong>0.83333 on a
+short task and ~55% cumulative across 1,446 drafts</strong>. Quoting only the two lowest makes the
+degradation look uniform when the issue's own aggregate is 55%. <strong>The 35–37% band is the long-task
+tail, not the mean.</strong> The recommendation — measure at working context, not headline context —
+survives intact; the magnitude should not be overstated.</p>
+<p>Related, and <strong>both also closed</strong> (the same status error this finding corrects in the transcript,
+so stated carefully): <strong>#23658</strong>, acceptance collapsing at KV-slot boundaries from ~70% to ~16%
+across a 256-token context shift — substantively the stronger citation of the two — and <strong>#23184</strong>,
+a feature request for pipelined draft strategies, closed as not planned.</p>
+<h3>F5 — Dense architecture removes every escape hatch</h3>
+<p>Verified: Qwen3.8-27B is <strong>dense</strong>, and llama.cpp's <code>--n-cpu-moe</code> matches only tensors named
+<code>\.ffn_(up|down|gate|gate_up)_(ch|)exps</code> — routed expert tensors. A dense model has none, so the
+flag has nothing to match and no effect. The same applies to <code>-ot</code> expert-offload regexes.</p>
+<p>The consequences compound:</p>
+<ul>
+<li><strong>Every one of the 27B parameters is read for every token.</strong> There is no sparse activation to
+  exploit.</li>
+<li><strong>The CPU-offload recipes circulating for MoE models do not apply.</strong> They are the single most
+  commonly pasted "make it fit" advice and they are inert here.</li>
+<li><strong>Disk paging is not a fallback.</strong> The transcript's arithmetic: ~17 GB read per token against a
+  Gen4 NVMe sustaining ~5 GB/s gives <strong>~0.3 tok/s as a ceiling</strong>. It is presented as a bound
+  rather than a measurement, correctly — no published measurement of a dense 27B paging from disk
+  exists. A laptop CPU running entirely from system RAM with no paging was clocked at 0.94 tok/s.</li>
+</ul>
+<p><strong>For hxs-1 this closes a door that was never really open.</strong> The model fits in VRAM at 4-bit and
+6-bit, so paging is moot — but it is worth recording that <em>if</em> a future artifact did not fit,
+there is no graceful degradation path. It fits or it does not.</p>
+<h3>F6 — <code>--language-model-only</code> saves about a gigabyte, not the three a first draft claimed</h3>
+<p>The vision tower is <strong>≈0.93 GB at BF16</strong> — <code>vision_config</code> gives hidden_size 1152, depth 27,
+≈460M parameters — and this is confirmed by every <code>mmproj-*BF16.gguf</code> in the ecosystem landing
+within 600 bytes of <strong>931,146,432</strong>. vLLM's <code>--language-model-only</code> drops it cleanly.</p>
+<p><em>A first draft of this finding asserted 2.7 GB, which is wrong by ~2.9×. The likely source is
+conflating <code>visual.*</code> with the other BF16-retained tensors — <code>lm_head</code> at ≈1.55 GB and the
+linear-attention projections — which that flag does </em><em>not</em><em> drop.</em> The corrected claim: the flag
+saves ~0.93 GB, <strong>less than the 2.42 GB spread between the cheapest and dearest 4-bit checkpoint
+in §3.2</strong>, and comparable to the GGUF projector it mirrors. Useful, not decisive.</p>
+<p>The GGUF path has the same property by default: the projector is a <strong>separate 931 MB file</strong>, and
+omitting it yields a text-only model. Two consequences worth stating:</p>
+<ul>
+<li><strong>This confirms record 4's derivation — as a consistency check, not independent corroboration.</strong>
+  Record 4 computed 461M params × 2 bytes = <strong>0.922 GB</strong>; the actual file is <strong>931,146,432 bytes =
+  0.931 GB</strong>. But these are not two methods: they are a parameter count of a tensor blob and the
+  on-disk size of that same blob, so agreement within 1% is guaranteed by construction — the delta
+  is GGUF header and metadata. It confirms the manifest reading was correct, nothing more. Record 4
+  drew exactly this distinction about its own "three methods" claim; it applies here too.</li>
+<li><strong>The transcript's warning stands:</strong> the main GGUF "has no eyes at all." Pull it without the
+  projector and you have a text-only model, silently.</li>
+</ul>
+<h3>F7 — Two transcript claims refuted, both about what does not exist</h3>
+<p>The transcript is otherwise the most accurate source in this series — <strong>13 of 13 numeric claims
+verified exact</strong>, with correct GB/GiB handling throughout. Both failures are negative claims:</p>
+<table>
+<thead>
+<tr>
+<th>Claim</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>"Four of those five do not go below 2-bit at all"</em></td>
+<td><span class="no">❌</span> <strong>It is five of five.</strong> No IQ1_S, IQ1_M or TQ1_0 exists in any of the five repos, including mradermacher's imatrix repo</td>
+</tr>
+<tr>
+<td><em>"There is no AWQ build and no GPTQ build"</em></td>
+<td><span class="no">❌</span> <strong>Flatly wrong.</strong> ~29 AWQ and ~24 GPTQ repos exist — and <strong>this is the finding that resolved H8</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The second is instructive beyond its own correction. <strong>The transcript's single largest error is
+the one that mattered most to HX</strong> — and it happens to be an error in the same direction as my
+own: both of us concluded the vLLM channel was unavailable or unviable without resolving it.</p>
+<p><em>(Publisher floors, all verified exact: Unsloth 9.010 GB · bartowski 9.393 · mradermacher 10.865 ·
+lmstudio-community 16.811 · ggml-org 18.974. AtomicChat undercuts all of them at 8.498 GB.)</em></p>
+<h3>F8 — An operational detail that changes TP=2 planning</h3>
+<p><code>gpu_memory_utilization</code> in vLLM is a <strong>per-GPU fraction, not an aggregate</strong>. With TP=2 and ~9.3 GB
+of weights per card, the default 0.90 yields roughly 5.4 GB of KV per card — <strong>10.8 GB total, not
+the 13.59 GB the budget allows</strong>. Reaching the full pool requires 0.94–0.95.</p>
+<p>Small, but it is the kind of detail that produces a "why is my context so short" investigation
+three days into a commissioning run. Pairs with <code>--kv-cache-dtype fp8</code> to roughly double token
+capacity — the same lever the 24 GB single-card deployment uses to reach 150K context.</p>
+<hr>
+<h2>5. What now decides the runtime question</h2>
+<p>With the fit argument withdrawn, the decision rests on five factors. <strong>None is settled by this
+record</strong>, and that is the honest position.</p>
+<table>
+<thead>
+<tr>
+<th>Factor</th>
+<th>Favours</th>
+<th>Strength</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>iss-015</code> — silent truncation vs explicit error</td>
+<td><strong>vLLM</strong></td>
+<td><strong>Strongest remaining.</strong> Root-caused in source; open</td>
+</tr>
+<tr>
+<td>Continuous batching / paged KV for fleet serving</td>
+<td><strong>vLLM</strong></td>
+<td>Strong — hxs-1 serves a fleet, not one user</td>
+</tr>
+<tr>
+<td>Authentication</td>
+<td><strong>vLLM</strong></td>
+<td>Strong — Ollama has none</td>
+</tr>
+<tr>
+<td>PCIe ×4 link penalising TP=2 all-reduce</td>
+<td><strong>Ollama</strong></td>
+<td><strong>Unmeasured.</strong> Could be decisive either way</td>
+</tr>
+<tr>
+<td>Operational simplicity, no Python environment</td>
+<td><strong>Ollama</strong></td>
+<td>Real but not architectural</td>
+</tr>
+<tr>
+<td>Memory fit</td>
+<td><strong>neither</strong></td>
+<td><strong>Withdrawn — 3.1% gap</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>The ×4 link is now the single highest-leverage unmeasured fact in the entire workstream.</strong> It
+was already flagged in three prior records. With memory fit removed from the equation, it is the
+only remaining factor that could favour Ollama on hard evidence — and it is settled by one
+command.</p>
+<p>This also means the <code>vllm-qwen remains PRIMARY</code> invariant now faces <strong>one fewer counter-argument</strong>.
+That is not the same as new support for it — nothing in this record is positive evidence for vLLM,
+and the ×4 link, on which TP=2 and therefore every vLLM advantage depends, remains unmeasured and
+capable of undermining it. What is gone is the case for revisiting the invariant <em>on fit grounds</em>.</p>
+<hr>
+<h2>6. Recommendations</h2>
+<h3>R1 — Measure the PCIe link width before anything else</h3>
+<p><strong>Do:</strong> <code>sudo lspci -vvs &lt;bdf&gt;</code>, comparing <code>LnkCap</code> against <code>LnkSta</code> for both GPUs, deriving the
+bus IDs rather than hardcoding them.
+<strong>Why:</strong> it is now the only unmeasured fact that could change the runtime decision.
+<strong>Resolves:</strong> whether TP=2 is viable, and therefore whether vLLM's advantages are reachable.
+<strong>Does not resolve:</strong> anything about correctness or batching, which stand regardless.
+<strong>Cost:</strong> one command, read-only. <strong>Highest leverage item in the series.</strong></p>
+<h3>R2 — Record the artifact register, and pin by publisher + full digest</h3>
+<p><strong>Do:</strong> record §3.1 and §3.2 in the hxs-1 workload definition. Pin the chosen artifact by
+<strong>publisher, repo, and full blob SHA-256</strong> — never by quant label.
+<strong>Why:</strong> F7 — "Q4_K_M" spans 16.81–18.97 GB across publishers, a 2.16 GB spread on one name.
+<strong>Resolves:</strong> the artifact ambiguity that record 4's F3 (MTP default) and F4 (nvfp4/mlx digest
+collision) both exposed.
+<strong>Prerequisite:</strong> none. Repository-side.</p>
+<h3>R3 — Reweight the benchmark evidence in record 4</h3>
+<p><strong>Do:</strong> annotate record 4's §3 tables as <strong>vendor self-reported, unreproduced</strong>, and soften its
+F1/F2 conclusions from "measured" to "the vendor's own evidence points this way."
+<strong>Why:</strong> F1 — no independent reproduction exists, and one benchmark in the comparison is the
+vendor's in-house harness.
+<strong>Resolves:</strong> prevents a provisional magnitude hardening into a project fact.
+<strong>Does not resolve:</strong> the direction of the finding, which survives.</p>
+<h3>R4 — Consider an independent benchmark run on hxs-15</h3>
+<p><strong>Do:</strong> evaluate whether HX wants its own number on one or two benchmarks, using the Apache-2.0
+weights. AtomicChat's published methodology (F3) is a usable template for a token-agreement
+fidelity test.
+<strong>Why:</strong> hxs-15's assigned role is literally <code>Test &amp; integration — QA, regression, integration
+testing, benchmarks</code>, and F1 establishes nobody has reproduced these scores.
+<strong>Resolves:</strong> converts the series' weakest evidence class into HX-primary evidence.
+<strong>Does not resolve:</strong> anything on the critical path — this is optional and later.
+<strong>Reversal criteria:</strong> drop it if independent leaderboard results appear first.</p>
+<h3>R5 — Treat the non-MTP tag as baseline and measure acceptance at working context</h3>
+<p><strong>Do:</strong> baseline on the non-MTP artifact; if MTP is A/B'd, measure draft acceptance at <strong>131K, not
+at 4K</strong>.
+<strong>Why:</strong> F4 — the degradation is specifically on long tasks, which is hxs-1's entire proposition.
+Corroborated by record 1's independent finding that MTP had to be disabled under concurrency.
+<strong>Resolves:</strong> prevents a headline throughput number that does not survive the real workload.
+<strong>Consistent with</strong> the Codex runbook, which already recommends non-MTP first.</p>
+<hr>
+<h2>7. Explicitly not recommended</h2>
+<ul>
+<li><strong>Do not revisit <code>vllm-qwen remains PRIMARY</code> on fit grounds.</strong> That argument is withdrawn.</li>
+<li><strong>Do not pull <code>27b-nvfp4</code>, <code>amd/…-MXFP4</code>, or <code>dsikka/…-NVFP4-FP8</code></strong> — all Blackwell-dependent or
+  broken on NVIDIA; hxs-1 is Ada 8.9.</li>
+<li><strong>Do not plan any CPU-offload or disk-paging fallback.</strong> F5 — dense architecture, ~0.3 tok/s
+  ceiling, MoE flags inert. It fits or it does not.</li>
+<li><strong>Do not quote any benchmark figure from this series as measured.</strong> F1.</li>
+<li><strong>Do not treat Q6_K as a recommendation.</strong> It is an <em>available option</em> that the Ollama library
+  does not reach; whether the quality delta justifies the inconvenience is unmeasured.</li>
+</ul>
+<hr>
+<h2>8. Series close — the five records and what each settled</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Record</th>
+<th>Settled</th>
+<th>Left open</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>…inference-performance_third-party</code></td>
+<td>23.5 GiB at 131K <em>plausibly</em> fits hxs-1's aggregate but not one card; prefix caching is load-bearing</td>
+<td>H8; the ×4 link; the L2 quantization-tier ambiguity on the 23.5 GiB figure itself</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>…cuda-driver-runtime-requirements_vendor</code></td>
+<td>Neither runtime needs the CUDA Toolkit; driver clears CUDA 13.0 <strong>only</strong></td>
+<td><code>hx-gpu-fit.ps1</code> floor defect</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>…hxs1-model-storage-architecture_synthesis</code></td>
+<td>The SATA drive is SMR; device names unsafe; downloads are in-place</td>
+<td>Mount path (<code>/srv/hx-ai</code> vs <code>/srv/hx</code>)</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>…ollama-serving-and-capability-fit_synthesis</code></td>
+<td>Default tag is MTP; no sampler prior art; role/capability gap</td>
+<td>Benchmark weighting <em>(corrected here)</em>; H8 <em>(resolved here)</em></td>
+</tr>
+<tr>
+<td><strong>5</strong></td>
+<td><strong>this record</strong></td>
+<td><strong>H8 resolved; fit argument withdrawn; artifact ladder resolved</strong></td>
+<td><strong>The ×4 link — one command</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Corrections issued across the series:</strong> H8 framing (record 1 → record 4 → here), the w4a16
+extrapolation (record 4 → here), benchmark evidence weighting (record 4 → here), the <code>noatime</code>
+rationale and PCIe width claim (record 3, at verification), the KV functional form and L2
+limitation (record 4, at verification).</p>
+<p><strong>Every one of these was found by adversarial verification, not by the drafting pass.</strong> That is
+the process finding worth carrying forward more than any individual number.</p>
+<hr>
+<h2>9. Remaining verification and owner decisions</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Item</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V1</td>
+<td><strong>PCIe <code>LnkCap</code> vs <code>LnkSta</code> on both GPUs</strong></td>
+<td>Verification — <strong>the critical path</strong></td>
+</tr>
+<tr>
+<td>V2</td>
+<td>Does the OpenAI <code>/v1</code> path share <code>iss-015</code>? Read vendored source</td>
+<td>Verification</td>
+</tr>
+<tr>
+<td>V3</td>
+<td>Full blob SHA-256 for whichever artifact is chosen</td>
+<td>Verification, at pull time</td>
+</tr>
+<tr>
+<td>V4</td>
+<td>MTP draft acceptance at 131K on Qwen3.8 specifically</td>
+<td>Measurement, at commissioning</td>
+</tr>
+<tr>
+<td>V5</td>
+<td>Whether Ollama's VRAM context tiering reads aggregate or per-device</td>
+<td>Verification, at commissioning</td>
+</tr>
+<tr>
+<td>D1</td>
+<td>What does <code>Deep reasoning &amp; synthesis</code> require?</td>
+<td><strong>Owner decision</strong> — record 4</td>
+</tr>
+<tr>
+<td>D2</td>
+<td><code>/srv/hx-ai</code> or <code>/srv/hx</code>, and which partition plan?</td>
+<td><strong>Owner decision</strong> — record 3</td>
+</tr>
+<tr>
+<td>D3</td>
+<td>Runtime selection, now on correctness/batching grounds only</td>
+<td><strong>Owner decision</strong></td>
+</tr>
+<tr>
+<td>D4</td>
+<td>Implementation-phase authorization for hxs-1</td>
+<td><strong>Owner decision</strong> — gates everything</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>10. Provenance</h2>
+<p><strong>Vendor primary — retrieved 2026-08-17.</strong> Exact manifest byte counts via the HuggingFace API
+(<code>?blobs=true</code>), not rounded UI strings:
+<code>unsloth/Qwen3.8-27B-GGUF</code> · <code>bartowski/Qwen3.8-27B-GGUF</code> · <code>ggml-org/Qwen3.8-27B-GGUF</code> ·
+<code>lmstudio-community/Qwen3.8-27B-GGUF</code> · <code>mradermacher/Qwen3.8-27B-GGUF</code> (+ <code>-i1-GGUF</code>) ·
+<code>AtomicChat/Qwen3.8-27B-GGUF</code> (+ <code>-metrics</code>) · <code>dbirks/Qwen3.8-27B-W4A16-AutoRound</code> ·
+<code>philbert440/Qwen3.8-27B-W4A16-AWQ</code> · <code>Vishva007/Qwen3.8-27B-W4A16-AutoRound-GPTQ</code> ·
+<code>amd/Qwen3.8-27B-Quark-AWQ-INT4-W4A16</code> · <code>amd/Qwen3.8-27B-Quark-AWQ-MXFP4</code> ·
+<code>btbtyler09/Qwen3.8-27B-GPTQ-4bit</code> · <code>cyankiwi/Qwen3.8-27B-AWQ-INT4</code> ·
+<code>dsikka/Qwen3.8-27B-NVFP4-FP8-GPTQ-AWQ</code> · <code>Qwen/Qwen3.8-27B</code> · <code>Qwen/Qwen3.8-27B-FP8</code></p>
+<p>llama.cpp — <a href="https://github.com/ggml-org/llama.cpp/pull/22673">PR #22673</a> (MTP merge, 16 May 2026) ·
+<a href="https://github.com/ggml-org/llama.cpp/issues/23322">issue #23322</a> (hybrid-attention acceptance,
+<strong>closed</strong>) · issues #23658, #23184 · <code>docs/speculative.md</code></p>
+<p><a href="https://recipes.vllm.ai/Qwen/Qwen3.8-27B">vLLM recipes — Qwen3.8-27B</a> ·
+<a href="https://docs.redhat.com/en/documentation/red_hat_ai/3/html/supported_product_and_hardware_configurations/rhaiis-gpu-quantization-support_supported-configurations">Red Hat AI quantization support matrix</a>
+(NVFP4 Blackwell-only) · <a href="https://docs.nvidia.com/deeplearning/tensorrt-rtx/1.4/getting-started/support-matrix-1/1.4.html">TensorRT-RTX 1.4 support matrix</a></p>
+<p><strong>HX primary:</strong> <code>SERVER-REGISTRY.md</code> · <code>servers/hxs-1/discovery.md</code> ·
+<code>tests/ai-runtime/workloads/qwen35-9b-ollama.json</code> · <code>governance/logs/actions-and-issues.md</code>
+(<code>iss-013</code>, <code>iss-014</code>, <code>iss-015</code>, <code>iss-016</code>)</p>
+<p><strong>HX design / in-flight:</strong> <code>governance/operations/ollama/codex_20260817_1524_hx-qwen38-27b-ollama-deployment-deep-dive.html</code>
+and the four companion records in this directory.</p>
+<p><strong>Third-party trigger source:</strong> independent operator video review, transcript supplied by project
+owner 2026-08-17. Thirteen of thirteen numeric claims verified exact; two negative claims refuted
+(F7); one framing error on issue status and model identity (F4).</p>
+<p><strong>Derived:</strong> all headroom arithmetic in §3, from exact manifest bytes against
+32,752 MiB less 2 × 1 GiB. <strong>Derived, not measured on hxs-1.</strong> No figure here is an HX measurement.</p>
+<hr>
+<p><em>Prepared by Claude (Opus 5), 2026-08-17. Research record — no authority asserted, no decision
+made, no acceptance granted. Per repository convention, a proposal is not a ruling.</em></p>
+<footer>Generated from the Markdown source of the same name — the pair is published together and must not diverge.<br>Research record — no authority asserted, no decision made.<br>Companion Markdown source: <code>hx-research_qwen38-27b-quantization-ladder-and-artifact-resolution_synthesis_2026-08-17_claude-opus-5.md</code></footer>
+</div>
+</body>
+</html>

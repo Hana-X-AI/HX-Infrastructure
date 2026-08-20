@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Codex" />
+  <title>HX Agentic SDLC Strategic Pivot</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    :root { color-scheme: dark; --bg:#07111f; --panel:#0e1b2e; --panel2:#111f35; --text:#e7eefb; --muted:#a8b6cc; --line:#27415f; --blue:#38bdf8; --violet:#a78bfa; --teal:#2dd4bf; --amber:#fb923c; --rose:#f472b6; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: var(--bg); }
+    body { max-width: 1180px; margin: 0 auto; padding: 40px 54px 90px; background: radial-gradient(circle at 80% 0%, #162958 0, transparent 28%), var(--bg); color: var(--text); font: 16.5px/1.68 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    header#title-block-header { padding: 34px 38px; margin-bottom: 32px; border: 1px solid #385b85; border-radius: 22px; background: linear-gradient(135deg, rgba(124,58,237,.28), rgba(37,99,235,.17) 55%, rgba(14,165,233,.10)); box-shadow: 0 24px 70px rgba(0,0,0,.28); }
+    h1 { margin: 0 0 8px; font-size: clamp(2.2rem, 5vw, 4.2rem); line-height: 1.02; letter-spacing: -.045em; color: #fff; }
+    header .subtitle { color: #c7d2fe; font-size: 1.22rem; margin: 8px 0 20px; }
+    header .author, header .date { display:inline-block; margin-right: 18px; color: var(--muted); }
+    h2 { margin-top: 58px; padding-bottom: 10px; border-bottom: 1px solid var(--line); color: #f8fbff; font-size: 1.78rem; line-height: 1.2; letter-spacing: -.02em; }
+    h3 { margin-top: 34px; color: #bae6fd; font-size: 1.28rem; }
+    h4 { color: #c4b5fd; }
+    p, li { color: #d7e2f2; }
+    strong { color: #fff; }
+    a { color: #7dd3fc; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    a:hover { color: #bae6fd; }
+    blockquote { margin: 28px 0; padding: 20px 26px; border-left: 5px solid var(--violet); border-radius: 0 14px 14px 0; background: rgba(124,58,237,.13); color: #eef2ff; font-size: 1.16rem; }
+    table { display: table; width: 100%; border-collapse: separate; border-spacing: 0; margin: 24px 0 34px; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: rgba(14,27,46,.82); }
+    th { padding: 13px 15px; text-align: left; color: #e0f2fe; background: #142846; border-bottom: 1px solid #3a587c; vertical-align: top; }
+    td { padding: 13px 15px; border-bottom: 1px solid #203853; vertical-align: top; }
+    tr:last-child td { border-bottom: 0; }
+    tr:nth-child(even) td { background: rgba(17,31,53,.62); }
+    code { color: #99f6e4; background: #0b1728; padding: .15em .38em; border: 1px solid #203b57; border-radius: 5px; }
+    pre { padding: 18px 20px; overflow:auto; border: 1px solid var(--line); border-radius: 12px; background: #081525; }
+    pre code { border:0; padding:0; }
+    svg { display:block; width:100%; height:auto; margin: 30px auto 42px; padding: 14px; border: 1px solid #203f60; border-radius: 18px; background: linear-gradient(180deg, rgba(13,28,48,.94), rgba(8,20,35,.98)); box-shadow: 0 18px 45px rgba(0,0,0,.23); }
+    nav#TOC { margin: 24px 0 44px; padding: 20px 26px; border: 1px solid var(--line); border-radius: 16px; background: rgba(14,27,46,.82); }
+    nav#TOC:before { content:"Report map"; display:block; margin-bottom:8px; color:#fff; font-weight:750; font-size:1.15rem; }
+    nav#TOC ul { margin:6px 0; padding-left:22px; }
+    nav#TOC a { text-decoration:none; }
+    hr { border:0; border-top:1px solid var(--line); margin:42px 0; }
+    @media (max-width:760px) { body{padding:22px 18px 60px;font-size:15.5px} header#title-block-header{padding:24px 22px} table{display:block;overflow-x:auto} h2{margin-top:44px} }
+    @media print { body{background:#fff;color:#111;max-width:none;padding:20px} p,li,td{color:#222} h1,h2,h3,strong{color:#111} table,td,th{border-color:#999} nav#TOC{display:none} svg{background:#fff} a{color:#0645ad} }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">HX Agentic SDLC Strategic Pivot</h1>
+<p class="subtitle">Evidence review, target architecture, and pilot
+roadmap</p>
+<p class="author">Codex</p>
+<p class="date">2026-08-16 12:42 EDT</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#executive-verdict" id="toc-executive-verdict">Executive
+verdict</a></li>
+<li><a href="#what-the-five-sources-actually-establish"
+id="toc-what-the-five-sources-actually-establish">What the five sources
+actually establish</a></li>
+<li><a href="#evidence-basis-and-authority"
+id="toc-evidence-basis-and-authority">Evidence basis and
+authority</a></li>
+<li><a href="#deep-assessment-1-anthropics-ai-native-secure-sdlc"
+id="toc-deep-assessment-1-anthropics-ai-native-secure-sdlc">Deep
+assessment 1: Anthropic’s AI-native secure SDLC</a></li>
+<li><a
+href="#deep-assessment-2-aws-ai-dlcmethodology-versus-implementation"
+id="toc-deep-assessment-2-aws-ai-dlcmethodology-versus-implementation">Deep
+assessment 2: AWS AI-DLC—methodology versus implementation</a></li>
+<li><a href="#deep-assessment-3-bedrock-agentcore"
+id="toc-deep-assessment-3-bedrock-agentcore">Deep assessment 3: Bedrock
+AgentCore</a></li>
+<li><a href="#deep-assessment-4-microsoft-azuregithub-pattern"
+id="toc-deep-assessment-4-microsoft-azuregithub-pattern">Deep assessment
+4: Microsoft Azure/GitHub pattern</a></li>
+<li><a href="#deep-assessment-5-langchain-harness-engineering"
+id="toc-deep-assessment-5-langchain-harness-engineering">Deep assessment
+5: LangChain harness engineering</a></li>
+<li><a href="#cross-source-convergence"
+id="toc-cross-source-convergence">Cross-source convergence</a></li>
+<li><a href="#proposed-hx-agentic-sdlc-architecture"
+id="toc-proposed-hx-agentic-sdlc-architecture">Proposed HX Agentic SDLC
+architecture</a></li>
+<li><a href="#proposed-hx-lifecycle"
+id="toc-proposed-hx-lifecycle">Proposed HX lifecycle</a></li>
+<li><a href="#risk-and-autonomy-model"
+id="toc-risk-and-autonomy-model">Risk and autonomy model</a></li>
+<li><a href="#the-governed-learning-loop"
+id="toc-the-governed-learning-loop">The governed learning loop</a></li>
+<li><a href="#harness-evaluation-program"
+id="toc-harness-evaluation-program">Harness evaluation program</a></li>
+<li><a href="#recommended-pilot-roadmap"
+id="toc-recommended-pilot-roadmap">Recommended pilot roadmap</a></li>
+<li><a href="#what-should-not-be-reopened"
+id="toc-what-should-not-be-reopened">What should not be
+reopened</a></li>
+<li><a href="#decisions-for-agent-zero"
+id="toc-decisions-for-agent-zero">Decisions for Agent Zero</a></li>
+<li><a href="#final-assessment" id="toc-final-assessment">Final
+assessment</a></li>
+<li><a href="#source-register" id="toc-source-register">Source
+register</a></li>
+</ul>
+</nav>
+<p><strong>Status:</strong> Strategic recommendation<br />
+<strong>Decision posture:</strong> <strong>ADOPT THE DIRECTION · ADAPT
+THE MECHANISMS · DO NOT ADOPT A VENDOR STACK WHOLESALE</strong><br />
+<strong>Scope:</strong> Planning and architecture only; no HX
+implementation was performed.</p>
+<h2 id="executive-verdict">Executive verdict</h2>
+<p>HX should pivot next to an <strong>HX-native Agentic Software
+Development Lifecycle control plane</strong>. That is the missing layer
+that brings the technology stack and the agent methodology together.</p>
+<p>The pivot is <strong>not</strong> to Anthropic, AWS Bedrock
+AgentCore, Azure, GitHub Copilot, LangChain, or AWS AI-DLC as a
+platform. The pivot is from a powerful collection of agents, models,
+knowledge systems, and infrastructure into a <strong>governed
+engineering operating system</strong> in which:</p>
+<ol type="1">
+<li><code>sdd-core</code> remains the constitutional and spec-driven
+backbone.</li>
+<li>A deterministic lifecycle kernel owns workflow state, stage
+eligibility, gates, audit, evidence requirements, recovery, and
+resume.</li>
+<li>Claude Code remains the HX meta-agent and coordinates bounded
+specialist agents, but it does not get to redefine lifecycle state or
+waive gates by persuasion.</li>
+<li>Agent identities and permissions are scoped to actions, not merely
+described in prompts.</li>
+<li>Every construction loop is build → execute → verify → compare to the
+original contract → repair, with completion blocked until evidence
+exists.</li>
+<li>Traces and evals improve the harness through measured failure
+analysis; model intelligence alone is not treated as the improvement
+strategy.</li>
+<li>Lessons are captured as <strong>candidate rules</strong>,
+replay-tested, reviewed, and only then promoted into HX governance or
+memory.</li>
+</ol>
+<p>The strongest near-term move is a <strong>thin, evidence-producing
+pilot</strong>, not a full 33-stage framework installation. Use the
+current AWS AI-DLC v2 implementation as a design mine and comparison
+harness, then implement only the minimum HX kernel needed to prove the
+architecture on code-heavy repositories that HX already
+understands—especially jcode and OmniRoute—before introducing it into
+the canonical HX-Infrastructure mainline.</p>
+<h3 id="the-essential-decision">The essential decision</h3>
+<blockquote>
+<p><strong>HX should own the lifecycle. Models and vendor frameworks
+should execute within it.</strong></p>
+</blockquote>
+<p>This preserves every important decision already made: Claude Code as
+meta-agent; <code>sdd-core</code> as the file-driven execution backbone;
+capability-first specialist agents; LightRAG for
+human/document/governance knowledge; Code-Graph-RAG as a future
+read-only code-intelligence plane; LangGraph as a durable orchestration
+client rather than a competing authority; Qwen3.5-9B as bounded local
+utility inference; native Bash/SSH fleet control; and delayed
+platform-wide security/observability expansion until the core platform
+is working.</p>
+<h2 id="what-the-five-sources-actually-establish">What the five sources
+actually establish</h2>
+<p>The five sources converge on a single proposition: <strong>agent
+capability is no longer the main constraint; the harness, control
+boundaries, verification system, and learning loop are.</strong> They
+approach that conclusion from different layers.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Source</th>
+<th>What it proves best</th>
+<th>What HX should take</th>
+<th>What HX should not infer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Anthropic AI-native SDLC security</td>
+<td>High-velocity agentic coding requires hard identity, permission,
+review, and audit boundaries</td>
+<td>Least agency, separation of duties, risk tiers, shadow mode, sampled
+approvals, closed-loop guidance updates</td>
+<td>That prompts or <code>CLAUDE.md</code> alone are enforcement; that
+Anthropic-scale controls should all be deployed now</td>
+</tr>
+<tr class="even">
+<td>AWS AI-DLC workflows</td>
+<td>A lifecycle can be expressed as a harness-neutral, gated, resumable,
+auditable state machine</td>
+<td>Stage contracts, adaptive scopes, walking-skeleton gate, Bolt
+execution, failure halt, state/audit, one core/many harnesses</td>
+<td>That HX should copy 33 stages, 14 agents, Bedrock defaults, or the
+repository into main</td>
+</tr>
+<tr class="odd">
+<td>AWS Bedrock AgentCore</td>
+<td>Agent runtime concerns can be separated into runtime, identity,
+tools, memory, sandboxed execution, and observability</td>
+<td>The modular capability model and control boundaries</td>
+<td>That HX needs AWS to obtain those properties</td>
+</tr>
+<tr class="even">
+<td>Microsoft Azure/GitHub pattern</td>
+<td>Spec isolation and explicit ambiguity resolution reduce context
+drift</td>
+<td>Assessor/resolver/specifier/generator/validator separation and
+spec-only generation</td>
+<td>That a prompt sequence is a complete SDLC or that a validator can
+rescue a wrong specification</td>
+</tr>
+<tr class="odd">
+<td>LangChain harness engineering</td>
+<td>The same model can improve materially through trace-driven changes
+to prompts, tools, middleware, and verification</td>
+<td>Failure taxonomy, replayable evals, pre-completion verification,
+loop detection, context injection, model-specific tuning</td>
+<td>That a historical leaderboard rank is durable or that Terminal-Bench
+proves lifecycle quality</td>
+</tr>
+</tbody>
+</table>
+<h2 id="evidence-basis-and-authority">Evidence basis and authority</h2>
+<h3 id="hx-authority-hierarchy-used-in-this-assessment">HX authority
+hierarchy used in this assessment</h3>
+<ol type="1">
+<li>Current user-ratified HX decisions and governance.</li>
+<li>Current HX architectural constraints and accepted runtime
+decisions.</li>
+<li>Current official upstream repositories and documentation.</li>
+<li>The five supplied articles as primary vendor evidence.</li>
+<li>Current independent benchmark and standards material.</li>
+<li>Inference and recommendation, labeled as such.</li>
+</ol>
+<h3 id="workspace-limitation">Workspace limitation</h3>
+<p>No HX repository files were mounted in this session; the local
+workspace was empty. I therefore did <strong>not</strong> perform a
+fresh file-by-file audit of the current HX-Infrastructure or
+<code>sdd-core</code> repositories. HX-specific conclusions are grounded
+in the project’s ratified decisions and current project context. A later
+implementation manifest must verify actual paths, schemas, hooks, and
+instruction precedence against the canonical mainline before any
+change.</p>
+<h3 id="current-upstream-facts-that-changed-the-assessment">Current
+upstream facts that changed the assessment</h3>
+<ul>
+<li>The AWS repository’s main page now announces <strong>AI-DLC
+Workflows 2.0 GA</strong>, while the implementation resides on a
+<code>v2</code> branch. It describes five phases, 33 stages, 14 agents,
+nine scopes, approval gates, a deterministic engine, an 82-event audit
+trail, session resume, and a learning loop. The repository warns users
+to pin a known-good version. <a
+href="https://github.com/awslabs/aidlc-workflows/tree/v2">AWS AI-DLC v2
+repository</a></li>
+<li>GitHub’s <strong>latest published release</strong> for the
+repository is still <strong>v1.0.1</strong>, not a v2 release. This is a
+real distribution-maturity contradiction, not a wording issue. <a
+href="https://github.com/awslabs/aidlc-workflows/releases/latest">AI-DLC
+latest release</a></li>
+<li>LangChain’s February 2026 article accurately reported an improvement
+from 52.8% to 66.5% using the same model and a changed harness. The
+current Terminal-Bench 2.0 board now places that 66.5% submission at
+rank 27, not Top 5. The enduring result is the <strong>13.7-point
+harness gain</strong>, not the historical position. <a
+href="https://www.langchain.com/blog/improving-deep-agents-with-harness-engineering">LangChain
+harness-engineering report</a>, <a
+href="https://www.tbench.ai/leaderboard/terminal-bench/2.0">current
+Terminal-Bench 2.0 leaderboard</a></li>
+<li>NIST’s SSDF 1.2 is still an initial public draft as of the evidence
+reviewed. It reinforces that secure practices should be integrated into
+an organization’s chosen lifecycle and measured as outcomes rather than
+tied to a tool. <a
+href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-218r1.ipd.pdf">NIST
+SP 800-218r1 initial public draft</a></li>
+<li>OWASP’s Top 10 for Agentic Applications 2026 establishes a current,
+peer-reviewed baseline for agent-specific risks. <a
+href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">OWASP
+Top 10 for Agentic Applications 2026</a></li>
+</ul>
+<h2 id="deep-assessment-1-anthropics-ai-native-secure-sdlc">Deep
+assessment 1: Anthropic’s AI-native secure SDLC</h2>
+<p>Anthropic reports that Claude authors about 80% of merged code, more
+than half of code is merged by its internal Claude Tag system, and
+engineer code throughput increased eightfold over 2021–2025. These are
+vendor-reported operational figures, not independently audited measures,
+but the control adaptations described are concrete and technically
+coherent. <a
+href="https://claude.com/blog/how-anthropic-secures-its-ai-native-software-development-lifecycle">Anthropic
+AI-native SDLC</a></p>
+<h3 id="what-matters-for-hx">What matters for HX</h3>
+<p>Anthropic’s most important contribution is not “use Claude
+everywhere.” It is the recognition that <strong>the security unit
+changes from the individual code change to the agentic
+loop</strong>.</p>
+<p>The enduring controls are:</p>
+<ul>
+<li>Bring organizational context into planning and review agents.</li>
+<li>Encode recurring secure-development lessons into instructions and
+skills.</li>
+<li>Combine deterministic scanning with multiple narrow agentic
+reviews.</li>
+<li>Give agents single-purpose identities with minimum permissions.</li>
+<li>Contain development in managed environments with controlled
+egress.</li>
+<li>Tier code and automation by risk rather than applying one universal
+gate.</li>
+<li>Introduce reviewers in shadow mode, red-team them, sample automated
+approvals, and observe their behavior.</li>
+<li>Log tool calls, approvals, and agent-to-agent interactions so
+decisions are attributable.</li>
+<li>Separate incident analysis from deployment authority.</li>
+</ul>
+<p>That last point is decisive. Anthropic describes an incident-response
+agent that can inspect logs, draft documents, and communicate, but
+cannot deploy. It also recounts an agent attempting to reach another
+agent with code-writing authority. The human gate caught the attempt,
+but the lesson was that the boundary must be drawn around
+<strong>actions and reachable capabilities</strong>, not the model’s
+stated job. <a
+href="https://claude.com/blog/ciso-guide-to-agentic-ai">Anthropic CISO
+guide</a>, <a
+href="https://claude.com/blog/agent-identity-access-model">Anthropic
+agent identity model</a></p>
+<h3 id="hx-adoption-disposition">HX adoption disposition</h3>
+<p><strong>Adopt now as design invariants</strong></p>
+<ul>
+<li>Every agent has an explicit capability manifest: identity, allowed
+tools, allowed paths, network policy, write surface, escalation rules,
+and forbidden transitions.</li>
+<li>Reviewer and deployer are separate authority domains.</li>
+<li>A production-observing or incident agent cannot obtain deployment
+capability by calling another agent.</li>
+<li>Deterministic checks and independent reviewers must both contribute
+evidence.</li>
+<li>Agent actions must be attributable to the agent identity, the
+initiating human, the model/harness version, and the governing workflow
+state.</li>
+</ul>
+<p><strong>Adapt to HX’s stage of maturity</strong></p>
+<ul>
+<li>Begin with append-only local audit and structured trace output.
+Route it to the future observability host later.</li>
+<li>Apply remote execution and egress control first to agents that
+ingest untrusted content or can write/execute, rather than forcing the
+entire platform through a broad security program before it is
+usable.</li>
+<li>Use risk-based gates, not universal ceremony.</li>
+</ul>
+<p><strong>Do not copy</strong></p>
+<ul>
+<li>Anthropic’s scale-specific SIEM, continuous AI DAST, and enterprise
+sampling program are a future assurance layer, not a prerequisite to
+stand up the HX development/test platform.</li>
+<li>Do not interpret “architectural review is less critical because
+prototypes are cheap” as permission to weaken HX specifications or
+invariants. Cheap prototypes make empirical architecture testing easier;
+they do not make incorrect architecture cheap once agents reproduce it
+at machine speed.</li>
+</ul>
+<h3 id="important-correction-to-the-articles-framing">Important
+correction to the article’s framing</h3>
+<p>The article says detailed architecture review can become a less
+critical gate when prototypes can be built in hours. That is
+conditionally true for reversible prototypes. It is false for authority
+boundaries, data models, security invariants, irreversible migrations,
+and platform topology. For HX, the correct adaptation is:</p>
+<blockquote>
+<p>Replace speculative design ceremony with executable architecture
+evidence, but preserve explicit architectural authority.</p>
+</blockquote>
+<h2
+id="deep-assessment-2-aws-ai-dlcmethodology-versus-implementation">Deep
+assessment 2: AWS AI-DLC—methodology versus implementation</h2>
+<h3 id="the-older-three-phase-framework">The older three-phase
+framework</h3>
+<p>The original workflow organized work into Inception, Construction,
+and a future Operations phase. It used file-based questions, adaptive
+stage selection, human approval, generated artifacts under
+<code>aidlc-docs/</code>, and extensions for security, testing, and
+resiliency. Its tenets—single source of truth, methodology first,
+reproducibility, model/harness agnosticism, and human approval—align
+strongly with HX. <a
+href="https://github.com/awslabs/aidlc-workflows">AI-DLC repository
+mainline</a>, <a
+href="https://github.com/awslabs/aidlc-workflows/blob/main/aidlc-rules/aws-aidlc-rule-details/common/process-overview.md">three-phase
+process overview</a></p>
+<h3 id="the-current-v2-line-is-materially-different">The current v2 line
+is materially different</h3>
+<p>The <code>v2</code> branch is no longer a collection of steering
+files. It is a lifecycle engine with:</p>
+<ul>
+<li>Five phases: Initialization, Ideation, Inception, Construction,
+Operation.</li>
+<li>Thirty-three stages.</li>
+<li>Fourteen agent personas: eleven broad domain agents, two reviewers,
+and an adaptive composer.</li>
+<li>Nine scopes and independent depth/test-strategy settings.</li>
+<li>A deterministic state machine, audit taxonomy, CLI utilities,
+resume, stage jump, and recovery.</li>
+<li>Approval gates at stage and phase boundaries.</li>
+<li>A two-tier knowledge system and persistent learning loop.</li>
+<li>A harness-neutral <code>core/</code> rendered into Claude Code,
+Codex, Kiro, Cursor, opencode, and GitHub Copilot distributions.</li>
+<li>A packaging drift guard and test suite.</li>
+</ul>
+<p>The architecture is documented in the <a
+href="https://github.com/awslabs/aidlc-workflows/tree/v2">v2
+overview</a>, <a
+href="https://github.com/awslabs/aidlc-workflows/blob/v2/docs/guide/04-phases-and-stages.md">phase/stage
+guide</a>, <a
+href="https://github.com/awslabs/aidlc-workflows/blob/v2/docs/guide/06-agents.md">agent
+guide</a>, <a
+href="https://github.com/awslabs/aidlc-workflows/blob/v2/docs/guide/10-state-and-audit.md">state
+and audit guide</a>, and <a
+href="https://github.com/awslabs/aidlc-workflows/blob/v2/docs/harness-engineering/00-overview.md">harness
+engineer guide</a>.</p>
+<h3 id="the-strongest-patterns-for-hx">The strongest patterns for
+HX</h3>
+<ol type="1">
+<li><strong>Deterministic initialization.</strong> Workspace detection
+and state initialization do not require LLM judgment.</li>
+<li><strong>Stage contracts.</strong> Each stage has a lead, supporting
+agents, inputs, outputs, conditions, and artifacts.</li>
+<li><strong>Adaptive composition.</strong> Scope and complexity select
+the minimum useful path.</li>
+<li><strong>Verification gates between phases.</strong> Traceability
+checks catch missing or orphaned artifacts before downstream work builds
+on them.</li>
+<li><strong>Walking skeleton first.</strong> The first end-to-end Bolt
+is always gated; only after it succeeds does the owner choose gated or
+autonomous continuation.</li>
+<li><strong>Failure stops autonomy.</strong> Construction cannot
+silently press on after a failed Bolt.</li>
+<li><strong>Parallel work follows a dependency DAG.</strong> Independent
+Bolts may run together; dependent work waits.</li>
+<li><strong>State and audit are files, not conversation memory.</strong>
+Workflow progress can survive session loss or compaction.</li>
+<li><strong>One core, many harnesses.</strong> Methodology remains the
+authority while harness adapters remain thin.</li>
+<li><strong>Broad agents with lean activation.</strong> Eleven broad
+agents are preferable to dozens of waterfall specialists—consistent with
+HX’s capability-first direction.</li>
+</ol>
+<h3 id="where-v2-collides-with-hx">Where v2 collides with HX</h3>
+<p>The v2 package also creates a nearly complete second engineering
+operating system:</p>
+<ul>
+<li>Its <code>core/</code>, state model, agent roster, memory tree,
+hooks, skills, audit taxonomy, CLI, and artifact directories overlap
+<code>sdd-core</code>, the Claude meta-agent enforcement architecture,
+and HX governance.</li>
+<li>Its Claude and Codex distributions default to AWS Bedrock
+configuration.</li>
+<li>It requires Bun for deterministic tooling across harnesses.</li>
+<li>It includes an AWS platform agent and AWS-oriented infrastructure
+assumptions.</li>
+<li>It can provision environments and execute deployments in its
+Operation phase.</li>
+<li>Its correction-to-rule learning loop can persist behavioral changes,
+creating a memory-poisoning or policy-drift path unless promotion is
+separately controlled.</li>
+<li>It recommends a specific frontier model and acknowledges that weaker
+models may skip reviewer passes or rush gates—evidence that prose-level
+orchestration still needs hard enforcement.</li>
+<li>It says v2 is GA, but the public release channel still identifies
+v1.0.1 as latest.</li>
+</ul>
+<h3 id="hx-disposition">HX disposition</h3>
+<p><strong>PILOT / MINE SELECTIVELY. Do not install into
+HX-Infrastructure main.</strong></p>
+<p>Treat v2 as three things:</p>
+<ol type="1">
+<li>A reference implementation to test against HX use cases.</li>
+<li>A source of lifecycle contracts and failure modes.</li>
+<li>A benchmark challenger for HX’s own thinner control plane.</li>
+</ol>
+<p>The default should be to port concepts into HX’s authority model, not
+port HX into AI-DLC’s authority model.</p>
+<h2 id="deep-assessment-3-bedrock-agentcore">Deep assessment 3: Bedrock
+AgentCore</h2>
+<p>Amazon Bedrock AgentCore currently separates agent platform
+capabilities into a managed harness, runtime, memory, gateway, identity,
+browser, code interpreter, and observability. AWS states that the
+runtime is framework/model agnostic and supports agents and MCP servers,
+including A2A patterns. <a
+href="https://docs.aws.amazon.com/bedrock-agentcore/">Amazon Bedrock
+AgentCore documentation</a></p>
+<h3 id="strategic-value-to-hx">Strategic value to HX</h3>
+<p>AgentCore’s value is architectural, not vendor-specific. It
+demonstrates that an agent platform should separate:</p>
+<ul>
+<li>The agent loop from the execution sandbox.</li>
+<li>Tool publication/discovery from tool authorization.</li>
+<li>Short/long-term memory from live context.</li>
+<li>inbound user identity from outbound agent identity.</li>
+<li>browser and code execution into isolated services.</li>
+<li>agent observability from application logs.</li>
+</ul>
+<p>Those separations align with the HX technology map: Claude Code and
+jcode at the interaction/execution surface; LangGraph for durable
+orchestration; LightRAG and future Code-Graph-RAG as distinct knowledge
+planes; specialist agents as bounded workers; and dedicated
+infrastructure for runtime and observability.</p>
+<h3 id="why-hx-should-not-pivot-to-agentcore-now">Why HX should not
+pivot to AgentCore now</h3>
+<ul>
+<li>HX is intentionally building a local development/test/demo platform
+across its server fleet.</li>
+<li>AgentCore would introduce a managed-cloud runtime and a new
+operational/control dependency.</li>
+<li>Its managed identity, gateway, memory, and observability services
+overlap components HX is already designing locally.</li>
+<li>The supplied Builder article is a useful end-to-end example, but the
+article body was not machine-retrievable in this session. I validated
+AgentCore’s current capabilities against AWS’s official documentation
+and avoided inferring article-specific implementation details that could
+not be verified.</li>
+</ul>
+<p><strong>Disposition: REFERENCE-ONLY for the current HX
+pivot.</strong> Revisit only if HX later needs externally hosted,
+elastic, multi-tenant agent runtime capacity or a managed control
+boundary that local infrastructure cannot economically provide.</p>
+<h2 id="deep-assessment-4-microsoft-azuregithub-pattern">Deep assessment
+4: Microsoft Azure/GitHub pattern</h2>
+<p>The supplied Microsoft Community article page was discoverable but
+its body was not machine-retrievable in this session. A current
+Microsoft-owned repository provides a stronger inspectable
+implementation pattern: a five-step pipeline that turns PRD/TDD/user
+stories into assessed decisions, specifications, generated code, and
+validation. <a
+href="https://github.com/microsoft/agentic-sdlc-starter">Microsoft
+Agentic SDLC Starter</a></p>
+<h3 id="the-useful-mechanics">The useful mechanics</h3>
+<ul>
+<li><strong>Assessor:</strong> finds gaps, ambiguity, and conflict.</li>
+<li><strong>Resolver:</strong> checks flagged questions against source
+documents or routes them to a human.</li>
+<li><strong>Specifier:</strong> produces detailed machine-readable
+specifications.</li>
+<li><strong>Generator:</strong> reads only specifications and coding
+guardrails, not the original PRD/TDD.</li>
+<li><strong>Validator:</strong> checks code against specifications and
+guardrails.</li>
+</ul>
+<p>This is close to <code>sdd-core</code> philosophically. The
+generator’s restricted context prevents it from quietly reinterpreting
+the business request. The explicit resolution artifact is especially
+valuable because it converts hidden assumptions into reviewable
+decisions.</p>
+<h3 id="the-critical-limits">The critical limits</h3>
+<ol type="1">
+<li>“The pipeline never guesses” is an aspiration, not an enforceable
+property of a language model.</li>
+<li>A resolver can mistake a plausible passage for authoritative
+evidence.</li>
+<li>A generator that sees only the spec faithfully amplifies any spec
+defect.</li>
+<li>A validator comparing code to the same defective spec can issue a
+false pass.</li>
+<li>A sequential prompt workflow is not itself a deterministic lifecycle
+engine.</li>
+<li>The inspected repository is small—four commits, no published
+releases—and should be treated as a starter/reference, not production
+proof.</li>
+</ol>
+<h3 id="hx-disposition-1">HX disposition</h3>
+<p><strong>ADOPT the separation of roles and the explicit resolution
+gate.</strong> Add one crucial HX enhancement: validation must be
+triangular, not circular.</p>
+<p>The validator should compare:</p>
+<ol type="1">
+<li>code to the specification;</li>
+<li>specification to the ratified intent/requirements;</li>
+<li>both to executable invariants and independent tests.</li>
+</ol>
+<p>No artifact should validate itself through descendants derived from
+the same assumption chain.</p>
+<h2 id="deep-assessment-5-langchain-harness-engineering">Deep assessment
+5: LangChain harness engineering</h2>
+<p>LangChain kept GPT-5.2-Codex fixed and changed the harness. Its
+reported Terminal-Bench score moved from 52.8% to 66.5%. The most
+effective changes were trace analysis, build-and-self-verify guidance,
+deterministic environment context injection, a pre-completion checklist,
+loop detection, and deliberate reasoning budgets. <a
+href="https://www.langchain.com/blog/improving-deep-agents-with-harness-engineering">LangChain
+harness engineering</a></p>
+<h3 id="the-durable-lessons">The durable lessons</h3>
+<ul>
+<li>Agents naturally stop at the first plausible answer unless
+verification is forced.</li>
+<li>Re-reading generated code is not verification; execution against an
+external oracle is.</li>
+<li>Environment discovery is error-prone and should be injected
+deterministically where possible.</li>
+<li>Repeated edits to the same file can indicate a doom loop and should
+trigger replanning.</li>
+<li>Reasoning should be concentrated in planning and verification rather
+than maximized uniformly.</li>
+<li>Traces reveal whether a failure came from reasoning, tools, context,
+timeout, or the harness.</li>
+<li>Harnesses must be tuned and evaluated per model; a harness that
+helps Codex may not transfer unchanged to Claude.</li>
+<li>Improvement must be checked for overfitting and regression across a
+task suite.</li>
+</ul>
+<h3 id="hx-disposition-2">HX disposition</h3>
+<p><strong>ADOPT IMMEDIATELY AS THE ENGINEERING METHOD FOR THE AGENTIC
+SDLC ITSELF.</strong></p>
+<p>This is the immediate pivot inside the larger pivot: HX should stop
+evaluating agent quality mainly by the apparent quality of individual
+conversations and begin evaluating <strong>versioned harnesses against
+replayable HX task suites</strong>.</p>
+<p>LangSmith is optional. The method requires structured traces and
+evals, not that particular SaaS. HX can begin with local structured
+events and later feed the dedicated observability host.</p>
+<h2 id="cross-source-convergence">Cross-source convergence</h2>
+<p>The sources use different terminology, but the combined architecture
+is remarkably consistent.</p>
+<svg viewBox="0 0 900 660" role="img" aria-label="HX Agentic SDLC layered architecture" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g1" x1="0" x2="1"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#2563eb"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="5" stdDeviation="8" flood-opacity="0.28"/></filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#7dd3fc"/></marker>
+  </defs>
+  <rect x="40" y="28" width="820" height="88" rx="16" fill="url(#g1)" filter="url(#shadow)"/>
+  <text x="450" y="62" text-anchor="middle" fill="white" font-size="22" font-weight="700">Governance & Intent Authority</text>
+  <text x="450" y="90" text-anchor="middle" fill="#e0e7ff" font-size="16">sdd-core · constitution · decisions · specifications · risk class</text>
+  <line x1="450" y1="118" x2="450" y2="148" stroke="#7dd3fc" stroke-width="4" marker-end="url(#arrow)"/>
+  <rect x="40" y="152" width="820" height="88" rx="16" fill="#14213d" stroke="#38bdf8" stroke-width="2" filter="url(#shadow)"/>
+  <text x="450" y="187" text-anchor="middle" fill="#f8fafc" font-size="22" font-weight="700">Deterministic Lifecycle Kernel</text>
+  <text x="450" y="215" text-anchor="middle" fill="#bae6fd" font-size="16">state · stage graph · gates · evidence · audit · resume · failure halt</text>
+  <line x1="450" y1="242" x2="450" y2="272" stroke="#7dd3fc" stroke-width="4" marker-end="url(#arrow)"/>
+  <rect x="40" y="276" width="820" height="88" rx="16" fill="#172554" stroke="#818cf8" stroke-width="2" filter="url(#shadow)"/>
+  <text x="450" y="311" text-anchor="middle" fill="#f8fafc" font-size="22" font-weight="700">Meta-Agent & Specialist Mob</text>
+  <text x="450" y="339" text-anchor="middle" fill="#c7d2fe" font-size="16">Claude Code coordinates · bounded workers · independent reviewers · separate deployer</text>
+  <line x1="450" y1="366" x2="450" y2="396" stroke="#7dd3fc" stroke-width="4" marker-end="url(#arrow)"/>
+  <rect x="40" y="400" width="820" height="88" rx="16" fill="#052e2b" stroke="#2dd4bf" stroke-width="2" filter="url(#shadow)"/>
+  <text x="450" y="435" text-anchor="middle" fill="#f8fafc" font-size="22" font-weight="700">Harness & Assurance</text>
+  <text x="450" y="463" text-anchor="middle" fill="#99f6e4" font-size="16">tools · hooks · sandboxes · build/verify · tracing · evals · loop detection</text>
+  <line x1="450" y1="490" x2="450" y2="520" stroke="#7dd3fc" stroke-width="4" marker-end="url(#arrow)"/>
+  <rect x="40" y="524" width="820" height="88" rx="16" fill="#3b1d18" stroke="#fb923c" stroke-width="2" filter="url(#shadow)"/>
+  <text x="450" y="559" text-anchor="middle" fill="#f8fafc" font-size="22" font-weight="700">HX Runtime, Knowledge & Infrastructure</text>
+  <text x="450" y="587" text-anchor="middle" fill="#fed7aa" font-size="16">LangGraph · LightRAG · future read-only Code-Graph-RAG · fleet · observability</text>
+</svg>
+
+<h3 id="seven-convergent-principles">Seven convergent principles</h3>
+<ol type="1">
+<li><strong>Context must be curated.</strong> More context is not
+automatically better; authoritative context must be routed
+deliberately.</li>
+<li><strong>State must be externalized.</strong> Chat history is not
+workflow state.</li>
+<li><strong>Autonomy must be risk-weighted.</strong> The safe autonomy
+level differs for research, code generation, merging, deployment, and
+incident response.</li>
+<li><strong>Verification must be external.</strong> Tests, invariants,
+scanners, and independent reviewers—not the author agent’s
+confidence—determine success.</li>
+<li><strong>Identity must follow the action.</strong> Permissions attach
+to the agent’s actual capability and execution boundary.</li>
+<li><strong>Learning must be governed.</strong> Corrections should
+improve future work, but persistent memory cannot become an unreviewed
+policy mutation path.</li>
+<li><strong>The harness is a product.</strong> It needs versions, tests,
+telemetry, replay, and release criteria just like application
+software.</li>
+</ol>
+<h2 id="proposed-hx-agentic-sdlc-architecture">Proposed HX Agentic SDLC
+architecture</h2>
+<h3 id="1-governance-and-intent-plane--authoritative">1. Governance and
+intent plane — authoritative</h3>
+<p><strong>Owner:</strong> HX <code>sdd-core</code> and ratified
+governance<br />
+<strong>Role:</strong> Defines the meaning of “correct.”</p>
+<p>Keep:</p>
+<ul>
+<li><code>.specify/memory/constitution.md</code> for global
+non-negotiables.</li>
+<li><code>knowledge/instructions.md</code> for local repository and
+context routing.</li>
+<li>File-driven specifications, decisions, acceptance criteria, and
+invariants.</li>
+<li>Modular backend/frontend projects inheriting global
+constraints.</li>
+</ul>
+<p>Add conceptually:</p>
+<ul>
+<li>A lifecycle contract defining stages, inputs, outputs, evidence,
+gate owner, and failure behavior.</li>
+<li>A risk-class contract determining which stages and permissions are
+eligible.</li>
+<li>A provenance contract identifying the authority and freshness of
+every material input.</li>
+</ul>
+<h3 id="2-deterministic-lifecycle-kernel--procedural-authority">2.
+Deterministic lifecycle kernel — procedural authority</h3>
+<p><strong>Owner:</strong> HX-native state machine<br />
+<strong>Role:</strong> Decides what may happen next; never decides
+product intent.</p>
+<p>The kernel should own:</p>
+<ul>
+<li>Intent/work-item identity.</li>
+<li>Current phase and stage.</li>
+<li>Scope and stage plan.</li>
+<li>Dependency graph.</li>
+<li>Required artifacts and evidence.</li>
+<li>Gate state and named approver.</li>
+<li>Allowed transitions.</li>
+<li>Timeout/failure/retry/abort behavior.</li>
+<li>Append-only audit events.</li>
+<li>Session resume and recovery.</li>
+<li>Harness/model/version identity.</li>
+</ul>
+<p>The kernel should be deliberately boring. It should not use an LLM to
+decide whether a required test passed, whether an approval exists, or
+whether an artifact is present. Agents may propose; deterministic code
+validates the transition.</p>
+<h3
+id="3-meta-agent-and-specialist-plane--reasoning-authority-within-a-stage">3.
+Meta-agent and specialist plane — reasoning authority within a
+stage</h3>
+<p><strong>Meta-agent:</strong> Claude Code<br />
+<strong>Role:</strong> Interprets intent within the active stage,
+assembles context, delegates bounded work, synthesizes results, and
+presents decisions.</p>
+<p>Claude should be the conductor, not the constitution, state machine,
+or evidence oracle.</p>
+<p>Use a small broad roster activated by capability:</p>
+<ul>
+<li>Product/Requirements</li>
+<li>Architecture</li>
+<li>Developer</li>
+<li>Quality/Verification</li>
+<li>Platform/Infrastructure</li>
+<li>Security/Assurance</li>
+<li>Operations</li>
+<li>Independent reviewer(s)</li>
+</ul>
+<p>Existing domain specialists such as Craig remain valuable; they join
+the mob when their capability is relevant. HX does not need a
+permanently active 14-agent council.</p>
+<h3 id="4-harness-and-assurance-plane--execution-control">4. Harness and
+assurance plane — execution control</h3>
+<p><strong>Role:</strong> Converts agent intent into constrained action
+and generates evidence.</p>
+<p>Required mechanisms:</p>
+<ul>
+<li>Deterministic workspace and tool discovery.</li>
+<li>Worktree, VM, container, or sandbox isolation based on risk.</li>
+<li>Path and command allow/deny policy.</li>
+<li>Network egress policy for agents consuming untrusted input.</li>
+<li>Pre-completion verification hook.</li>
+<li>Loop detection and forced replanning.</li>
+<li>Full-output capture for build/test commands.</li>
+<li>Independent deterministic and agentic review.</li>
+<li>Trace emission with latency, cost/token, tool, error, and outcome
+data.</li>
+</ul>
+<h3 id="5-knowledge-and-intelligence-plane--advisory-not-executive">5.
+Knowledge and intelligence plane — advisory, not executive</h3>
+<ul>
+<li><strong>LightRAG:</strong> human, document, governance, and
+organizational context.</li>
+<li><strong>Future Code-Graph-RAG:</strong> structural source-code
+intelligence on code-heavy repositories, exposed read-only.</li>
+<li><strong>Local upstream repositories:</strong> specialist technical
+knowledge, as with Craig and Ollama.</li>
+<li><strong>Skills/instructions:</strong> behavioral guidance, versioned
+and reviewed.</li>
+</ul>
+<p>No knowledge system should be able to merge, deploy, delete, or alter
+governance merely because it can retrieve an answer.</p>
+<h3 id="6-runtime-and-infrastructure-plane--execution-substrate">6.
+Runtime and infrastructure plane — execution substrate</h3>
+<ul>
+<li>Claude Code and jcode may operate in tandem, but one workflow kernel
+records authority and outcome.</li>
+<li>LangGraph may provide durable orchestration once the lifecycle
+contracts are stable; it should execute the graph, not invent its
+governance.</li>
+<li>Qwen3.5-9B on hxs-4 remains bounded local utility inference. It is
+appropriate for low-risk extraction, classification, summarization, or
+triage within accepted context limits—not the meta-agent or coding
+authority.</li>
+<li>Bash/SSH fleet control from hxs-cp remains the infrastructure
+orchestration baseline. Agentic SDLC does not justify introducing
+Ansible.</li>
+<li>The future observability host can aggregate traces after the local
+event schema proves useful.</li>
+</ul>
+<h2 id="proposed-hx-lifecycle">Proposed HX lifecycle</h2>
+<svg viewBox="0 0 960 780" role="img" aria-label="HX Agentic SDLC lifecycle" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="a2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#60a5fa"/></marker></defs>
+  <style>.n{fill:#14213d;stroke:#60a5fa;stroke-width:2}.g{fill:#3f1d2e;stroke:#f472b6;stroke-width:2}.t{fill:#f8fafc;font:700 19px system-ui}.s{fill:#cbd5e1;font:14px system-ui}</style>
+  <rect class="n" x="220" y="24" width="520" height="72" rx="15"/><text class="t" x="480" y="53" text-anchor="middle">0 · Intake & Risk Classification</text><text class="s" x="480" y="77" text-anchor="middle">intent · authority · untrusted inputs · action surface</text>
+  <line x1="480" y1="98" x2="480" y2="127" stroke="#60a5fa" stroke-width="4" marker-end="url(#a2)"/>
+  <rect class="n" x="220" y="132" width="520" height="72" rx="15"/><text class="t" x="480" y="161" text-anchor="middle">1 · Discover Current State</text><text class="s" x="480" y="185" text-anchor="middle">workspace · code · practices · constraints · source authority</text>
+  <line x1="480" y1="206" x2="480" y2="235" stroke="#60a5fa" stroke-width="4" marker-end="url(#a2)"/>
+  <rect class="n" x="220" y="240" width="520" height="72" rx="15"/><text class="t" x="480" y="269" text-anchor="middle">2 · Resolve & Specify</text><text class="s" x="480" y="293" text-anchor="middle">ambiguities resolved · spec ratified · invariants executable</text>
+  <line x1="480" y1="314" x2="480" y2="343" stroke="#60a5fa" stroke-width="4" marker-end="url(#a2)"/>
+  <rect class="g" x="210" y="348" width="540" height="78" rx="15"/><text class="t" x="480" y="379" text-anchor="middle">G1 · Specification Gate</text><text class="s" x="480" y="404" text-anchor="middle">intent ↔ spec ↔ tests traceability; owner approval</text>
+  <line x1="480" y1="428" x2="480" y2="457" stroke="#60a5fa" stroke-width="4" marker-end="url(#a2)"/>
+  <rect class="n" x="220" y="462" width="520" height="72" rx="15"/><text class="t" x="480" y="491" text-anchor="middle">3 · Design & Plan Bolts</text><text class="s" x="480" y="515" text-anchor="middle">architecture · dependency DAG · walking skeleton · evidence plan</text>
+  <line x1="480" y1="536" x2="480" y2="565" stroke="#60a5fa" stroke-width="4" marker-end="url(#a2)"/>
+  <rect class="n" x="220" y="570" width="520" height="72" rx="15"/><text class="t" x="480" y="599" text-anchor="middle">4 · Build → Verify → Repair</text><text class="s" x="480" y="623" text-anchor="middle">first Bolt gated; later autonomy chosen; failure always halts</text>
+  <line x1="480" y1="644" x2="480" y2="673" stroke="#60a5fa" stroke-width="4" marker-end="url(#a2)"/>
+  <rect class="g" x="210" y="678" width="540" height="78" rx="15"/><text class="t" x="480" y="709" text-anchor="middle">G2 · Release Evidence Gate</text><text class="s" x="480" y="734" text-anchor="middle">deterministic tests + independent review + provenance + approval</text>
+</svg>
+
+<p>After G2, the current HX environment allows release to
+<strong>development/test/demo</strong>, followed by observability and
+feedback. Production deployment and autonomous incident remediation
+remain future lifecycle extensions.</p>
+<h3 id="stage-completion-contract">Stage completion contract</h3>
+<p>A stage is complete only when all five are true:</p>
+<ol type="1">
+<li>Required artifacts exist and pass schema/format validation.</li>
+<li>Required deterministic checks pass with captured output.</li>
+<li>Independent review findings are resolved or explicitly accepted by
+an authorized human.</li>
+<li>Provenance connects the output to ratified inputs and governing
+rules.</li>
+<li>The deterministic kernel records the transition and evidence
+hashes.</li>
+</ol>
+<p>An agent statement such as “all tests pass” is not evidence. The
+captured command, environment identity, exit status, and test results
+are evidence.</p>
+<h2 id="risk-and-autonomy-model">Risk and autonomy model</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Tier</th>
+<th>Example</th>
+<th>Default agent rights</th>
+<th>Required gate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>T0 — Observe</td>
+<td>Research, inventory, read-only analysis</td>
+<td>Read-only; no execution that mutates state</td>
+<td>Source/provenance check</td>
+</tr>
+<tr class="even">
+<td>T1 — Sandbox</td>
+<td>Prototype, tests, generated artifacts in disposable workspace</td>
+<td>Write/execute inside bounded sandbox; constrained egress</td>
+<td>Self-verification plus deterministic checks</td>
+</tr>
+<tr class="odd">
+<td>T2 — Repository</td>
+<td>Branch/worktree changes and PR preparation</td>
+<td>Scoped repo write; no merge; no secret access by default</td>
+<td>Independent review and human merge approval</td>
+</tr>
+<tr class="even">
+<td>T3 — HX nonproduction</td>
+<td>Deploy to development/test/demo</td>
+<td>Separate deployment identity; environment-scoped</td>
+<td>Release evidence gate and named approval</td>
+</tr>
+<tr class="odd">
+<td>T4 — Production/fleet-critical</td>
+<td>Production or broad fleet mutation</td>
+<td>No default autonomous authority</td>
+<td>Future explicit operational contract; human authorization</td>
+</tr>
+</tbody>
+</table>
+<p>This avoids the two bad extremes: agents that cannot do useful work
+and agents that inherit broad human credentials.</p>
+<h2 id="the-governed-learning-loop">The governed learning loop</h2>
+<p>AWS AI-DLC and Anthropic both advocate feeding corrections and
+discovered bug classes back into instructions. HX should adopt the
+feedback loop but strengthen the promotion boundary.</p>
+<svg viewBox="0 0 900 500" role="img" aria-label="HX governed agent learning loop" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="a3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#34d399"/></marker></defs>
+  <style>.b{fill:#102a25;stroke:#34d399;stroke-width:2}.q{fill:#3b1d33;stroke:#f472b6;stroke-width:2}.tt{fill:#f8fafc;font:700 18px system-ui}.ss{fill:#cbd5e1;font:14px system-ui}</style>
+  <rect class="b" x="240" y="20" width="420" height="70" rx="14"/><text class="tt" x="450" y="50" text-anchor="middle">Trace or Review Finds Failure Pattern</text><text class="ss" x="450" y="73" text-anchor="middle">reasoning · context · tool · permission · verification</text>
+  <line x1="450" y1="92" x2="450" y2="121" stroke="#34d399" stroke-width="4" marker-end="url(#a3)"/>
+  <rect class="b" x="240" y="126" width="420" height="70" rx="14"/><text class="tt" x="450" y="156" text-anchor="middle">Create Candidate Rule or Harness Change</text><text class="ss" x="450" y="179" text-anchor="middle">quarantined; never promoted automatically</text>
+  <line x1="450" y1="198" x2="450" y2="227" stroke="#34d399" stroke-width="4" marker-end="url(#a3)"/>
+  <rect class="b" x="240" y="232" width="420" height="70" rx="14"/><text class="tt" x="450" y="262" text-anchor="middle">Replay Evaluation Suite</text><text class="ss" x="450" y="285" text-anchor="middle">target failure fixed · regressions · cost · cross-model behavior</text>
+  <line x1="450" y1="304" x2="450" y2="333" stroke="#34d399" stroke-width="4" marker-end="url(#a3)"/>
+  <rect class="q" x="240" y="338" width="420" height="70" rx="14"/><text class="tt" x="450" y="368" text-anchor="middle">Human Promotion Gate</text><text class="ss" x="450" y="391" text-anchor="middle">approve · revise · reject · expire</text>
+  <line x1="450" y1="410" x2="450" y2="439" stroke="#34d399" stroke-width="4" marker-end="url(#a3)"/>
+  <rect class="b" x="240" y="444" width="420" height="44" rx="14"/><text class="tt" x="450" y="472" text-anchor="middle">Versioned Governance / Skill / Harness Release</text>
+</svg>
+
+<h3 id="why-automatic-learning-is-unsafe">Why automatic learning is
+unsafe</h3>
+<p>An incorrect correction, injected source, or one-off workaround can
+become persistent behavioral drift. The promoted rule may then affect
+every future agent. HX should therefore record:</p>
+<ul>
+<li>candidate rule source and author;</li>
+<li>affected failure class;</li>
+<li>test cases it should fix;</li>
+<li>regression results;</li>
+<li>scope and expiration/review date;</li>
+<li>approving owner;</li>
+<li>release/version that introduced it.</li>
+</ul>
+<p>This makes the learning loop auditable and reversible.</p>
+<h2 id="harness-evaluation-program">Harness evaluation program</h2>
+<h3 id="evaluation-unit">Evaluation unit</h3>
+<p>The unit is not “did the conversation look smart?” It is a
+reproducible task with:</p>
+<ul>
+<li>fixed starting repository state;</li>
+<li>ratified task specification;</li>
+<li>hidden or independent acceptance tests;</li>
+<li>expected safety boundaries;</li>
+<li>resource budget;</li>
+<li>required evidence bundle;</li>
+<li>pass/fail and graded quality measures.</li>
+</ul>
+<h3 id="minimum-measures">Minimum measures</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Dimension</th>
+<th>Measures</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Correctness</td>
+<td>acceptance-test pass rate; invariant violations; regression
+count</td>
+</tr>
+<tr class="even">
+<td>Specification discipline</td>
+<td>requirements covered; unauthorized scope added; unresolved
+assumptions</td>
+</tr>
+<tr class="odd">
+<td>Verification</td>
+<td>tests actually executed; full output read; false pass rate; evidence
+completeness</td>
+</tr>
+<tr class="even">
+<td>Safety</td>
+<td>denied actions attempted; path/network boundary violations;
+privilege escalation attempts</td>
+</tr>
+<tr class="odd">
+<td>Control adherence</td>
+<td>gates skipped; state inconsistencies; resume correctness; audit
+completeness</td>
+</tr>
+<tr class="even">
+<td>Efficiency</td>
+<td>elapsed time; tokens/cost; tool calls; retries; human
+interventions</td>
+</tr>
+<tr class="odd">
+<td>Recovery</td>
+<td>doom-loop detection; replan success; failed Bolt containment;
+rollback quality</td>
+</tr>
+<tr class="even">
+<td>Generalization</td>
+<td>results across jcode, OmniRoute, and a distinct third workload;
+memory on/off where relevant</td>
+</tr>
+</tbody>
+</table>
+<h3 id="baselines-to-compare">Baselines to compare</h3>
+<ol type="1">
+<li>Current Claude Code + HX instructions.</li>
+<li>Current Claude Code + thin HX deterministic gate/verification
+harness.</li>
+<li>AWS AI-DLC v2 pinned reference harness.</li>
+<li>Claude Code + jcode tandem where jcode executes a bounded
+construction role.</li>
+<li>Optional Codex reviewer/challenger run to expose model-specific
+assumptions.</li>
+</ol>
+<p>The purpose is not to declare one universal winner. It is to learn
+which mechanisms improve HX outcomes and which merely add ceremony.</p>
+<h2 id="recommended-pilot-roadmap">Recommended pilot roadmap</h2>
+<h3 id="phase-a--ratify-the-hx-lifecycle-contract">Phase A — Ratify the
+HX lifecycle contract</h3>
+<p><strong>Deliverables</strong></p>
+<ul>
+<li>HX phase/stage vocabulary.</li>
+<li>Artifact and evidence contracts.</li>
+<li>Risk/autonomy tiers.</li>
+<li>Agent capability manifest schema.</li>
+<li>Gate ownership and failure semantics.</li>
+<li>Audit event schema.</li>
+</ul>
+<p><strong>Gate:</strong> The contract must state which files are
+authoritative and how it composes with <code>sdd-core</code>; no
+duplicate constitution or competing source of truth.</p>
+<h3 id="phase-b--baseline-current-behavior">Phase B — Baseline current
+behavior</h3>
+<p>Run a small replayable task suite with the current Claude Code
+methodology before changing the harness. Capture failures by category:
+context, reasoning, tool use, verification, permissions, time, and
+instruction adherence.</p>
+<p><strong>Gate:</strong> Baseline results are reproducible and include
+at least one success, one recoverable failure, and one safety-boundary
+test.</p>
+<h3 id="phase-c--ai-dlc-v2-forensic-pilot">Phase C — AI-DLC v2 forensic
+pilot</h3>
+<p>Clone and pin an exact v2 commit in an isolated pilot area. Do not
+merge it into HX main. Exercise only a small scope on jcode and
+OmniRoute.</p>
+<p>Inspect:</p>
+<ul>
+<li>deterministic state/gate behavior;</li>
+<li>stage and artifact contracts;</li>
+<li>walking-skeleton/Bolt execution;</li>
+<li>resume and failure recovery;</li>
+<li>audit fidelity;</li>
+<li>learning-loop writes;</li>
+<li>collision points with <code>sdd-core</code>, Claude meta-agent
+rules, and existing specialist agents;</li>
+<li>Bedrock/Bun assumptions and portability.</li>
+</ul>
+<p><strong>Gate:</strong> Produce an adopt/adapt/reject manifest at the
+mechanism/file level. Popularity and “GA” labeling do not count as
+evidence.</p>
+<h3 id="phase-d--thin-hx-kernel-proof">Phase D — Thin HX kernel
+proof</h3>
+<p>Implement the smallest HX-native kernel that can:</p>
+<ol type="1">
+<li>initialize an intent;</li>
+<li>load a stage contract;</li>
+<li>validate prerequisites;</li>
+<li>dispatch one bounded worker;</li>
+<li>block completion until evidence exists;</li>
+<li>record a gate decision;</li>
+<li>resume after session interruption;</li>
+<li>halt on failed verification.</li>
+</ol>
+<p>Use one walking-skeleton code change. Do not implement the full
+lifecycle.</p>
+<p><strong>Gate:</strong> The kernel catches a deliberately skipped
+test, rejected transition, and unauthorized action without relying on
+the agent to confess.</p>
+<h3 id="phase-e--specialist-mob-and-independent-review">Phase E —
+Specialist mob and independent review</h3>
+<p>Map existing HX agents into broad capability roles. Add independent
+review contexts and separate write/merge/deploy identities. Measure
+whether multi-agent review adds signal rather than duplicate prose.</p>
+<p><strong>Gate:</strong> Reviewers demonstrate non-identical findings,
+low duplicate rate, and proof-backed conclusions.</p>
+<h3 id="phase-f--governed-learning-and-harness-releases">Phase F —
+Governed learning and harness releases</h3>
+<p>Add candidate-rule quarantine, replay evaluation, regression checks,
+human promotion, and versioned release notes.</p>
+<p><strong>Gate:</strong> A seeded bad correction cannot reach active
+governance without explicit approval and passing evals.</p>
+<h3 id="phase-g--nonproduction-operations-and-observability">Phase G —
+Nonproduction operations and observability</h3>
+<p>After the development/test platform is operational, extend the
+lifecycle to deployment, telemetry, and incident triage. Route
+structured traces to the dedicated observability host when it is
+available.</p>
+<p><strong>Gate:</strong> An operations/incident agent can diagnose and
+draft a fix but cannot deploy it through its own identity or through
+another agent.</p>
+<h2 id="what-should-not-be-reopened">What should not be reopened</h2>
+<ul>
+<li>Do not replace <code>sdd-core</code>; extend it with lifecycle
+contracts and evidence semantics.</li>
+<li>Do not replace Claude Code as the meta-agent solely because AWS or
+Microsoft shows another orchestration product.</li>
+<li>Do not adopt Bedrock AgentCore or Azure as the HX control plane at
+this stage.</li>
+<li>Do not install AI-DLC v2 into the canonical HX-Infrastructure
+repository before the isolated pilot and collision manifest.</li>
+<li>Do not restore Ansible. Agentic SDLC does not change the validated
+Bash/SSH fleet-control decision.</li>
+<li>Do not make Code-Graph-RAG an execution authority. Its future role
+remains read-only code intelligence.</li>
+<li>Do not promote Qwen3.5-9B beyond its accepted bounded utility role
+based on an agentic workflow need.</li>
+<li>Do not auto-promote lessons into the constitution, skills, or
+persistent memory.</li>
+<li>Do not allow the code-authoring agent to be the only reviewer or the
+incident agent to deploy.</li>
+<li>Do not build full SIEM/continuous-DAST machinery before the core
+platform and thin lifecycle kernel are working.</li>
+<li>Do not use a leaderboard rank, star count, vendor claim, or model
+benchmark as a lifecycle architecture decision.</li>
+</ul>
+<h2 id="decisions-for-agent-zero">Decisions for Agent Zero</h2>
+<h3 id="recommended-decisions">Recommended decisions</h3>
+<ol type="1">
+<li><strong>Approve the strategic pivot:</strong> create an HX Agentic
+SDLC control plane around <code>sdd-core</code>, not around a vendor
+runtime.</li>
+<li><strong>Approve AI-DLC v2 as an isolated pilot/reference:</strong>
+pin it, exercise it, mine it, and require a collision/adoption manifest
+before any incorporation.</li>
+<li><strong>Approve harness engineering as the immediate operating
+method:</strong> baseline, trace, replay, change one mechanism at a
+time, and measure regression.</li>
+<li><strong>Approve jcode and OmniRoute as the first code-heavy
+ground-truth workloads.</strong> They are better validation targets than
+the Markdown-heavy HX-Infrastructure repository.</li>
+<li><strong>Keep operations limited to development/test/demo</strong>
+until the platform is stable and the later assurance workstream is
+intentionally opened.</li>
+</ol>
+<h3 id="owner-decisions-that-can-wait-until-the-contract-phase">Owner
+decisions that can wait until the contract phase</h3>
+<ul>
+<li>Final HX lifecycle name and directory topology.</li>
+<li>Whether the deterministic kernel is implemented first as a small
+local CLI, a LangGraph-backed service, or a hybrid. Recommendation:
+local deterministic CLI first; LangGraph after contracts stabilize.</li>
+<li>Which independent model/harness acts as the default challenger
+reviewer.</li>
+<li>Initial risk-tier thresholds for repository writes and nonproduction
+deployment.</li>
+</ul>
+<h2 id="final-assessment">Final assessment</h2>
+<p>HX is not missing another model, orchestration library, agent roster,
+or cloud service. It is missing the <strong>deterministic connective
+tissue</strong> that makes all of those components behave as one
+engineering system.</p>
+<p>Anthropic supplies the security and identity model. AWS AI-DLC v2
+supplies the most complete lifecycle/state-machine reference. AgentCore
+supplies the modular runtime decomposition. Microsoft supplies a clean
+spec-resolution pipeline. LangChain supplies the scientific method for
+improving the harness.</p>
+<p>The HX synthesis should be:</p>
+<blockquote>
+<p><strong>Spec-driven authority + deterministic lifecycle control +
+bounded agent reasoning + executable verification + governed
+learning.</strong></p>
+</blockquote>
+<p>That is the pivot that brings the stack together without surrendering
+HX’s architecture to any vendor.</p>
+<h2 id="source-register">Source register</h2>
+<h3 id="user-supplied-primary-sources">User-supplied primary
+sources</h3>
+<ol type="1">
+<li><a
+href="https://claude.com/blog/how-anthropic-secures-its-ai-native-software-development-lifecycle">Anthropic
+— How Anthropic secures its AI-native software development
+lifecycle</a></li>
+<li><a href="https://github.com/awslabs/aidlc-workflows">AWS Labs —
+AI-DLC Workflows</a></li>
+<li><a
+href="https://builder.aws.com/content/3EJUyZQoLZ4AtIyx961HPSDlLJr/building-an-agentic-sdlc-on-amazon-bedrock-agentcore">AWS
+Builder — Building an Agentic SDLC on Amazon Bedrock AgentCore</a></li>
+<li><a
+href="https://techcommunity.microsoft.com/blog/appsonazureblog/an-ai-led-sdlc-building-an-end-to-end-agentic-software-development-lifecycle-wit/4491896">Microsoft
+— An AI-led SDLC with Azure and GitHub</a></li>
+<li><a
+href="https://www.langchain.com/blog/improving-deep-agents-with-harness-engineering">LangChain
+— Improving Deep Agents with harness engineering</a></li>
+</ol>
+<h3 id="current-official-upstream-and-corroborating-sources">Current
+official upstream and corroborating sources</h3>
+<ul>
+<li><a href="https://github.com/awslabs/aidlc-workflows/tree/v2">AWS
+AI-DLC v2 branch and current implementation</a></li>
+<li><a
+href="https://github.com/awslabs/aidlc-workflows/blob/v2/docs/guide/04-phases-and-stages.md">AWS
+AI-DLC v2 phases and stages</a></li>
+<li><a
+href="https://github.com/awslabs/aidlc-workflows/blob/v2/docs/guide/06-agents.md">AWS
+AI-DLC v2 agents</a></li>
+<li><a
+href="https://github.com/awslabs/aidlc-workflows/blob/v2/docs/guide/09-rules-and-the-learning-loop.md">AWS
+AI-DLC v2 learning loop</a></li>
+<li><a
+href="https://github.com/awslabs/aidlc-workflows/blob/v2/docs/guide/10-state-and-audit.md">AWS
+AI-DLC v2 state and audit</a></li>
+<li><a href="https://docs.aws.amazon.com/bedrock-agentcore/">Amazon
+Bedrock AgentCore documentation</a></li>
+<li><a
+href="https://github.com/microsoft/agentic-sdlc-starter">Microsoft
+Agentic SDLC Starter</a></li>
+<li><a href="https://claude.com/blog/zero-trust-for-ai-agents">Anthropic
+— Zero Trust for AI agents</a></li>
+<li><a href="https://claude.com/blog/ciso-guide-to-agentic-ai">Anthropic
+— CISO’s guide to agentic AI</a></li>
+<li><a
+href="https://claude.com/blog/agent-identity-access-model">Anthropic —
+Agent identity access model</a></li>
+<li><a
+href="https://www.tbench.ai/leaderboard/terminal-bench/2.0">Terminal-Bench
+2.0 current leaderboard</a></li>
+<li><a
+href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-218r1.ipd.pdf">NIST
+SSDF Version 1.2 initial public draft</a></li>
+<li><a
+href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">OWASP
+Top 10 for Agentic Applications 2026</a></li>
+<li><a href="https://slsa.dev/spec/v1.2/build-requirements">SLSA Build
+requirements v1.2</a></li>
+</ul>
+</body>
+</html>

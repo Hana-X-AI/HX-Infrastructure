@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HX-Infrastructure — Docling Pilot Brief Deep Review</title>
+<style>
+:root{color-scheme:dark;--bg:#080d13;--panel:#101923;--panel2:#15212c;--ink:#e8eef5;--muted:#9cabb8;--line:#2a3947;--green:#61d5ae;--blue:#7cb8ff;--amber:#efb25e;--red:#ff7b72;--violet:#c6a8ff;--mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;--sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#07111a,#080d13 35rem);color:var(--ink);font:15px/1.62 var(--sans)}
+main{max-width:1260px;margin:auto;padding:40px 24px 76px}header{background:linear-gradient(135deg,#142633,#0d161f);border:1px solid var(--line);border-radius:14px;padding:30px;box-shadow:0 18px 42px rgba(0,0,0,.25)}
+.eyebrow{font:800 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:12px}h1{font-size:36px;line-height:1.08;letter-spacing:-.027em;margin:0 0 12px}h2{font-size:24px;line-height:1.2;letter-spacing:-.015em;margin:0 0 9px}h3{font-size:17px;margin:0 0 7px}.sub,.lede{color:var(--muted);max-width:105ch}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.pill{font:700 11px/1 var(--mono);padding:7px 9px;border:1px solid var(--line);border-radius:999px;background:#0a131c;color:#cad5df}
+section{margin-top:32px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:14px}.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}.metric{font-size:24px;font-weight:800;letter-spacing:-.02em}.small{font-size:12.5px;color:var(--muted)}
+.callout{background:var(--panel);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:16px 18px;margin:14px 0}.warn{border-left-color:var(--amber)}.bad{border-left-color:var(--red)}.blue{border-left-color:var(--blue)}.violet{border-left-color:var(--violet)}
+table{width:100%;border-collapse:separate;border-spacing:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:12px}th,td{text-align:left;vertical-align:top;padding:11px 12px;border-bottom:1px solid var(--line)}th{font:800 10.5px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#b8c5cf;background:#0e1720}tr:last-child td{border-bottom:0}
+code,pre{font-family:var(--mono)}code{background:#08121a;border:1px solid #22313f;border-radius:4px;padding:.05em .32em;color:#dce8f2}pre{white-space:pre-wrap;overflow:auto;background:#070c11;border:1px solid var(--line);border-radius:10px;padding:18px;line-height:1.5;color:#dae5ef}
+ul,ol{margin:7px 0 0;padding-left:22px}li{margin:5px 0}.badge{display:inline-block;font:800 9.5px/1 var(--mono);text-transform:uppercase;letter-spacing:.06em;padding:5px 7px;border-radius:999px;white-space:nowrap}.pass{color:#c8f7d9;background:rgba(97,213,174,.12);border:1px solid rgba(97,213,174,.35)}.fix{color:#ffe0ad;background:rgba(239,178,94,.12);border:1px solid rgba(239,178,94,.35)}.block{color:#ffc7c2;background:rgba(255,123,114,.12);border:1px solid rgba(255,123,114,.35)}.info{color:#d2e6ff;background:rgba(124,184,255,.12);border:1px solid rgba(124,184,255,.35)}
+.decision{background:linear-gradient(135deg,#10261f,#101a24);border:1px solid #295246;border-radius:12px;padding:20px;margin-top:14px}.decision h3{color:var(--green)}.rank{font-weight:800;font-family:var(--mono)}.p0{color:var(--red)}.p1{color:var(--amber)}.p2{color:var(--blue)}
+footer{margin-top:44px;border-top:1px solid var(--line);padding-top:18px;color:#7f8e9b;font-size:12px}
+@media(max-width:760px){main{padding:22px 12px 48px}header{padding:22px 18px}h1{font-size:29px}th,td{padding:9px 8px;font-size:13px}}
+</style>
+</head>
+<body><main>
+<header>
+<div class="eyebrow">HX-Infrastructure · Docling migration pilot · pre-handoff review</div>
+<h1>Deep Review of the Claude Code Docling Pilot Brief</h1>
+<p class="sub">The brief is well structured and much closer to an execution contract than a planning essay. It correctly freezes the repository architecture, makes the ledger the source-selection mechanism, protects the sanitized-history boundary, forces provenance, and uses the pilot to test the transformation model rather than Docling deployment. Before handing it to Claude Code, I recommend a small set of high-impact corrections so the pilot cannot manufacture current state, mis-handle the inspect-only secret class, or claim SME sign-off that has not actually occurred.</p>
+<div class="meta">
+<span class="pill">author: gpt-5.6 sol</span>
+<span class="pill">2026-08-13 16:20 -05:00</span>
+<span class="pill">source: claude_20260813_2112_doclingdistillationpilotbrief.html</span>
+<span class="pill">verdict: send after targeted patch</span>
+<span class="pill">no infrastructure changes</span>
+</div>
+</header>
+
+<section>
+<h2>1. Executive recommendation</h2>
+<div class="decision">
+<h3>Do not rewrite the brief. Patch it, then send it.</h3>
+<p>The execution model is sound. I would keep roughly 90% of the document unchanged. The remaining 10% matters because it controls the authority boundary of the first real migration batch.</p>
+<p><strong>My send/no-send decision:</strong> <strong>do not send the current version unchanged.</strong> Make the three P0 and nine P1 corrections (sections 3&ndash;14) below, then hand it to Claude Code as the pilot contract. None of the changes reopens manifest v3 or the repository architecture.</p>
+</div>
+<div class="grid">
+<div class="card"><div class="small">Ledger selection</div><div class="metric">Strong</div><div class="small">Exact 198-row working set and useful source-family ranges.</div></div>
+<div class="card"><div class="small">Secret boundary</div><div class="metric">Mostly strong</div><div class="small">One inspect-only secret is accidentally promoted back into “rotate/current credential” language.</div></div>
+<div class="card"><div class="small">Authority semantics</div><div class="metric">Needs fix</div><div class="small">A planning artifact cannot be authoritative as-built state.</div></div>
+<div class="card"><div class="small">SME model</div><div class="metric">Strong, gated</div><div class="small">Must distinguish actual review from missing/unreconstructed SME contracts.</div></div>
+</div>
+</section>
+
+<section>
+<h2>2. What I would keep exactly</h2>
+<table>
+<thead><tr><th>Brief element</th><th>Verdict</th><th>Reason</th></tr></thead>
+<tbody>
+<tr><td>Freeze manifest v3</td><td><span class="badge pass">keep</span></td><td>Correct. The pilot is testing migration execution, not reopening repository architecture.</td></tr>
+<tr><td>198-row Docling working set</td><td><span class="badge pass">keep</span></td><td>Good execution scope. It prevents uncontrolled tree-walking and keeps the pilot ledger-driven.</td></tr>
+<tr><td>Three never-open rows</td><td><span class="badge pass">keep</span></td><td>Strong boundary. Excluded/retired secret mechanism files should be referenced by ID only.</td></tr>
+<tr><td>Extract → reconcile → author</td><td><span class="badge pass">keep</span></td><td>This is the core anti-drift rule and should remain prominent.</td></tr>
+<tr><td>Defects become constraints/gotchas</td><td><span class="badge pass">keep</span></td><td>Exactly right. We want learned engineering constraints, not a copied defect archive.</td></tr>
+<tr><td>No shadow archive</td><td><span class="badge pass">keep</span></td><td>Critical. Historical files remain in the sanitized lineage and do not reappear in current main.</td></tr>
+<tr><td>Return package</td><td><span class="badge pass">keep</span></td><td>Service document + ledger/provenance + pilot report + validation output is the right review bundle.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>3. P0 — Change “current authoritative service document” to target-state design authority</h2>
+<div class="callout bad">
+<strong>The brief currently risks converting a plan into operational fact.</strong> It says the service document is current and authoritative while the same document will contain <code>VERIFICATION REQUIRED</code> items and no infrastructure work is allowed.
+</div>
+<p>The correct authority model is:</p>
+<pre><code>Status: PLANNED / TARGET-STATE
+Authority:
+  - authoritative for current intended Docling MCP service design
+  - not evidence that the service is installed, configured, reachable, or validated
+  - SERVER-REGISTRY.md remains authoritative for placement/role
+  - servers/&lt;host&gt;/configuration.md becomes as-built authority after implementation</code></pre>
+<p>Change the service tree line from:</p>
+<pre><code>Status and authority        # current, authoritative; supersedes 2025</code></pre>
+<p>to:</p>
+<pre><code>Status and authority        # current target-state design; supersedes 2025 design,
+                            # but does not assert implementation/as-built state</code></pre>
+<p>This single wording change protects the project from a future AI reading a planning artifact and assuming Docling is already operational.</p>
+</section>
+
+<section>
+<h2>4. P0 — Correct the treatment of <code>legacy-secret-002</code></h2>
+<div class="callout bad">
+<strong>The brief re-overclaims the second secret class.</strong> The latest manifest work says this class is an <em>inspect-class placeholder/reference</em>, not a confirmed live credential. Yet the brief says “credential via <code>legacy-secret-002</code> ref, rotate” and places that secret ID into the current LiteLLM contract.
+</div>
+<p>That should be changed in both the defect table and target document shape.</p>
+<table>
+<thead><tr><th>Current brief wording</th><th>Recommended wording</th></tr></thead>
+<tbody>
+<tr><td>“credential via <code>legacy-secret-002</code> ref, rotate”</td><td>“Historical evidence indicates an authentication/configuration concern. <code>legacy-secret-002</code> is inspect-only; do not treat it as a current credential or rotation target unless current review confirms an actual secret.”</td></tr>
+<tr><td>LiteLLM section comment: “auth contract; <code>legacy-secret-002</code> ref”</td><td>“Define the current LiteLLM authentication contract from current authority. Historical secret IDs belong only in provenance/security findings, never in the active service configuration model.”</td></tr>
+</tbody>
+</table>
+<p><strong>Current service documents should not depend on legacy secret IDs.</strong> They should describe the current secret source/interface generically and mark it <code>VERIFICATION REQUIRED</code> if the current mechanism has not been chosen.</p>
+</section>
+
+<section>
+<h2>5. P0 — Make the sanitized source a hard preflight gate</h2>
+<p>The brief currently says “read raw content from the quarantined/sanitized legacy source.” That is too permissive.</p>
+<div class="callout bad">
+<strong>For the distillation pilot, Claude Code should read content only from the sanitized historical source.</strong> Raw quarantine is for security/history remediation, not normal service-authoring context.
+</div>
+<p>Add a preflight stop condition:</p>
+<pre><code>PRECHECK:
+- manifest v3 path: governance/reports/claude/manifestv3.jsonl
+  manifest v3 SHA-256: &lt;record exact sha256sum digest here before execution&gt;
+- sanitized source ref: legacy/2025-sanitized
+  sanitized-source revision: &lt;record exact commit SHA here before execution&gt;
+- sanitized source secret-scan result: &lt;record scan tool, version, result ID here&gt;
+- if any identifier above is missing or invalid: STOP and return a blocker report
+- all historical reads and distilled-content generation must use the pinned
+  sanitized revision above — do not fall back to raw/quarantine content
+- do not proceed on an unspecified snapshot</code></pre>
+<p>Also pin the exact v3 manifest commit or SHA-256 in the brief. “Freeze v3” is a policy; a hash/ref makes it enforceable.</p>
+</section>
+
+<section>
+<h2>6. P1 — Resolve the “plan mode” vs file-write contradiction</h2>
+<p>The document calls this “plan mode,” but also instructs Claude Code to create <code>service.md</code>, update <code>manifest.jsonl</code>, and create <code>provenance-index.jsonl</code>. Those are repository writes.</p>
+<p>I recommend renaming the mode:</p>
+<pre><code>MODE: REPOSITORY-MIGRATION / DOCUMENT-ONLY
+Allowed:
+  - read repository and sanitized legacy ref
+  - create/edit service.md, manifest/provenance and pilot report
+  - run local read-only/search/render/validation commands
+  - use a dedicated migration branch/worktree
+
+Forbidden:
+  - SSH or remote host execution
+  - package installation
+  - server/service configuration
+  - deployment
+  - changing SERVER-REGISTRY roles
+  - changing manifest dispositions/schema
+  - changing infrastructure</code></pre>
+<p>If Claude Code has a literal product “plan mode” that blocks writes, leave it in plan mode only to produce the proposed diff, then explicitly switch to repository-document execution for the approved pilot. Do not rely on ambiguous wording.</p>
+</section>
+
+<section>
+<h2>7. P1 — Split the 198 rows into total scope vs readable content scope</h2>
+<p>The brief says all 198 Docling rows are the working set and “every one” carries the Docling distillation target, while three rows are simultaneously never-open/retired/excluded. That is internally awkward.</p>
+<p>Use:</p>
+<pre><code>Total Docling ledger scope: 198 rows (lgc-064..lgc-261)
+Never-open content rows:     3  (lgc-134, lgc-260, lgc-261)
+Content-review eligible:   195
+</code></pre>
+<p>The source-family table currently totals 196 rows because the two vault rows sit outside the listed families; that is fine, but state it explicitly. Rename the final row “README + inventory” rather than “charter,inventory,README,” because charter is already counted separately.</p>
+<p>Also remove “every one carrying <code>distill_target</code>.” Excluded/retired rows should not be described as distillation inputs even if the ledger happens to contain a generic target field.</p>
+</section>
+
+<section>
+<h2>8. P1 — Do not mark historical files “migrated” merely because their knowledge was cited</h2>
+<p>The ledger-closure section says historical source rows used in the document should advance from <code>pending</code> to <code>migrated</code>. That can confuse “knowledge was distilled” with “the file was migrated into main.”</p>
+<div class="callout warn">
+<strong>Keep the source-file disposition semantics intact.</strong> The historical file remains historical in the sanitized ref. What changed is that knowledge from it was consumed.
+</div>
+<p>Preferred model:</p>
+<pre><code>disposition: historical
+location: sanitized-ref
+distillation_status: used | reviewed-not-used | blocked
+distilled_into: ["services/docling-mcp/service.md#failure-handling"]
+reviewed_by: [...]
+migration_status: unchanged unless v3 explicitly defines it as knowledge-migration state
+</code></pre>
+<p>If v3 does not contain a separate distillation field and the schema is frozen, use <code>provenance-index.jsonl</code> to record <code>used/reviewed-not-used</code> and leave the historical row’s file-migration status unchanged. Do not invent a misleading state transition just to “close” the row.</p>
+</section>
+
+<section>
+<h2>9. P1 — Current authority precedence must be explicit</h2>
+<p>The brief says reconcile against <code>SERVER-REGISTRY.md</code> and architecture v0.3. Because the v0.3 roles are now committed, there should be no ambiguity about precedence.</p>
+<pre><code>Authority order for current facts:
+1. SERVER-REGISTRY.md / current infrastructure contracts
+2. current server records and current governance decisions
+3. approved current architecture rationale (v0.3)
+4. current service design being authored
+5. legacy sanitized material — evidence/lessons only, never authority
+</code></pre>
+<p>Also replace wording such as “reconcile to <code>192.168.50.x</code> / <code>hx.local.arpa</code> / <code>hxs-N</code>” with:</p>
+<blockquote style="margin:14px 0;padding:12px 16px;border-left:3px solid var(--blue);background:var(--panel)">Resolve every host, address and name from current authoritative files. Never numerically translate or infer a current endpoint from its 2025 value.</blockquote>
+</section>
+
+<section>
+<h2>10. P1 — Correct the vLLM / Docling boundary</h2>
+<p>The current wording says “Docling serves via vLLM-fronted stack.” That conflates two different responsibilities.</p>
+<p>Use:</p>
+<pre><code>Docling is the document-processing service.
+Any LLM-dependent Docling workflow must use the current model-gateway contract
+(e.g. LiteLLM routing to approved model backends) if such an integration is part
+of current architecture.
+
+Do not describe core Docling conversion/OCR as being “served by vLLM.”
+</code></pre>
+<p>This matters because otherwise the first service document can accidentally encode a false runtime dependency.</p>
+<p>Similarly, remove “Blackwell toolchain pins” from the Docling-specific verification list unless the current target host and current Docling design actually require GPU acceleration. A fleet-wide GPU concern should not silently become a Docling requirement.</p>
+</section>
+
+<section>
+<h2>11. P1 — Separate required current integrations from legacy integration candidates</h2>
+<p>The target structure currently mandates LiteLLM, Qdrant, Redis and LightRAG integration-contract subsections. That is fine only if current architecture requires each direct integration.</p>
+<p>For each legacy integration, Claude Code should classify:</p>
+<table>
+<thead><tr><th>State</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><strong>CURRENT REQUIRED</strong></td><td>Explicitly required by current architecture/service placement; author the contract.</td></tr>
+<tr><td><strong>INDIRECT</strong></td><td>Docling reaches the capability through another current service/gateway; do not invent a direct client contract.</td></tr>
+<tr><td><strong>LEGACY CANDIDATE</strong></td><td>Useful historical integration but not yet approved for current design; retain in provenance/verification list.</td></tr>
+<tr><td><strong>RETIRED</strong></td><td>No current role; lesson only.</td></tr>
+</tbody>
+</table>
+<p>This prevents the pilot from turning “it integrated in 2025” into “Docling must directly integrate in 2026.”</p>
+</section>
+
+<section>
+<h2>12. P1 — SME sign-off needs a real gate</h2>
+<p>The brief correctly says missing reconstructed specialist contracts should be reported, not silently skipped. Tighten that into an acceptance rule:</p>
+<ul>
+<li>A historical 2025 SME review is <strong>evidence</strong>, never current sign-off.</li>
+<li>A current SME sign-off may be recorded only if the corresponding current capability contract exists and the review actually ran.</li>
+<li>If a required current SME contract is missing, mark the relevant section <code>SME REVIEW REQUIRED</code>.</li>
+<li>The pilot may still produce a useful draft, but it does not receive “multi-SME pass” status until the required reviews exist.</li>
+</ul>
+<p>I would make <code>docling-mcp</code>, <code>infrastructure-ops</code> and <code>testing-qa</code> mandatory final reviewers. Other integration SMEs become mandatory only for integrations that survive as <strong>CURRENT REQUIRED</strong>.</p>
+</section>
+
+<section>
+<h2>13. P1 — Fix three defect-derived constraints</h2>
+<table>
+<thead><tr><th>Brief item</th><th>Issue</th><th>Recommended current constraint</th></tr></thead>
+<tbody>
+<tr><td>LiteLLM auth / <code>legacy-secret-002</code></td><td>Inspect-only historical class is being treated as confirmed credential/rotation target.</td><td>Current auth contract must be defined from current LiteLLM design; historical inspect-class evidence remains provenance only.</td></tr>
+<tr><td>journald overwrite → “systemd drop-in only”</td><td>Conflates systemd unit drop-ins with journald configuration.</td><td>Do not overwrite global journald configuration. Prefer service-scoped logging. Use journald drop-ins only when a deliberate system-wide journald change is required.</td></tr>
+<tr><td>Bearer token regex → “proper parser”</td><td>Directionally correct but overly implementation-specific.</td><td>Use framework/library authentication parsing and validation; no ad-hoc partial bearer-token regex.</td></tr>
+</tbody>
+</table>
+<p>I would also add three QA lessons to the target set: malformed-PDF fixture quality, explicit format-detection coverage, and test-coverage-gap tracking. Those are exactly the kinds of lessons worth preserving without importing the old test suite.</p>
+</section>
+
+<section>
+<h2>14. P1 — Secret validation must not require typing old literals into commands</h2>
+<p>The validation section says to “grep ... for any credential literal.” That can itself create shell-history/process/log exposure if the scanner is invoked with the actual value.</p>
+<p>Change it to:</p>
+<pre><code>Run the approved secret-scanning mechanism against:
+- service.md
+- touched manifest rows
+- provenance-index entries
+- pilot report
+- git diff / staged output
+
+Known historical values are supplied to the scanner through secure/ephemeral
+configuration, not as command-line text and not written to logs.
+
+Pass condition: zero confirmed-secret hits and all generic-scan hits reviewed.
+</code></pre>
+</section>
+
+<section>
+<h2>15. P2 — Make “concise” measurable enough to prevent another pseudo-spec</h2>
+<p>I would not impose a rigid word limit, but give Claude Code an explicit compression rule:</p>
+<ul>
+<li>No historical chronology.</li>
+<li>No copied task sequences.</li>
+<li>No defect narratives longer than the current constraint + provenance.</li>
+<li>No duplicated installation and validation prose.</li>
+<li>Prefer tables for integration contracts and verification items.</li>
+<li>If the document exceeds roughly 6,000–8,000 words, Claude Code must explain what cannot be safely condensed.</li>
+</ul>
+<p>The exact number is less important than giving the pilot a concrete signal that compactness is part of the experiment.</p>
+</section>
+
+<section>
+<h2>16. Recommended preflight block to insert verbatim</h2>
+<pre><code>PRE-FLIGHT — STOP ON FAILURE
+
+1. Confirm the current repository owner decisions are already committed:
+   - permanent orchestration exclusion is reflected in current docs
+   - deployment phase gate is retired
+   - v0.3 roles are committed to SERVER-REGISTRY.md
+
+2. Confirm the frozen manifest-v3 identity:
+   - expected 522 rows
+   - record the manifest commit/ref and SHA-256 in the pilot report
+
+3. Confirm sanitized historical source exists and passed secret scanning.
+   - read historical content only from sanitized source
+   - never fall back to raw/quarantine source
+
+4. Confirm the Docling ledger scope:
+   - total rows: 198 (lgc-064..lgc-261)
+   - never-open: lgc-134, lgc-260, lgc-261
+   - content-review eligible: 195
+
+5. Create/use a dedicated document-migration branch or worktree.
+   No infrastructure/server execution is permitted.
+
+If any pre-flight condition fails, STOP and return a blocker report.
+</code></pre>
+</section>
+
+<section>
+<h2>17. Recommended authority header for <code>service.md</code></h2>
+<pre><code># Docling MCP
+
+Status: TARGET-STATE DESIGN
+Target placement: &lt;resolve from SERVER-REGISTRY.md&gt;
+As-built status: NOT ASSERTED BY THIS DOCUMENT
+
+Authority boundary:
+- This document is authoritative for the current intended Docling MCP service design.
+- It does not assert that the service is installed, configured, reachable, or validated.
+- SERVER-REGISTRY.md is authoritative for host/role placement.
+- servers/&lt;host&gt;/configuration.md is the as-built authority after implementation.
+- Legacy 2025 sources are non-authoritative evidence and lessons only.
+</code></pre>
+</section>
+
+<section>
+<h2>18. Final send checklist</h2>
+<table>
+<thead><tr><th>Priority</th><th>Patch before sending</th></tr></thead>
+<tbody>
+<tr><td><span class="rank p0">P0</span></td><td>Change service authority from “current/as-built” implication to target-state design authority.</td></tr>
+<tr><td><span class="rank p0">P0</span></td><td>Remove rotation/current-config language for inspect-only <code>legacy-secret-002</code>; keep legacy secret IDs out of active service configuration.</td></tr>
+<tr><td><span class="rank p0">P0</span></td><td>Require sanitized historical source as a preflight gate; no fallback to raw quarantine.</td></tr>
+<tr><td><span class="rank p1">P1</span></td><td>Clarify repository-document writes are allowed while infrastructure execution is forbidden; avoid ambiguous “plan mode.”</td></tr>
+<tr><td><span class="rank p1">P1</span></td><td>Split 198 total / 195 readable / 3 never-open and remove “every row distills” wording.</td></tr>
+<tr><td><span class="rank p1">P1</span></td><td>Do not misuse <code>migration_status=migrated</code> for historical files merely because knowledge was consumed.</td></tr>
+<tr><td><span class="rank p1">P1</span></td><td>Make registry/contracts the explicit current-fact authority; never translate old IP/domain values.</td></tr>
+<tr><td><span class="rank p1">P1</span></td><td>Correct Docling-vs-vLLM responsibility and remove irrelevant GPU/toolchain assumptions unless verified.</td></tr>
+<tr><td><span class="rank p1">P1</span></td><td>Classify each legacy integration as current-required / indirect / legacy-candidate / retired.</td></tr>
+<tr><td><span class="rank p1">P1</span></td><td>Only record current SME sign-off when the current specialist contract exists and review actually ran.</td></tr>
+<tr><td><span class="rank p1">P1</span></td><td>Use secure secret scanning rather than literal values in grep/CLI arguments.</td></tr>
+<tr><td><span class="rank p2">P2</span></td><td>Add compression rule / soft size ceiling and three QA fixture/coverage lessons.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>19. Final recommendation</h2>
+<div class="decision">
+<h3>This should be the brief you send—after the targeted patch.</h3>
+<p>The pilot concept is correct and the document is already strong. My changes are about preventing the first successful migration from creating the wrong kind of “truth.” The service document should be a current target-state design distilled from historical engineering evidence, not a declaration that Docling is already built. Historical secret IDs should never leak into current configuration semantics. And the pilot should consume only a sanitized source with real current SME review clearly distinguished from legacy reviewer evidence.</p>
+<p>With those corrections, I would send the brief to Claude Code and use the returned Docling package as the first real quality test of the migration model.</p>
+</div>
+</section>
+
+<footer>HX-Infrastructure · Docling pilot execution-brief deep review · gpt-5.6 sol · 2026-08-13 16:20 -05:00 · review only; no repository or infrastructure change performed.</footer>
+</main></body></html>

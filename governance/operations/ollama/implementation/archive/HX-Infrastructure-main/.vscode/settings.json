@@ -1,0 +1,4 @@
+{
+    "chat.useClaudeHooks": true,
+    "python.analysis.excludeLibraryDiagnostics": true
+}

@@ -1,0 +1,284 @@
+<title>Migration Manifest Findings — HX Governance</title>
+<style>
+  :root {
+    --ground:#fbfbf9; --surface:#f2f3f0; --raised:#ffffff; --ink:#1b1f1d;
+    --muted:#6b726e; --faint:#949b96; --line:#dde0db; --line-firm:#c3c8c1;
+    --accent:#0f6e5c; --accent-wash:#e6f0ec; --signal:#b4531a; --signal-wash:#fbeee4;
+    --ok:#2f6d4f; --ok-wash:#e4efe8; --stop:#a3282a; --stop-wash:#fae8e8;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --step-0:0.9375rem; --step--1:0.8125rem; --step--2:0.6875rem;
+    --step-1:1.125rem; --step-2:1.5rem; --step-3:2.125rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ground:#141917; --surface:#1b211e; --raised:#1f2724; --ink:#e8ebe8;
+      --muted:#97a09b; --faint:#6f7873; --line:#2b342f; --line-firm:#3c4740;
+      --accent:#4fbfa3; --accent-wash:#16302a; --signal:#e08a4c; --signal-wash:#33251a;
+      --ok:#6cc09a; --ok-wash:#162c22; --stop:#e4726f; --stop-wash:#331c1c; }
+  }
+  :root[data-theme="dark"]{ --ground:#141917;--surface:#1b211e;--raised:#1f2724;--ink:#e8ebe8;--muted:#97a09b;--faint:#6f7873;--line:#2b342f;--line-firm:#3c4740;--accent:#4fbfa3;--accent-wash:#16302a;--signal:#e08a4c;--signal-wash:#33251a;--ok:#6cc09a;--ok-wash:#162c22;--stop:#e4726f;--stop-wash:#331c1c;}
+  :root[data-theme="light"]{ --ground:#fbfbf9;--surface:#f2f3f0;--raised:#ffffff;--ink:#1b1f1d;--muted:#6b726e;--faint:#949b96;--line:#dde0db;--line-firm:#c3c8c1;--accent:#0f6e5c;--accent-wash:#e6f0ec;--signal:#b4531a;--signal-wash:#fbeee4;--ok:#2f6d4f;--ok-wash:#e4efe8;--stop:#a3282a;--stop-wash:#fae8e8;}
+  :root{color-scheme:light;} @media (prefers-color-scheme:dark){:root{color-scheme:dark;}}
+  :root[data-theme="dark"]{color-scheme:dark;} :root[data-theme="light"]{color-scheme:light;}
+
+  body { margin:0; padding:clamp(1.5rem,4vw,3.5rem) clamp(1rem,4vw,2rem) 5rem; background:var(--ground); color:var(--ink); font-family:var(--sans); font-size:var(--step-0); line-height:1.55; -webkit-text-size-adjust:100%; }
+  .page { max-width:1140px; margin:0 auto; display:flex; flex-direction:column; gap:2.25rem; }
+  .masthead { display:flex; flex-direction:column; gap:0.7rem; }
+  .masthead-top { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .nav { display:flex; gap:1.1rem; flex-wrap:wrap; align-items:center; font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.1em; }
+  .nav a { color:var(--muted); text-decoration:none; border-bottom:1px solid transparent; padding-bottom:2px; }
+  .nav a:hover { color:var(--accent); border-bottom-color:var(--accent); }
+  .toggle { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.09em; color:var(--muted); background:var(--surface); border:1px solid var(--line-firm); border-radius:2px; padding:0.4rem 0.75rem; cursor:pointer; transition:color 120ms ease,border-color 120ms ease; }
+  .toggle:hover { color:var(--accent); border-color:var(--accent); }
+  .eyebrow { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.14em; color:var(--accent); margin:0; }
+  h1 { font-size:var(--step-3); line-height:1.08; letter-spacing:-0.02em; font-weight:650; margin:0; text-wrap:balance; }
+  .masthead p { margin:0; max-width:72ch; color:var(--muted); }
+
+  .strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:3px; overflow:hidden; }
+  .cell { background:var(--surface); padding:0.85rem 1rem; display:flex; flex-direction:column; gap:0.15rem; }
+  .cell dt { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); }
+  .cell dd { margin:0; font-size:var(--step-1); font-weight:600; font-variant-numeric:tabular-nums; }
+
+  section { display:flex; flex-direction:column; gap:0.85rem; }
+  h2 { font-size:var(--step-2); letter-spacing:-0.015em; font-weight:620; margin:0; text-wrap:balance; }
+  .lede { margin:0; color:var(--muted); max-width:82ch; font-size:var(--step--1); }
+
+  .items { display:flex; flex-direction:column; gap:0.85rem; }
+  .item { border:1px solid var(--line); border-radius:3px; background:var(--raised); padding:1rem 1.2rem; display:flex; flex-direction:column; gap:0.5rem; border-left:3px solid var(--line-firm); }
+  .item.stop { border-left-color:var(--stop); }
+  .item.warn { border-left-color:var(--signal); }
+  .item.good { border-left-color:var(--ok); }
+  .item-head { display:flex; align-items:baseline; gap:0.6rem; flex-wrap:wrap; }
+  .fid { font-family:var(--mono); font-weight:650; }
+  .item h3 { flex:1 1 22rem; margin:0; font-size:var(--step-1); font-weight:620; letter-spacing:-0.01em; }
+  .badge { font-family:var(--mono); font-size:var(--step--2); text-transform:uppercase; letter-spacing:0.08em; padding:0.15rem 0.5rem; border-radius:10px; font-weight:600; white-space:nowrap; }
+  .badge.stop { background:var(--stop-wash); color:var(--stop); }
+  .badge.warn { background:var(--signal-wash); color:var(--signal); }
+  .badge.good { background:var(--ok-wash); color:var(--ok); }
+  .badge.info { background:var(--surface); color:var(--muted); }
+  .item p { margin:0; max-width:84ch; color:var(--muted); font-size:var(--step--1); }
+  .item p.body { color:var(--ink); font-size:var(--step-0); }
+
+  .scroll { overflow-x:auto; border:1px solid var(--line); border-radius:3px; background:var(--raised); }
+  table { border-collapse:collapse; width:100%; font-size:var(--step--1); }
+  thead th { background:var(--surface); border-bottom:1px solid var(--line-firm); font-family:var(--mono); font-size:var(--step--2); font-weight:600; text-transform:uppercase; letter-spacing:0.09em; color:var(--muted); text-align:left; padding:0.65rem 0.85rem; white-space:nowrap; }
+  tbody td { padding:0.6rem 0.85rem; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:last-child td { border-bottom:none; }
+  td.n { font-family:var(--mono); text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+
+  ul.notes { padding-left:1.15rem; margin:0; font-size:var(--step--1); color:var(--muted); display:flex; flex-direction:column; gap:0.4rem; }
+  ul.notes b, ul.notes code { color:var(--ink); }
+  code { font-family:var(--mono); font-size:0.92em; background:var(--surface); padding:0.05em 0.32em; border-radius:2px; }
+  pre { margin:0; overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:3px; padding:0.85rem 1rem; }
+  pre code { background:none; padding:0; font-size:var(--step--1); }
+  footer { border-top:1px solid var(--line); padding-top:1rem; font-size:var(--step--2); color:var(--faint); }
+  a { color:var(--accent); }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important;} }
+</style>
+
+<div class="page">
+
+  <header class="masthead">
+    <div class="masthead-top">
+      <nav class="nav"><a href="https://claude.ai/code/artifact/09f4465a-1924-40c5-b352-cbe19926100d">&larr; Governance</a></nav>
+      <button type="button" class="toggle" id="theme-toggle">Dark mode</button>
+    </div>
+    <p class="eyebrow">HX-Infrastructure &middot; review of the migration manifest &middot; 2026-08-13</p>
+    <h1>Migration Manifest Findings</h1>
+    <p>
+      Review of the file-by-file migration manifest against the repository as it stands. The
+      manifest is good work &mdash; genuinely file-level, correctly dispositioned, and right that
+      the 411-file node trees must be distilled rather than imported. Seven findings, checked by
+      running the code rather than reading it. <strong>Two are blocking</strong> and should be
+      settled before &sect;0 is executed, because &sect;0 is what everything else waits on.
+    </p>
+  </header>
+
+  <dl class="strip">
+    <div class="cell"><dt>Findings</dt><dd>7</dd></div>
+    <div class="cell"><dt>Blocking</dt><dd>2</dd></div>
+    <div class="cell"><dt>Already done</dt><dd>1</dd></div>
+    <div class="cell"><dt>Unverifiable here</dt><dd>1</dd></div>
+    <div class="cell"><dt>Confirmed</dt><dd>2</dd></div>
+    <div class="cell"><dt>Verdict</dt><dd>Execute</dd></div>
+  </dl>
+
+  <section>
+    <h2>Findings</h2>
+    <div class="items">
+
+      <article class="item stop">
+        <div class="item-head"><span class="fid">F1</span><h3>&sect;0 cannot both retire the guard and meet its own acceptance criteria</h3><span class="badge stop">blocking</span></div>
+        <p class="body">&sect;0 retires <code>hx-phase1-guard.ps1</code> and the phase1-gate skill.
+        &sect;7 requires <strong>"Remediation suite 153/0"</strong> as an acceptance criterion.
+        Those two cannot both hold.</p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th scope="col">Measured now</th><th scope="col">Count</th></tr></thead>
+            <tbody>
+              <tr><td>Suite result today</td><td class="n">153 pass / 0 fail</td></tr>
+              <tr><td><code>Assert-True</code> statements in the suite</td><td class="n">90</td></tr>
+              <tr><td>Assertions naming guard, deny, blocked or phase</td><td class="n">18</td></tr>
+              <tr><td>Direct guard invocations (<code>Invoke-Hook $guardHook</code>)</td><td class="n">7</td></tr>
+              <tr><td>Hook registrations in <code>settings.json</code></td><td class="n">1</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Deleting the guard fails the suite immediately.</strong> The tests are not
+        incidental to it &mdash; a fifth of the assertions exist to prove the guard denies what it
+        should and permits what it should, and that history is why the guard works at all
+        (<code>ll-002</code>: an untested guard pattern is an unguarded path).</p>
+        <p><strong>Resolve by choosing one:</strong> retire the guard <em>and</em> rewrite those
+        18 assertions in the same change, restating the expected count; or keep the guard as a
+        storage-and-credential guard with the phase logic removed, which preserves the tests and
+        the <code>permissions.deny</code> rules the infrastructure contract requires in any phase.
+        The second is less work and loses nothing. What must not happen is deleting the hook and
+        discovering the suite number afterwards.</p>
+      </article>
+
+      <article class="item stop">
+        <div class="item-head"><span class="fid">F2</span><h3>Dropping the Phase 2 column breaks three live hooks</h3><span class="badge stop">blocking</span></div>
+        <p class="body">&sect;0 says to "drop the now-obsolete Phase 2 status column" from
+        <code>SERVER-REGISTRY.md</code>. That column is not obsolete &mdash; it is read at runtime
+        by three hooks, in both the active and packaged copies:</p>
+        <pre><code>.claude/hooks/hx-common.ps1        Test-HxPhase2Open parses **Phase 2 Status:**
+.claude/hooks/hx-phase1-guard.ps1  gates on it
+.claude/hooks/hx-session-state.ps1 reports it into every session
+claude-hooks/claude-hooks/hooks/   the packaged copies of all three</code></pre>
+        <p>The registry currently reads <strong>Phase 1 COMPLETE, Phase 2 READY</strong>. Removing
+        the column makes <code>Test-HxPhase2Open</code> fall through to its default, which is
+        <em>guard active</em> &mdash; so dropping the column to signal "the gate is gone" would
+        re-block the fleet. The failure is silent and points the wrong way.</p>
+        <p><strong>Resolve:</strong> if the guard is retired per F1, remove the column and its
+        three readers in one change. If the guard is kept, keep the column. Either way, column
+        and readers move together.</p>
+      </article>
+
+      <article class="item good">
+        <div class="item-head"><span class="fid">F3</span><h3>&sect;0's second decision is already executed</h3><span class="badge good">done</span></div>
+        <p class="body">&sect;0 lists "commit v0.3 roles" as pending. It landed earlier today in
+        commit <code>8123965</code>.</p>
+        <p>All 15 fleet rows carry an Assigned Role and Workload/Model transcribed from v0.3, the
+        FQDN column was corrected from <code>not configured</code> to the resolving
+        <code>hxs-N.hx.local.arpa</code> names, all seven gate conditions are ticked, and
+        <code>act-012</code> is closed. The manifest is one step behind the repository here, not
+        wrong. Re-running that row would be a no-op at best.</p>
+      </article>
+
+      <article class="item warn">
+        <div class="item-head"><span class="fid">F4</span><h3>"Retire the gate" and "the gate is complete" are different outcomes</h3><span class="badge warn">decide</span></div>
+        <p class="body">The manifest frames the phase gate as something to remove. The repository
+        records it as something that was <strong>satisfied</strong>: seven of seven conditions met,
+        Phase 1 <code>COMPLETE</code>, Phase 2 <code>READY</code>.</p>
+        <p>Stripping the gate language deletes the evidence that Phase 1 was completed properly
+        &mdash; fifteen servers discovered, documented, reviewed and assigned before any
+        configuration began. That record is the reason the fleet inventory can be trusted.</p>
+        <p><strong>Suggestion:</strong> retire the gate as a <em>control</em> while keeping it as a
+        <em>record</em>. Mark the section historical and dated rather than removing it. The
+        control has already done its job and released; erasing it costs the provenance and buys
+        nothing.</p>
+      </article>
+
+      <article class="item warn">
+        <div class="item-head"><span class="fid">F5</span><h3>The manifest carried the credentials it warns about</h3><span class="badge warn">fixed</span></div>
+        <p class="body">&sect;6 correctly identifies the exposure and mandates scanning every
+        migration commit. The manifest itself then printed the password four times and the API key
+        once, in a document destined for a governance directory and a published artifact.</p>
+        <p>Redacted before commit &mdash; five occurrences here, plus two more in the 11:25 deep-pass
+        document. The working tree now holds zero credential values. Neither file had been
+        published, so nothing left the workstation.</p>
+        <p><strong>The exposure is not closed by redaction.</strong> The value is already in
+        committed history via <code>43530f5</code>. Both credentials need rotating regardless of
+        what any file says now, and that is unaffected by the merge.</p>
+      </article>
+
+      <article class="item warn">
+        <div class="item-head"><span class="fid">F6</span><h3>Acceptance criterion 1 fails against the current repository</h3><span class="badge warn">tension</span></div>
+        <p class="body">&sect;7 requires "no secret object in active history". The current
+        repository's active history already contains one, from this morning
+        (<code>43530f5</code>). The criterion cannot pass as written without rewriting history.</p>
+        <p><strong>Resolve by choosing one:</strong> rewrite history before the push, which is
+        clean but discards commit hashes already cited across the governance log; or restate the
+        criterion as "no secret object introduced from this point, and both exposed credentials
+        rotated", which is honest and achievable. Rotation is what actually neutralises the risk
+        &mdash; a value in an old object is harmless once it no longer opens anything.</p>
+      </article>
+
+      <article class="item">
+        <div class="item-head"><span class="fid">F7</span><h3>Half the password-guard claim confirmed; half unverifiable here</h3><span class="badge info">partial</span></div>
+        <p class="body">&sect;3b marks <code>hx-password-guard-hook.py</code> as exclude-and-rebuild
+        because it "contains secret literals and fails to compile".</p>
+        <p><strong>Secret literals: confirmed.</strong> Fetched from the live org repository &mdash;
+        4,236 bytes, and it contains the exposed password. A guard that hard-codes the credential
+        it defends against is a good reason to rebuild rather than migrate, and it is a third
+        location for that value beyond the two already known.</p>
+        <p><strong>Fails to compile: not verified.</strong> Python is not installed on this
+        workstation, so I could not run <code>py_compile</code>. Recording it as unverified rather
+        than repeating it &mdash; the disposition is right either way, and the reason given for it
+        should be one that was actually checked.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>What the manifest gets right</h2>
+    <ul class="notes">
+      <li><b>File-level, not thematic.</b> 26 commands, 6 hooks, 6 gates, 10 standards, 18
+      templates, 17 procedures and both node trees each carry a disposition. That is the artifact
+      all three reviews asked for.</li>
+      <li><b>Seven disposition types with a legend</b> &mdash; adopt / adapt / reconstruct /
+      covered / historical / retire / exclude. "Covered" is the one most plans omit, and it is
+      what stops a merge re-importing things the current repo already does better.</li>
+      <li><b>The 411 node files collapse to two build documents.</b> Correct. Importing 90-file
+      task trees would recreate the ceremony the owner has twice asked to avoid.</li>
+      <li><b>Registry-driven IP validator rather than a hardcoded subnet.</b> Better than the
+      hardcode this project proposed, which would have become the next stale validator.</li>
+      <li><b>Agents reconstructed, not copied.</b> Verified independently: <code>hx-agents/</code>
+      in the live org repository holds five description documents and no per-agent profiles. The
+      profiles do not exist to copy, in the archive or the remote.</li>
+      <li><b>Transform facts into new documents rather than editing historical ones in place</b>
+      &mdash; preserves provenance, and matches the lesson this project learned when stale
+      cross-host claims had to be corrected across thirteen records (<code>ll-030</code>).</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Recommended order</h2>
+    <p class="lede">Unchanged from the manifest except that F1 and F2 are settled before &sect;0
+    runs, and one step is already done.</p>
+    <ul class="notes">
+      <li><b>1. Rotate both credentials.</b> Independent of everything else, unblocked, and the
+      only action that actually closes the exposure.</li>
+      <li><b>2. Decide F1 and F2 together</b> &mdash; guard retired with tests rewritten, or guard
+      kept with phase logic stripped. The Phase 2 column follows whichever is chosen.</li>
+      <li><b>3. Push to the org remote.</b> Still the largest unmitigated risk: nineteen commits
+      on one workstation. Independent of the merge.</li>
+      <li><b>4. Then &sect;0 as amended</b>, skipping the roles row, and re-baseline the suite
+      number deliberately rather than discovering it.</li>
+      <li><b>5. Then &sect;1 onward</b> as written.</li>
+    </ul>
+  </section>
+
+  <footer>
+    HX-Infrastructure &middot; migration manifest findings &middot; Claude Code &middot; 2026-08-13 &middot;
+    review only; authorizes no change. Counts measured against the working tree and the live org repository on the day of writing.
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById('theme-toggle');
+  if (!btn) { return; }
+  var media = window.matchMedia('(prefers-color-scheme: dark)');
+  function stored(v){ try{ if(v===undefined){ return localStorage.getItem('hx-theme'); } localStorage.setItem('hx-theme', v); }catch(e){} return null; }
+  function active(){ var e=root.getAttribute('data-theme'); return (e==='dark'||e==='light')?e:(media.matches?'dark':'light'); }
+  function relabel(){ var n=active()==='dark'?'light':'dark'; btn.textContent=n==='dark'?'Dark mode':'Light mode'; btn.setAttribute('aria-label','Switch to '+n+' mode'); }
+  var s=stored(); if(s==='dark'||s==='light'){ root.setAttribute('data-theme', s); } relabel();
+  btn.addEventListener('click', function(){ var n=active()==='dark'?'light':'dark'; root.setAttribute('data-theme', n); stored(n); relabel(); });
+  if(typeof media.addEventListener==='function'){ media.addEventListener('change', relabel); }
+  if(typeof MutationObserver==='function'){ new MutationObserver(relabel).observe(root,{attributes:true,attributeFilter:['data-theme']}); }
+})();
+</script>

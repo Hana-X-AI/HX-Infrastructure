@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HX-Ai-Infrastructure — Agentic SDLC Platform</title>
+<style>
+  :root {
+    --bg:         #07101d;
+    --surface:    #101b2d;
+    --surface-2:  #14243c;
+    --fg:         #e6eef7;
+    --muted:      #9eb1ca;
+    --border:     #1e2f45;
+    --accent:     #41d9ff;
+    --mint:       #60e6b6;
+    --amber:      #ffd06a;
+    --mono: 'Cascadia Code', Consolas, 'SF Mono', ui-monospace, Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', system-ui, sans-serif;
+    --maxw: 1200px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: rgba(65, 217, 255, .22); }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 32px; }
+
+  /* ---------- Eyebrow / type helpers ---------- */
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  h1, h2, h3, h4 { font-weight: 600; line-height: 1.15; letter-spacing: -.01em; }
+
+  .muted { color: var(--muted); }
+
+  .mono { font-family: var(--mono); }
+
+  /* ---------- Nav ---------- */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(7,16,29,.82);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: var(--maxw); margin: 0 auto; padding: 16px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; }
+  .brand-mark {
+    width: 20px; height: 20px; border-radius: 5px;
+    background: conic-gradient(from 210deg, var(--accent), var(--mint), var(--amber), var(--accent));
+  }
+  .nav-links { display: flex; gap: 28px; font-size: 13px; color: var(--muted); }
+  .nav-links a { color: inherit; text-decoration: none; transition: color .15s; }
+  .nav-links a:hover { color: var(--fg); }
+
+  /* ---------- Hero ---------- */
+  .hero { padding: 120px 0 80px; }
+  .hero .eyebrow { margin-bottom: 20px; }
+  .hero h1 {
+    font-size: clamp(40px, 5vw, 58px);
+    max-width: 20ch; margin-bottom: 24px;
+  }
+  .hero h1 .accent { color: var(--accent); }
+  .hero .lede {
+    font-size: 18px; color: var(--muted); max-width: 62ch; margin-bottom: 40px;
+  }
+  .hero-meta {
+    display: flex; flex-wrap: wrap; gap: 28px;
+    padding-top: 24px; border-top: 1px solid var(--border);
+    font-family: var(--mono); font-size: 12px; color: var(--muted);
+  }
+  .hero-meta span b { color: var(--fg); font-weight: 500; }
+
+  /* ---------- Section base ---------- */
+  section { padding: 80px 0; border-top: 1px solid var(--border); }
+  .section-head { max-width: 720px; margin-bottom: 48px; }
+  .section-head h2 { font-size: clamp(26px, 3vw, 34px); margin-bottom: 12px; }
+  .section-head p { color: var(--muted); }
+
+  /* ---------- Card grid ---------- */
+  .grid { display: grid; gap: 20px; }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+  }
+  .card .kicker { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .card h3 { font-size: 17px; margin-bottom: 8px; }
+  .card p { font-size: 14px; color: var(--muted); }
+
+  /* ---------- Agent flow diagram ---------- */
+  .flow-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 36px 32px;
+    overflow-x: auto;
+  }
+  .flow-legend { display: flex; flex-wrap: wrap; gap: 18px 28px; margin-top: 24px; font-size: 13px; color: var(--muted); }
+  .flow-legend .lg-item { display: flex; align-items: center; gap: 8px; }
+  .flow-legend .swatch { width: 10px; height: 10px; border-radius: 3px; }
+
+  /* ---------- Pipeline ---------- */
+  .pipeline { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+  .gate {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 18px;
+    position: relative;
+  }
+  .gate .gnum { font-family: var(--mono); font-size: 11px; color: var(--accent); margin-bottom: 8px; }
+  .gate h3 { font-size: 15px; margin-bottom: 6px; }
+  .gate p { font-size: 12.5px; color: var(--muted); }
+  .gate .arrow {
+    position: absolute; right: -18px; top: 50%; transform: translateY(-50%);
+    color: var(--border); font-size: 16px;
+  }
+  .gate:last-child .arrow { display: none; }
+
+  /* ---------- Knowledge base ---------- */
+  .kb-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 28px; align-items: stretch; }
+  .search-box {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 16px; margin-bottom: 20px;
+  }
+  .search-box input {
+    flex: 1; background: none; border: none; outline: none;
+    color: var(--fg); font-family: var(--sans); font-size: 14px;
+  }
+  .search-box input::placeholder { color: var(--muted); }
+  .search-box svg { width: 16px; height: 16px; stroke: var(--muted); }
+  .kb-stats { display: flex; gap: 40px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .kb-stats .stat .num { font-family: var(--mono); font-size: 26px; color: var(--fg); font-weight: 600; }
+  .kb-stats .stat .lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* Librarian chat */
+  .librarian {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .lib-head {
+    display: flex; align-items: center; gap: 12px;
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+  }
+  .lib-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--mint));
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 13px; color: #07101d; font-weight: 700;
+  }
+  .lib-head .lib-name { font-size: 14px; font-weight: 600; }
+  .lib-head .lib-status { font-size: 12px; color: var(--mint); }
+  .lib-body { flex: 1; padding: 20px; min-height: 220px; }
+  .msg { display: flex; gap: 12px; margin-bottom: 16px; font-size: 13.5px; }
+  .msg .bubble { background: rgba(7,16,29,.4); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; max-width: 85%; }
+  .msg.user .bubble { margin-left: auto; background: rgba(65,217,255,.08); border-color: rgba(65,217,255,.25); }
+  .lib-input {
+    display: flex; gap: 10px; padding: 14px 16px; border-top: 1px solid var(--border);
+  }
+  .lib-input input {
+    flex: 1; background: rgba(7,16,29,.4); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 14px; color: var(--fg); font-family: var(--sans); font-size: 13px; outline: none;
+  }
+  .lib-input input:focus { border-color: var(--accent); }
+  .lib-input button {
+    background: var(--accent); color: #07101d; border: none; border-radius: 8px;
+    padding: 0 18px; font-weight: 600; font-size: 13px; cursor: pointer; transition: opacity .15s;
+  }
+  .lib-input button:hover { opacity: .85; }
+
+  /* ---------- Roadmap ---------- */
+  .roadmap { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+  .rm-step { padding: 20px 24px; border-left: 1px solid var(--border); position: relative; }
+  .rm-step:first-child { border-left: none; padding-left: 0; }
+  .rm-step .rm-dot {
+    position: absolute; left: -5px; top: 24px;
+    width: 10px; height: 10px; border-radius: 50%; background: var(--accent);
+  }
+  .rm-step:first-child .rm-dot { left: -4px; }
+  .rm-step .rm-num { font-family: var(--mono); font-size: 11px; color: var(--amber); margin-bottom: 8px; }
+  .rm-step h3 { font-size: 15px; margin-bottom: 6px; }
+  .rm-step p { font-size: 12.5px; color: var(--muted); }
+  .rm-step.done .rm-dot { background: var(--mint); }
+
+  /* ---------- Truth state footer ---------- */
+  .truth {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 64px 0;
+  }
+  .truth .eyebrow { color: var(--amber); }
+  .truth h2 { font-size: clamp(24px, 3vw, 30px); margin-bottom: 16px; max-width: 30ch; }
+  .truth .truth-list { margin-top: 28px; display: grid; gap: 14px; max-width: 720px; }
+  .truth .truth-list li {
+    display: flex; gap: 12px; align-items: flex-start;
+    font-size: 14.5px; color: var(--muted); list-style: none;
+  }
+  .truth .truth-list li .check {
+    color: var(--mint); font-family: var(--mono); font-size: 13px; margin-top: 2px;
+  }
+  .truth .truth-list li .mono-txt { color: var(--fg); }
+  .truth .mono-line {
+    font-family: var(--mono); font-size: 12px; color: var(--accent);
+    padding: 16px 0 0; margin-top: 28px; border-top: 1px solid var(--border);
+  }
+
+  /* ---------- Footer ---------- */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0; font-size: 12.5px; color: var(--muted);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+  footer .mono { color: var(--muted); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 960px) {
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+    .pipeline { grid-template-columns: 1fr; gap: 12px; }
+    .gate .arrow { display: none; }
+    .roadmap { grid-template-columns: 1fr 1fr; gap: 24px 0; }
+    .rm-step:nth-child(odd) { border-left: none; padding-left: 0; }
+    .rm-step:nth-child(odd) .rm-dot { left: -4px; }
+    .kb-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 0 20px; }
+    .grid-3 { grid-template-columns: 1fr; }
+    .roadmap { grid-template-columns: 1fr; }
+    .rm-step { border-left: 1px solid var(--border); padding-left: 24px; }
+    .rm-step .rm-dot { left: -5px; }
+    .nav-links { display: none; }
+    .hero { padding: 80px 0 56px; }
+    section { padding: 56px 0; }
+    .kb-stats { flex-direction: column; gap: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="brand"><div class="brand-mark"></div> Hana-X AI · HX-Ai-Infrastructure</div>
+    <div class="nav-links">
+      <a href="#platform">Platform</a>
+      <a href="#pipeline">Pipeline</a>
+      <a href="#knowledge">Knowledge</a>
+      <a href="#roadmap">Roadmap</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Hana-X AI · Infrastructure Program</div>
+    <h1>The agentic <span class="accent">software development</span> platform for Hana-X AI</h1>
+    <p class="lede">
+      A spec-driven control repository where a meta-agent coordinates specialist agents
+      through a gated delivery pipeline — every document governed, every step evidence-first.
+    </p>
+    <div class="hero-meta">
+      <span>spec-driven <b>control repository</b></span>
+      <span>agents <b>6 specialist</b></span>
+      <span>governance <b>five-gate</b></span>
+      <span>documents <b>41 / offline</b></span>
+    </div>
+  </div>
+</header>
+
+<!-- ============ PLATFORM / AGENT FLOW ============ -->
+<section id="platform">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">What the platform is</div>
+      <h2>A control repository with a deterministic agent chain</h2>
+      <p>
+        The repository holds the live specification. The meta-agent reads owner intent,
+        distributes work to specialist agents, and routes every outcome through governance
+        before anything is accepted.
+      </p>
+    </div>
+
+    <div class="flow-card">
+      <svg viewBox="0 0 1024 120" width="100%" role="img" aria-label="Agent flow diagram">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#1e2f45"/>
+          </marker>
+        </defs>
+        <!-- connection line -->
+        <line x1="70" y1="60" x2="954" y2="60" stroke="#1e2f45" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <!-- nodes -->
+        <g font-family="'Cascadia Code', Consolas, monospace" font-size="12" text-anchor="middle">
+          <g>
+            <rect x="10" y="35" width="120" height="50" rx="8" fill="#101b2d" stroke="#41d9ff"/>
+            <text x="70" y="62" fill="#e6eef7">Owner</text>
+          </g>
+          <g>
+            <rect x="158" y="35" width="140" height="50" rx="8" fill="#101b2d" stroke="#1e2f45"/>
+            <text x="228" y="62" fill="#e6eef7">Meta-Agent</text>
+          </g>
+          <g>
+            <rect x="326" y="35" width="120" height="50" rx="8" fill="#101b2d" stroke="#1e2f45"/>
+            <text x="386" y="62" fill="#e6eef7">Owen</text>
+          </g>
+          <g>
+            <rect x="474" y="35" width="120" height="50" rx="8" fill="#101b2d" stroke="#1e2f45"/>
+            <text x="534" y="62" fill="#e6eef7">Craig</text>
+          </g>
+          <g>
+            <rect x="622" y="35" width="120" height="50" rx="8" fill="#101b2d" stroke="#1e2f45"/>
+            <text x="682" y="62" fill="#e6eef7">Quincy</text>
+          </g>
+          <g>
+            <rect x="770" y="35" width="120" height="50" rx="8" fill="#101b2d" stroke="#1e2f45"/>
+            <text x="830" y="62" fill="#e6eef7">Tessa</text>
+          </g>
+          <g>
+            <rect x="918" y="35" width="120" height="50" rx="8" fill="#14243c" stroke="#60e6b6"/>
+            <text x="978" y="62" fill="#e6eef7">Governance</text>
+          </g>
+        </g>
+      </svg>
+      <div class="flow-legend">
+        <div class="lg-item"><span class="swatch" style="background:#41d9ff"></span> entry point</div>
+        <div class="lg-item"><span class="swatch" style="background:#101b2d;border:1px solid #1e2f45"></span> specialist agents</div>
+        <div class="lg-item"><span class="swatch" style="background:#60e6b6"></span> acceptance gate</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PIPELINE ============ -->
+<section id="pipeline">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Delivery pipeline</div>
+      <h2>Five-gate delivery — nothing ships unexamined</h2>
+      <p>Each gate must pass on evidence before the next opens. No gate is skipped; no date overrides a document.</p>
+    </div>
+
+    <div class="pipeline">
+      <div class="gate">
+        <div class="gnum">GATE 01</div>
+        <h3>Repository Baseline</h3>
+        <p>Version-controlled spec repository established, directory structure fixed.</p>
+        <span class="arrow">→</span>
+      </div>
+      <div class="gate">
+        <div class="gnum">GATE 02</div>
+        <h3>Provider Profiles</h3>
+        <p>Provider configurations documented and pinned to the control repository.</p>
+        <span class="arrow">→</span>
+      </div>
+      <div class="gate">
+        <div class="gnum">GATE 03</div>
+        <h3>HXS-1 MVP-1</h3>
+        <p>First agent-initiated message produced through the gated pipeline.</p>
+        <span class="arrow">→</span>
+      </div>
+      <div class="gate">
+        <div class="gnum">GATE 04</div>
+        <h3>Independent Acceptance</h3>
+        <p>Acceptance performed by an authority separate from the producing agents.</p>
+        <span class="arrow">→</span>
+      </div>
+      <div class="gate">
+        <div class="gnum">GATE 05</div>
+        <h3>Governance Review</h3>
+        <p>Final state reviewed against the repository; only documents accepted.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ KNOWLEDGE BASE ============ -->
+<section id="knowledge">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Offline knowledge base</div>
+      <h2>41 documents, searchable and governed by the Librarian</h2>
+      <p>
+        The knowledge base is fully offline and indexed. The Librarian — an AI interface over the
+        repository — answers queries strictly from the documents, never from memory or assumption.
+      </p>
+    </div>
+
+    <div class="kb-grid">
+      <div>
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+            <circle cx="11" cy="11" r="7"/>
+            <line x1="21" y1="21" x2="16.5" y2="16.5"/>
+          </svg>
+          <input type="text" id="kbSearch" placeholder="Search 41 documents…">
+        </div>
+        <div id="kbResults" class="grid" style="grid-template-columns:1fr 1fr">
+          <div class="card">
+            <div class="kicker">Spec</div>
+            <h3>Control Repository Spec</h3>
+            <p>Directory structure, document types, and the signature of the live spec.</p>
+          </div>
+          <div class="card">
+            <div class="kicker">Protocol</div>
+            <h3>Agent Routing Protocol</h3>
+            <p>How the meta-agent distributes tasks to Owen, Craig, Quincy, and Tessa.</p>
+          </div>
+          <div class="card">
+            <div class="kicker">Governance</div>
+            <h3>Gate Acceptance Rules</h3>
+            <p>Evidence required at each of the five gates before acceptance.</p>
+          </div>
+          <div class="card">
+            <div class="kicker">Truth</div>
+            <h3>Deployment Status</h3>
+            <p>Current state: no deployment has occurred. Documents govern, not dates.</p>
+          </div>
+        </div>
+        <div id="kbEmpty" style="display:none;color:var(--muted);font-size:14px;padding:12px 0 0;font-family:var(--mono)">
+          no matching documents
+        </div>
+        <div class="kb-stats">
+          <div class="stat"><div class="num">41</div><div class="lbl">documents indexed</div></div>
+          <div class="stat"><div class="num">1</div><div class="lbl">librarian interface</div></div>
+          <div class="stat"><div class="num">0</div><div class="lbl">network dependency</div></div>
+        </div>
+      </div>
+
+      <div class="librarian">
+        <div class="lib-head">
+          <div class="lib-avatar">L</div>
+          <div>
+            <div class="lib-name">Librarian</div>
+            <div class="lib-status">● online · offline knowledge base</div>
+          </div>
+        </div>
+        <div class="lib-body" id="libBody">
+          <div class="msg">
+            <div class="bubble">I answer from the 41 governance documents only. Ask about any spec, gate, or rule.</div>
+          </div>
+        </div>
+        <form class="lib-input" id="libForm">
+          <input type="text" id="libInput" placeholder="Ask the Librarian…" autocomplete="off">
+          <button type="submit">Ask</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ROADMAP ============ -->
+<section id="roadmap">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Roadmap</div>
+      <h2>Progress is measured by accepted documents, not dates</h2>
+      <p>The road runs repository baseline → provider configuration → HXS-1 MVP-1 → independent acceptance.</p>
+    </div>
+
+    <div class="roadmap">
+      <div class="rm-step done">
+        <div class="rm-dot"></div>
+        <div class="rm-num">STEP 01 · DONE</div>
+        <h3>Repository Baseline</h3>
+        <p>Control repository and document structure established.</p>
+      </div>
+      <div class="rm-step">
+        <div class="rm-dot"></div>
+        <div class="rm-num">STEP 02 · ACTIVE</div>
+        <h3>Provider Profiles</h3>
+        <p>Provider configurations being documented and pinned.</p>
+      </div>
+      <div class="rm-step">
+        <div class="rm-dot"></div>
+        <div class="rm-num">STEP 03 · NEXT</div>
+        <h3>HXS-1 MVP-1</h3>
+        <p>First agent-initiated message through the gated pipeline.</p>
+      </div>
+      <div class="rm-step">
+        <div class="rm-dot"></div>
+        <div class="rm-num">STEP 04 · PENDING</div>
+        <h3>Independent Acceptance</h3>
+        <p>Acceptance by an authority separate from the agents.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TRUTH STATE ============ -->
+<div class="truth" id="truth">
+  <div class="wrap">
+    <div class="eyebrow">Truth state</div>
+    <h2>No deployment has occurred. Documents govern, not dates.</h2>
+    <p class="muted" style="max-width:60ch">
+      This platform is in its infrastructure-establishment phase. The authoritative record is
+      the control repository — progress is claimed only where an accepted document exists.
+    </p>
+    <ul class="truth-list">
+      <li><span class="check">✓</span> <span>No code has been deployed to any environment.</span></li>
+      <li><span class="check">✓</span> <span>The repository baseline is the single source of truth.</span></li>
+      <li><span class="check">✓</span> <span>Acceptance happens only at a gate, by an independent authority.</span></li>
+      <li><span class="check">✓</span> <span>Dates are planning signals, never proof of completion.</span></li>
+    </ul>
+    <div class="mono-line">truth := <span style="color:var(--mint)">repository_documents_govern</span></div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;width:100%">
+    <span>Hana-X AI · HX-Ai-Infrastructure</span>
+    <span class="mono">governed · evidence-first · deterministic</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    // Knowledge base search — filters the document cards
+    var search = document.getElementById('kbSearch');
+    var cards = Array.prototype.slice.call(document.querySelectorAll('#kbResults .card'));
+    var empty = document.getElementById('kbEmpty');
+    if (search) {
+      search.addEventListener('input', function () {
+        var q = search.value.trim().toLowerCase();
+        var visible = 0;
+        cards.forEach(function (c) {
+          var match = c.textContent.toLowerCase().indexOf(q) !== -1;
+          c.style.display = (q === '' || match) ? '' : 'none';
+          if (match) visible++;
+        });
+        if (empty) empty.style.display = (q !== '' && visible === 0) ? 'block' : 'none';
+      });
+    }
+
+    // Librarian — deterministic on-message responses drawn from the stated knowledge base
+    var form = document.getElementById('libForm');
+    var input = document.getElementById('libInput');
+    var body = document.getElementById('libBody');
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var q = input.value.trim();
+        if (!q) return;
+        var userMsg = document.createElement('div');
+        userMsg.className = 'msg user';
+        userMsg.innerHTML = '<div class="bubble"></div>';
+        userMsg.querySelector('.bubble').textContent = q;
+
+        var reply = document.createElement('div');
+        reply.className = 'msg';
+        reply.innerHTML = '<div class="bubble"></div>';
+
+        var lower = q.toLowerCase();
+        var answer;
+        if (lower.indexOf('deploy') !== -1 || lower.indexOf('production') !== -1) {
+          answer = 'No deployment has occurred. The control repository documents govern; there is no deployed artifact.';
+        } else if (lower.indexOf('gate') !== -1) {
+          answer = 'There are five gates: repository baseline, provider profiles, HXS-1 MVP-1, independent acceptance, governance review. Nothing ships unexamined.';
+        } else if (lower.indexOf('roadmap') !== -1 || lower.indexOf('next') !== -1) {
+          answer = 'Current step: provider profiles. Next: HXS-1 MVP-1 first agent-initiated message, then independent acceptance.';
+        } else if (lower.indexOf('agent') !== -1 || lower.indexOf('owen') !== -1 || lower.indexOf('craig') !== -1) {
+          answer = 'The chain is Owner → Meta-Agent → Owen → Craig → Quincy → Tessa → Governance. Specialist agents act under the meta-agent; governance accepts.';
+        } else {
+          answer = 'I can answer from the 41 offline governance documents. Ask about deployment, gates, the roadmap, or the agent chain.';
+        }
+        reply.querySelector('.bubble').textContent = answer;
+
+        body.appendChild(userMsg);
+        body.appendChild(reply);
+        body.scrollTop = body.scrollHeight;
+        input.value = '';
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>
+</artifact>

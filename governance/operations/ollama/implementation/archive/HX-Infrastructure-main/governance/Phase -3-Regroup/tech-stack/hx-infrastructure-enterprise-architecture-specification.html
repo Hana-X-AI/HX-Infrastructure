@@ -1,0 +1,1121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HX-Infrastructure — Enterprise Architecture Specification & Visual Models</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #060911;
+      --bg-surface: #0c1220;
+      --bg-elevated: #121b2e;
+      --bg-card: #152238;
+      --border-subtle: #1c2b48;
+      --border-strong: #2a3f68;
+      --text-main: #f0f4fc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent-blue: #38bdf8;
+      --accent-cyan: #22d3ee;
+      --accent-green: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      --accent-purple: #c084fc;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'Fira Code', ui-monospace, monospace;
+      --shadow-lg: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(at 100% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 50%),
+        radial-gradient(at 0% 50%, rgba(192, 132, 252, 0.05) 0px, transparent 50%),
+        linear-gradient(180deg, #060911 0%, #090e1a 100%);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout structure */
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sticky Sidebar Navigation */
+    .sidebar {
+      width: 300px;
+      flex-shrink: 0;
+      background: rgba(12, 18, 32, 0.85);
+      backdrop-filter: blur(16px);
+      border-right: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 28px 20px;
+      z-index: 100;
+    }
+
+    .brand {
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .brand-eyebrow {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-cyan);
+    }
+    .brand-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      margin-top: 4px;
+    }
+
+    .nav-group-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin: 20px 0 8px 8px;
+    }
+    .nav-links { list-style: none; }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s ease;
+      margin-bottom: 2px;
+    }
+    .nav-link:hover {
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent-blue);
+    }
+    .nav-num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    /* Main Content Area */
+    .content-area {
+      flex: 1;
+      max-width: 1180px;
+      padding: 48px 48px 120px;
+      overflow-x: hidden;
+    }
+
+    /* Executive Header */
+    .doc-hero {
+      margin-bottom: 36px;
+      padding-bottom: 30px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: rgba(34, 211, 238, 0.1);
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-cyan);
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 38px;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+    .hero-lede {
+      font-size: 17px;
+      color: var(--text-muted);
+      max-width: 960px;
+      line-height: 1.6;
+    }
+
+    /* Metadata Bar */
+    .meta-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-bottom: 36px;
+    }
+    .meta-item-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .meta-item-val {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-top: 2px;
+    }
+
+    /* Executive Callout */
+    .callout {
+      background: linear-gradient(145deg, rgba(21, 34, 56, 0.9), rgba(12, 18, 32, 0.9));
+      border: 1px solid var(--border-strong);
+      border-left: 4px solid var(--accent-cyan);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      margin: 28px 0;
+    }
+    .callout-title {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent-cyan);
+      margin-bottom: 6px;
+    }
+    .callout-body {
+      font-size: 15px;
+      color: #dbeafe;
+      line-height: 1.6;
+    }
+
+    /* Architecture Section */
+    .arch-section {
+      margin-top: 56px;
+      padding-top: 24px;
+    }
+    .section-header {
+      margin-bottom: 20px;
+    }
+    .section-tag {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #fff;
+      margin: 4px 0 8px;
+    }
+    .section-desc {
+      font-size: 15px;
+      color: var(--text-muted);
+      max-width: 900px;
+    }
+
+    /* Diagram Card Component */
+    .diagram-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin: 20px 0;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+    }
+    .diagram-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .diagram-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .diagram-kind {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent-blue);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .diagram-view {
+      overflow-x: auto;
+      padding: 12px 0;
+      display: flex;
+      justify-content: center;
+    }
+    .diagram-view svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Key Insights Grid */
+    .spec-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+    .spec-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+    }
+    .spec-card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .spec-card-body {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    /* Badges */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+    .badge-foundational { background: rgba(52, 211, 153, 0.12); color: var(--accent-green); border: 1px solid rgba(52, 211, 153, 0.3); }
+    .badge-core { background: rgba(56, 189, 248, 0.12); color: var(--accent-blue); border: 1px solid rgba(56, 189, 248, 0.3); }
+    .badge-conditional { background: rgba(251, 191, 36, 0.12); color: var(--accent-amber); border: 1px solid rgba(251, 191, 36, 0.3); }
+    .badge-roadmap { background: rgba(192, 132, 252, 0.12); color: var(--accent-purple); border: 1px solid rgba(192, 132, 252, 0.3); }
+    .badge-out { background: rgba(251, 113, 133, 0.12); color: var(--accent-rose); border: 1px solid rgba(251, 113, 133, 0.3); }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin: 16px 0 24px;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    th {
+      background: var(--bg-elevated);
+      font-weight: 700;
+      color: #e2e8f0;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.05em;
+    }
+    tr:last-child td { border-bottom: none; }
+    td strong { color: #fff; }
+    code {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      background: #08111f;
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      padding: 2px 6px;
+      color: var(--accent-blue);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-base); }
+    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+    @media (max-width: 1024px) {
+      .sidebar { display: none; }
+      .content-area { padding: 24px 16px; }
+    }
+  </style>
+  <!-- Mermaid: pinned to an exact version. The CDN link requires network access; for an isolated
+       deployment, vendor mermaid.min.js locally and update this src. The initialize call below is
+       guarded so a failed/absent load does not throw a ReferenceError. -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js" crossorigin="anonymous"></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        darkMode: true,
+        background: 'transparent',
+        mainBkg: '#121d33',
+        textColor: '#f0f4fc',
+        lineColor: '#38bdf8',
+        nodeBorder: '#2a436e',
+        clusterBkg: '#0d1527',
+        clusterBorder: '#1c2e4d',
+        titleColor: '#38bdf8',
+        fontFamily: 'Inter, sans-serif',
+        fontSize: '13px'
+      },
+      flowchart: { curve: 'linear', htmlLabels: true, padding: 18 },
+      sequence: { actorFontSize: 13, messageFontSize: 12 }
+      });
+    }
+  </script>
+</head>
+<body>
+
+<div class="app-container">
+
+  <!-- Sidebar Navigation -->
+  <nav class="sidebar">
+    <div class="brand">
+      <div class="brand-eyebrow">Hana-X Platform</div>
+      <div class="brand-title">HX Architecture Models</div>
+    </div>
+
+    <div class="nav-group-title">Executive Overviews</div>
+    <ul class="nav-links">
+      <li><a class="nav-link" href="#overview"><span class="nav-num">01</span> Platform Top-Level Matrix</a></li>
+      <li><a class="nav-link" href="#end-to-end"><span class="nav-num">02</span> End-to-End Execution Trace</a></li>
+      <li><a class="nav-link" href="#boundaries"><span class="nav-num">03</span> Ownership Boundary Matrix</a></li>
+    </ul>
+
+    <div class="nav-group-title">Plane-by-Plane Models</div>
+    <ul class="nav-links">
+      <li><a class="nav-link" href="#plane-traffic"><span class="nav-num">P3</span> Edge & Model Traffic</a></li>
+      <li><a class="nav-link" href="#plane-inference"><span class="nav-num">P4</span> AI Inference Runtimes</a></li>
+      <li><a class="nav-link" href="#plane-retrieval"><span class="nav-num">P5</span> Retrieval & Knowledge</a></li>
+      <li><a class="nav-link" href="#plane-agents"><span class="nav-num">P6</span> Agents, Memory & MCP</a></li>
+      <li><a class="nav-link" href="#plane-data"><span class="nav-num">P7</span> Data & State Topology</a></li>
+      <li><a class="nav-link" href="#plane-experience"><span class="nav-num">P8</span> Experience & Automation</a></li>
+      <li><a class="nav-link" href="#plane-observability"><span class="nav-num">P9</span> Observability & Recovery</a></li>
+    </ul>
+
+    <div class="nav-group-title">Toolchains & Taxonomy</div>
+    <ul class="nav-links">
+      <li><a class="nav-link" href="#developer-flow"><span class="nav-num">10</span> Engineering Toolchain</a></li>
+      <li><a class="nav-link" href="#taxonomy"><span class="nav-num">11</span> Adoption & Exclusion Taxonomy</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main Content Body -->
+  <main class="content-area">
+
+    <header class="doc-hero">
+      <div class="hero-eyebrow">Technical Architecture Specification · Phase 3 Regroup</div>
+      <h1>HX-Infrastructure Target Architecture</h1>
+      <p class="hero-lede">
+        A precise, technology-only visual specification of the self-hosted Hana-X AI application platform. Defines component roles, interface boundaries, execution topologies, and lifecycle status for the seven runtime platform planes (Planes 3-9); Planes 1 and 2 (governance and systems foundation) are ratified platform standards covered separately.
+      </p>
+    </header>
+
+    <div class="meta-bar">
+      <div>
+        <div class="meta-item-label">Document Version</div>
+        <div class="meta-item-val">Proposed True-North Stack v0.3</div>
+      </div>
+      <div>
+        <div class="meta-item-label">Governance Baseline</div>
+        <div class="meta-item-val">sdd-core Specification Standard</div>
+      </div>
+      <div>
+        <div class="meta-item-label">Deployment Model</div>
+        <div class="meta-item-val">Self-Hosted Linux / Native systemd</div>
+      </div>
+      <div>
+        <div class="meta-item-label">Orchestration Baseline</div>
+        <div class="meta-item-val">Bash / SSH (Zero Ansible / K8s)</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout-title">Core Architectural Anchor: One Authority Per Concern</div>
+      <div class="callout-body">
+        HX operates as a governed platform where each system concern has exactly <strong>one authoritative owner</strong>. Traffic routing belongs solely to OmniRoute; durable user/agent memory belongs to Mem0; stateful orchestration belongs to LangGraph with PostgreSQL; document intelligence belongs to Docling with Granite Docling 258M; and graph knowledge belongs to LightRAG. Shadow authorities, overlapping gateways, and premature container orchestrators are strictly eliminated.
+      </div>
+    </div>
+
+    <!-- SECTION 1: TOP-LEVEL LANDSCAPE -->
+    <section id="overview" class="arch-section">
+      <div class="section-header">
+        <div class="section-tag">Overview · Diagram 01</div>
+        <h2>Nine-Plane Platform Landscape</h2>
+        <p class="section-desc">Tiered structural hierarchy showing how the nine specialized planes partition responsibility across the platform.</p>
+      </div>
+
+      <div class="diagram-card">
+        <div class="diagram-top">
+          <div class="diagram-title">Platform Tier &amp; Plane Interconnect</div>
+          <span class="diagram-kind">flowchart TD</span>
+        </div>
+        <div class="diagram-view">
+          <div class="mermaid">
+flowchart TD
+    subgraph TIER_GOV["Tier I: Governance & Systems Foundation"]
+        P1["Plane 1: Governance & Execution Control<br/><code>Git • sdd-core • Claude Code • Fail-Closed Hooks</code>"]
+        P2["Plane 2: Systems Foundation & Fleet Control<br/><code>Ubuntu • systemd • venvs • Bash/SSH • chrony</code>"]
+    end
+
+    subgraph TIER_EXP["Tier II: Ingress, Experience & Orchestration"]
+        P3["Plane 3: Edge & Traffic Mediation<br/><code>NGINX (TLS/Edge) • OmniRoute (Model Gateway)</code>"]
+        P8["Plane 8: Experience & Automation<br/><code>Open WebUI • CopilotKit / AG-UI • n8n</code>"]
+        P6["Plane 6: Agents, Memory & Tools<br/><code>LangGraph • Mem0 (Durable) • FastMCP</code>"]
+    end
+
+    subgraph TIER_CORE["Tier III: AI Inference & Knowledge Retrieval"]
+        P4["Plane 4: AI Inference Serving<br/><code>vLLM (Strategic Batch) • Ollama (Local Utility)</code>"]
+        P5["Plane 5: Retrieval & Knowledge Planes<br/><code>Docling + Granite 258M • Qdrant • LightRAG</code>"]
+    end
+
+    subgraph TIER_STATE["Tier IV: State, Observability & Recovery"]
+        P7["Plane 7: Relational & Ephemeral State<br/><code>PostgreSQL (Schemas/Checkpoints) • Redis</code>"]
+        P9["Plane 9: Observability & Recovery<br/><code>Prometheus • Loki • Grafana • DCGM Exporter</code>"]
+    end
+
+    TIER_EXP --> TIER_CORE
+    TIER_EXP --> TIER_STATE
+    TIER_CORE --> TIER_STATE
+    TIER_GOV -. Enforces .-> TIER_EXP & TIER_CORE & TIER_STATE
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: END-TO-END SEQUENCE -->
+    <section id="end-to-end" class="arch-section">
+      <div class="section-header">
+        <div class="section-tag">Execution Flow · Diagram 02</div>
+        <h2>End-to-End Interactive Request Trace</h2>
+        <p class="section-desc">Sequence trace illustrating a single agent turn: client ingress, durable memory resolution, checkpoint persistence, governed model mediation, and streaming return.</p>
+      </div>
+
+      <div class="diagram-card">
+        <div class="diagram-top">
+          <div class="diagram-title">Interactive Agent Execution Sequence</div>
+          <span class="diagram-kind">sequenceDiagram</span>
+        </div>
+        <div class="diagram-view">
+          <div class="mermaid">
+sequenceDiagram
+    autonumber
+    actor Client as User / UI Client
+    participant NGINX as NGINX (Edge)
+    participant UI as Open WebUI / AG-UI
+    participant Agent as LangGraph Orchestrator
+    participant Mem as Mem0 Memory Service
+    participant PG as PostgreSQL (Checkpoints)
+    participant Route as OmniRoute Traffic Plane
+    participant VLLM as vLLM Inference Engine
+
+    Client->>NGINX: HTTPS Request / Agent Prompt
+    NGINX->>UI: Reverse Proxy Route
+    UI->>Agent: Initiate Orchestration Turn
+    Agent->>Mem: Query Long-Term User & Agent Context
+    Mem-->>Agent: Returns Durable Memory Entities
+    Agent->>PG: Commit Initial Turn Checkpoint
+    Agent->>Route: Post OpenAI-Compatible Completion Call
+    Note over Route: Rate Limit, Token Budget & Registry Check
+    Route->>VLLM: Forward Inference Request
+    VLLM-->>Route: Stream Model Tokens
+    Route-->>Agent: Deliver Model Output & Tool Invocations
+    Agent->>Mem: Write New Salient Memory Facts
+    Agent->>PG: Commit Completed Step State
+    Agent-->>UI: Stream Output Response
+    UI-->>Client: Render Final Agent Result
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: OWNERSHIP BOUNDARIES -->
+    <section id="boundaries" class="arch-section">
+      <div class="section-header">
+        <div class="section-tag">Governance · Diagram 03</div>
+        <h2>Ownership Boundaries & Anti-Pattern Separation</h2>
+        <p class="section-desc">Explicit delineation of authoritative components versus forbidden shadow authorities.</p>
+      </div>
+
+      <div class="diagram-card">
+        <div class="diagram-top">
+          <div class="diagram-title">Concern Authority vs Forbidden Shadow Systems</div>
+          <span class="diagram-kind">flowchart LR</span>
+        </div>
+        <div class="diagram-view">
+          <div class="mermaid">
+flowchart LR
+    subgraph CONCERNS["Platform Concern"]
+        C1["Project Truth & Governance"]
+        C2["Model Traffic Routing"]
+        C3["Agent Orchestration State"]
+        C4["Durable User/Agent Memory"]
+        C5["Domain & Document Knowledge"]
+        C6["Tool Capability Exposure"]
+    end
+
+    subgraph PROPOSED["Authoritative Owner"]
+        A1["Owner Rulings + Git sdd-core Specs"]
+        A2["OmniRoute Registry & Gateway"]
+        A3["LangGraph + PostgreSQL Checkpoints"]
+        A4["Mem0 Service (In by Default)"]
+        A5["LightRAG + Qdrant Collections"]
+        A6["FastMCP Services (Streamable HTTP)"]
+    end
+
+    subgraph FORBIDDEN["Forbidden Shadow Authorities"]
+        F1["&#10007; AI Agent Output / HTML Reviews"]
+        F2["&#10007; NGINX / LangGraph / LiteLLM / Raw LAN"]
+        F3["&#10007; Mem0 / Redis / UI Session State"]
+        F4["&#10007; LangGraph Store / LightRAG / Ad-hoc String"]
+        F5["&#10007; Mem0 / Code-Graph-RAG"]
+        F6["&#10007; Raw Shell Access / Inline Agent Code"]
+    end
+
+    C1 --> A1 -. Rejects .-> F1
+    C2 --> A2 -. Rejects .-> F2
+    C3 --> A3 -. Rejects .-> F3
+    C4 --> A4 -. Rejects .-> F4
+    C5 --> A5 -. Rejects .-> F5
+    C6 --> A6 -. Rejects .-> F6
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: PLANE 3 EDGE & TRAFFIC -->
+    <section id="plane-traffic" class="arch-section">
+      <div class="section-header">
+        <div class="section-tag">Plane 3 · Diagram 04</div>
+        <h2>Edge Ingress & Model Traffic Separation</h2>
+        <p class="section-desc">Clean partitioning between human/web ingress (NGINX) and governed AI model traffic (OmniRoute).</p>
+      </div>
+
+      <div class="diagram-card">
+        <div class="diagram-top">
+          <div class="diagram-title">Traffic Separation Architecture</div>
+          <span class="diagram-kind">flowchart TD</span>
+        </div>
+        <div class="diagram-view">
+          <div class="mermaid">
+flowchart TD
+    USERS["External Operators & Web Clients"] -->|TLS / HTTPS 443| NGINX["NGINX Reverse Proxy (Web Edge)"]
+    
+    subgraph WEB_EDGE["Human & Application Ingress"]
+        NGINX -->|HTTP Route| UI["Open WebUI / CopilotKit"]
+        NGINX -->|HTTP Route| N8N["n8n Automation Engine"]
+    end
+
+    subgraph ORCH["Agent Plane"]
+        UI & N8N --> LANG["LangGraph Orchestrator"]
+    end
+
+    subgraph MODEL_EDGE["Governed AI Model Traffic Plane"]
+        LANG -->|Model Calls| OMNI["OmniRoute Traffic Authority"]
+        OMNI -->|Auth, Policy & Quotas| REG["Model Registry & Metrics"]
+    end
+
+    subgraph INFERENCE["Protected Loopback Runtimes"]
+        OMNI -->|Localhost / IPC| VLLM["vLLM Strategic Engine"]
+        OMNI -. Governed Loopback Fronting .-> OLLAMA["Ollama Local Engine"]
+    end
+
+    style OMNI stroke:#38bdf8,stroke-width:2px
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: PLANE 4 INFERENCE RUNTIMES -->
+    <section id="plane-inference" class="arch-section">
+      <div class="section-header">
+        <div class="section-tag">Plane 4 · Diagram 05</div>
+        <h2>Dual AI Inference Strategy (vLLM & Ollama)</h2>
+        <p class="section-desc">Two runtimes with non-overlapping roles: strategic batch serving vs. local utility execution.</p>
+      </div>
+
+      <div class="diagram-card">
+        <div class="diagram-top">
+          <div class="diagram-title">Inference Runtime Workload Allocation</div>
+          <span class="diagram-kind">flowchart LR</span>
+        </div>
+        <div class="diagram-view">
+          <div class="mermaid">
+flowchart LR
+    subgraph ROUTE["OmniRoute Model Gateway"]
+        REQ["Incoming Model Request"]
+    end
+
+    subgraph VLLM_BOX["vLLM Runtime (Strategic Serving)"]
+        V1["Primary Reasoning & Coding Tasks"]
+        V2["High-Context Window Demands"]
+        V3["Multi-Request Continuous Batching"]
+        V4["Tensor Parallelism Support"]
+        V5["Models: Qwen Family, gpt-oss"]
+    end
+
+    subgraph OLLAMA_BOX["Ollama Runtime (Bounded Local Utility)"]
+        O1["Loopback Local Rapid Evaluation"]
+        O2["Small Utility & Formatting Models"]
+        O3["Explicitly Refused for Claude Code"]
+        O4["Loopback Bound (No Direct LAN Access)"]
+    end
+
+    REQ -->|High Context / Production Tasks| VLLM_BOX
+    REQ -->|Local Utility / Experimental Tasks| OLLAMA_BOX
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: PLANE 5 RETRIEVAL & KNOWLEDGE -->
+    <section id="plane-retrieval" class="arch-section">
+      <div class="section-header">
+        <div class="section-tag">Plane 5 · Diagrams 06 & 07</div>
+        <h2>Document Parsing, Structure Recovery & Hybrid Retrieval</h2>
+        <p class="section-desc">Multi-modal ingestion via Granite Docling 258M embedded VLM, specialized vector embeddings, and entity-graph knowledge.</p>
+      </div>
+
+      <div class="diagram-card">
+        <div class="diagram-top">
+          <div class="diagram-title">Diagram 06: Document Parsing Pipeline with Granite Docling 258M</div>
+          <span class="diagram-kind">flowchart TD</span>
+        </div>
+        <div class="diagram-view">
+          <div class="mermaid">
+flowchart TD
+    RAW_IN["Incoming Documents (PDFs, Scans, Reports, Web)"] --> DISPATCH{"Document Complexity Classifier"}
+
+    subgraph VLM_PIPELINE["Preferred Embedded VLM Pipeline (ADOPT WITH LIMITS)"]
+        DISPATCH -->|Scans, Complex Tables, Visually Difficult| VLM["Granite Docling 258M VLM"]
+        VLM --> TAGS["DocTags Structure Validation"]
+        TAGS --> TIME_LIMIT["Bounded Page Time & Retries"]
+    end
+
+    subgraph STD_PIPELINE["Conventional Pipeline (Operational Fallback)"]
+        DISPATCH -->|Clean Born-Digital Material| STD["Docling Standard Pipeline (Fast Benchmark)"]
+    end
+
+    subgraph CLEAN_OUT["Normalized Output"]
+        TIME_LIMIT & STD --> CHUNKS["Normalized Markdown / JSON Document Chunks"]
+    end
+          </div>
+        </div>
+      </div>
+
+      <div class="diagram-card">
+        <div class="diagram-top">
+          <div class="diagram-title">Diagram 07: Hybrid Knowledge Storage & Retrieval Architecture</div>
+          <span class="diagram-kind">flowchart LR</span>
+        </div>
+        <div class="diagram-view">
+          <div class="mermaid">
+flowchart LR
+    CHUNKS["Normalized Ingest Chunks"] --> EMB_SERV["TEI or Infinity Dedicated Serving Runtime"]
+    
+    subgraph EMBEDDINGS["Embedding & Reranking"]
+        EMB_SERV --> BGE["BGE-M3 / Nomic Embeddings"]
+        EMB_SERV --> RERANK["BGE Reranker Engine"]
+    end
+
+    subgraph STORAGE["Dual Knowledge Stores"]
+        BGE --> QDRANT["Qdrant Vector Store (Dense Vectors)"]
+        BGE --> LIGHTRAG["LightRAG Engine (Entity & Graph Relations)"]
+    end
+
+    subgraph RETRIEVAL["Hybrid Context Assembly"]
+        QDRANT & LIGHTRAG --> RERANK
+        RERANK --> CTX["Governed Agent Context Envelope"]
+    end
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: PLANE 6 AGENTS, MEMORY & MCP -->
+    <section id="plane-agents" class="arch-section">
+      <div class="section-header">
+        <div class="section-tag">Plane 6 · Diagrams 08 & 09</div>
+        <h2>Agent Orchestration, Durable Memory & FastMCP Tools</h2>
+        <p class="section-desc">LangGraph orchestration with durable checkpoints, dedicated Mem0 user/agent memory, and bounded FastMCP tool capabilities.</p>
+      </div>
+
+      <div class="diagram-card">
+        <div class="diagram-top">
+          <div class="diagram-title">Diagram 08: Memory Boundaries: LangGraph vs Mem0 vs LightRAG</div>
+          <span class="diagram-kind">flowchart LR</span>
+        </div>
+        <div class="diagram-view">
+          <div class="mermaid">
+flowchart LR
+    subgraph AGENT_CALL["Agent Turn Execution"]
+        LG["LangGraph Engine"]
+    end
+
+    subgraph CHECKPOINTS["Orchestration State"]
+        LG <-->|Thread Execution State & Resumption| PG_CHECK["PostgreSQL Checkpointer"]
+    end
+
+    subgraph DURABLE_MEM["Durable User & Agent Memory"]
+        LG <-->|User Preferences, Salient Facts & Profiles| MEM0["Mem0 Service (In by Default)"]
+    end
+
+    subgraph DOMAIN_KNOW["Domain & Document Knowledge"]
+        LG <-->|External Truth, Documents & Corpus Graph| LR["LightRAG + Qdrant"]
+    end
+
+    style MEM0 stroke:#34d399,stroke-width:2px
+    style PG_CHECK stroke:#38bdf8,stroke-width:2px
+    style LR stroke:#c084fc,stroke-width:2px
+          </div>
+        </div>
+      </div>
+
+      <div class="diagram-card">
+        <div class="diagram-top">
+          <div class="diagram-title">Diagram 09: Governed FastMCP Tool Capability Subsystem</div>
+          <span class="diagram-kind">flowchart TD</span>
+        </div>
+        <div class="diagram-view">
+          <div class="mermaid">
+flowchart TD
+    CONSUMER["Authorized Agent / Client (LangGraph / Claude Code)"] -->|Streamable HTTP| MCP_GATE["FastMCP Gateway Boundary"]
+
+    subgraph MCP_SERVICES["Governed Platform Capabilities"]
+        MCP_GATE --> SRV_DOC["Docling Parsing Tool"]
+        MCP_GATE --> SRV_CRAWL["Crawl4AI Web Scraper Tool"]
+        MCP_GATE --> SRV_SEARCH["Qdrant & LightRAG Knowledge Search"]
+        MCP_GATE --> SRV_INFRA["Infrastructure Metrics & Audit Tool"]
+    end
+
+    subgraph POLICY["Security & Contract Enforcement"]
+        MCP_GATE --> AUTH["Explicit Token & Permission Validation"]
+        MCP_GATE --> AUDIT["Tamper-Evident Audit Logging"]
+    end
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 8: PLANE 7 DATA & STATE -->
+    <section id="plane-data" class="arch-section">
+      <div class="section-header">
+        <div class="section-tag">Plane 7 · Diagram 10</div>
+        <h2>Data & State Topology</h2>
+        <p class="section-desc">Strict separation between durable relational state, fast ephemeral cache, and vector embeddings.</p>
+      </div>
+
+      <div class="diagram-card">
+        <div class="diagram-top">
+          <div class="diagram-title">State Role Separation & Storage Topologies</div>
+          <span class="diagram-kind">flowchart TD</span>
+        </div>
+        <div class="diagram-view">
+          <div class="mermaid">
+flowchart TD
+    subgraph POSTGRES["PostgreSQL (Durable Relational State Authority)"]
+        PG1["Platform Identities & Roles"]
+        PG2["Service-Owned Isolated Schemas"]
+        PG3["LangGraph Durable Workflow Checkpoints"]
+        PG4["Audit Logs & Execution Provenance"]
+    end
+
+    subgraph REDIS["Redis (Ephemeral In-Memory State)"]
+        RD1["Fast Key-Value Cache"]
+        RD2["Task Queues & Pub/Sub Channels"]
+        RD3["Short-Lived UI Session Coordination"]
+    end
+
+    subgraph QDRANT_STORE["Qdrant (High-Dimensional Vector State)"]
+        QD1["Governed Vector Collections"]
+        QD2["Fixed Dimension Embeddings"]
+        QD3["Cosine / HNSW Similarity Indexing"]
+    end
+
+    subgraph SQLITE_STORE["SQLite (Narrow Scoped Local History)"]
+        SQ1["Single-Service Embedded History Only"]
+        SQ2["Explicitly Forbidden as Shared Platform State"]
+    end
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 9: PLANE 8 EXPERIENCE & AUTOMATION -->
+    <section id="plane-experience" class="arch-section">
+      <div class="section-header">
+        <div class="section-tag">Plane 8 · Diagram 11</div>
+        <h2>User Experience, Embedded Copilots & Automation</h2>
+        <p class="section-desc">Partitioning ready-made chat, agent-aware UI frameworks, and deterministic process workflows.</p>
+      </div>
+
+      <div class="diagram-card">
+        <div class="diagram-top">
+          <div class="diagram-title">Experience Layer Components</div>
+          <span class="diagram-kind">flowchart LR</span>
+        </div>
+        <div class="diagram-view">
+          <div class="mermaid">
+flowchart LR
+    HUMAN["Human Users & Operators"] --> WEB_LAYER["NGINX Ingress"]
+
+    subgraph UI_EXPERIENCE["User Experience Options"]
+        WEB_LAYER --> OWUI["Open WebUI<br/>(Primary Chat, Dev & Demo Surface)"]
+        WEB_LAYER --> COPILOT["CopilotKit + AG-UI<br/>(Custom Embedded Agent Experience)"]
+    end
+
+    subgraph AUTOMATION["Deterministic Automation"]
+        WEB_LAYER --> N8N["n8n Workflow Engine<br/>(Process Automation & Webhook Ingest)"]
+    end
+
+    subgraph PLATFORM_API["Governed Platform Interface"]
+        OWUI & COPILOT & N8N --> ORCH["LangGraph / OmniRoute APIs"]
+    end
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 10: PLANE 9 OBSERVABILITY & RECOVERY -->
+    <section id="plane-observability" class="arch-section">
+      <div class="section-header">
+        <div class="section-tag">Plane 9 · Diagram 12</div>
+        <h2>Observability, GPU Telemetry & Recovery</h2>
+        <p class="section-desc">Full-stack metric scraping, GPU hardware telemetry, centralized logging, and backup verification.</p>
+      </div>
+
+      <div class="diagram-card">
+        <div class="diagram-top">
+          <div class="diagram-title">Observability &amp; Telemetry Pipeline</div>
+          <span class="diagram-kind">flowchart TD</span>
+        </div>
+        <div class="diagram-view">
+          <div class="mermaid">
+flowchart TD
+    subgraph TARGETS["Fleet Telemetry Sources"]
+        HOST["Ubuntu Host (node_exporter)"]
+        GPU["NVIDIA GPUs (DCGM Exporter)"]
+        SERVICES["Platform Services (vLLM, PostgreSQL, OmniRoute)"]
+        SYSLOG["Linux Journald & Application Logs"]
+    end
+
+    subgraph COLLECTORS["Scraping & Ingestion Layer"]
+        PROM["Prometheus Time-Series Scraper"]
+        LOKI["Loki Log Aggregator"]
+    end
+
+    subgraph VISUAL["Dashboards & Alerts"]
+        GRAF["Grafana Unified Dashboards"]
+    end
+
+    subgraph RECOVERY["Backup & Recovery (Conditional)"]
+        BACKUP["Targeted Snapshot Tooling (Postgres, Qdrant, Configs)"]
+    end
+
+    HOST & GPU & SERVICES --> PROM
+    SYSLOG --> LOKI
+    PROM & LOKI --> GRAF
+    SERVICES -. Protected by .-> BACKUP
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 11: DEVELOPER TOOLCHAIN -->
+    <section id="developer-flow" class="arch-section">
+      <div class="section-header">
+        <div class="section-tag">Engineering · Diagram 13</div>
+        <h2>Developer & Code-Intelligence Toolchain</h2>
+        <p class="section-desc">AI-assisted engineering lifecycle governed by specification-driven policies and repository gates.</p>
+      </div>
+
+      <div class="diagram-card">
+        <div class="diagram-top">
+          <div class="diagram-title">Repository Governance & AI Engineering Toolchain</div>
+          <span class="diagram-kind">flowchart TD</span>
+        </div>
+        <div class="diagram-view">
+          <div class="mermaid">
+flowchart TD
+    ENGINEER["Operator / Engineer"] --> CC["Claude Code (Primary Engineering Tool)"]
+    ENGINEER --> JCODE["jcode (Local Dev Agent Pilot)"]
+
+    subgraph REPO_GOV["Repository Authority & Gates"]
+        AGENTS_MD["AGENTS.md Standing Conduct Rules"]
+        HOOKS["Fail-Closed Pre-Execution Hooks"]
+        SPECS["Markdown Architecture Specifications"]
+    end
+
+    CC <--> REPO_GOV
+    JCODE <--> REPO_GOV
+
+    CC -->|Audited Changes & Tests| REPO["Git + GitHub Repository"]
+
+    subgraph CODE_INTEL["Code Intelligence Plane (Roadmap)"]
+        CGR["Code-Graph-RAG (Read-Only AST & Call Graphs)"]
+    end
+
+    REPO -. Indexed by .-> CGR
+    CGR -. Structural Answers .-> CC
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 12: TAXONOMY -->
+    <section id="taxonomy" class="arch-section">
+      <div class="section-header">
+        <div class="section-tag">Decision Lifecycle · Diagram 14</div>
+        <h2>Technology Adoption & Exclusion Taxonomy</h2>
+        <p class="section-desc">Authoritative inventory categorizing all evaluated technologies into discrete readiness tiers.</p>
+      </div>
+
+      <div class="diagram-card">
+        <div class="diagram-top">
+          <div class="diagram-title">Diagram 14: Technology Readiness &amp; Status Hierarchy</div>
+          <span class="diagram-kind">flowchart TD</span>
+        </div>
+        <div class="diagram-view">
+          <div class="mermaid">
+flowchart TD
+    ROOT["HX Target Architecture Evaluation"]
+
+    subgraph FOUNDATIONAL["FOUNDATIONAL / DECIDED (Owner Ratified)"]
+        F1["Git & GitHub"]
+        F2["sdd-core Governance Standard"]
+        F3["Ubuntu Server & systemd Isolation"]
+        F4["Bash + SSH/SCP Fleet Control"]
+        F5["Claude Code + Fail-Closed Hooks"]
+    end
+
+    subgraph CORE["PROPOSED CORE (In by Default)"]
+        C1["NGINX Reverse Proxy"]
+        C2["OmniRoute Model Traffic Plane"]
+        C3["vLLM Strategic Inference Engine"]
+        C4["Ollama Loopback Utility"]
+        C5["Docling + Granite Docling 258M VLM"]
+        C6["Qdrant Vector Database"]
+        C7["LightRAG Domain Knowledge"]
+        C8["Crawl4AI Web Extractor"]
+        C9["LangGraph Workflow Orchestrator"]
+        C10["Mem0 Durable Memory Service"]
+        C11["FastMCP Protocol Services"]
+        C12["PostgreSQL + Redis"]
+        C13["Open WebUI + CopilotKit"]
+        C14["n8n Automation Engine"]
+        C15["Prometheus + Loki + Grafana"]
+    end
+
+    subgraph COND["CONDITIONAL / PILOT"]
+        CD1["jcode Pilot Agent"]
+        CD2["TEI vs Infinity Serving"]
+        CD3["BGE-M3 vs Nomic Model"]
+        CD4["SQLite (Narrow Local Only)"]
+        CD5["Backup / Snapshot Tooling"]
+    end
+
+    subgraph ROADMAP["ROADMAP"]
+        R1["Code-Graph-RAG (Read-Only AST & Call Graphs)"]
+    end
+
+    subgraph EXCLUDED["EXPLICITLY OUT / SUPERSEDED"]
+        X1["Ansible (Permanently Out)"]
+        X2["LiteLLM (Superseded by OmniRoute)"]
+        X3["Kubernetes (Not Justified)"]
+        X4["Docker Platform Requirement (Not Required)"]
+        X5["Direct Exposed Ollama (Refused)"]
+        X6["Premature HA / Mesh (Deferred)"]
+    end
+
+    ROOT --> FOUNDATIONAL
+    ROOT --> CORE
+    ROOT --> COND
+    ROOT --> ROADMAP
+    ROOT --> EXCLUDED
+          </div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Status Tier</th>
+            <th>Operational Rule &amp; Policy</th>
+            <th>Components</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="status-badge badge-foundational">FOUNDATIONAL</span></td>
+            <td>Owner-ratified platform standard. Immutable baseline.</td>
+            <td>Git, GitHub, <code>sdd-core</code>, Ubuntu, <code>systemd</code>, Python venvs, Bash/SSH/SCP, Claude Code.</td>
+          </tr>
+          <tr>
+            <td><span class="status-badge badge-core">PROPOSED CORE</span></td>
+            <td>In architecture by default. Requires demonstrable evidence-based conflict to exclude.</td>
+            <td>NGINX, OmniRoute, vLLM, Ollama, Docling + Granite Docling 258M, Crawl4AI, Qdrant, LightRAG, LangGraph, Mem0, FastMCP, PostgreSQL, Redis, Open WebUI, CopilotKit, n8n, Prometheus, Loki, Grafana.</td>
+          </tr>
+          <tr>
+            <td><span class="status-badge badge-conditional">CONDITIONAL</span></td>
+            <td>Genuine requirement with runtime, model, or product benchmark pending.</td>
+            <td><code>jcode</code> pilot, TEI vs. Infinity, BGE-M3 vs. Nomic, SQLite local scoping, Backup/restore tool.</td>
+          </tr>
+          <tr>
+            <td><span class="status-badge badge-roadmap">ROADMAP</span></td>
+            <td>Valuable future capability. Not current implementation authority.</td>
+            <td>Code-Graph-RAG (read-only AST structural repository intelligence).</td>
+          </tr>
+          <tr>
+            <td><span class="status-badge badge-out">EXPLICITLY OUT</span></td>
+            <td>Eliminated or superseded. Must not appear in target designs.</td>
+            <td>Ansible, LiteLLM, Kubernetes, Docker as platform dependency, Direct exposed Ollama, Premature HA.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+</div>
+
+</body>
+</html>

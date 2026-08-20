@@ -1,0 +1,20 @@
+{
+  "id": "F10",
+  "capability": "RT-11",
+  "evidence_class": "A",
+  "api_style": "openai-chat",
+  "description": "Structured server error is surfaced, not swallowed.",
+  "http_status": 503,
+  "response": {
+    "error": {
+      "message": "model not loaded",
+      "type": "server_error",
+      "code": "model_unavailable"
+    }
+  },
+  "expect": {
+    "status": 503,
+    "error_type": "server_error",
+    "surfaced": true
+  }
+}

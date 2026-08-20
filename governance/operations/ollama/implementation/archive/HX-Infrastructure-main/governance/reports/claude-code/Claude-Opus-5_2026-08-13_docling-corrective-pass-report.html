@@ -1,0 +1,295 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Docling Pilot — Corrective Pass Report</title>
+<style>
+:root{--bg:#fff;--panel:#f6f8fa;--panel2:#eef1f4;--bd:#d0d7de;--fg:#1f2328;--dim:#59636e;
+--acc:#0969da;--ok:#1a7f37;--warn:#9a6700;--stop:#cf222e}
+:root[data-theme="dark"]{--bg:#0d1117;--panel:#161b22;--panel2:#1c2129;--bd:#30363d;--fg:#e6edf3;
+--dim:#8b949e;--acc:#58a6ff;--ok:#3fb950;--warn:#d29922;--stop:#f85149}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1117;--panel:#161b22;
+--panel2:#1c2129;--bd:#30363d;--fg:#e6edf3;--dim:#8b949e;--acc:#58a6ff;--ok:#3fb950;--warn:#d29922;--stop:#f85149}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.62 -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.wrap{max-width:1060px;margin:0 auto;padding:28px 22px 80px}
+header.hero{border:1px solid var(--bd);border-radius:14px;background:var(--panel);padding:24px 26px;margin-bottom:20px}
+.hero h1{margin:0 0 6px;font-size:23px}.hero .sub{color:var(--dim);font-size:14px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.meta span{background:var(--panel2);border:1px solid var(--bd);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--dim)}
+.meta b{color:var(--fg)}
+h2{font-size:18px;margin:30px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--bd)}
+h2 .k{color:var(--acc);font-weight:700;margin-right:8px}
+h3{font-size:15px;margin:20px 0 6px}
+p{margin:8px 0}
+code{background:var(--panel2);border:1px solid var(--bd);border-radius:5px;padding:1px 5px;font:12.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace}
+pre{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;overflow-x:auto;font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:8px 0;min-width:560px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--bd);vertical-align:top}
+th{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.5px;background:var(--panel)}
+.callout{border-left:4px solid var(--acc);background:var(--panel);border-radius:0 10px 10px 0;padding:13px 17px;margin:14px 0}
+.callout.stop{border-left-color:var(--stop)}.callout.ok{border-left-color:var(--ok)}.callout.warn{border-left-color:var(--warn)}
+.callout h3{margin:0 0 5px;font-size:14.5px}
+.callout p{margin:0 0 6px;font-size:13.5px;color:var(--dim)}.callout p:last-child{margin-bottom:0}
+.pass{color:var(--ok);font-weight:700}.fail{color:var(--stop);font-weight:700}.warnt{color:var(--warn);font-weight:700}
+ul.tight{margin:6px 0 0;padding-left:20px;font-size:14px}ul.tight li{margin:5px 0}
+ol{font-size:14px}ol li{margin:5px 0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0}
+.kpi{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:13px}
+.kpi .n{font-size:22px;font-weight:700}
+.kpi .l{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.foot{color:var(--dim);font-size:12px;margin-top:36px;border-top:1px solid var(--bd);padding-top:16px}
+#themeToggle{position:fixed;top:14px;right:14px;z-index:99;background:var(--panel);color:var(--fg);
+border:1px solid var(--bd);border-radius:20px;padding:7px 14px;font-size:12.5px;cursor:pointer;font-family:inherit}
+#themeToggle:hover{border-color:var(--acc);color:var(--acc)}
+</style></head><body>
+<button id="themeToggle" type="button">◐ Theme</button>
+<div class="wrap">
+
+<header class="hero">
+<h1>Docling Pilot — Corrective Pass Report</h1>
+<div class="sub">Fixing the migration substrate: real archive ref, resolved ledger, upstream re-verified, four specialists reconstructed and actually run, provenance made reproducible.</div>
+<div class="meta">
+<span>Run by <b>Claude Opus 5</b></span>
+<span>Date <b>2026-08-13</b></span>
+<span>Branch <b>migration/docling-pilot</b> · uncommitted</span>
+<span>LangGraph <b>NOT started</b></span>
+</div></header>
+
+<div class="kpis">
+<div class="kpi"><div class="n">522/522</div><div class="l">ledger rows verified</div></div>
+<div class="kpi"><div class="n">12/12</div><div class="l">repaths resolved</div></div>
+<div class="kpi"><div class="n">4/4</div><div class="l">real SME reviews</div></div>
+<div class="kpi"><div class="n">115/80/3</div><div class="l">used / reviewed / blocked</div></div>
+<div class="kpi"><div class="n">154/0</div><div class="l">regression, twice</div></div>
+</div>
+
+<div class="callout ok"><h3>All gates pass. One owner decision remains open by design.</h3>
+<p><b><code>lgc-046</code> is resolved.</b> The owner named
+<code>GOALS-AND-OBJECTIVES.md</code> as the project constitution, so the legacy
+<code>constitution.md</code> row now targets it with section <code>core-principles</code>.
+Zero REPATH-REQUIRED remain.</p>
+<p><b>The conversion topology is still yours to rule</b>, and that is the intended state — the
+design carries <code>conversion topology: VERIFICATION REQUIRED</code> and scopes every
+dependent section conditionally, so it is correct either way. The decision packet is written
+and linked.</p>
+<p>Acceptance ran with no waivers: <b>29 of 29 checks pass</b>. The branch stays uncommitted
+as instructed; acceptance is yours to give, not mine to assume.</p></div>
+
+<h2><span class="k">1</span>The archive is real now</h2>
+<div class="tw"><table>
+<thead><tr><th>Item</th><th>Result</th></tr></thead>
+<tbody>
+<tr><td>Acquired</td><td>Mirror clone into an isolated workspace outside the canonical repo. 22 commits, 1 ref, 0 tags, 522 blobs at tip</td></tr>
+<tr><td>Ref published</td><td><code>refs/heads/legacy/2025</code> at <code>a98846d6930f7b0097e7ac237c93b60280f99e44</code></td></tr>
+<tr><td>Method</td><td>New ref created at the existing tip. <b>No rewrite, no force-push, no merge into main.</b> <code>main</code> verified unchanged afterwards</td></tr>
+<tr><td>Protection</td><td><span class="pass">APPLIED</span> — <code>lock_branch</code>, force-push disabled, deletion disabled, enforced for admins</td></tr>
+<tr><td>Tree isolation</td><td>The 522-file tree is <b>not</b> nested inside current <code>main</code></td></tr>
+</tbody></table></div>
+<p>Protection initially failed — the org was on the free plan and the repo was private. You
+made the repo public mid-run and it applied cleanly. <b>One factual consequence, not a
+re-raise:</b> the waiver assessed the known-dead credential as harmless while the repository
+was private; the archive is now readable by anyone. Your decision stands, and the exposure
+surface changed under it.</p>
+
+<h3>Pre-publish hygiene scan — nothing unexpected</h3>
+<p>One generic scan across all 22 commits and 755 unique blobs. Findings by class, never by
+value:</p>
+<div class="tw"><table>
+<thead><tr><th>Class</th><th>Found</th><th>Assessment</th></tr></thead>
+<tbody>
+<tr><td>ansible-vault blob</td><td>1, in <code>vault/credentials.yml</code> (lgc-260)</td><td><span class="pass">Known-dead</span> legacy-secret-001. Expected</td></tr>
+<tr><td>provider-key prefix</td><td>2 distinct, both <code>litellm_api_key</code> slots</td><td><span class="pass">Known-dead</span> class. Entropy 3.54 and 3.91, all-lowercase or near it; one annotated "Replace with actual key". Placeholder-shaped</td></tr>
+<tr><td>bearer + JWT</td><td>1 value, inside the defect report <i>about</i> redaction failure</td><td>Example token in a code sample</td></tr>
+<tr><td>assignment-with-value</td><td>583 raw, 242 distinct</td><td><b>Zero</b> survive a high-confidence filter (len ≥ 16, entropy ≥ 4.2, mixed alphanumeric, non-placeholder). Documentation noise</td></tr>
+<tr><td>private-key block</td><td>0</td><td>—</td></tr>
+</tbody></table></div>
+<p>No live-looking secret class outside the catalogued dead ones. Published as-is, no history
+rewritten, per your override.</p>
+
+<h2><span class="k">2</span>Ledger — base preserved, resolved separately</h2>
+<pre>manifest_base_sha256     = 2d6faadcdf90c0749ba8689e8f9cac2f444252f757f1b9b36b070d4a0546b31a
+                           governance/reports/claude/manifestv3.1base.jsonl   (unmodified)
+
+manifest_resolved_sha256 = 64eb356f5b22d39c4705e2babb48a16fe6a20e3fa4d5747cba6ed7516c64cd59
+                           governance/reports/claude/manifestv3.1resolved.jsonl</pre>
+<p>Base hash verified before any ledger work, exactly as the handshake required. Base coverage
+confirmed independently: 522 rows, 522 unique IDs, 522 unique paths, dispositions 423
+historical / 34 retire / 34 adapt / 16 reconstruct / 14 covered / 1 exclude — matching your
+figures precisely. The base file is untouched on disk.</p>
+
+<h3>Only the two permitted edits were made</h3>
+<div class="tw"><table>
+<thead><tr><th>Edit</th><th>Scope</th></tr></thead>
+<tbody>
+<tr><td>Source binding</td><td>All 522 rows: <code>source_ref</code> → <code>legacy/2025</code>, <code>source_commit</code> → <code>a98846d6…</code></td></tr>
+<tr><td>Repath resolution</td><td>11 of 12 rows resolved against the real current tree</td></tr>
+</tbody></table></div>
+<p>No ID, disposition, classification, policy decision or schema semantic was altered.
+Confirmed after resolution: 0 historical rows carry a current-tree <code>target_path</code> —
+v3.1 fixed the 1:1-copy ambiguity the pilot flagged.</p>
+
+<h3>Resolutions</h3>
+<div class="tw"><table>
+<thead><tr><th>Rows</th><th>Resolved to</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td>lgc-495, 497, 499, 500</td><td><code>governance/policy/documentation-standards.md</code></td><td><code>covered_by</code>; file moved into <code>policy/</code></td></tr>
+<tr><td>lgc-503</td><td><code>governance/policy/tooling-first-rule.md</code></td><td><code>covered_by</code>; file moved</td></tr>
+<tr><td>lgc-059</td><td><code>governance/logs/lessons-learned.md</code></td><td>File moved into <code>logs/</code></td></tr>
+<tr><td>lgc-501</td><td><code>…/documentation-standards.md</code> § <code>naming-rules</code></td><td>Section exists today</td></tr>
+<tr><td>lgc-031, 036, 498, 502</td><td><code>…/documentation-standards.md</code> §§ infrastructure-philosophy, quality, testing</td><td>File exists; <b>these sections do not exist yet</b> and will be created by the migration. Not phantom paths</td></tr>
+<tr><td><b>lgc-046</b></td><td><code>GOALS-AND-OBJECTIVES.md</code> § <code>core-principles</code></td><td><span class="pass">Resolved by owner ruling</span> — that document is the project constitution</td></tr>
+</tbody></table></div>
+
+<h3>Source identity independently verified</h3>
+<p>I did not trust the delivered per-file hashes. I recomputed SHA-256 for every row against
+the archive tip: <b>522 verified, 0 mismatches, 0 missing</b>. Every Docling row now maps
+reproducibly to <code>legacy/2025</code> at a named commit.</p>
+
+<h2><span class="k">3</span>Upstream re-verified — and the assessment was partly wrong</h2>
+<p>I re-checked current sources rather than trusting the version numbers in the brief. Pinned
+authority: <code>docling-project/docling-mcp</code> <b>v3.0.0</b>, tag commit
+<code>7b51926920550c4a2c6e888977b8e38a08bafdbd</code>, released 2026-07-31.</p>
+<div class="callout stop"><h3>Three corrections to what was handed to me</h3>
+<p><b>It is v3.0.0, not v2.x.</b> The assessment said the change came "since v2.0". Current is
+3.0.0.</p>
+<p><b>There are two conversion modes, not three.</b> <code>ConversionMode</code> holds exactly
+<code>remote</code> (default) and <code>local</code>. "Hybrid" is not a mode — it is
+<code>fallback_to_local</code>, a boolean defaulting to false. Upstream's own README calls it
+a mode; the source does not.</p>
+<p><b>It is no longer FastMCP.</b> v3.0.0 moved to MCP Python SDK v2 —
+<code>mcp[cli]&gt;=2.0.0,&lt;3.0.0</code>, <code>from mcp.server.mcpserver import
+MCPServer</code>. My own first-pass document said "a FastMCP server". That was wrong and is
+corrected. It also sharpens the hxs-7 question: that host's assigned workload is literally
+"FastMCP runtime", and this is no longer a FastMCP server.</p></div>
+<p>Also verified and patched in: <code>requires-python &gt;=3.10</code> with classifiers through
+<b>3.14</b>; six toolgroups with three loaded by default; real base dependency names; and the
+settings defaults. <b>All optional RAG and information-extraction toolgroups are disabled by
+HX default</b> — and two of the three write to a vector store, not one as previously stated.</p>
+
+<h2><span class="k">4</span>Four specialists — reconstructed, then actually run</h2>
+<p>Contracts created capability-first at <code>.claude/agents/</code>, each carrying
+capability_id, purpose, scope, out_of_scope, authoritative_inputs, historical_sources_allowed,
+prohibited_authority_sources, required_output, validation_partner and activation_state. 2025
+personas were used as evidence only, never as identity.</p>
+<p>Each review ran in a <b>separate context</b> against the contract. The authoring context did
+not sign its own work.</p>
+<div class="tw"><table>
+<thead><tr><th>Capability</th><th>Verdict</th><th>Headline finding</th></tr></thead>
+<tbody>
+<tr><td><code>docling-mcp</code></td><td class="warnt">CONDITIONAL PASS</td><td>Caught the FastMCP error, the release-vs-tip conflation, and that <code>docling-mcp[local]</code> drags a CUDA runtime onto a GPU-less host</td></tr>
+<tr><td><code>infrastructure-ops</code></td><td class="warnt">CONDITIONAL PASS</td><td>All six host facts substantiated; but B/C have no host, and three "open" questions were already settled by ratified fleet documents</td></tr>
+<tr><td><code>testing-qa</code></td><td class="warnt">CONDITIONAL PASS</td><td>No prohibited inheritance; but the gate-failability rule was vacuously satisfiable and error-path coverage was a stub</td></tr>
+<tr><td><code>lightrag</code></td><td class="warnt">CONDITIONAL PASS</td><td>Boundary holds and no direct contract was created; but the "ingestion group" basis was wrong, the first-ingest freeze gate was missing, and partner services were described as running when none are built</td></tr>
+</tbody></table></div>
+<p><b>All four are conditional. None is a pass.</b> <code>reviewed_by</code> is populated only
+where the contract existed, the review ran, and the section was in scope — 115 rows.</p>
+
+<h3>Corrections applied from those reviews</h3>
+<ul class="tight">
+<li>FastMCP → MCP SDK v2, and the hxs-7 question re-framed around it.</li>
+<li>Authority pinned to v3.0.0 alone; unreleased <code>main</code> work explicitly excluded.</li>
+<li>torch/CUDA wheel chain documented as a topology A/C constraint; the blanket "no GPU-toolchain concern touches this service" claim withdrawn.</li>
+<li>Docling Serve placement raised to its own owner decision and precondition of B and C.</li>
+<li>Virtual environment, transport and bind address moved out of "open" into "settled elsewhere" — they are fixed by ratified fleet documents.</li>
+<li>Partner services rewritten from "currently runs" to assigned-role language; none is built.</li>
+<li>First-ingest freeze gate added; "ingestion group" corrected to roadmap phase 4.</li>
+<li>Qdrant justification re-anchored on entity/relationship insertion and graph traversal rather than the collection rename, which was only a naming deconfliction.</li>
+<li>Unprefixed <code>CACHE_DIR</code> documented — it sits outside the settings model and defaults inside the installed package tree.</li>
+<li>Gate rule made evidential: a gate is accepted only with a recorded failing run. Error paths named individually. Captured-output requirement added.</li>
+<li>Verification list renumbered — it had duplicate items 4 and 5.</li>
+</ul>
+
+<h2><span class="k">5</span>Provenance is reproducible now</h2>
+<p>Every record binds to exact source identity and to the resolved ledger:</p>
+<pre>manifest_base_sha256 · manifest_resolved_sha256 · ledger_id · legacy_path ·
+source_repo · source_ref · source_commit · source_path · source_sha256 ·
+read_from · distillation_status · distilled_into · reviewed_by ·
+migration_status · migration_commit</pre>
+<p>There is no separate sanitized layer, because none exists — <code>legacy/2025</code> is the
+single source of record and the records say so. Every historical row keeps
+<code>migration_status: pending</code>; no false migration was recorded.</p>
+
+<div class="callout warn"><h3>Coverage correction — I am not using the mandated numbers</h3>
+<p>The brief specified "120 contributed distilled content / 75 reviewed-not-used". The accurate
+figures are <b>115 / 80</b>. The 120 was inflated by five rows — <code>lgc-210</code> and
+<code>lgc-226</code>–<code>lgc-229</code> — that a loose pattern in my first-pass generator
+swept in without their ever being cited.</p>
+<p>Reporting 120 would have been exactly the unverifiable claim this corrective pass exists to
+eliminate, so I recounted per row and explained the delta rather than forcing the number. The
+195 content-eligible and 3 blocked figures are unchanged.</p></div>
+<pre>195 content-eligible files reviewed
+115 contributed distilled content
+ 80 reviewed-not-used
+  3 blocked / never opened</pre>
+<p>Blocked rows carry <code>read_from: null</code> and an explicit reason. They do hold a real
+<code>source_sha256</code>, because they physically exist in the archive — present in archive,
+blocked from migration.</p>
+
+<h2><span class="k">6</span>Regression evidence</h2>
+<p>Captured by the <code>testing-qa</code> reviewer independently, not relayed from chat.</p>
+<pre>command   : powershell -NoProfile -ExecutionPolicy Bypass -File "tests/remediation-tests-restored.ps1"
+branch    : migration/docling-pilot
+HEAD      : bb629f4728e349b7f8dd6180e700fd498b109d80
+tree      : NOT clean - new untracked deliverables + the v3 ledger superseded by v3.1
+expected  : 154 pass / 0 fail (post-gate-retirement baseline)
+actual    : PASS: 154  FAIL: 0   exit 0
+runs      : reproduced twice, 2026-08-13
+delta     : none</pre>
+<div class="callout ok"><h3>The suite was proven able to fail</h3>
+<p>A copy was mutated with one deliberately false assertion: <code>PASS: 154 FAIL: 1</code>,
+exit code 1. The harness genuinely propagates failure and the 154 baseline was unchanged by
+the injection. This is not a false-positive gate.</p>
+<p><b>Scope caveat, stated by the reviewer and worth repeating:</b> the suite contains zero
+Docling references. It validates repository hooks, registry state and packaging paths. It is
+not evidence about anything in <code>service.md</code>, and 154/0 must not be read as
+validating that design.</p></div>
+
+<h2><span class="k">7</span>Housekeeping</h2>
+<p><b>Harness artifact deleted.</b> The single auto-persisted raw legacy fetch
+(<code>bu3m2tkpg.txt</code>, sha256 <code>910cd84d…</code>) was removed and its removal
+verified. No broad destructive search was run; a targeted check confirmed no other raw legacy
+dump remains in that directory.</p>
+
+<h2><span class="k">7b</span>Documentation standard applied</h2>
+<p>The reports produced in this pass were renamed to the rule in
+<code>governance/policy/documentation-standards.md</code> &mdash;
+<code>&lt;author&gt;_&lt;YYYY-MM-DD&gt;_&lt;lower-kebab-slug&gt;</code>, no spaces, no non-ASCII:</p>
+<pre>Claude-Opus-5_2026-08-13_docling-corrective-pass-report.html
+Claude-Opus-5_2026-08-13_docling-topology-decision-packet.html
+Claude-Opus-5_2026-08-13_docling-pilot-validation.html
+Claude-Opus-5_2026-08-13_docling-mcp-service-design.html
+Claude-Opus-5_2026-08-13_docling-pilot-report.html      (superseded first pass)</pre>
+<p>Cross-references were updated in the same pass. Two citations of the old names survive in a
+third-party review under <code>governance/reports/chatgpt/</code>; those are another author’s
+archival report and the standard treats existing report names as archival, so they were left
+alone.</p>
+
+<h2><span class="k">8</span>Acceptance status</h2>
+<div class="tw"><table>
+<thead><tr><th>Gate</th><th>Status</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td>SOURCE</td><td class="pass">PASS</td><td>Archive ref exists and is protected; 522/522 hashes verified; no raw fallback used</td></tr>
+<tr><td>LEDGER</td><td class="pass">PASS</td><td>522/522, no duplicates, no historical target_path, source identity real, <b>0 REPATH-REQUIRED</b>, no phantom governance target</td></tr>
+<tr><td>DESIGN</td><td class="pass">PASS</td><td>Boundary preserved, upstream re-verified and pinned, LightRAG reworded, no RAG toolgroup enabled; topology correctly unresolved pending the owner ruling</td></tr>
+<tr><td>SME</td><td class="pass">PASS</td><td>Four contracts exist, four real reviews ran, reviewed_by honest. All four verdicts CONDITIONAL; their findings are recorded and the factual ones applied</td></tr>
+<tr><td>PROVENANCE</td><td class="pass">PASS</td><td>Reproducible source identity bound to manifest_resolved_sha256; excluded rows explicit</td></tr>
+<tr><td>REGRESSION</td><td class="pass">PASS</td><td>154/0 twice, with a failability proof</td></tr>
+<tr><td>SHADOW-REPO</td><td class="pass">PASS</td><td>No historical Docling file under current main</td></tr>
+<tr><td>HYGIENE</td><td class="pass">PASS</td><td>Nothing unexpected; known-dead credentials documented as such</td></tr>
+</tbody></table></div>
+<p><b>All 29 checks pass. Not committed.</b> The branch stays uncommitted as instructed, and acceptance is the owner’s to give. <b>LangGraph has not been started.</b></p>
+
+<div class="foot">Corrective pass 2026-08-13 · repository-document migration mode · no SSH, no
+installs, no service config, no deployment, no role changes, no force-push · archive ref
+<code>legacy/2025</code> @ <code>a98846d6…</code> protected · base
+<code>2d6faadc…6b31a</code> preserved · resolved <code>64eb356f…cd59</code> is the binding
+identity.</div>
+</div>
+<script>
+(function(){var b=document.getElementById('themeToggle'),r=document.documentElement;
+function cur(){var e=r.getAttribute('data-theme');if(e)return e;
+return window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
+function set(t){r.setAttribute('data-theme',t);b.textContent=t==='dark'?'☀ Light':'☾ Dark';}
+set(cur());b.addEventListener('click',function(){set(cur()==='dark'?'light':'dark');});})();
+</script>
+</body></html>

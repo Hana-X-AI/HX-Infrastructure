@@ -1,0 +1,227 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Docling Distillation Pilot — Execution Brief for Claude Code (Plan Mode)</title>
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--panel2:#1c2129;--bd:#30363d;--fg:#e6edf3;--dim:#8b949e;--acc:#58a6ff;
+--ok:#3fb950;--warn:#d29922;--stop:#f85149;--purple:#bc8cff;--orange:#f0883e;--green:#7ee787}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.62 -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.wrap{max-width:1060px;margin:0 auto;padding:32px 22px 90px}
+header.hero{border:1px solid var(--bd);border-radius:14px;background:linear-gradient(150deg,#161b22,#0d1117);padding:26px 28px;margin-bottom:22px}
+.hero h1{margin:0 0 6px;font-size:24px}
+.hero .sub{color:var(--dim);font-size:14px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.meta span{background:var(--panel2);border:1px solid var(--bd);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--dim)}
+.meta b{color:var(--fg)}
+h2{font-size:18px;margin:30px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--bd)}
+h2 .k{color:var(--acc);font-weight:700;margin-right:8px}
+h3{font-size:15px;margin:18px 0 6px}
+.lead{color:var(--dim);margin:-2px 0 14px;font-size:14px}
+p{margin:8px 0}
+.callout{border-left:4px solid var(--acc);background:var(--panel2);border-radius:0 10px 10px 0;padding:14px 18px;margin:14px 0}
+.callout.stop{border-left-color:var(--stop)}.callout.ok{border-left-color:var(--ok)}.callout.warn{border-left-color:var(--warn)}
+.callout h3{margin:0 0 6px;font-size:15px}
+.callout p{margin:0 0 6px;color:var(--dim);font-size:13.5px}.callout p:last-child{margin-bottom:0}
+code{background:#0d1117;border:1px solid var(--bd);border-radius:5px;padding:1px 5px;font:12.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:#79c0ff}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--bd);vertical-align:top}
+th{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.5px;background:var(--panel)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+.req{display:flex;gap:13px;background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:13px 15px;margin:9px 0}
+.rnum{flex:none;width:28px;height:28px;border-radius:50%;background:var(--panel2);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--acc);font-size:13px}
+.req h4{margin:0 0 3px;font-size:14px}
+.req p{margin:0;color:var(--dim);font-size:13px}
+ul.tight{margin:6px 0 0;padding-left:20px;color:var(--dim);font-size:13.5px}
+ul.tight li{margin:4px 0}ul.tight b,ul.tight code{color:var(--fg)}
+.tree{background:#0d1117;border:1px solid var(--bd);border-radius:10px;padding:14px 16px;font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--fg);overflow:auto;white-space:pre}
+.pill{display:inline-block;font-size:11px;font-weight:600;border-radius:20px;padding:1px 9px;border:1px solid}
+.p-do{color:var(--ok);border-color:var(--ok)}.p-dont{color:var(--stop);border-color:var(--stop)}
+.sme{display:inline-block;background:var(--panel2);border:1px solid var(--bd);border-radius:6px;padding:3px 9px;margin:3px 4px 3px 0;font-size:12px;font-family:ui-monospace,Menlo,monospace;color:var(--green)}
+.foot{color:var(--dim);font-size:12px;margin-top:36px;border-top:1px solid var(--bd);padding-top:16px}
+.chk{color:var(--ok);font-weight:700}.x{color:var(--stop);font-weight:700}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:720px){.grid2{grid-template-columns:1fr}}
+.box{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:14px 16px}
+.box.do{border-left:4px solid var(--ok)}.box.dont{border-left:4px solid var(--stop)}
+</style></head><body><div class="wrap">
+
+<header class="hero">
+<h1>Docling MCP — Distillation Pilot · Execution Brief</h1>
+<div class="sub">For Claude Code, to run in <b>plan mode</b>. First end-to-end test of the v3 migration model: turn 198 historical files into one current-state service document, with no historical garbage in <code>main</code> and no infrastructure changes.</div>
+<div class="meta">
+<span>Prepared by <b>Claude (Opus 4.8)</b></span>
+<span>Date <b>2026-08-13 21:12</b></span>
+<span>Mode <b>PLAN ONLY — no server changes</b></span>
+<span>Baseline <b>manifest v3 (frozen)</b></span>
+<span>Deliverable <b>services/docling-mcp/service.md</b></span>
+</div></header>
+
+<div class="callout stop"><h3>Hard boundaries — read first</h3>
+<p><b>Planning / migration only.</b> No infrastructure implementation, no server configuration, no deployment, no package installs on any host. This pilot produces documents and ledger updates, nothing else.</p>
+<p><b>Freeze v3.</b> Do <u>not</u> re-review or re-open the manifest architecture. v3 is the migration baseline; the repository architecture is settled. If you believe a ledger row is mis-dispositioned, note it in the return package — do not re-classify the manifest.</p>
+<p><b>Secret-clean.</b> No historical credential value and no secret-bearing raw content may appear in <code>service.md</code> or any output. Provenance references (ledger IDs) are sufficient. Never open the excluded/retired vault rows for content (see §2).</p>
+<p><b>No shadow archive.</b> The 198 historical files stay reachable only through the sanitized legacy lineage. None of them may be copied under current <code>main</code>.</p>
+</div>
+
+<h2><span class="k">0</span>Objective &amp; success test</h2>
+<p>Produce a concise, current, technically deep <code>services/docling-mcp/service.md</code> distilled from the 198 Docling rows in the v3 ledger — proving the whole v3 model end-to-end: ledger-driven selection → extract/reconcile/author → multi-SME synthesis → provenance → ledger closure.</p>
+<div class="grid2">
+<div class="box do"><b class="chk">✓ Pilot passes if</b><ul class="tight">
+<li>the document is current-state, concise, and technically deep;</li>
+<li>every substantive legacy-derived section traces back to ledger IDs;</li>
+<li>unverified 2025 facts are marked <code>VERIFICATION REQUIRED</code>, not guessed;</li>
+<li>no historical file lands under <code>main</code>; no secret literal appears;</li>
+<li>the Docling ledger rows are closed with what happened to each.</li></ul></div>
+<div class="box dont"><b class="x">✗ Pilot fails if</b><ul class="tight">
+<li>it becomes another 100-page pseudo-spec;</li>
+<li>it copies 2025 facts forward as if current;</li>
+<li>it loses high-value engineering detail (defects, integration contracts);</li>
+<li>it drags the old node tree into <code>main</code>;</li>
+<li>it reopens the manifest instead of executing against it.</li></ul></div>
+</div>
+<p class="lead">If it passes, we repeat for LangGraph and then run the remaining services faster. If it fails, we fix the migration method <b>once</b>, here, before multiplying the problem.</p>
+
+<h2><span class="k">1</span>Ledger-driven source selection</h2>
+<p class="lead">Select sources from the ledger, do not reread the node tree and improvise. Authoritative input: <code>governance/reports/claude/manifestv3.jsonl</code> (v3, 522 rows).</p>
+<p>The Docling working set is the 198 rows where <code>owner_capability = "docling-mcp"</code> — IDs <code>lgc-064</code>&hellip;<code>lgc-261</code>, every one carrying <code>distill_target: services/docling-mcp/service.md</code>. Source subtree map:</p>
+<table>
+<thead><tr><th>Subtree</th><th>Rows</th><th>ID range</th><th>Primary value to extract</th></tr></thead>
+<tbody>
+<tr><td class="mono">charter/</td><td>6</td><td class="mono">lgc-065–070</td><td>Original intent, scope boundaries, team ownership evidence.</td></tr>
+<tr><td class="mono">specification/</td><td>12</td><td class="mono">lgc-117–128</td><td>Tool surface, node-spec, consolidated action items, SME contributions.</td></tr>
+<tr><td class="mono">planning/</td><td>12</td><td class="mono">lgc-105–116</td><td>Architecture, deployment-architecture, configuration-spec, security review.</td></tr>
+<tr><td class="mono">configuration/</td><td>3</td><td class="mono">lgc-071–073</td><td>env-vars and config model (reconcile every value).</td></tr>
+<tr><td class="mono">deployment/</td><td>3</td><td class="mono">lgc-101–103</td><td>Runtime/systemd model and service lifecycle.</td></tr>
+<tr><td class="mono">tasks/</td><td>74</td><td class="mono">lgc-129–202</td><td>Implementation lessons — mine for invariants, not step logs.</td></tr>
+<tr><td class="mono">tests/</td><td>57</td><td class="mono">lgc-203–259</td><td>Validation strategy and coverage intent (re-baseline; no old counts).</td></tr>
+<tr><td class="mono">defects/</td><td>27</td><td class="mono">lgc-074–100</td><td>Failure modes → current gotchas / design constraints (see §6).</td></tr>
+<tr><td class="mono">charter,inventory,README</td><td>2</td><td class="mono">lgc-064,104</td><td>Context only.</td></tr>
+<tr><td class="mono">vault/ (never-open)</td><td>2</td><td class="mono">lgc-260&ndash;261</td><td><strong>Excluded/retired &mdash; reference by ID only; raw content must not be read.</strong> Counted in the 198-row total but excluded from readable content. See &sect;2.</td></tr>
+</tbody>
+</table>
+<p class="lead">Read raw content from the quarantined/sanitized legacy source, keyed by the ledger path. Cite the ledger ID wherever a section draws on a file.</p>
+
+<h2><span class="k">2</span>Never-open-for-content rows (secret discipline)</h2>
+<div class="callout stop">
+<p>Three rows are <b>excluded/retired</b> and must not have their raw content transcribed into any output. Reference them by ID only:</p>
+<ul class="tight">
+<li><code>lgc-260</code> — <span class="pill p-dont">exclude</span> <code>vault/credentials.yml</code> (live credential file).</li>
+<li><code>lgc-261</code> — <span class="pill p-dont">retire</span> <code>vault/readme.md</code> (vault-layout doc).</li>
+<li><code>lgc-134</code> — <span class="pill p-dont">retire</span> <code>tasks/&hellip;task-006-create-ansible-vault-structure.md</code> (ansible-vault; mechanism retired).</li>
+</ul>
+<p>A further <b>20 rows</b> are <code>secret_risk: confirmed</code> and <b>22</b> are <code>secret_risk: inspect</code>. You may extract their <em>engineering</em> content (e.g. that auth was required, that a token was expected) but never the literal value. Refer to credentials as <code>legacy-secret-001</code> / <code>legacy-secret-002</code>.</p>
+</div>
+
+<h2><span class="k">3</span>The ten pilot requirements</h2>
+<div class="req"><div class="rnum">1</div><div><h4>Ledger-driven source selection</h4><p>Identify the exact Docling rows used from <code>manifest.jsonl</code>; do not improvise from a tree walk. The set of IDs you actually drew on is part of the return package.</p></div></div>
+<div class="req"><div class="rnum">2</div><div><h4>Extract, reconcile, author — do not translate</h4><p>Extract invariant knowledge (architecture, dependencies, tool surface, failure modes, validation strategy, systemd/runtime lessons, LiteLLM/Qdrant/Redis/LightRAG integration). Reconcile every current fact against 2026 authority (<code>SERVER-REGISTRY.md</code>, architecture v0.3). Do not carry the 2025 environment forward.</p></div></div>
+<div class="req"><div class="rnum">3</div><div><h4>Current service document only</h4><p>Describe Docling MCP as we intend to operate it <b>now</b>. Historical configuration belongs in provenance, not in the current architecture body.</p></div></div>
+<div class="req"><div class="rnum">4</div><div><h4>Strong provenance</h4><p>Every substantive legacy-derived section is traceable to source ledger IDs/paths. A reader must be able to answer "why is this recommendation here?" without opening 198 files.</p></div></div>
+<div class="req"><div class="rnum">5</div><div><h4>Multi-SME review</h4><p>The Docling SME owns the synthesis; relevant portions explicitly involve the specialists below (§4). This is where the specialist-agent model must show its value.</p></div></div>
+<div class="req"><div class="rnum">6</div><div><h4>Current-fact verification markers</h4><p>Package versions, ports, current APIs, commands, system requirements, model endpoints must not silently inherit 2025 values. Anything not yet verified says <code>VERIFICATION REQUIRED</code> rather than being guessed (§5).</p></div></div>
+<div class="req"><div class="rnum">7</div><div><h4>Legacy defect mining</h4><p>Turn the high-value defects into concise current gotchas / design constraints — not an imported defect log (§6).</p></div></div>
+<div class="req"><div class="rnum">8</div><div><h4>Secret-clean output</h4><p>No historical credential values, no secret-bearing raw material. Provenance references are enough.</p></div></div>
+<div class="req"><div class="rnum">9</div><div><h4>No shadow archive</h4><p>The 198 historical files remain reachable through the sanitized legacy lineage; none appear under current <code>main</code>.</p></div></div>
+<div class="req"><div class="rnum">10</div><div><h4>Ledger closure</h4><p>At the end, the Docling rows show exactly what happened: what was distilled, where it landed in <code>service.md</code>, who reviewed it, what stays historical, what needs current verification (§7).</p></div></div>
+
+<h2><span class="k">4</span>SME review roster</h2>
+<p class="lead">Docling SME owns the document. Route the named sections through the relevant specialists; record each reviewer against the sections they signed off (feeds requirement 10).</p>
+<p>
+<span class="sme">docling</span><span class="sme">docling-mcp</span><span class="sme">fastmcp</span><span class="sme">litellm</span><span class="sme">qdrant</span><span class="sme">redis</span><span class="sme">lightrag</span><span class="sme">infrastructure-ops</span><span class="sme">testing-qa</span>
+</p>
+<ul class="tight">
+<li><b>Architecture / MCP tool surface / runtime</b> → <code>docling</code>, <code>docling-mcp</code>, <code>fastmcp</code>, <code>infrastructure-ops</code>.</li>
+<li><b>Integration contracts</b> → <code>litellm</code>, <code>qdrant</code>, <code>redis</code>, <code>lightrag</code> (each owns its own contract subsection).</li>
+<li><b>Validation / failure handling / operational checks</b> → <code>testing-qa</code>, <code>infrastructure-ops</code>.</li>
+</ul>
+<p class="lead">These specialists are being reconstructed capability-first (ledger policy <code>P-AGENTS</code>). If a specialist contract does not yet exist, note it as a dependency in the return package rather than skipping the review.</p>
+
+<h2><span class="k">5</span>Verification-required discipline</h2>
+<div class="callout warn">
+<p>Every current-fact claim carries a state: <b>verified against 2026 authority</b> (cite the authority) or <b><code>VERIFICATION REQUIRED</code></b>. Never let a 2025 value pass silently as current. Apply especially to:</p>
+<ul class="tight">
+<li>package/library versions and the Blackwell toolchain pins;</li>
+<li>ports, host/IP assignments, FQDNs (reconcile to <code>192.168.50.x</code> / <code>hx.local.arpa</code> / <code>hxs-N</code>);</li>
+<li>MCP/API surfaces and command invocations;</li>
+<li>model endpoints (serving stack details are <b><code>VERIFICATION REQUIRED</code></b> &mdash; do not assert a vLLM-fronted or any other specific serving configuration unless a direct 2026 project authority from discovery records or <code>SERVER-REGISTRY.md</code> is cited; workload and model choices come from project records only);</li>
+<li>system requirements (GPU/VRAM, storage, cache paths).</li>
+</ul>
+</div>
+
+<h2><span class="k">6</span>Defect mining — target set</h2>
+<p class="lead">Convert these into concise current gotchas / design constraints with a one-line "current stance." Cite the ledger ID. Do not reproduce the defect narrative.</p>
+<table>
+<thead><tr><th>Ledger ID</th><th>Legacy defect</th><th>Becomes (current constraint)</th></tr></thead>
+<tbody>
+<tr><td class="mono">lgc-076</td><td>Hardcoded endpoint &amp; chown</td><td>No hardcoded endpoints — resolve from registry/config.</td></tr>
+<tr><td class="mono">lgc-094</td><td>Home-directory path unsafe</td><td>Service paths under a defined service root, never <code>$HOME</code>.</td></tr>
+<tr><td class="mono">lgc-081</td><td><code>libGL</code> missing dependency (critical)</td><td>Declare native libs (libGL et al.) as explicit runtime prerequisites.</td></tr>
+<tr><td class="mono">lgc-084</td><td>Hugging Face cache permission denied (high)</td><td>Pre-create HF cache dir with service-account ownership; pin cache path.</td></tr>
+<tr><td class="mono">lgc-080</td><td>LiteLLM auth (critical)</td><td>Define auth contract explicitly; credential via <code>legacy-secret-002</code> ref, rotate.</td></tr>
+<tr><td class="mono">lgc-083</td><td>journald config overwrite (destructive, high)</td><td>Never overwrite global journald; use a drop-in unit only.</td></tr>
+<tr><td class="mono">lgc-090 / lgc-091</td><td>Retry jitter negative sleep / regex patching fragile</td><td>Bounded, tested backoff; no regex-patched retry logic.</td></tr>
+<tr><td class="mono">lgc-079 / lgc-096</td><td>Version comparison string-not-semantic</td><td>Semantic version comparison for all constraint checks.</td></tr>
+<tr><td class="mono">lgc-097</td><td>Bearer-token regex incomplete</td><td>Token validation via a proper parser, not a partial regex.</td></tr>
+<tr><td class="mono">lgc-085 / lgc-086</td><td>Circuit-breaker criterion / schema versioning deferred</td><td>Carry forward as explicit design decisions to confirm.</td></tr>
+</tbody>
+</table>
+
+<h2><span class="k">7</span>Ledger closure — what to write back</h2>
+<p class="lead">Update the Docling rows in <code>manifest.jsonl</code> (and emit <code>provenance-index.jsonl</code> entries) so each row records its outcome. Do not alter dispositions or the schema — advance state and fill provenance.</p>
+<ul class="tight">
+<li><b>migration_status</b>: advance rows actually distilled from <code>pending</code> → <code>migrated</code>; leave untouched rows <code>pending</code> with a reason.</li>
+<li><b>distilled_into</b>: the <code>service.md</code> section(s) each row fed (mirror in provenance-index).</li>
+<li><b>reviewed_by</b>: the SME(s) who signed the section it fed.</li>
+<li><b>sanitized_sha256</b>: fill where the sanitized source hash is known; else leave null with a note.</li>
+<li><b>migration_commit</b>: leave null (planning only) — this is filled at real execution.</li>
+<li>Rows that remain purely historical stay <code>sanitized-ref</code>; confirm none flipped to a <code>main</code> target.</li>
+</ul>
+
+<h2><span class="k">8</span>Target shape of <code>service.md</code></h2>
+<div class="tree">Docling MCP
+├── Status and authority        # current, authoritative; supersedes 2025
+├── Purpose
+├── Current placement           # host/role per SERVER-REGISTRY + v0.3
+├── Owning SME(s)
+├── Architecture
+├── MCP tool surface
+├── Dependencies                # incl. native libs (libGL), HF cache
+├── Integration contracts
+│   ├── LiteLLM                 # auth contract; legacy-secret-002 ref
+│   ├── Qdrant
+│   ├── Redis
+│   └── LightRAG
+├── Runtime and service model   # systemd drop-in only (journald lesson)
+├── Configuration model         # no hardcoded endpoints/paths
+├── Data / cache paths          # service root, not $HOME
+├── Validation requirements     # re-baselined; no 2025 counts
+├── Failure handling            # bounded retry, semantic versioning
+├── Operational checks
+├── Known gotchas / legacy lessons   # mined defects, concise
+├── Current verification required    # the VERIFICATION REQUIRED list
+└── Provenance                  # section → ledger IDs/paths, reviewers</div>
+<p class="lead">Keep it a service document, not a spec: dense, current, decision-bearing. Historical detail lives in Provenance and in the sanitized ref, not in the architecture body.</p>
+
+<h2><span class="k">9</span>v3 validation checks to run before returning</h2>
+<ul class="tight">
+<li><b>Secret-clean:</b> run the repository-approved secret scanner (with its configured detector rules) against <code>service.md</code>, <code>governance/reports/claude/manifestv3.jsonl</code>, and <code>provenance-index.jsonl</code> &mdash; zero hits required. Confirm the three never-open rows (lgc-260, lgc-261, lgc-134) were not transcribed.</li>
+<li><b>No shadow archive:</b> confirm no Docling historical file was written under <code>main</code>; only <code>services/docling-mcp/service.md</code> + control/provenance files are new in <code>main</code>.</li>
+<li><b>Provenance completeness:</b> every substantive section maps to at least one ledger ID; every distilled row names its <code>distilled_into</code> target.</li>
+<li><b>Verification markers present:</b> current-fact claims are either authority-cited or flagged <code>VERIFICATION REQUIRED</code> — no silent 2025 inheritance.</li>
+<li><b>Coverage accounting:</b> of 198 rows, report distilled vs still-historical vs excluded (expect 1 exclude, 2 retire never opened for content).</li>
+</ul>
+
+<h2><span class="k">10</span>Return package (do not implement anything)</h2>
+<p class="lead">Return for targeted review — the owner will assess transformation quality, not reopen the architecture.</p>
+<ol style="color:var(--dim);font-size:13.5px">
+<li><code>services/docling-mcp/service.md</code> — the pilot deliverable.</li>
+<li>The updated Docling rows in <code>manifest.jsonl</code> + new <code>provenance-index.jsonl</code> entries.</li>
+<li>A short pilot report: which ledger IDs were used, the SME sign-off map, the <code>VERIFICATION REQUIRED</code> list, and any specialist-contract gaps found.</li>
+<li>Output of the §9 validation checks.</li>
+</ol>
+
+<div class="callout ok"><h3>One-line mandate</h3>
+<p>Freeze v3 as the migration baseline and execute one <b>planning-only</b> Docling distillation pilot against it — no second manifest review. Produce <code>services/docling-mcp/service.md</code>, close the Docling ledger rows/provenance, run the v3 validation checks, and return the pilot package. No infrastructure implementation.</p></div>
+
+<div class="foot">Execution brief for Claude Code · plan mode · companion to migration-manifest-v3 and the current-repo §0 change-set · authorizes planning and document/ledger writes only, no infrastructure change. Ledger IDs cited against manifest.jsonl v3 (522 rows; Docling working set lgc-064–lgc-261).</div>
+</div></body></html>

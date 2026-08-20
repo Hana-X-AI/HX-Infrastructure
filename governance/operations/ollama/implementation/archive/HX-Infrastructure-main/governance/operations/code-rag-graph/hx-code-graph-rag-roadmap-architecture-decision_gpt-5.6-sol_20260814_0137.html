@@ -1,0 +1,301 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HX Code-Graph-RAG Roadmap Architecture Decision</title><style>
+:root{
+ --bg:#071019;--panel:#0d1823;--panel2:#11212f;--text:#e9f1f7;--muted:#9dafbe;
+ --line:#263b4d;--cyan:#69dbff;--green:#94e77a;--amber:#ffd166;--red:#ff7e8e;
+ --violet:#c4a4ff;--code:#06131c;--shadow:0 18px 48px rgba(0,0,0,.32);
+}
+*{box-sizing:border-box}
+body{margin:0;background:
+ radial-gradient(circle at 10% -5%,rgba(105,219,255,.11),transparent 28%),
+ radial-gradient(circle at 90% 0%,rgba(196,164,255,.08),transparent 24%),var(--bg);
+ color:var(--text);font:15px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{width:min(1180px,calc(100% - 34px));margin:auto;padding:34px 0 80px}
+.hero{background:linear-gradient(145deg,rgba(17,33,47,.98),rgba(8,20,30,.98));
+ border:1px solid var(--line);border-radius:18px;padding:34px 36px;box-shadow:var(--shadow)}
+.eyebrow{color:var(--cyan);font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.15em}
+h1{font-size:clamp(36px,5.2vw,58px);line-height:1.02;letter-spacing:-.04em;margin:8px 0 12px}
+h2{font-size:27px;letter-spacing:-.02em;margin:40px 0 14px}
+h3{font-size:19px;margin:20px 0 8px}
+p{margin:8px 0 14px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.pill{border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:999px;padding:6px 11px;color:var(--muted);font-size:12px}
+.callout{margin:18px 0;padding:18px 20px;border:1px solid rgba(105,219,255,.25);border-left:4px solid var(--cyan);border-radius:11px;background:rgba(105,219,255,.05)}
+.callout.ok{border-left-color:var(--green);background:rgba(148,231,122,.045)}
+.callout.warn{border-left-color:var(--amber);background:rgba(255,209,102,.045)}
+.callout.bad{border-left-color:var(--red);background:rgba(255,126,142,.045)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.card{grid-column:span 6;border:1px solid var(--line);border-radius:14px;padding:20px;background:linear-gradient(180deg,rgba(17,33,47,.94),rgba(13,24,35,.94))}
+.card.third{grid-column:span 4}.card.full{grid-column:1/-1}
+.metric{font-size:30px;font-weight:850;letter-spacing:-.03em}.label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+table{width:100%;border-collapse:collapse;border:1px solid var(--line);background:rgba(13,24,35,.93)}
+th,td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+th{background:rgba(255,255,255,.03);color:#cfe4f2;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+tr:last-child td{border-bottom:0}
+code,pre{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+code{background:var(--code);border:1px solid rgba(255,255,255,.06);padding:2px 5px;border-radius:5px;color:#d7edf8}
+pre{white-space:pre-wrap;background:var(--code);border:1px solid var(--line);border-radius:12px;padding:17px;overflow:auto;color:#dbeaf3}
+.keep{color:var(--green);font-weight:800}.later{color:var(--amber);font-weight:800}.no{color:var(--red);font-weight:800}.strong{color:var(--violet);font-weight:800}
+ul,ol{padding-left:22px}li{margin:5px 0}
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+.copybtn{position:sticky;top:10px;float:right;margin:12px 12px -52px 0;z-index:4;cursor:pointer;padding:8px 11px;border-radius:9px;border:1px solid var(--line);background:#142536;color:var(--text);font-weight:700}
+@media(max-width:820px){main{width:min(100% - 22px,1180px)}.hero{padding:25px 21px}.card,.card.third{grid-column:1/-1}table{display:block;overflow:auto}}
+</style></head><body><main>
+<section class="hero">
+<div class="eyebrow">HX-Infrastructure · Roadmap Architecture Decision</div>
+<h1>Code-Graph-RAG as the Future HX Code Intelligence Plane</h1>
+<p>Places Code-Graph-RAG on the HX roadmap as a structural source-code intelligence layer shared by Claude Code and jcode, while preserving LightRAG for document/governance knowledge and preventing Code-Graph-RAG from becoming another editing or agent authority.</p>
+<div class="meta">
+<span class="pill">Disposition: ROADMAP CANDIDATE</span>
+<span class="pill">Role: Code Intelligence Plane</span>
+<span class="pill">Not a LightRAG replacement</span>
+<span class="pill">Initial pilot corpus: jcode + OmniRoute</span>
+<span class="pill">HX-Infrastructure current fit: low</span>
+<span class="pill">Read-only MCP gate required</span>
+<span class="pill">Source snapshot: 0.0.630</span>
+<span class="pill">SHA-256: b321a631e74ab4d5e9046e2574ab2321ec93c26ddf30205a2ac70261230dc92a</span>
+<span class="pill">Prepared by GPT-5.6 Sol</span>
+<span class="pill">2026-08-14 01:37 America/Panama</span>
+</div>
+</section>
+
+<div class="callout ok">
+<strong>Roadmap decision.</strong> Code-Graph-RAG is worth pursuing, but not as a replacement for LightRAG and not as the primary index for today's HX-Infrastructure repository. Its best role is a future <strong>Code Intelligence Plane</strong> for code-heavy HX modules and external repositories, exposed to Claude Code and jcode as a structural read/query service.
+</div>
+
+<h2>1. Why the role is distinct</h2>
+<pre>                      HX INTELLIGENCE PLANE
+
+         ┌──────────────────────┬────────────────────────┐
+         │                      │                        │
+         ▼                      ▼                        │
+     LightRAG            Code-Graph-RAG                 │
+         │                      │                        │
+         ▼                      ▼                        │
+ documents / decisions     source-code structure        │
+ governance / plans        calls / imports              │
+ research / history        inheritance / interfaces     │
+ operating knowledge       data flow / resources        │
+                                 │                       │
+                                 └──────────┬────────────┘
+                                            ▼
+                                Claude Code + jcode</pre>
+
+<table>
+<tr><th>Question type</th><th>Best HX intelligence layer</th></tr>
+<tr><td>Why was this architecture chosen?</td><td><strong>LightRAG</strong></td></tr>
+<tr><td>What decision superseded the prior plan?</td><td><strong>LightRAG</strong></td></tr>
+<tr><td>Who calls this function?</td><td><strong>Code-Graph-RAG</strong></td></tr>
+<tr><td>What implements this interface?</td><td><strong>Code-Graph-RAG</strong></td></tr>
+<tr><td>How does data flow from endpoint to resource?</td><td><strong>Code-Graph-RAG</strong></td></tr>
+<tr><td>Which HX policy applies to this code change?</td><td><strong>HX governance / LightRAG as supporting context</strong></td></tr>
+</table>
+
+<h2>2. Why current HX-Infrastructure is not the pilot target</h2>
+<div class="callout warn">
+<strong>Current repository composition matters.</strong> The supplied HX-Infrastructure snapshot is overwhelmingly Markdown, while Code-Graph-RAG's distinctive value comes from programming-language ASTs and semantic graph relationships.
+</div>
+
+<pre>Current supplied HX-Infrastructure snapshot
+-------------------------------------------
+522 files
+~19.3 MB
+
+504 Markdown
+7 shell
+6 Python
+1 SQL
+1 JSON
+1 YAML
+...</pre>
+
+<p>That makes the current HX repo a poor benchmark for Code-Graph-RAG. Most important HX meaning today lives in documents, governance, research and plans rather than in application call graphs.</p>
+
+<h2>3. Best initial pilot corpus</h2>
+<p>Use repositories we already understand deeply and which are structurally code-heavy:</p>
+
+<div class="grid">
+<div class="card">
+<div class="label">Pilot corpus A</div>
+<div class="metric">jcode</div>
+<p>Rust-heavy agent harness with hooks, provider routing, memory, swarm, persistent sessions and policy behavior already manually reviewed.</p>
+</div>
+<div class="card">
+<div class="label">Pilot corpus B</div>
+<div class="metric">OmniRoute</div>
+<p>Large TypeScript/JavaScript gateway with provider routing, protocol translation, tool-result handling, SSRF logic, MCP and telemetry already manually reviewed.</p>
+</div>
+</div>
+
+<p>Because the correct answers to many architectural questions are already known from manual review, they form a strong ground-truth benchmark.</p>
+
+<h2>4. Pilot questions with known answers</h2>
+<table>
+<tr><th>Repository</th><th>Question</th><th>Why useful</th></tr>
+<tr><td>jcode</td><td>Where does <code>pre_tool</code> fail open and under which error modes?</td><td>Tests graph traversal through policy-hook control flow.</td></tr>
+<tr><td>jcode</td><td>What initializes memory and what configuration controls it?</td><td>Tests config-to-constructor dependency tracing.</td></tr>
+<tr><td>jcode</td><td>Where are swarm coordinators instantiated and how do workers report back?</td><td>Tests multi-module agent-architecture traversal.</td></tr>
+<tr><td>OmniRoute</td><td>Where are Ollama and vLLM providers registered and routed?</td><td>Tests provider abstraction/import/call relationships.</td></tr>
+<tr><td>OmniRoute</td><td>Which translators touch tool-call/tool-result structures?</td><td>Tests protocol-semantic relationship discovery.</td></tr>
+<tr><td>OmniRoute</td><td>What configuration path controls SSRF behavior?</td><td>Tests security/configuration flow discovery.</td></tr>
+</table>
+
+<h2>5. Core technology fit</h2>
+<p>The reviewed 0.0.630 snapshot builds structural code intelligence from deterministic language analysis rather than asking an LLM to invent a graph.</p>
+
+<pre>repository
+   ↓
+language frontends / Tree-sitter
+   ↓
+entities + relationships
+   ↓
+Memgraph
+   ↓
+structural / call / import / inheritance / data-flow queries
+
+optional
+   ↓
+embeddings
+   ↓
+Qdrant / Milvus</pre>
+
+<p>Important graph concepts include functions, methods, classes, interfaces, modules, packages, resources, code smells and security issues, with relationships such as calls, imports, references, instantiation, inheritance, implementation, overrides, reads/writes and data flow.</p>
+
+<h2>6. Important epistemic strength</h2>
+<div class="callout ok">
+<strong>GOOD DESIGN:</strong> Code-Graph-RAG distinguishes <code>FOUND</code>, <code>NO_FLOW</code> and <code>UNKNOWN</code> in data-flow reasoning rather than treating missing graph coverage as proof of absence.
+</div>
+
+<p>This aligns well with HX's own evidence model: uncertainty is explicit rather than silently converted into a false PASS.</p>
+
+<h2>7. MCP exposure boundary</h2>
+<p>The reviewed snapshot exposes both intelligence and mutation capabilities. HX must not expose all of them equally.</p>
+
+<table>
+<tr><th>Tool</th><th>HX disposition</th></tr>
+<tr><td><code>query_code_graph</code></td><td class="keep">ALLOW</td></tr>
+<tr><td><code>get_code_snippet</code></td><td class="keep">ALLOW</td></tr>
+<tr><td><code>structural_search</code></td><td class="keep">ALLOW</td></tr>
+<tr><td><code>semantic_search</code></td><td class="later">ALLOW AFTER PHASE 1</td></tr>
+<tr><td><code>flow_verdict</code></td><td class="keep">ALLOW</td></tr>
+<tr><td><code>list_projects</code></td><td class="keep">ALLOW</td></tr>
+<tr><td><code>index_repository</code></td><td class="later">ADMIN/SERVICE ONLY</td></tr>
+<tr><td><code>update_repository</code></td><td class="later">ADMIN/SERVICE ONLY</td></tr>
+<tr><td><code>delete_project</code></td><td class="no">DO NOT EXPOSE TO AGENTS</td></tr>
+<tr><td><code>wipe_database</code></td><td class="no">DO NOT EXPOSE TO AGENTS</td></tr>
+<tr><td><code>read_file</code></td><td class="keep">ALLOW &mdash; intelligence only</td></tr>
+<tr><td><code>list_directory</code></td><td class="keep">ALLOW &mdash; intelligence only</td></tr>
+<tr><td><code>write_file</code></td><td class="no">DO NOT USE AS HX EXECUTION PATH</td></tr>
+<tr><td><code>surgical_replace_code</code></td><td class="no">DO NOT USE INITIALLY</td></tr>
+<tr><td><code>structural_replace</code></td><td class="no">DO NOT USE INITIALLY</td></tr>
+<tr><td><code>ask_agent</code></td><td class="no">DO NOT USE</td></tr>
+</table>
+
+<h2>8. Adoption gate: deterministic intelligence-only exposure</h2>
+<div class="callout bad">
+<strong>Required before service adoption.</strong> HX needs a deterministic read-only / intelligence-only MCP exposure mode. The reviewed snapshot does not provide an obvious server-side tool allowlist/read-only profile.
+</div>
+
+<p>Preferred solution families:</p>
+<table>
+<tr><th>Option</th><th>Disposition</th><th>Description</th></tr>
+<tr><td>A — upstream read-only MCP profile</td><td class="keep">PREFERRED</td><td>Upstream/configurable tool exposure limited to approved intelligence/query tools.</td></tr>
+<tr><td>B — HX fork</td><td class="no">NOT PREFERRED</td><td>Do not begin by carrying an HX-maintained fork solely for tool filtering.</td></tr>
+<tr><td>C — shared HX enforcement layer</td><td class="keep">PREFERRED</td><td>Use the same lower/shared policy boundary being investigated for jcode to constrain MCP actions deterministically.</td></tr>
+</table>
+
+<h2>9. Relationship to the emerging HX stack</h2>
+<pre>                         HX GOVERNANCE
+           sdd-core / AGENTS / skills / controls
+                              │
+                 ┌────────────┴────────────┐
+                 │                         │
+            Claude Code                  jcode
+                 │                         │
+                 └────────────┬────────────┘
+                              │
+                    CODE INTELLIGENCE
+                    Code-Graph-RAG
+                              │
+                    Memgraph (+ vector later)
+
+                 MODEL TRAFFIC REMAINS
+
+            Claude Code / jcode
+                   │
+                   ▼
+               OmniRoute
+                   │
+             ┌─────┴─────┐
+             ▼           ▼
+          Ollama        vLLM</pre>
+
+<p>Code-Graph-RAG does not replace OmniRoute, jcode, Claude Code, LightRAG or HX governance. It is a separate source-code understanding service.</p>
+
+<h2>10. Roadmap phases</h2>
+<table>
+<tr><th>Phase</th><th>Scope</th><th>Exit condition</th></tr>
+<tr><td>R0 — Roadmap only</td><td>Architecture decision, pilot spec, no deployment commitment.</td><td>Decision recorded.</td></tr>
+<tr><td>R1 — Offline source pilot</td><td>Index jcode and OmniRoute; Memgraph only; intelligence tools only.</td><td>Known-answer benchmark completed.</td></tr>
+<tr><td>R2 — Agent access</td><td>Expose read-only queries to Claude Code and jcode.</td><td>Both harnesses get useful, safe structural results.</td></tr>
+<tr><td>R3 — Semantic augmentation</td><td>Add Qdrant/Milvus embeddings only if structural graph proves valuable.</td><td>Measured incremental value over graph-only mode.</td></tr>
+<tr><td>R4 — Incremental/live update benchmark</td><td>Measure changed-file indexing and watcher behavior on active code repos.</td><td>Acceptable latency/consistency.</td></tr>
+<tr><td>R5 — HX code-module adoption</td><td>Index code-heavy HX backend/frontend/service repos as they emerge.</td><td>Real HX code workload justifies persistent service.</td></tr>
+<tr><td>Later</td><td>Security/code-smell/data-flow workflows.</td><td>Only after read-only intelligence layer is stable.</td></tr>
+</table>
+
+<h2>11. Pilot metrics</h2>
+<ul>
+<li>Accuracy against known manual-review answers.</li>
+<li>Time-to-answer versus grep/manual source navigation.</li>
+<li>Number of files/tokens an agent must inspect before reaching the correct conclusion.</li>
+<li>False relationship rate.</li>
+<li>UNKNOWN vs false-negative behavior.</li>
+<li>Cross-language consistency.</li>
+<li>Index time and incremental update time.</li>
+<li>Memgraph resource footprint.</li>
+<li>Agent usefulness from Claude Code and jcode.</li>
+<li>Tool-policy safety.</li>
+</ul>
+
+<h2>12. Initial pilot configuration philosophy</h2>
+<ul>
+<li>Use exact source snapshot/commit/version and recorded hash.</li>
+<li>Do not use floating <code>main</code> or latest package.</li>
+<li>Memgraph first; no vector database initially.</li>
+<li>No nested CGR agent.</li>
+<li>No CGR file editing.</li>
+<li>No destructive DB tools exposed to agent clients.</li>
+<li>Index jcode and OmniRoute only.</li>
+<li>Use direct structural queries first.</li>
+<li>Keep external repo indexing isolated and apply language-specific safety settings for untrusted code.</li>
+<li>For C# external repos, use Tree-sitter-only mode unless compiler execution is explicitly authorized.</li>
+</ul>
+
+<h2>13. Worktree/project identity policy</h2>
+<p>Because Code-Graph-RAG project identity includes the resolved repository path, separate Git worktrees become separate graph projects. HX should therefore index canonical worktrees deliberately and avoid blindly indexing temporary worktrees.</p>
+
+<h2>14. LightRAG remains</h2>
+<div class="callout ok">
+<strong>Explicit roadmap decision:</strong> Code-Graph-RAG does not replace LightRAG.
+</div>
+
+<pre>LightRAG:
+what HX knows
+
+Code-Graph-RAG:
+what HX code does</pre>
+
+<p>Both may eventually feed Claude Code and jcode, but they answer different classes of questions and should retain separate storage/indexing semantics.</p>
+
+<h2>15. Final roadmap position</h2>
+<div class="callout ok">
+<strong>PLACE ON ROADMAP.</strong><br>
+Code-Graph-RAG is a strong future Code Intelligence Plane candidate.<br><br>
+<strong>DO NOT deploy as a core HX service yet.</strong><br>
+First prove value on jcode and OmniRoute using known-answer structural benchmarks and a deterministic intelligence-only tool boundary.
+</div>
+
+<footer>
+Decision based on deep review of the supplied Code-Graph-RAG 0.0.630 source snapshot and the supplied current HX-Infrastructure repository snapshot. This artifact records roadmap intent and pilot design; it does not authorize live infrastructure deployment.
+</footer>
+</main></body></html>

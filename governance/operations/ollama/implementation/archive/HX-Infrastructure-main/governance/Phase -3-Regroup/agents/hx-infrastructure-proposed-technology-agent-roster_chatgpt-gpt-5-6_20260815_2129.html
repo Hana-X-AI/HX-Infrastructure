@@ -1,0 +1,171 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HX Proposed Technology Agent Roster</title>
+<style>
+:root{--bg:#081018;--p:#101b27;--p2:#142334;--ink:#eaf2f8;--muted:#a1b3c5;--cyan:#4bd5e7;--gold:#f4c95d;--green:#6ee7a8;--red:#ff7b7b;--violet:#b99cff;--line:#294057}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#071019,#0b1520 48%,#101829);color:var(--ink);font:15px/1.55 Inter,Segoe UI,Arial,sans-serif}main{max-width:1200px;margin:auto;padding:42px 28px 72px}h1{font-size:41px;line-height:1.08;margin:8px 0 14px}h2{font-size:27px;margin:40px 0 14px;border-bottom:1px solid var(--line);padding-bottom:8px}h3{color:var(--cyan);margin:24px 0 8px}.kicker{color:var(--cyan);text-transform:uppercase;letter-spacing:.15em;font-weight:800}.sub{font-size:18px;color:var(--muted);max-width:960px}.meta,.small{font-size:13px;color:var(--muted)}.verdict{margin:26px 0;padding:21px 23px;border:1px solid #2f7180;border-left:5px solid var(--cyan);background:#0e2029;border-radius:10px}.verdict strong{color:var(--cyan);font-size:20px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:13px}.card{background:rgba(16,27,39,.94);border:1px solid var(--line);border-radius:10px;padding:16px}.name{font-size:24px;font-weight:850;color:#fff}.tag{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:3px 8px;margin:2px;font-size:11px;font-weight:800}.found{color:var(--green);border-color:#33795a}.prior{color:var(--gold);border-color:#806825}.new{color:var(--cyan);border-color:#2e7181}.pilot{color:var(--violet);border-color:#69538e}.defer{color:var(--muted)}table{width:100%;border-collapse:collapse;margin:14px 0 25px;background:#0e1823;font-size:13.5px}th,td{vertical-align:top;text-align:left;border:1px solid var(--line);padding:10px 11px}th{background:#142536;color:var(--cyan)}tr:nth-child(even) td{background:#101d2a}code{color:#b9e9f0;background:#09141e;padding:1px 5px;border-radius:4px}.note{border-left:4px solid var(--gold);background:#241f12;padding:13px 16px;margin:15px 0}.ok{border-left:4px solid var(--green);background:#10231b;padding:13px 16px;margin:15px 0}.risk{border-left:4px solid var(--red);background:#251419;padding:13px 16px;margin:15px 0}ul{padding-left:23px}li{margin:5px 0}.footer{margin-top:48px;border-top:1px solid var(--line);padding-top:17px;color:var(--muted)}@media(max-width:720px){main{padding:25px 14px}h1{font-size:31px}table{display:block;overflow-x:auto}}
+</style></head><body><main>
+<div class="kicker">Hana-X AI · HX-Infrastructure · Phase 3 regroup</div>
+<h1>Proposed Technology Agent Roster</h1>
+<p class="sub">A validation draft derived from the proposed technology stack and prior HX agent work. It lists proposed human agent identities, component ownership, lifecycle, and the evidence state of each name. It does not create, activate, or install any agent.</p>
+<p class="meta">Prepared 15 August 2026 · Baseline stack artifact SHA-256 <code>3024678ffb8b8c8aaf5806cf8e5604916ecb84d5fe76a79a8d20ae10756d8618</code></p>
+
+<div class="verdict"><strong>Recommended roster shape: capability-first, human-named, broad catalogue with lean activation.</strong><br>
+Create durable specialists only for technologies that own a distinct platform responsibility. Combine tightly related components under one accountable agent. Keep pilot technologies temporary until adoption is earned. Do not create one autonomous agent per package, exporter, model, database client, or UI library.</div>
+
+<h2>Evidence legend</h2>
+<div class="grid">
+<div class="card"><span class="tag found">IDENTIFIED</span><p>Name and purpose were found in current conversation or retained project artifacts.</p></div>
+<div class="card"><span class="tag prior">PRIOR CAPABILITY</span><p>A capability-style agent was referenced historically, but a human display name or current file was not confirmed.</p></div>
+<div class="card"><span class="tag new">NEW PROPOSAL</span><p>Human name and consolidation boundary are proposed here for owner validation.</p></div>
+<div class="card"><span class="tag pilot">PILOT / TEMPORARY</span><p>Exists only to evaluate a candidate. Retire or re-charter after the owner decision.</p></div>
+</div>
+
+<h2>Pinned rule — mandatory for every agent definition</h2>
+<div class="risk"><b>BLOCKING PRE-TASK GATE.</b> No agent may begin task execution, invoke task tools, edit files, change configuration, install software, deploy services, or rely on remembered assumptions until the required Knowledge Base Review is complete.</div>
+<div class="card">
+<h3>Knowledge Base Review (mandatory pre-task step)</h3>
+<p>Before executing any task, you must review the knowledge base located in your assigned operations directory. Each agent's operations directory contains the unzipped source repository for its system.</p>
+<p><b>Base path:</b> <code>C:\Users\JarvisRichardson\Desktop\HX-Infrastructure\governance\operations\&lt;AgentName&gt;\&lt;repo-release-folder&gt;</code></p>
+<p><b>Example (OmniRoute):</b> <code>C:\Users\JarvisRichardson\Desktop\HX-Infrastructure\governance\operations\OmniRoute\OmniRoute-release-v3.8.50</code></p>
+<p>Some tasks will also require reading from other directories in the shared library. When a task depends on information outside your own operations directory, review the relevant directory before proceeding rather than assuming or inventing details.</p>
+<p><b>No task execution begins until this review is complete.</b></p>
+</div>
+<h3>Application rules</h3>
+<ul>
+<li><b>Existing agents:</b> retrofit this directive one agent at a time and preserve each agent's identity and capability contract.</li>
+<li><b>New agents:</b> include the directive in the first-pass definition before activation or use.</li>
+<li><b>Technology directory mapping:</b> the human agent name maps to the applicable technology-named directory shown in the operations crosswalk; the placeholder does not require renaming an existing operations folder.</li>
+<li><b>Multi-technology agents:</b> review every assigned operations directory needed for the task. For example, Drew may need both <code>diagram-design</code> and <code>gitdiagram</code>; Skye may need both <code>skills</code> and <code>skill-expert</code>.</li>
+<li><b>Cross-domain tasks:</b> review the relevant shared-library or adjacent operations material before proceeding.</li>
+<li><b>Hard stop:</b> if a required directory, release folder, source repository or shared dependency is missing, ambiguous, inaccessible or stale beyond safe use, stop and report the blocker. Never fill the gap with assumption or invention.</li>
+<li><b>Completion acknowledgement:</b> the agent's task response must identify the operations source reviewed before claiming execution began.</li>
+</ul>
+
+<h2>Previously identified named agents</h2>
+<table><thead><tr><th>Name</th><th>Technology/capability</th><th>Known role</th><th>Evidence state</th><th>Roster recommendation</th></tr></thead><tbody>
+<tr><td><b>Craig</b></td><td>Ollama</td><td>Ollama installation, configuration, verification and full audit of the hxs-4 implementation using the local Ollama repository as technical source.</td><td><span class="tag found">CONVERSATION-IDENTIFIED</span></td><td>Retain as the durable Ollama specialist. Validate whether the agent file was committed and whether the audit charter is included.</td></tr>
+<tr><td><b>Atlas</b></td><td>code-review-graph / Code Intelligence pilot</td><td>Bounded, intelligence-only pilot executor on disposable jcode and OmniRoute copies; known-answer comparison; exact read-only MCP surface; no source-writing authority.</td><td><span class="tag found">ARTIFACT IDENTIFIED</span><span class="tag pilot">PROPOSED PILOT</span></td><td>Retain for the pilot. If adopted, re-charter Atlas as the durable Code Intelligence specialist rather than adding a competing Code-Graph-RAG agent.</td></tr>
+<tr><td><b>Ariadne</b></td><td>LoopX pilot</td><td>Temporary control-state steward for a bounded LoopX evaluation: claims, gates, evidence, recovery, quota, handoff and authoritative execution-local state.</td><td><span class="tag found">ARTIFACT IDENTIFIED</span><span class="tag pilot">PROPOSED PILOT</span></td><td>Retain only for the LoopX pilot; retire or re-charter after disposition.</td></tr>
+<tr><td><b>Max</b></td><td>OmniRoute repository ecosystem</td><td>Chief Repository Steward, sole dispatcher and integrator for the approved three-tier OmniRoute management architecture.</td><td><span class="tag found">OWNER-APPROVED</span></td><td>Retain as the durable OmniRoute primary coordinator.</td></tr>
+<tr><td><b>Maya</b></td><td>OmniRoute protocol/streaming</td><td>Protocol translation, SSE, request/response fidelity and modality surfaces.</td><td><span class="tag found">OWNER-APPROVED</span></td><td>Retain as a persistent OmniRoute steward.</td></tr>
+<tr><td><b>Carson</b></td><td>OmniRoute routing/resilience</td><td>Routing, fallback, circuit breaker, cooldown, lockout and policy behavior.</td><td><span class="tag found">OWNER-APPROVED</span></td><td>Retain as a persistent OmniRoute steward.</td></tr>
+<tr><td><b>Riley</b></td><td>OmniRoute providers</td><td>Provider integrations, credentials, model catalog and upstream capability mapping.</td><td><span class="tag found">OWNER-APPROVED</span></td><td>Retain as a persistent OmniRoute steward.</td></tr>
+<tr><td><b>Lena</b></td><td>OmniRoute persistence</td><td>Database, migrations, durable state, backup/restore and schema safety.</td><td><span class="tag found">OWNER-APPROVED</span></td><td>Retain as a persistent OmniRoute steward.</td></tr>
+<tr><td><b>Aisha</b></td><td>OmniRoute security</td><td>Authentication, guardrails, secrets, SSRF/exposure boundaries, MITM, tunnels and process execution.</td><td><span class="tag found">OWNER-APPROVED</span></td><td>Retain as a persistent OmniRoute steward.</td></tr>
+<tr><td><b>Nolan</b></td><td>OmniRoute extensions</td><td>MCP, A2A, cloud agents, memory, skills, plugins and extension contracts.</td><td><span class="tag found">OWNER-APPROVED</span></td><td>Retain as a persistent OmniRoute steward; this does not enable those product subsystems in HX.</td></tr>
+<tr><td><b>Sofia</b></td><td>OmniRoute experience</td><td>Dashboard, desktop, browser clients, Electron, PWA, i18n and accessibility.</td><td><span class="tag found">OWNER-APPROVED</span></td><td>Retain as a persistent OmniRoute steward.</td></tr>
+<tr><td><b>Frank</b></td><td>OmniRoute delivery</td><td>CLI, build, packaging, installers, embedded service supervisors and delivery assets.</td><td><span class="tag found">OWNER-APPROVED</span></td><td>Retain as a persistent OmniRoute steward.</td></tr>
+<tr><td><b>Vera</b></td><td>OmniRoute quality/release</td><td>Tests, quality ratchets, CI, evidence, baselines, changelog and release consistency.</td><td><span class="tag found">OWNER-APPROVED</span></td><td>Retain as an independent persistent OmniRoute steward.</td></tr>
+<tr><td><b>Sam, Ruth, Will, Brooke, Paul, Sue</b></td><td>OmniRoute task-cell templates</td><td>Reconnaissance, reproduction, bounded implementation, adversarial review, independent proof and knowledge capture.</td><td><span class="tag found">OWNER-APPROVED</span></td><td>Retain as ephemeral templates, not always-on specialists.</td></tr>
+</tbody></table>
+
+<h2>Prior capability agents requiring identity validation</h2>
+<table><thead><tr><th>Prior capability ID</th><th>Observed responsibility</th><th>Proposed human name</th><th>Action</th></tr></thead><tbody>
+<tr><td><code>infrastructure-ops</code></td><td>Fleet operations, Linux service practices and infrastructure review.</td><td><b>Owen</b></td><td>Validate whether a named agent already exists before adopting Owen.</td></tr>
+<tr><td><code>testing-qa</code></td><td>Independent test methodology, fixtures, gates and evidence validity.</td><td><b>Tessa</b></td><td>Validate existing identity. Preserve independence from component implementers.</td></tr>
+<tr><td><code>mcp-plane</code></td><td>MCP admission, transport, tool-surface and authority boundary.</td><td><b>Felix</b></td><td>Validate existing identity; proposed name aligns with FastMCP ownership.</td></tr>
+<tr><td><code>lightrag</code></td><td>Document/domain retrieval and LightRAG integration.</td><td><b>Liam</b></td><td>Validate whether the prior capability is already reconstructed and named.</td></tr>
+<tr><td><code>langgraph</code></td><td>Workflow graphs, orchestration state, checkpoints and bounded iteration.</td><td><b>Laura</b></td><td>Historical material said reconstruction was required. Validate whether an agent was subsequently created.</td></tr>
+<tr><td><code>docling</code></td><td>Document conversion, structure recovery and ingestion handoff.</td><td><b>Diana</b></td><td>Validate whether the migration/distillation work already produced the current agent.</td></tr>
+<tr><td><code>architecture-governance</code></td><td>Authority boundaries and architecture review.</td><td><b>Grace</b></td><td>Validate existing identity; do not duplicate Agent Zero’s owner authority.</td></tr>
+</tbody></table>
+
+<h2>Proposed core technology specialists</h2>
+<table><thead><tr><th>Proposed agent</th><th>Owned technology</th><th>Scope</th><th>Lifecycle</th><th>Important boundary</th></tr></thead><tbody>
+<tr><td><b>Owen</b></td><td>Ubuntu, systemd, Bash/SSH/SCP, PowerShell fleet controls, chrony, DNS</td><td>Systems foundation, service lifecycle, fleet scripts, time and naming verification.</td><td>Durable core</td><td>No Ansible; does not own application configuration or security approval.</td></tr>
+<tr><td><b>Nick</b></td><td>NGINX</td><td>Human/web ingress, reverse proxy, TLS and path routing.</td><td>Durable core</td><td>Does not own model routing; OmniRoute owns AI traffic.</td></tr>
+<tr><td><b>Victor</b></td><td>vLLM</td><td>High-throughput serving, context enforcement, batching, tensor parallelism and OpenAI-compatible runtime behavior.</td><td>Durable core</td><td>Runtime specialist, not model-acceptance authority.</td></tr>
+<tr><td><b>Craig</b></td><td>Ollama</td><td>Install, configure, audit, verify and troubleshoot bounded local inference.</td><td>Durable core</td><td>Loopback-only; not a universal or Claude Code backend.</td></tr>
+<tr><td><b>Quincy</b></td><td>Hugging Face, Qwen, gpt-oss and model portfolio</td><td>Model provenance, license, quantization, context, workload fit and acceptance evidence.</td><td>Durable core</td><td>Does not configure runtimes or declare broad acceptance.</td></tr>
+<tr><td><b>Quinn</b></td><td>Qdrant</td><td>Vector collections, dimensions, metadata, backup and collection ownership.</td><td>Durable core</td><td>Vector state only; not document knowledge, semantic memory or relational truth.</td></tr>
+<tr><td><b>Liam</b></td><td>LightRAG</td><td>Human, document, governance and domain knowledge retrieval.</td><td>Durable core</td><td>Not user memory and not code-structure intelligence.</td></tr>
+<tr><td><b>Diana</b></td><td>Docling + Granite Docling 258M</td><td>Document parsing, VLM routing, DocTags validation, quality/performance comparison and normalized output.</td><td>Durable core</td><td>Granite Docling stays embedded within Docling, not a general conversational model.</td></tr>
+<tr><td><b>Chloe</b></td><td>Crawl4AI</td><td>Web acquisition, extraction, cleaning, provenance and ingestion-ready output.</td><td>Durable core</td><td>Acquires content; does not own retrieval collections or knowledge truth.</td></tr>
+<tr><td><b>Evan</b></td><td>TEI/Infinity, BGE-M3/Nomic and BGE reranker</td><td>Embedding/rerank serving, batching, dimensions, evaluation and API compatibility.</td><td>Conditional core</td><td>Final runtime/model remains evidence-selected; dimensions freeze before ingest.</td></tr>
+<tr><td><b>Laura</b></td><td>LangGraph</td><td>Workflow graphs, orchestration state, checkpoints, interrupts, resumability and bounded iteration.</td><td>Durable core after design acceptance</td><td>Does not own model traffic, Mem0 memory, LightRAG knowledge or MCP admission.</td></tr>
+<tr><td><b>Felix</b></td><td>FastMCP, custom HX MCP services, Streamable HTTP</td><td>Capability contracts, tool admission, transport and exact read/write exposure.</td><td>Durable core</td><td>No unbounded shell or second execution-control plane.</td></tr>
+<tr><td><b>Mia</b></td><td>Mem0</td><td>Durable user/agent memory, retention, deletion, storage boundaries and retrieval quality.</td><td>Durable proposed core / in by default</td><td>Does not duplicate LangGraph checkpoints, LightRAG or graph memory.</td></tr>
+<tr><td><b>Peter</b></td><td>PostgreSQL</td><td>Relational state, service schemas, least-privilege roles, migrations and LangGraph checkpoints.</td><td>Durable core</td><td>Explicit schema ownership; not vector or ephemeral state.</td></tr>
+<tr><td><b>Reggie</b></td><td>Redis</td><td>Cache, queues, pub/sub, sessions and short-lived coordination.</td><td>Durable core</td><td>Never authoritative durable business or agent state.</td></tr>
+<tr><td><b>Sylvia</b></td><td>SQLite</td><td>Narrow local, low-concurrency, service-owned state and portability patterns.</td><td>Conditional specialist</td><td>Cannot re-enter as shared platform truth.</td></tr>
+<tr><td><b>Wendy</b></td><td>Open WebUI</td><td>Ready-made model/chat experience for development, testing and demos.</td><td>Durable core</td><td>Consumes governed APIs; does not bind directly to exposed runtimes.</td></tr>
+<tr><td><b>Cody</b></td><td>CopilotKit + AG-UI</td><td>Custom agent-aware UI, event streaming, shared state and embedded copilots.</td><td>Durable core</td><td>User experience only; not orchestration or policy authority.</td></tr>
+<tr><td><b>Nate</b></td><td>n8n</td><td>Deterministic workflow automation and external-system integration.</td><td>Durable core</td><td>Does not replace LangGraph’s stateful agent reasoning.</td></tr>
+<tr><td><b>Oscar</b></td><td>Prometheus, Grafana, Loki, node_exporter, DCGM exporter</td><td>Metrics, dashboards, logs, GPU/host/service telemetry and observability contracts.</td><td>Durable core</td><td>Measures and reports; never configuration or acceptance authority.</td></tr>
+<tr><td><b>Becca</b></td><td>Backup/snapshot and recovery tooling</td><td>Data inventory, RPO/RTO, backup policy, immutable copies and restore tests.</td><td>Conditional core</td><td>Product selection remains open; recovery must be proven, not assumed.</td></tr>
+<tr><td><b>Jay</b></td><td>jcode</td><td>Full-profile local development agent working in tandem with Claude Code; memory-on/off evaluation and local execution.</td><td>Pilot / likely durable</td><td>Must inherit fail-closed HX controls; no immediate HX fork.</td></tr>
+<tr><td><b>Drew</b></td><td>diagram-design + GitDiagram</td><td>Architecture diagrams, repository visualizations, diagram standards, provenance and rendered-output validation.</td><td>Conditional shared specialist</td><td>Visualizes authoritative architecture; diagrams do not become architecture truth.</td></tr>
+<tr><td><b>Derek</b></td><td>Discovery</td><td>Cross-stack as-found discovery, evidence capture, drift detection and current-state inventories before configuration work.</td><td>Durable cross-cutting</td><td>Discovery is read-only/as-found evidence; it does not configure or declare desired state.</td></tr>
+<tr><td><b>Morgan</b></td><td>Migrations</td><td>Repository, service, schema and knowledge migration planning; manifests, provenance, rollback and post-migration verification.</td><td>Durable cross-cutting</td><td>Coordinates migrations but does not replace Peter, Lena or the affected domain owner.</td></tr>
+<tr><td><b>Seth</b></td><td>Sessions</td><td>Session start/resume/handoff contracts, context hygiene, continuity records and recovery from interrupted AI work.</td><td>Durable cross-cutting</td><td>Session continuity does not become project truth, durable memory or a competing task ledger.</td></tr>
+<tr><td><b>Skye</b></td><td>Skills + skill-expert</td><td>Skill catalogue, skill design, evaluation, routing metadata, installation lifecycle and capability reuse.</td><td>Durable cross-cutting</td><td>Skills package governed capability; they do not grant new authority or bypass hooks.</td></tr>
+<tr><td><b>Grace</b></td><td>Git, GitHub, sdd-core pattern, Markdown authority and review artifacts</td><td>Repository governance, provenance, architecture records, hooks and change-policy consistency.</td><td>Durable cross-cutting</td><td>Advises and enforces repository rules; Agent Zero remains owner authority.</td></tr>
+<tr><td><b>Tessa</b></td><td>Cross-stack testing and acceptance</td><td>Independent gate design, fixtures, evidence quality, regression proof and acceptance records.</td><td>Durable cross-cutting</td><td>Does not implement the change she certifies.</td></tr>
+</tbody></table>
+
+<h2>Operations-directory coverage crosswalk</h2>
+<p>The operations directory is a technology evidence and working-material catalogue, not automatic proof that every folder needs a permanent agent or belongs in the final stack.</p>
+<table><thead><tr><th>Operations folder</th><th>Roster owner</th><th>Coverage</th><th>Disposition note</th></tr></thead><tbody>
+<tr><td><code>code-rag-graph</code></td><td>Atlas</td><td><span class="tag found">COVERED</span></td><td>Comparator/roadmap candidate. Do not create a peer permanent agent while code-review-graph is the active pilot.</td></tr>
+<tr><td><code>code-review-graph</code></td><td>Atlas</td><td><span class="tag found">COVERED</span></td><td>Current bounded Code Intelligence pilot identity.</td></tr>
+<tr><td><code>diagram-design</code></td><td>Drew</td><td><span class="tag new">ADDED</span></td><td>Combined with GitDiagram under one visualization specialist.</td></tr>
+<tr><td><code>discovery</code></td><td>Derek</td><td><span class="tag new">ADDED</span></td><td>General read-only discovery; distinct from Sam’s OmniRoute-only task-cell role.</td></tr>
+<tr><td><code>dns-fqdn</code></td><td>Owen</td><td><span class="tag found">COVERED</span></td><td>Part of systems foundation and fleet naming.</td></tr>
+<tr><td><code>docling</code></td><td>Diana</td><td><span class="tag found">COVERED</span></td><td>Includes Granite Docling embedded-model policy.</td></tr>
+<tr><td><code>gitdiagram</code></td><td>Drew</td><td><span class="tag new">ADDED</span></td><td>Candidate visualization tool; not a source of repository truth.</td></tr>
+<tr><td><code>hooks</code></td><td>Grace; Tessa validates</td><td><span class="tag prior">EXPLICITLY MAPPED</span></td><td>Grace owns hook policy and implementation governance; Tessa proves fail-closed behavior.</td></tr>
+<tr><td><code>jcode</code></td><td>Jay</td><td><span class="tag found">COVERED</span></td><td>Pilot/likely-adopt development agent working with Claude Code.</td></tr>
+<tr><td><code>langgraph</code></td><td>Laura</td><td><span class="tag found">COVERED</span></td><td>Orchestration state only; current design still requires acceptance.</td></tr>
+<tr><td><code>loopx</code></td><td>Ariadne</td><td><span class="tag found">COVERED</span></td><td>Temporary pilot steward only.</td></tr>
+<tr><td><code>migrations</code></td><td>Morgan</td><td><span class="tag new">ADDED</span></td><td>Cross-project migration method; domain agents retain technical ownership.</td></tr>
+<tr><td><code>ollama</code></td><td>Craig</td><td><span class="tag found">COVERED</span></td><td>Includes the full hxs-4 audit obligation.</td></tr>
+<tr><td><code>OmniRoute</code></td><td>Max and council</td><td><span class="tag found">COVERED</span></td><td>Federated ownership remains justified by repository scale.</td></tr>
+<tr><td><code>Qwen</code></td><td>Quincy</td><td><span class="tag found">COVERED</span></td><td>Model-family evidence and workload acceptance, not runtime configuration.</td></tr>
+<tr><td><code>sessions</code></td><td>Seth</td><td><span class="tag new">ADDED</span></td><td>Generic session continuity; does not duplicate LoopX, Mem0 or project logs.</td></tr>
+<tr><td><code>skill-expert</code></td><td>Skye</td><td><span class="tag new">ADDED</span></td><td>Candidate/source expertise folded into the skills capability.</td></tr>
+<tr><td><code>skills</code></td><td>Skye</td><td><span class="tag prior">EXPLICITLY MAPPED</span></td><td>One catalogue and lifecycle owner rather than agents per skill.</td></tr>
+<tr><td><code>vllm</code></td><td>Victor</td><td><span class="tag found">COVERED</span></td><td>High-throughput serving specialist.</td></tr>
+</tbody></table>
+<div class="ok"><b>Coverage result:</b> all 19 operations folders are now explicitly mapped. Five previously implicit or absent areas produced five proposed identities: Drew, Derek, Morgan, Seth and Skye. No folder was treated as automatic adoption.</div>
+
+<h2>Pilot and roadmap agents</h2>
+<table><thead><tr><th>Agent</th><th>Candidate</th><th>Current lifecycle</th><th>Promotion rule</th></tr></thead><tbody>
+<tr><td><b>Atlas</b></td><td>code-review-graph</td><td><span class="tag pilot">TEMPORARY PILOT</span></td><td>If the owner adopts code-review-graph, re-charter Atlas as the one Code Intelligence agent. Do not keep a second competing Code-Graph-RAG authority.</td></tr>
+<tr><td><b>Ariadne</b></td><td>LoopX</td><td><span class="tag pilot">TEMPORARY PILOT</span></td><td>Retire after the pilot unless LoopX earns a bounded durable role.</td></tr>
+<tr><td><b>Jay</b></td><td>jcode</td><td><span class="tag pilot">PILOT / LIKELY ADOPT</span></td><td>Promote only after fail-closed controls and tandem operation with Claude Code are proven.</td></tr>
+<tr><td><b>Atlas</b> or a future replacement—not both</td><td>Code-Graph-RAG comparator</td><td><span class="tag defer">ROADMAP / COMPARATOR</span></td><td>Create no separate permanent agent unless Code-Graph-RAG proves a distinct, non-overlapping role after code-review-graph evaluation.</td></tr>
+</tbody></table>
+
+<h2>Consolidations that prevent agent sprawl</h2>
+<ul>
+<li><b>One model-portfolio agent:</b> Quincy covers Hugging Face, Qwen and gpt-oss; do not create one agent per model family.</li>
+<li><b>One embedding agent:</b> Evan covers TEI/Infinity, embedding models and rerankers because these decisions are coupled.</li>
+<li><b>One observability agent:</b> Oscar covers Prometheus, Grafana, Loki and exporters.</li>
+<li><b>One UI-framework agent:</b> Cody covers CopilotKit and AG-UI; Wendy remains separate because Open WebUI is an operated product.</li>
+<li><b>One MCP-plane agent:</b> Felix owns FastMCP and transport/exposure contracts; individual MCP services remain bounded capabilities, not autonomous specialists by default.</li>
+<li><b>One Code Intelligence authority:</b> Atlas is the current pilot identity. Code-Graph-RAG remains a comparator, not a peer agent.</li>
+<li><b>OmniRoute stays federated:</b> its repository size justifies Max plus nine stewards and ephemeral task cells; do not collapse it into a generic “OmniRoute expert.”</li>
+</ul>
+
+<h2>Owner validation checklist</h2>
+<div class="note"><b>This document is intentionally a roster draft.</b> For each row, validate the name, whether an agent already exists, whether it should be durable or temporary, and whether the proposed consolidation boundary is correct.</div>
+<ol>
+<li>Confirm or replace the proposed human names.</li>
+<li>Mark which agent definitions already exist in the canonical repository.</li>
+<li>Resolve the prior capability IDs: <code>infrastructure-ops</code>, <code>testing-qa</code>, <code>mcp-plane</code>, <code>lightrag</code>, <code>langgraph</code>, <code>docling</code>, and <code>architecture-governance</code>.</li>
+<li>Confirm whether Craig’s full hxs-4 Ollama audit charter is present in his current definition.</li>
+<li>Keep Atlas and Ariadne temporary until their pilots earn a durable role.</li>
+<li>After validation, produce a file-by-file agent reconciliation manifest: existing, rename, merge, create, retire, or defer.</li>
+<li>Verify that every created or retrofitted definition contains the pinned Knowledge Base Review verbatim and maps to its actual technology directory.</li>
+</ol>
+
+<h2>Final proposed catalogue</h2>
+<p><b>Durable/cross-stack or proposed core:</b> Grace, Owen, Nick, Max and council, Victor, Craig, Quincy, Quinn, Liam, Diana, Chloe, Evan, Laura, Felix, Mia, Peter, Reggie, Sylvia, Wendy, Cody, Nate, Oscar, Becca, Derek, Morgan, Seth, Skye and Tessa.</p>
+<p><b>Conditional/pilot specialists:</b> Jay and Drew, pending their technology dispositions.</p>
+<p><b>Temporary pilots:</b> Atlas and Ariadne.</p>
+<p><b>Ephemeral OmniRoute task templates:</b> Sam, Ruth, Will, Brooke, Paul and Sue.</p>
+<div class="verdict"><strong>Recommendation:</strong> validate this catalogue against the canonical agent directory before creating anything. Preserve existing agents where their capability matches, rename only deliberately, merge overlapping capabilities, and create only the gaps that survive owner review. Every resulting definition must contain the pinned Knowledge Base Review as a blocking pre-task gate.</div>
+
+<p class="small">Evidence basis: supplied proposed technology-stack HTML; current OmniRoute management architecture; retained Craig/Ollama project context; Library artifacts for Atlas and Ariadne; and historical references to capability agents. Personal conversation retrieval did not return a reliable “Repo Review for HX” transcript, so unverified historical identities are explicitly marked rather than inferred as fact.</p>
+<div class="footer">HX Infrastructure · Proposed technology agent roster · Validation draft only</div>
+</main></body></html>

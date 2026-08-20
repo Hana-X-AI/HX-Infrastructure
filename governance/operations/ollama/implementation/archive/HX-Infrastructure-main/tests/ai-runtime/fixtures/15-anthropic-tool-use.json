@@ -1,0 +1,29 @@
+{
+  "id": "F15",
+  "capability": "RT-07",
+  "evidence_class": "A",
+  "api_style": "anthropic-messages",
+  "description": "Anthropic tool_use block exposes id, name and input.",
+  "response": {
+    "id": "msg_2",
+    "type": "message",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "content": [
+      {
+        "type": "tool_use",
+        "id": "toolu_hx_001",
+        "name": "hx_read_registry",
+        "input": {
+          "host": "hxs-3"
+        }
+      }
+    ]
+  },
+  "expect": {
+    "tool_call_id": "toolu_hx_001",
+    "tool_name": "hx_read_registry",
+    "argument_key": "host",
+    "argument_value": "hxs-3"
+  }
+}
